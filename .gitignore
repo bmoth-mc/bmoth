@@ -1,9 +1,14 @@
 *.class
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Gradle generated files
+build/
+.gradle
+.settings
+.project
+.classpath
 
-# Package Files #
+
+# Packages
 *.jar
 *.war
 *.ear
