@@ -15,14 +15,34 @@ apply plugin: 'application'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
-    // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    mavenCentral()
+    maven {
+        name "snapshots"
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven {
+        name "release"
+        url "https://oss.sonatype.org/content/repositories/releases/"
+    }
 }
+
+def parser_version = '2.8.1-SNAPSHOT'
 
 dependencies {
     // The production code uses Guava
-    compile 'com.google.guava:guava:20.0'
+    // compile 'com.google.guava:guava:20.0'
+
+    // ProB's B parser
+    compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
+    compile group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
+    compile group: "de.hhu.stups", name: "cliparser", version: parser_version , changing: true
+    compile group: "de.hhu.stups", name: "ltlparser", version: parser_version , changing: true
+    compile group: "de.hhu.stups", name: "parserbase", version: parser_version , changing: true
+    compile group: "de.hhu.stups", name: "prologlib", version: parser_version , changing: true
+    compile group: "de.hhu.stups", name: "unicode", version: parser_version , changing: true
+    compile group: "de.hhu.stups", name: "typechecker", version: parser_version , changing: true
+    compile group: "de.hhu.stups", name: "theorymapping", version: parser_version , changing: true
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
