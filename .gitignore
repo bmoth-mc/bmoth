@@ -1,4 +1,6 @@
+# compiled files
 *.class
+/bin/
 
 # Gradle generated files
 build/
@@ -8,7 +10,7 @@ build/
 .classpath
 
 
-# Packages
+# packages
 *.jar
 *.war
 *.ear
