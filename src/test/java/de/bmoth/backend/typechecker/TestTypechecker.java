@@ -1,4 +1,4 @@
-package typechecker;
+package de.bmoth.backend.typechecker;
 
 import java.util.Hashtable;
 

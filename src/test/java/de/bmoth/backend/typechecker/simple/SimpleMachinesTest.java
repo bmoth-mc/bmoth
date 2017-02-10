@@ -1,10 +1,10 @@
-package de.bmoth.typechecker.simple;
+package de.bmoth.backend.typechecker.simple;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import de.bmoth.typechecker.TestTypechecker;
+import de.bmoth.backend.typechecker.TestTypechecker;
 import de.prob.typechecker.exceptions.TypeErrorException;
 
 public class SimpleMachinesTest {
