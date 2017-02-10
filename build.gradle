@@ -44,6 +44,9 @@ dependencies {
     compile group: "de.hhu.stups", name: "typechecker", version: parser_version , changing: true
     compile group: "de.hhu.stups", name: "theorymapping", version: parser_version , changing: true
 
+    // Java SMT collection of and API for multiple SMT solvers
+    compile group: 'org.sosy-lab', name: 'java-smt', version: '1.0.1'
+
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
 }
