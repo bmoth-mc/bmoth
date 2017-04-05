@@ -9,13 +9,13 @@ import de.prob.typechecker.MachineContext;
 import de.prob.typechecker.Typechecker;
 import de.prob.typechecker.btypes.BType;
 
-public class TestTypechecker {
+public class TypecheckerTest {
 
 	public Hashtable<String, BType> parameters;
 	public Hashtable<String, BType> constants;
 	public Hashtable<String, BType> variables;
 
-	public TestTypechecker(String machine) throws BCompoundException {
+	public TypecheckerTest(String machine) throws BCompoundException {
 		parameters = new Hashtable<String, BType>();
 		constants = new Hashtable<String, BType>();
 		variables = new Hashtable<String, BType>();
