@@ -7,6 +7,7 @@ import de.bmoth.antlr.BMoThLexer;
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.parser.ast.MachineAnalyser;
 import de.bmoth.parser.ast.SemanticAstCreator;
+import de.bmoth.parser.ast.TypeChecker;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
 public class Parser {
@@ -35,4 +36,11 @@ public class Parser {
 
 	}
 
+	public static MachineNode getSemanticAst(String inputString) {
+		Parser parser = new Parser();
+		ParseTree parseTree = parser.parseString(inputString);
+		MachineNode ast = parser.getAst(parseTree);
+		new TypeChecker(ast);
+		return ast;
+	}
 }

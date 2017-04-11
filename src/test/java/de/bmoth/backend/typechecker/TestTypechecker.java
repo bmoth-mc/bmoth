@@ -2,6 +2,8 @@ package de.bmoth.backend.typechecker;
 
 import java.util.Hashtable;
 
+import de.bmoth.parser.Parser;
+
 public class TestTypechecker {
 
 	public Hashtable<String, String> parameters;
@@ -13,8 +15,7 @@ public class TestTypechecker {
 		constants = new Hashtable<String, String>();
 		variables = new Hashtable<String, String>();
 
-		//TODO
-
+		Parser.getSemanticAst(machine);
 	}
 
 }

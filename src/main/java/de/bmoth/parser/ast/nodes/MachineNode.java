@@ -8,6 +8,7 @@ public class MachineNode extends Node {
 
 	private List<DeclarationNode> constants;
 	private List<DeclarationNode> variables;
+	private PredicateNode properties;
 	private PredicateNode invariant;
 	private SubstitutionNode initialisation;
 	private List<OperationNode> operations;
@@ -55,5 +56,14 @@ public class MachineNode extends Node {
 	public void setInvariant(PredicateNode invariant) {
 		this.invariant = invariant;
 	}
+
+	public PredicateNode getProperties() {
+		return properties;
+	}
+
+	public void setProperties(PredicateNode properties) {
+		this.properties = properties;
+	}
+
 
 }

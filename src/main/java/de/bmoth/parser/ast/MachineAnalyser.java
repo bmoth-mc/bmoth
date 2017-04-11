@@ -3,6 +3,7 @@ package de.bmoth.parser.ast;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -11,6 +12,7 @@ import static de.bmoth.antlr.BMoThParser.*;
 
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.Identifier_listContext;
+import de.bmoth.antlr.BMoThParser.OperationContext;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
 import de.bmoth.exceptions.ScopeException;
 
@@ -137,7 +139,23 @@ public class MachineAnalyser {
 				scopeTable.clear();
 				scopeTable.add(MachineAnalyser.this.constantsDeclarations);
 				scopeTable.add(MachineAnalyser.this.variablesDeclarations);
-				MachineAnalyser.this.properties.accept(this);
+				MachineAnalyser.this.invariant.accept(this);
+				scopeTable.clear();
+			}
+
+			if (MachineAnalyser.this.initialisation != null) {
+				scopeTable.clear();
+				scopeTable.add(MachineAnalyser.this.constantsDeclarations);
+				scopeTable.add(MachineAnalyser.this.variablesDeclarations);
+				MachineAnalyser.this.initialisation.accept(this);
+				scopeTable.clear();
+			}
+
+			for (Entry<String, OperationContext> entry : MachineAnalyser.this.operationsDeclarations.entrySet()) {
+				scopeTable.clear();
+				scopeTable.add(MachineAnalyser.this.constantsDeclarations);
+				scopeTable.add(MachineAnalyser.this.variablesDeclarations);
+				entry.getValue().substitution().accept(this);
 				scopeTable.clear();
 			}
 

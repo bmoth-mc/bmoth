@@ -28,7 +28,6 @@ public class SimpleMachinesTest {
 		Parser parser = new Parser();
 		ParseTree parseTree = parser.parseString(machine);
 		MachineNode ast = parser.getAst(parseTree);
-		System.out.println(ast);
 	}
 
 }
