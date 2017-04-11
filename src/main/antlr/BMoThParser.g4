@@ -11,7 +11,7 @@ start
   ;
 
 parse_unit
-  : MACHINE IDENTIFIER (clauses+=machine_clause)* END            # ParseUnitMachine
+  : MACHINE IDENTIFIER (clauses+=machine_clause)* END                     # MachineParseUnit
   ;
 
 machine_clause
@@ -34,19 +34,13 @@ identifier_list
   : identifiers+=IDENTIFIER (',' identifiers+=IDENTIFIER)*
   ;
 
-formula
-  : expression            #FormulaExpression
-  | predicate             #FormulaPredicate
-  | substitution          #FormulaSubstitution
-  ;
-
 substitution
-  : BEGIN substitution END                                                              # BlockSubstitution
-  | SKIP_SUB                                                                            # SkipSubstitution
-  | SELECT condition=predicate THEN sub=substitution END                                # SelectSubstitution
-  | ANY identifier_list WHERE predicate THEN substitution END                           # AnySubstitution
-  | identifier_list ':=' expression_list                                                # AssignSubstitution
-  | substitution DOUBLE_VERTICAL_BAR substitution                                       # ParallelSubstitution
+  : BEGIN substitution END                                                  # BlockSubstitution
+  | SKIP_SUB                                                                # SkipSubstitution
+  | SELECT condition=predicate THEN sub=substitution END                    # SelectSubstitution
+  | ANY identifier_list WHERE predicate THEN substitution END               # AnySubstitution
+  | identifier_list ':=' expression_list                                    # AssignSubstitution
+  | substitution DOUBLE_VERTICAL_BAR substitution                           # ParallelSubstitution
   ;
 
 expression_list
@@ -54,32 +48,29 @@ expression_list
   ;
 
 predicate
-  : '(' predicate ')'                                                                     # ParenthesisPredicate
-  | keyword=(TRUE|FALSE)                                                                  # KeywordPredicate
-  | NOT '(' predicate ')'                                                                 # NotPredicate
+  : '(' predicate ')'                                                       # ParenthesisPredicate
+  | operator=(TRUE|FALSE)                                                   # PredicateOperator
+  | operator=NOT '(' predicate ')'                                          # PredicateOperator
   | operator=(FOR_ANY|EXITS) quantified_variables_list
-      DOT LEFT_PAR predicate RIGHT_PAR                                                    # QuantificationPredicate
-  | left=expression operator=(EQUAL|ELEMENT_OF|COLON|INCLUSION|STRICT_INCLUSION
-    |NON_INCLUSION|STRICT_NON_INCLUSION|NOT_EQUAL|NOT_BELONGING|LESS_EQUAL
-    |LESS|GREATER_EQUAL|GREATER) right=expression                                         # BinExpressionOperatorPredicate
-  | left=predicate operator=EQUIVALENCE right=predicate                                   # BinPredicateOperatorPredicate //p60
-  | left=predicate operator=(AND|OR) right=predicate                                      # BinPredicateOperatorPredicate //p40
-  | left=predicate operator=IMPLIES right=predicate                                       # BinPredicateOperatorPredicate //p30
+      DOT LEFT_PAR predicate RIGHT_PAR                                      # QuantificationPredicate
+  | expression operator=(EQUAL|NOT_EQUAL|COLON|ELEMENT_OF
+    |LESS_EQUAL|LESS|GREATER_EQUAL|GREATER) expression                      # PredicateOperatorWithExprArgs
+  | predicate operator=EQUIVALENCE predicate                                # PredicateOperator //p60
+  | predicate operator=(AND|OR) predicate                                   # PredicateOperator //p40
+  | predicate operator=IMPLIES predicate                                    # PredicateOperator //p30
   ;
 
 expression
   : Number                                                                  # NumberExpression
-  | value=(TRUE|FALSE)                                                      # BooleanValueExpression
-  | StringLiteral                                                           # StringExpression
-  | LEFT_PAR expression RIGHT_PAR                                           # ParenthesisExpression
+  | LEFT_PAR expression RIGHT_PAR                                           # ParenthesesExpression
   | IDENTIFIER                                                              # IdentifierExpression
   | BOOl_CAST '(' predicate ')'                                             # CastPredicateExpression
-  | keyword=(NATURAL|NATURAL1|INTEGER|BOOL)                                 # KeywordExpression
+  | operator=(NATURAL|NATURAL1|INTEGER|BOOL|TRUE|FALSE)                     # ExpressionOperator
   // operators with precedences
-  | operator=MINUS expr=expression                                                      # UnaryOperatorExpression  //P210
-  | <assoc=right> left=expression operator=POWER_OF right=expression                    # BinOperatorExpression //p200
-  | left=expression operator=(MULT|DIVIDE|MOD) right=expression                         # BinOperatorExpression //p190
-  | left=expression operator=(PLUS|MINUS|SET_SUBTRACTION) right=expression              # BinOperatorExpression //p180
-  | left=expression operator=INTERVAL right=expression                                  # BinOperatorExpression //p170
-  | left=expression operator=(UNION|MAPLET) right=expression                            # BinOperatorExpression //p160
+  | operator=MINUS expression                                               # ExpressionOperator //P210
+  | <assoc=right> expression operator=POWER_OF expression                   # ExpressionOperator //p200
+  | expression operator=(MULT|DIVIDE|MOD) expression                        # ExpressionOperator //p190
+  | expression operator=(PLUS|MINUS|SET_SUBTRACTION) expression             # ExpressionOperator //p180
+  | expression operator=INTERVAL expression                                 # ExpressionOperator //p170
+  | expression operator=(UNION|MAPLET) expression                           # ExpressionOperator //p160
   ;
