@@ -1,17 +1,14 @@
 package de.bmoth.backend.translator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.sosy_lab.common.ShutdownManager;
-import org.sosy_lab.common.configuration.Configuration;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
-import org.sosy_lab.common.log.BasicLogManager;
-import org.sosy_lab.common.log.LogManager;
 import org.sosy_lab.java_smt.SolverContextFactory;
 import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
 import org.sosy_lab.java_smt.api.BooleanFormula;
@@ -27,17 +24,14 @@ import org.sosy_lab.java_smt.api.SolverContext;
 import org.sosy_lab.java_smt.api.SolverContext.ProverOptions;
 import org.sosy_lab.java_smt.api.SolverException;
 
+import com.google.common.collect.ImmutableList;
+
 public class SMTSolverConnectionTest {
 
 	@Test
 	public void testSimpleCallToSMTINTERPOL()
 			throws InvalidConfigurationException, SolverException, InterruptedException {
-		Configuration config = Configuration.defaultConfiguration();
-		LogManager logger = BasicLogManager.create(config);
-		ShutdownManager shutdown = ShutdownManager.create();
-
-		SolverContext context = SolverContextFactory.createSolverContext(config, logger, shutdown.getNotifier(),
-				Solvers.SMTINTERPOL);
+		SolverContext context = SolverContextFactory.createSolverContext(Solvers.SMTINTERPOL);
 		FormulaManager fmgr = context.getFormulaManager();
 
 		BooleanFormulaManager bmgr = fmgr.getBooleanFormulaManager();
@@ -59,12 +53,7 @@ public class SMTSolverConnectionTest {
 	@Test(expected = UnsupportedOperationException.class)
 	public void testNoQuantifiersInSMTINTERPOL()
 			throws InvalidConfigurationException, SolverException, InterruptedException {
-		Configuration config = Configuration.defaultConfiguration();
-		LogManager logger = BasicLogManager.create(config);
-		ShutdownManager shutdown = ShutdownManager.create();
-
-		SolverContext context = SolverContextFactory.createSolverContext(config, logger, shutdown.getNotifier(),
-				Solvers.SMTINTERPOL);
+		SolverContext context = SolverContextFactory.createSolverContext(Solvers.SMTINTERPOL);
 		FormulaManager fmgr = context.getFormulaManager();
 
 		BooleanFormulaManager bmgr = fmgr.getBooleanFormulaManager();
@@ -88,12 +77,7 @@ public class SMTSolverConnectionTest {
 
 	@Test
 	public void testSimpleCallToZ3() throws InvalidConfigurationException, SolverException, InterruptedException {
-		Configuration config = Configuration.defaultConfiguration();
-		LogManager logger = BasicLogManager.create(config);
-		ShutdownManager shutdown = ShutdownManager.create();
-
-		SolverContext context = SolverContextFactory.createSolverContext(config, logger, shutdown.getNotifier(),
-				Solvers.Z3);
+		SolverContext context = SolverContextFactory.createSolverContext(Solvers.Z3);
 		FormulaManager fmgr = context.getFormulaManager();
 
 		BooleanFormulaManager bmgr = fmgr.getBooleanFormulaManager();
@@ -105,8 +89,10 @@ public class SMTSolverConnectionTest {
 		try (ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_MODELS)) {
 			prover.addConstraint(constraint);
 			boolean isUnsat = prover.isUnsat();
+			assertFalse(isUnsat);
 			if (!isUnsat) {
 				Model model = prover.getModel();
+				assertEquals(BigInteger.valueOf(5), model.evaluate(a));
 				assertEquals(BigInteger.valueOf(5), model.evaluate(b));
 			}
 		}
