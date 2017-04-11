@@ -15,8 +15,8 @@ parse_unit
   ;
 
 machine_clause
-  : name=(PROPERTIES|INVARIANT) pred=predicate                            # PredicateClause
-  | name=(CONSTANTS|VARIABLES) identifier_list                            # DeclarationClause
+  : clauseName=(PROPERTIES|INVARIANT) pred=predicate                      # PredicateClause
+  | clauseName=(CONSTANTS|VARIABLES) identifier_list                      # DeclarationClause
   | INITIALISATION substitution                                           # InitialisationClause
   | OPERATIONS  ops+=single_operation (SEMICOLON ops+=single_operation)*  # OperationsClause
   ;
@@ -31,7 +31,7 @@ quantified_variables_list
   ;
 
 identifier_list
-  : idents+=IDENTIFIER (',' idents+=IDENTIFIER)*
+  : identifiers+=IDENTIFIER (',' identifiers+=IDENTIFIER)*
   ;
 
 formula
@@ -43,7 +43,7 @@ formula
 substitution
   : BEGIN substitution END                                                              # BlockSubstitution
   | SKIP_SUB                                                                            # SkipSubstitution
-  | SELECT pred=predicate THEN sub=substitution END                                     # SelectSubstitution
+  | SELECT condition=predicate THEN sub=substitution END                                # SelectSubstitution
   | ANY identifier_list WHERE predicate THEN substitution END                           # AnySubstitution
   | identifier_list ':=' expression_list                                                # AssignSubstitution
   | substitution DOUBLE_VERTICAL_BAR substitution                                       # ParallelSubstitution

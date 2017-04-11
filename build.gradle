@@ -9,6 +9,8 @@
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'antlr'
+
 
 // Apply the application plugin to add support for building an application
 apply plugin: 'application'
@@ -27,22 +29,24 @@ repositories {
     }
 }
 
+sourceSets {
+    main {
+        java {
+          	srcDirs = ['src/main/java', 'build/generated-src']
+        }
+    }
+}
+
+
+
 def parser_version = '2.8.1-SNAPSHOT'
 
 dependencies {
     // The production code uses Guava
     // compile 'com.google.guava:guava:20.0'
 
-    // ProB's B parser
-    compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "cliparser", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "ltlparser", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "parserbase", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "prologlib", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "unicode", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "typechecker", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "theorymapping", version: parser_version , changing: true
+    // Antlr4 Parser Generator
+    antlr "org.antlr:antlr4:4.5.3"
 
     // Java SMT collection of and API for multiple SMT solvers
     compile group: 'org.sosy-lab', name: 'java-smt', version: '1.0.1'
@@ -53,3 +57,11 @@ dependencies {
 
 // Define the main class for the application
 mainClassName = 'de.bmoth.App'
+
+
+// gradle generateGrammarSource
+generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments += ["-visitor", "-long-messages"]
+    outputDirectory = file('build/generated-src/de/bmoth/antlr')
+}
