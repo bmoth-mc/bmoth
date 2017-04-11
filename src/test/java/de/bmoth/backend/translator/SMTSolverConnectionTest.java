@@ -26,13 +26,40 @@ import org.sosy_lab.java_smt.api.SolverException;
 public class SMTSolverConnectionTest {
 
 	@Test
-	public void testSimpleSMTCall() throws InvalidConfigurationException, SolverException, InterruptedException {
+	public void testSimpleCallToSMTINTERPOL()
+			throws InvalidConfigurationException, SolverException, InterruptedException {
 		Configuration config = Configuration.defaultConfiguration();
 		LogManager logger = BasicLogManager.create(config);
 		ShutdownManager shutdown = ShutdownManager.create();
 
 		SolverContext context = SolverContextFactory.createSolverContext(config, logger, shutdown.getNotifier(),
 				Solvers.SMTINTERPOL);
+		FormulaManager fmgr = context.getFormulaManager();
+
+		BooleanFormulaManager bmgr = fmgr.getBooleanFormulaManager();
+		IntegerFormulaManager imgr = fmgr.getIntegerFormulaManager();
+
+		IntegerFormula a = imgr.makeVariable("a"), b = imgr.makeVariable("b");
+		BooleanFormula constraint = bmgr.and(imgr.equal(a, b), imgr.equal(a, imgr.makeNumber(5)));
+
+		try (ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_MODELS)) {
+			prover.addConstraint(constraint);
+			boolean isUnsat = prover.isUnsat();
+			if (!isUnsat) {
+				Model model = prover.getModel();
+				assertEquals(BigInteger.valueOf(5), model.evaluate(b));
+			}
+		}
+	}
+
+	@Test
+	public void testSimpleCallToZ3() throws InvalidConfigurationException, SolverException, InterruptedException {
+		Configuration config = Configuration.defaultConfiguration();
+		LogManager logger = BasicLogManager.create(config);
+		ShutdownManager shutdown = ShutdownManager.create();
+
+		SolverContext context = SolverContextFactory.createSolverContext(config, logger, shutdown.getNotifier(),
+				Solvers.Z3);
 		FormulaManager fmgr = context.getFormulaManager();
 
 		BooleanFormulaManager bmgr = fmgr.getBooleanFormulaManager();
