@@ -3,6 +3,8 @@ package de.bmoth.backend.translator;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.sosy_lab.common.ShutdownManager;
@@ -19,6 +21,8 @@ import org.sosy_lab.java_smt.api.IntegerFormulaManager;
 import org.sosy_lab.java_smt.api.Model;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 import org.sosy_lab.java_smt.api.ProverEnvironment;
+import org.sosy_lab.java_smt.api.QuantifiedFormulaManager;
+import org.sosy_lab.java_smt.api.QuantifiedFormulaManager.Quantifier;
 import org.sosy_lab.java_smt.api.SolverContext;
 import org.sosy_lab.java_smt.api.SolverContext.ProverOptions;
 import org.sosy_lab.java_smt.api.SolverException;
@@ -44,6 +48,36 @@ public class SMTSolverConnectionTest {
 
 		try (ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_MODELS)) {
 			prover.addConstraint(constraint);
+			boolean isUnsat = prover.isUnsat();
+			if (!isUnsat) {
+				Model model = prover.getModel();
+				assertEquals(BigInteger.valueOf(5), model.evaluate(b));
+			}
+		}
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void testNoQuantifiersInSMTINTERPOL()
+			throws InvalidConfigurationException, SolverException, InterruptedException {
+		Configuration config = Configuration.defaultConfiguration();
+		LogManager logger = BasicLogManager.create(config);
+		ShutdownManager shutdown = ShutdownManager.create();
+
+		SolverContext context = SolverContextFactory.createSolverContext(config, logger, shutdown.getNotifier(),
+				Solvers.SMTINTERPOL);
+		FormulaManager fmgr = context.getFormulaManager();
+
+		BooleanFormulaManager bmgr = fmgr.getBooleanFormulaManager();
+		IntegerFormulaManager imgr = fmgr.getIntegerFormulaManager();
+		QuantifiedFormulaManager qmgr = fmgr.getQuantifiedFormulaManager();
+
+		IntegerFormula a = imgr.makeVariable("a"), b = imgr.makeVariable("b");
+		BooleanFormula constraint = bmgr.and(imgr.equal(a, b), imgr.equal(a, imgr.makeNumber(5)));
+		BooleanFormula quantified = qmgr.mkQuantifier(Quantifier.EXISTS,
+				new ArrayList<IntegerFormula>(Arrays.asList(a, b)), constraint);
+
+		try (ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_MODELS)) {
+			prover.addConstraint(quantified);
 			boolean isUnsat = prover.isUnsat();
 			if (!isUnsat) {
 				Model model = prover.getModel();

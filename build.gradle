@@ -6,11 +6,14 @@
  * user guide available at https://docs.gradle.org/3.3/userguide/tutorial_java_projects.html
  */
 
+ plugins {
+     id "de.undercouch.download" version "3.2.0"
+ }
+
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'antlr'
-
 
 // Apply the application plugin to add support for building an application
 apply plugin: 'application'
@@ -37,19 +40,15 @@ sourceSets {
     }
 }
 
-
-
-def parser_version = '2.8.1-SNAPSHOT'
-
 dependencies {
-    // The production code uses Guava
-    // compile 'com.google.guava:guava:20.0'
-
     // Antlr4 Parser Generator
     antlr "org.antlr:antlr4:4.5.3"
 
     // Java SMT collection of and API for multiple SMT solvers
     compile group: 'org.sosy-lab', name: 'java-smt', version: '1.0.1'
+    
+    // Z3 Java Bindings
+    compile files('libs/com.microsoft.z3.jar')
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
@@ -64,4 +63,24 @@ generateGrammarSource {
     maxHeapSize = "64m"
     arguments += ["-visitor", "-long-messages"]
     outputDirectory = file('build/generated-src/de/bmoth/antlr')
+}
+
+task downloadExternalJars {
+    doFirst {
+        download {
+            src 'https://www3.hhu.de/stups/buildlibs/com.microsoft.z3.jar'
+            dest 'libs/com.microsoft.z3.jar'
+            onlyIfNewer true
+        }
+    }
+}
+
+compileJava {
+    dependsOn {
+        downloadExternalJars
+    }
+}
+
+tasks.withType(Test) {
+    systemProperty "java.library.path", "/usr/local/lib"
 }

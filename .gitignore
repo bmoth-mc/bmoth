@@ -9,6 +9,8 @@ build/
 .project
 .classpath
 
+# downloaded libraries
+libs/
 
 # packages
 *.jar
