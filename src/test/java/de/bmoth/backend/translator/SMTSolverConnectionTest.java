@@ -1,101 +1,56 @@
 package de.bmoth.backend.translator;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.sosy_lab.common.configuration.InvalidConfigurationException;
-import org.sosy_lab.java_smt.SolverContextFactory;
-import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
-import org.sosy_lab.java_smt.api.BooleanFormula;
-import org.sosy_lab.java_smt.api.BooleanFormulaManager;
-import org.sosy_lab.java_smt.api.FormulaManager;
-import org.sosy_lab.java_smt.api.IntegerFormulaManager;
-import org.sosy_lab.java_smt.api.Model;
-import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
-import org.sosy_lab.java_smt.api.ProverEnvironment;
-import org.sosy_lab.java_smt.api.QuantifiedFormulaManager;
-import org.sosy_lab.java_smt.api.QuantifiedFormulaManager.Quantifier;
-import org.sosy_lab.java_smt.api.SolverContext;
-import org.sosy_lab.java_smt.api.SolverContext.ProverOptions;
-import org.sosy_lab.java_smt.api.SolverException;
 
-import com.google.common.collect.ImmutableList;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Expr;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Status;
 
 public class SMTSolverConnectionTest {
+	private Context ctx;
+	private Solver s;
 
-	@Test
-	public void testSimpleCallToSMTINTERPOL()
-			throws InvalidConfigurationException, SolverException, InterruptedException {
-		SolverContext context = SolverContextFactory.createSolverContext(Solvers.SMTINTERPOL);
-		FormulaManager fmgr = context.getFormulaManager();
-
-		BooleanFormulaManager bmgr = fmgr.getBooleanFormulaManager();
-		IntegerFormulaManager imgr = fmgr.getIntegerFormulaManager();
-
-		IntegerFormula a = imgr.makeVariable("a"), b = imgr.makeVariable("b");
-		BooleanFormula constraint = bmgr.and(imgr.equal(a, b), imgr.equal(a, imgr.makeNumber(5)));
-
-		try (ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_MODELS)) {
-			prover.addConstraint(constraint);
-			boolean isUnsat = prover.isUnsat();
-			if (!isUnsat) {
-				Model model = prover.getModel();
-				assertEquals(BigInteger.valueOf(5), model.evaluate(b));
-			}
-		}
+	@Before
+	public void setup() {
+		ctx = new Context();
+		s = ctx.mkSolver();
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testNoQuantifiersInSMTINTERPOL()
-			throws InvalidConfigurationException, SolverException, InterruptedException {
-		SolverContext context = SolverContextFactory.createSolverContext(Solvers.SMTINTERPOL);
-		FormulaManager fmgr = context.getFormulaManager();
-
-		BooleanFormulaManager bmgr = fmgr.getBooleanFormulaManager();
-		IntegerFormulaManager imgr = fmgr.getIntegerFormulaManager();
-		QuantifiedFormulaManager qmgr = fmgr.getQuantifiedFormulaManager();
-
-		IntegerFormula a = imgr.makeVariable("a"), b = imgr.makeVariable("b");
-		BooleanFormula constraint = bmgr.and(imgr.equal(a, b), imgr.equal(a, imgr.makeNumber(5)));
-		BooleanFormula quantified = qmgr.mkQuantifier(Quantifier.EXISTS,
-				new ArrayList<IntegerFormula>(Arrays.asList(a, b)), constraint);
-
-		try (ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_MODELS)) {
-			prover.addConstraint(quantified);
-			boolean isUnsat = prover.isUnsat();
-			if (!isUnsat) {
-				Model model = prover.getModel();
-				assertEquals(BigInteger.valueOf(5), model.evaluate(b));
-			}
-		}
+	@After
+	public void cleanup() {
+		ctx.close();
 	}
 
 	@Test
-	public void testSimpleCallToZ3() throws InvalidConfigurationException, SolverException, InterruptedException {
-		SolverContext context = SolverContextFactory.createSolverContext(Solvers.Z3);
-		FormulaManager fmgr = context.getFormulaManager();
+	public void testSimpleCallToZ3() {
+		Expr a = ctx.mkIntConst("a"), b = ctx.mkIntConst("b");
+		BoolExpr constraint = ctx.mkAnd(ctx.mkEq(a, b), ctx.mkEq(a, ctx.mkInt(5)));
 
-		BooleanFormulaManager bmgr = fmgr.getBooleanFormulaManager();
-		IntegerFormulaManager imgr = fmgr.getIntegerFormulaManager();
+		s.add(constraint);
+		Status check = s.check();
 
-		IntegerFormula a = imgr.makeVariable("a"), b = imgr.makeVariable("b");
-		BooleanFormula constraint = bmgr.and(imgr.equal(a, b), imgr.equal(a, imgr.makeNumber(5)));
+		assertEquals(Status.SATISFIABLE, check);
+		assertEquals(ctx.mkInt(5), s.getModel().eval(a, true));
+		assertEquals(ctx.mkInt(5), s.getModel().eval(b, true));
+	}
 
-		try (ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_MODELS)) {
-			prover.addConstraint(constraint);
-			boolean isUnsat = prover.isUnsat();
-			assertFalse(isUnsat);
-			if (!isUnsat) {
-				Model model = prover.getModel();
-				assertEquals(BigInteger.valueOf(5), model.evaluate(a));
-				assertEquals(BigInteger.valueOf(5), model.evaluate(b));
-			}
-		}
+	@Test
+	public void testQuantifiedFormula() {
+
+		Expr a = ctx.mkIntConst("a"), b = ctx.mkIntConst("b");
+		BoolExpr constraint = ctx.mkAnd(ctx.mkEq(a, b), ctx.mkEq(a, ctx.mkInt(5)), ctx.mkEq(b, ctx.mkInt(7)));
+		constraint = ctx.mkExists(new Expr[] { a, b }, constraint, 1, null, null, null, null);
+
+		s.add(constraint);
+		Status check = s.check();
+
+		assertEquals(Status.UNSATISFIABLE, check);
 	}
 
 }

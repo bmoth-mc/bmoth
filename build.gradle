@@ -18,6 +18,8 @@ apply plugin: 'antlr'
 // Apply the application plugin to add support for building an application
 apply plugin: 'application'
 
+import org.apache.tools.ant.taskdefs.condition.Os
+
 // In this section you declare where to find the dependencies of your project
 repositories {
     jcenter()
@@ -43,9 +45,6 @@ sourceSets {
 dependencies {
     // Antlr4 Parser Generator
     antlr "org.antlr:antlr4:4.5.3"
-
-    // Java SMT collection of and API for multiple SMT solvers
-    compile group: 'org.sosy-lab', name: 'java-smt', version: '1.0.1'
     
     // Z3 Java Bindings
     compile files('libs/com.microsoft.z3.jar')
@@ -65,22 +64,44 @@ generateGrammarSource {
     outputDirectory = file('build/generated-src/de/bmoth/antlr')
 }
 
-task downloadExternalJars {
+task downloadZ3 {
     doFirst {
+        def url = 'https://github.com/Z3Prover/bin/raw/master/releases/'
+        def filename = 'z3-4.5.0-x64-'
+        if (Os.isFamily(Os.FAMILY_MAC)) {
+            filename += 'osx-10.11.6.zip'
+        } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            filename += 'win.zip'
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            filename += 'ubuntu-14.04.zip'
+        }
         download {
-            src 'https://www3.hhu.de/stups/buildlibs/com.microsoft.z3.jar'
-            dest 'libs/com.microsoft.z3.jar'
-            onlyIfNewer true
+                src url + filename
+                dest 'libs/' + filename
+                onlyIfNewer true
+                overwrite false
+        }
+        copy {
+            from zipTree('libs/' + filename)
+            into 'libs/'
+            eachFile {
+                FileCopyDetails fcp ->
+                    if (fcp.relativePath.pathString.contains("bin")) {
+                        fcp.relativePath = new RelativePath(true, *(fcp.relativePath.getSegments()[2..-1]))
+                    } else {
+                        fcp.exclude()
+                    }
+            }
         }
     }
 }
 
 compileJava {
     dependsOn {
-        downloadExternalJars
+        downloadZ3
     }
 }
 
 tasks.withType(Test) {
-    systemProperty "java.library.path", "/usr/local/lib"
+    systemProperty "java.library.path", "./libs"
 }
