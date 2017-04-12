@@ -105,3 +105,9 @@ compileJava {
 tasks.withType(Test) {
     systemProperty "java.library.path", "./libs"
 }
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
