@@ -7,12 +7,25 @@ import de.bmoth.exceptions.UnificationException;
 public class UntypedType extends Observable implements Type {
 
 	@Override
-	public Type unify(Type otherType) throws UnificationException {
+	public boolean unifiable(Type otherType) {
 		if (otherType instanceof UntypedType) {
-			((UntypedType) otherType).replaceBy(this);
-			return this;
+			return true;
 		} else {
-			return otherType.unify(this);
+			return otherType.unifiable(this);
+		}
+	}
+
+	@Override
+	public Type unify(Type otherType) throws UnificationException {
+		if (unifiable(otherType)) {
+			if (otherType instanceof UntypedType) {
+				((UntypedType) otherType).replaceBy(this);
+				return this;
+			} else {
+				return otherType.unify(this);
+			}
+		} else {
+			throw new UnificationException();
 		}
 	}
 
@@ -24,5 +37,16 @@ public class UntypedType extends Observable implements Type {
 	@Override
 	public boolean isUntyped() {
 		return true;
+	}
+
+	@Override
+	public boolean contains(Type other) {
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		int shortenedHashCode = this.hashCode() / 10000;
+		return "_Type" + shortenedHashCode + "_";
 	}
 }

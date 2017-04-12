@@ -22,7 +22,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 		// check that all constants have a type, otherwise throw an exception
 		for (DeclarationNode con : machineNode.getConstants()) {
 			if (con.getType().isUntyped()) {
-				throw new TypeErrorException("Can not infer the type of constant + " + con.getName());
+				throw new TypeErrorException(con, "Can not infer the type of constant " + con.getName());
 			}
 		}
 
@@ -38,7 +38,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 		// check that all variables have type, otherwise throw an exception
 		for (DeclarationNode var : machineNode.getVariables()) {
 			if (var.getType().isUntyped()) {
-				throw new TypeErrorException("Can not infer the type of variable " + var.getName());
+				throw new TypeErrorException(var, "Can not infer the type of variable " + var.getName());
 			}
 		}
 
@@ -70,7 +70,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			// expression formula
 			Type type = super.visitExprNode((ExprNode) formula, new UntypedType());
 			if (type.isUntyped()) {
-				throw new TypeErrorException("Can not infer type of formula");
+				throw new TypeErrorException(formula, "Can not infer type of formula");
 			}
 		}
 
@@ -78,7 +78,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 		// exception
 		for (DeclarationNode node : formulaNode.getImplicitDeclarations()) {
 			if (node.getType().isUntyped()) {
-				throw new TypeErrorException("Can not infer the type of local variable + " + node.getName());
+				throw new TypeErrorException(node, "Can not infer the type of local variable + " + node.getName());
 			}
 		}
 	}
@@ -88,7 +88,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 		try {
 			BoolType.getInstance().unify(expected);
 		} catch (UnificationException e) {
-			throw new TypeErrorException();
+			throw new TypeErrorException(node, expected, BoolType.getInstance());
 		}
 		List<PredicateNode> predicateArguments = node.getPredicateArguments();
 		for (PredicateNode predicateNode : predicateArguments) {
@@ -102,7 +102,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 		try {
 			BoolType.getInstance().unify(expected);
 		} catch (UnificationException e) {
-			throw new TypeErrorException();
+			throw new TypeErrorException(node, expected, BoolType.getInstance());
 		}
 		final List<ExprNode> expressionNodes = node.getExpressionNodes();
 		switch (node.getOperator()) {
@@ -144,7 +144,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			try {
 				IntegerType.getInstance().unify(expected);
 			} catch (UnificationException e) {
-				throw new TypeErrorException();
+				throw new TypeErrorException(node, expected, IntegerType.getInstance());
 			}
 			for (ExprNode exprNode : expressionNodes) {
 				visitExprNode(exprNode, IntegerType.getInstance());
@@ -156,7 +156,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			try {
 				found = found.unify(expected);
 			} catch (UnificationException e) {
-				throw new TypeErrorException();
+				throw new TypeErrorException(node, expected, found);
 			}
 			visitExprNode(expressionNodes.get(0), IntegerType.getInstance());
 			visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
@@ -169,7 +169,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			try {
 				type = type.unify(expected);
 			} catch (UnificationException e) {
-				throw new TypeErrorException();
+				throw new TypeErrorException(node, expected, type);
 			}
 			return type;
 		}
@@ -178,7 +178,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			try {
 				BoolType.getInstance().unify(expected);
 			} catch (UnificationException e) {
-				throw new TypeErrorException();
+				throw new TypeErrorException(node, expected, BoolType.getInstance());
 			}
 			return BoolType.getInstance();
 		}
@@ -187,7 +187,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			try {
 				found.unify(expected);
 			} catch (UnificationException e) {
-				throw new TypeErrorException();
+				throw new TypeErrorException(node, expected, found);
 			}
 			return found;
 		}
@@ -196,7 +196,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			try {
 				type = type.unify(expected);
 			} catch (UnificationException e) {
-				throw new TypeErrorException();
+				throw new TypeErrorException(node, expected, type);
 			}
 			type = visitExprNode(expressionNodes.get(0), type);
 			type = visitExprNode(expressionNodes.get(1), type);
@@ -214,7 +214,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 		try {
 			return node.getDeclarationNode().getType().unify(expected);
 		} catch (UnificationException e) {
-			throw new TypeErrorException();
+			throw new TypeErrorException(node, expected, node.getDeclarationNode().getType());
 		}
 	}
 
@@ -223,7 +223,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 		try {
 			return IntegerType.getInstance().unify(expected);
 		} catch (UnificationException e) {
-			throw new TypeErrorException();
+			throw new TypeErrorException(node, expected, IntegerType.getInstance());
 		}
 	}
 

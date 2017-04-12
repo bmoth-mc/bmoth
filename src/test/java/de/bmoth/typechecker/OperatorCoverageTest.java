@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import de.bmoth.exceptions.TypeErrorException;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
@@ -33,6 +34,12 @@ public class OperatorCoverageTest {
 		assertEquals("b", node2.getName());
 		assertEquals("INTEGER", node1.getType().toString());
 		assertEquals("INTEGER", node2.getType().toString());
+	}
+
+	@Test(expected = TypeErrorException.class)
+	public void testPredicateFormulaError() throws Exception {
+		String formula = "x = 2 / 3 & b : x ";
+		Parser.getFormulaAsSemanticAst(formula);
 	}
 
 }

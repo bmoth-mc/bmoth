@@ -21,25 +21,49 @@ public class SetType extends Observable implements Type, Observer {
 	}
 
 	@Override
-	public Type unify(Type otherType) throws UnificationException {
-		if (otherType instanceof UntypedType) {
-			((UntypedType) otherType).replaceBy(this);
-			return this;
+	public boolean unifiable(Type otherType) {
+		if (otherType == this) {
+			return true;
+		} else if (otherType instanceof UntypedType && !this.contains(otherType)) {
+			return true;
 		} else if (otherType instanceof SetType) {
-			SetType otherSetType = (SetType) otherType;
-			otherSetType.replaceBy(this);
-
-			// unify the sub types
-			this.subType.unify(otherSetType.subType);
-			/*
-			 * Note, if the sub type has changed this instance will be
-			 * automatically updated. Hence, there is no need to store the
-			 * result of the unification.
-			 */
-
-			return this;
+			SetType setType = (SetType) otherType;
+			return this.subType.unifiable(setType.subType);
 		}
-		throw new UnificationException();
+		return false;
+	}
+
+	@Override
+	public boolean contains(Type other) {
+		if (this.subType == other || this.subType.contains(other)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public Type unify(Type otherType) throws UnificationException {
+		if (unifiable(otherType)) {
+			if (otherType instanceof UntypedType) {
+				((UntypedType) otherType).replaceBy(this);
+				return this;
+			} else {
+				SetType otherSetType = (SetType) otherType;
+				otherSetType.replaceBy(this);
+
+				// unify the sub types
+				this.subType.unify(otherSetType.subType);
+				/*
+				 * Note, if the sub type has changed this instance will be
+				 * automatically updated. Hence, there is no need to store the
+				 * result of the unification.
+				 */
+				return this;
+			}
+		} else {
+			throw new UnificationException();
+		}
 	}
 
 	public void replaceBy(Type otherType) {
