@@ -12,7 +12,7 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 
-public class SMTSolverConnectionTest {
+public class Z3ConnectionTest {
 	private Context ctx;
 	private Solver s;
 
@@ -42,7 +42,6 @@ public class SMTSolverConnectionTest {
 
 	@Test
 	public void testQuantifiedFormula() {
-
 		Expr a = ctx.mkIntConst("a"), b = ctx.mkIntConst("b");
 		BoolExpr constraint = ctx.mkAnd(ctx.mkEq(a, b), ctx.mkEq(a, ctx.mkInt(5)), ctx.mkEq(b, ctx.mkInt(7)));
 		constraint = ctx.mkExists(new Expr[] { a, b }, constraint, 1, null, null, null, null);
