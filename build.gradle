@@ -123,3 +123,7 @@ eclipse.classpath.file.whenMerged { classpath ->
         }
     }
 }
+
+clean {
+    delete 'libs'
+}
