@@ -5,4 +5,6 @@ import de.bmoth.exceptions.UnificationException;
 public interface Type {
 
 	public Type unify(Type otherType) throws UnificationException;
+
+	public boolean isUntyped();
 }

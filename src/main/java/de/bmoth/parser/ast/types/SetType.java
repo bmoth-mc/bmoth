@@ -67,4 +67,9 @@ public class SetType extends Observable implements Type, Observer {
 		return "POW(" + subType.toString() + ")";
 	}
 
+	@Override
+	public boolean isUntyped() {
+		return this.subType.isUntyped();
+	}
+
 }

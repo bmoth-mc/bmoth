@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import de.bmoth.exceptions.TypeErrorException;
 
-public class SimpleMachinesTest {
+public class MachinesTest {
 
 	@Test
 	public void testInteger() throws Exception {
@@ -186,7 +186,7 @@ public class SimpleMachinesTest {
 	public void testSubstitution() throws Exception {
 		String machine = "MACHINE test \n";
 		machine += "VARIABLES x,y \n";
-		machine += "INVARIANT 1=1 \n";
+		machine += "INVARIANT x=1 & y : BOOL \n";
 		machine += "INITIALISATION x,y:= 1,TRUE \n";
 		machine += "OPERATIONS foo = SELECT x < 2 THEN x := 2 END \n";
 		machine += "END";
@@ -194,5 +194,5 @@ public class SimpleMachinesTest {
 		assertEquals("INTEGER", t.variables.get("x").toString());
 		assertEquals("BOOL", t.variables.get("y").toString());
 	}
-	
+
 }

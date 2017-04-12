@@ -15,7 +15,7 @@ public class SimpleMachinesTest {
 		machine += "OPERATIONS IncX = SELECT x < 10 THEN x := x + 1 END \n";
 		machine += "END";
 
-		Parser.getSemanticAst(machine);
+		Parser.getMachineAsSemanticAst(machine);
 	}
 
 }

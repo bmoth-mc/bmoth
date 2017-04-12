@@ -20,4 +20,9 @@ public class UntypedType extends Observable implements Type {
 		this.setChanged();
 		this.notifyObservers(otherType);
 	}
+
+	@Override
+	public boolean isUntyped() {
+		return true;
+	}
 }

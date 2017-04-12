@@ -1,18 +1,21 @@
 package de.bmoth.parser;
 
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import de.bmoth.antlr.BMoThLexer;
 import de.bmoth.antlr.BMoThParser;
+import de.bmoth.antlr.BMoThParser.FormulaContext;
+import de.bmoth.antlr.BMoThParser.StartContext;
+import de.bmoth.parser.ast.FormulaAnalyser;
 import de.bmoth.parser.ast.MachineAnalyser;
 import de.bmoth.parser.ast.SemanticAstCreator;
 import de.bmoth.parser.ast.TypeChecker;
+import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
 public class Parser {
 
-	public ParseTree parseString(String inputString) {
+	private BMoThParser getParser(String inputString) {
 		ANTLRInputStream inputStream = new ANTLRInputStream(inputString);
 		final BMoThLexer lexer = new BMoThLexer(inputStream);
 		// create a buffer of tokens pulled from the lexer
@@ -21,21 +24,46 @@ public class Parser {
 		bMoThParser.addErrorListener(new DiagnosticErrorListener());
 		MyErrorListener myErrorListener = new MyErrorListener();
 		bMoThParser.addErrorListener(myErrorListener);
-		ParseTree tree = bMoThParser.start();
-		return tree;
+		return bMoThParser;
 	}
 
-	public MachineNode getAst(ParseTree parseTree) {
-		MachineAnalyser machineAnalyser = new MachineAnalyser(parseTree);
+	public StartContext parseMachine(String inputString) {
+		BMoThParser parser = getParser(inputString);
+		StartContext start = parser.start();
+		return start;
+	}
+
+	public FormulaContext parseFormula(String inputString) {
+		BMoThParser parser = getParser(inputString);
+		return parser.formula();
+	}
+
+	public MachineNode getMachineAst(StartContext start) {
+		MachineAnalyser machineAnalyser = new MachineAnalyser(start);
 		SemanticAstCreator astCreator = new SemanticAstCreator(machineAnalyser);
-		return astCreator.getMachineNode();
+		return (MachineNode) astCreator.getAstNode();
 	}
 
-	public static MachineNode getSemanticAst(String inputString) {
+	public FormulaNode getFormulaAst(FormulaContext formula) {
+		FormulaAnalyser formulaAnalyser = new FormulaAnalyser(formula);
+		SemanticAstCreator astCreator = new SemanticAstCreator(formulaAnalyser);
+		return (FormulaNode) astCreator.getAstNode();
+	}
+
+	public static MachineNode getMachineAsSemanticAst(String inputString) {
 		Parser parser = new Parser();
-		ParseTree parseTree = parser.parseString(inputString);
-		MachineNode ast = parser.getAst(parseTree);
+		StartContext start = parser.parseMachine(inputString);
+		MachineNode ast = parser.getMachineAst(start);
 		new TypeChecker(ast);
 		return ast;
 	}
+
+	public static FormulaNode getFormulaAsSemanticAst(String inputString) {
+		Parser parser = new Parser();
+		FormulaContext formulaContext = parser.parseFormula(inputString);
+		FormulaNode formulaNode = parser.getFormulaAst(formulaContext);
+		new TypeChecker(formulaNode);
+		return formulaNode;
+	}
+
 }

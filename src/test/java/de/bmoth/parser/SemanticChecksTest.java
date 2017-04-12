@@ -12,7 +12,7 @@ public class SemanticChecksTest {
 		machine += "CONSTANTS k\n";
 		machine += "PROPERTIES k2 = INTEGER \n";
 		machine += "END";
-		Parser.getSemanticAst(machine);
+		Parser.getMachineAsSemanticAst(machine);
 	}
 	
 	@Test(expected = ScopeException.class)
@@ -22,7 +22,7 @@ public class SemanticChecksTest {
 		machine += "PROPERTIES k = INTEGER \n";
 		machine += "PROPERTIES k = INTEGER \n";
 		machine += "END";
-		Parser.getSemanticAst(machine);
+		Parser.getMachineAsSemanticAst(machine);
 	}
 
 

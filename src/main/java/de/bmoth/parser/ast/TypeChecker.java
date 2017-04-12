@@ -10,28 +10,77 @@ import de.bmoth.parser.ast.types.*;
 public class TypeChecker extends AbstractVisitor<Type, Type> {
 
 	public TypeChecker(MachineNode machineNode) {
+		// set all constants to untyped
 		for (DeclarationNode con : machineNode.getConstants()) {
 			con.setType(new UntypedType());
 		}
+		// visit the properties clause
 		if (machineNode.getProperties() != null) {
 			super.visitPredicateNode(machineNode.getProperties(), BoolType.getInstance());
 		}
 
+		// check that all constants have a type, otherwise throw an exception
+		for (DeclarationNode con : machineNode.getConstants()) {
+			if (con.getType().isUntyped()) {
+				throw new TypeErrorException("Can not infer the type of constant + " + con.getName());
+			}
+		}
+
+		// set all variables to untyped
 		for (DeclarationNode var : machineNode.getVariables()) {
 			var.setType(new UntypedType());
 		}
+
+		// visit the invariant clause
 		if (machineNode.getInvariant() != null) {
 			super.visitPredicateNode(machineNode.getInvariant(), BoolType.getInstance());
 		}
+		// check that all variables have type, otherwise throw an exception
+		for (DeclarationNode var : machineNode.getVariables()) {
+			if (var.getType().isUntyped()) {
+				throw new TypeErrorException("Can not infer the type of variable " + var.getName());
+			}
+		}
 
+		// visit the initialisation clause
 		if (machineNode.getInitialisation() != null) {
 			super.visitSubstitutionNode(machineNode.getInitialisation(), null);
 		}
 
+		// visit all operations
 		for (OperationNode op : machineNode.getOperations()) {
 			super.visitSubstitutionNode(op.getSubstitution(), null);
 		}
 
+		/*
+		 * Currently there are no local variables, e.g. quantified variables or
+		 * VAR variables. Hence, a check is missing that all local variables
+		 * have type.
+		 */
+	}
+
+	public TypeChecker(FormulaNode formulaNode) {
+		for (DeclarationNode node : formulaNode.getImplicitDeclarations()) {
+			node.setType(new UntypedType());
+		}
+		Node formula = formulaNode.getFormula();
+		if (formula instanceof PredicateNode) {
+			super.visitPredicateNode((PredicateNode) formula, BoolType.getInstance());
+		} else {
+			// expression formula
+			Type type = super.visitExprNode((ExprNode) formula, new UntypedType());
+			if (type.isUntyped()) {
+				throw new TypeErrorException("Can not infer type of formula");
+			}
+		}
+
+		// check that all local variables have a type, otherwise throw an
+		// exception
+		for (DeclarationNode node : formulaNode.getImplicitDeclarations()) {
+			if (node.getType().isUntyped()) {
+				throw new TypeErrorException("Can not infer the type of local variable + " + node.getName());
+			}
+		}
 	}
 
 	@Override
@@ -188,7 +237,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 	@Override
 	public Type visitSingleAssignSubstitution(SingleAssignSubstitution node, Type expected) {
 		Type type = visitIdentifierExprNode(node.getIdentifier(), new UntypedType());
-		visitExprNode(node.getValue(), type);
+		super.visitExprNode(node.getValue(), type);
 		return null;
 	}
 

@@ -26,4 +26,9 @@ public class BoolType implements Type {
 		return "BOOL";
 	}
 
+	@Override
+	public boolean isUntyped() {
+		return false;
+	}
+
 }

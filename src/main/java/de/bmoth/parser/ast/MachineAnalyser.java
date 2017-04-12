@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import static de.bmoth.antlr.BMoThParser.*;
 
@@ -17,7 +16,7 @@ import de.bmoth.exceptions.ScopeException;
 
 public class MachineAnalyser {
 
-	private final ParseTree parseTree;
+	private final StartContext parseTree;
 
 	final LinkedHashMap<String, Token> constantsDeclarations = new LinkedHashMap<>();
 	final LinkedHashMap<String, Token> variablesDeclarations = new LinkedHashMap<>();
@@ -29,8 +28,8 @@ public class MachineAnalyser {
 	PredicateClauseContext invariant;
 	InitialisationClauseContext initialisation;
 
-	public MachineAnalyser(ParseTree parseTree) {
-		this.parseTree = parseTree;
+	public MachineAnalyser(StartContext start) {
+		this.parseTree = start;
 
 		// find and store all declaration of global identifiers
 		new DeclarationFinder();

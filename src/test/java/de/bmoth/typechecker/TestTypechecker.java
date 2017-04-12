@@ -13,7 +13,7 @@ public class TestTypechecker {
 	public Hashtable<String, String> variables;
 
 	public TestTypechecker(String machine) {
-		MachineNode semanticAst = Parser.getSemanticAst(machine);
+		MachineNode semanticAst = Parser.getMachineAsSemanticAst(machine);
 
 		constants = new Hashtable<>();
 		List<DeclarationNode> constantsDecls = semanticAst.getConstants();

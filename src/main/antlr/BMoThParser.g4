@@ -47,12 +47,15 @@ expression_list
   : exprs+=expression (',' exprs+=expression)*
   ;
 
+formula
+  : predicate
+  | expression
+  ;
+
 predicate
   : '(' predicate ')'                                                       # ParenthesisPredicate
   | operator=(TRUE|FALSE)                                                   # PredicateOperator
   | operator=NOT '(' predicate ')'                                          # PredicateOperator
-  | operator=(FOR_ANY|EXITS) quantified_variables_list
-      DOT LEFT_PAR predicate RIGHT_PAR                                      # QuantificationPredicate
   | expression operator=(EQUAL|NOT_EQUAL|COLON|ELEMENT_OF
     |LESS_EQUAL|LESS|GREATER_EQUAL|GREATER) expression                      # PredicateOperatorWithExprArgs
   | predicate operator=EQUIVALENCE predicate                                # PredicateOperator //p60

@@ -11,41 +11,63 @@ import org.antlr.v4.runtime.tree.RuleNode;
 
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.ExpressionContext;
+import de.bmoth.antlr.BMoThParser.FormulaContext;
 import de.bmoth.antlr.BMoThParser.OperationContext;
 import de.bmoth.antlr.BMoThParser.PredicateContext;
 import de.bmoth.antlr.BMoThParser.SubstitutionContext;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
+import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.*;
 
 public class SemanticAstCreator {
 
-	final MachineAnalyser machineAnalyser;
-	final MachineNode machineNode;
+	private final LinkedHashMap<Token, Token> declarationReferences;
+	private final HashMap<Token, DeclarationNode> declarationMap = new HashMap<>();
+	private final Node semanticNode;
 
-	HashMap<Token, DeclarationNode> declarationMap = new HashMap<>();
+	public Node getAstNode() {
+		return this.semanticNode;
+	}
+
+	public SemanticAstCreator(FormulaAnalyser formulaAnalyser) {
+		this.declarationReferences = formulaAnalyser.declarationReferences;
+		FormulaContext formulaContext = formulaAnalyser.formula;
+		FormulaNode.FormulaType type = formulaContext.expression() != null ? EXPRESSION_FORMULA : PREDICATE_FORMULA;
+		FormulaNode formulaNode = new FormulaNode(type);
+		formulaNode.setImplicitDeclarations(createDeclarationList(formulaAnalyser.implicitDeclarations));
+		FormulaVisitor formulaVisitor = new FormulaVisitor();
+		Node node;
+		if (type == EXPRESSION_FORMULA) {
+			node = formulaContext.expression().accept(formulaVisitor);
+		} else {
+			node = formulaContext.predicate().accept(formulaVisitor);
+		}
+		formulaNode.setFormula(node);
+		this.semanticNode = formulaNode;
+	}
 
 	public SemanticAstCreator(MachineAnalyser machineAnalyser) {
-		this.machineAnalyser = machineAnalyser;
-		this.machineNode = new MachineNode(null, null);
-		this.machineNode.setConstants(createDeclarationList(machineAnalyser.constantsDeclarations));
-		this.machineNode.setVariables(createDeclarationList(machineAnalyser.variablesDeclarations));
+		this.declarationReferences = machineAnalyser.declarationReferences;
+		MachineNode machineNode = new MachineNode(null, null);
+		machineNode.setConstants(createDeclarationList(machineAnalyser.constantsDeclarations));
+		machineNode.setVariables(createDeclarationList(machineAnalyser.variablesDeclarations));
 
 		FormulaVisitor formulaVisitor = new FormulaVisitor();
 
 		if (machineAnalyser.properties != null) {
 			PredicateNode pred = (PredicateNode) machineAnalyser.properties.predicate().accept(formulaVisitor);
-			this.machineNode.setProperties(pred);
+			machineNode.setProperties(pred);
 		}
 
 		if (machineAnalyser.invariant != null) {
 			PredicateNode pred = (PredicateNode) machineAnalyser.invariant.predicate().accept(formulaVisitor);
-			this.machineNode.setInvariant(pred);
+			machineNode.setInvariant(pred);
 		}
 
 		if (machineAnalyser.initialisation != null) {
 			SubstitutionNode substitution = (SubstitutionNode) machineAnalyser.initialisation.substitution()
 					.accept(formulaVisitor);
-			this.machineNode.setInitialisation(substitution);
+			machineNode.setInitialisation(substitution);
 		}
 
 		{
@@ -57,9 +79,10 @@ public class SemanticAstCreator {
 				OperationNode operationNode = new OperationNode(entry.getValue(), entry.getKey(), substitution);
 				operationsList.add(operationNode);
 			}
-			this.machineNode.setOperations(operationsList);
+			machineNode.setOperations(operationsList);
 		}
 
+		this.semanticNode = machineNode;
 	}
 
 	private List<DeclarationNode> createDeclarationList(LinkedHashMap<String, Token> constantsDeclarations) {
@@ -77,7 +100,7 @@ public class SemanticAstCreator {
 
 		@Override
 		public Node visitChildren(RuleNode node) {
-			System.out.println(node.getClass() + " is not implemented yet.");
+			System.out.println(node.getClass() + " is not implemented yet in semantic Ast creator.");
 			return super.visitChildren(node);
 		}
 
@@ -163,7 +186,7 @@ public class SemanticAstCreator {
 		}
 
 		private IdentifierExprNode createIdentifierExprNode(Token token) {
-			Token declToken = SemanticAstCreator.this.machineAnalyser.declarationReferences.get(token);
+			Token declToken = SemanticAstCreator.this.declarationReferences.get(token);
 			DeclarationNode declarationNode = declarationMap.get(declToken);
 			if (declarationNode == null) {
 				System.out.println(declToken);
@@ -185,9 +208,4 @@ public class SemanticAstCreator {
 		}
 
 	}
-
-	public MachineNode getMachineNode() {
-		return this.machineNode;
-	}
-
 }

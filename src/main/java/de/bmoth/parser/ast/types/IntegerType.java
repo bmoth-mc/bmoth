@@ -25,4 +25,9 @@ public class IntegerType implements Type {
 	public String toString() {
 		return "INTEGER";
 	}
+
+	@Override
+	public boolean isUntyped() {
+		return false;
+	}
 }
