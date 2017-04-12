@@ -112,3 +112,11 @@ test {
         exceptionFormat = 'full'
     }
 }
+
+eclipse.classpath.file.whenMerged { classpath ->
+    classpath.entries.findResult { entry ->
+        if (entry.kind == 'lib' && entry.path.contains('com.microsoft.z3')) {
+            entry.setNativeLibraryLocation('bmoth/libs')
+        }
+    }
+}
