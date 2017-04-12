@@ -7,7 +7,5 @@ public class ParseErrorException extends RuntimeException {
 
 	public ParseErrorException(CommonToken token, String message) {
 		super(message);
-		System.out.println(message);
-		System.out.println(token.getText());
 	}
 }
