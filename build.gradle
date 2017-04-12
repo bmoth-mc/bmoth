@@ -103,8 +103,12 @@ compileJava {
 }
 
 tasks.withType(Test) {
-    environment "LD_LIBRARY_PATH", "./libs"
-    systemProperty "java.library.path", "./libs"
+    def env_vars =  ['LD_LIBRARY_PATH': ("$System.env.LD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/libs"),
+                 'DYLD_LIBRARY_PATH': ("$System.env.DYLD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/libs"),
+                 'PATH': ("$System.env.PATH" + System.getProperty("path.separator") + "$projectDir/libs")]
+    environment env_vars
+
+    systemProperty "java.library.path", "libs"
 }
 
 test {
