@@ -21,9 +21,10 @@ public class Parser {
 		// create a buffer of tokens pulled from the lexer
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		BMoThParser bMoThParser = new BMoThParser(tokens);
+		bMoThParser.removeErrorListeners();
 		bMoThParser.addErrorListener(new DiagnosticErrorListener());
-		MyErrorListener myErrorListener = new MyErrorListener();
-		bMoThParser.addErrorListener(myErrorListener);
+		ErrorListener errorListener = new ErrorListener();
+		bMoThParser.addErrorListener(errorListener);
 		return bMoThParser;
 	}
 
