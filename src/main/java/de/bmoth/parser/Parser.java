@@ -18,7 +18,6 @@ public class Parser {
 		// create a buffer of tokens pulled from the lexer
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		BMoThParser bMoThParser = new BMoThParser(tokens);
-
 		bMoThParser.addErrorListener(new DiagnosticErrorListener());
 		MyErrorListener myErrorListener = new MyErrorListener();
 		bMoThParser.addErrorListener(myErrorListener);
@@ -30,10 +29,6 @@ public class Parser {
 		MachineAnalyser machineAnalyser = new MachineAnalyser(parseTree);
 		SemanticAstCreator astCreator = new SemanticAstCreator(machineAnalyser);
 		return astCreator.getMachineNode();
-	}
-
-	public Parser() {
-
 	}
 
 	public static MachineNode getSemanticAst(String inputString) {

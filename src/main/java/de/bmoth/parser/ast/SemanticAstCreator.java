@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 
 import de.bmoth.antlr.BMoThParser;
@@ -83,9 +82,9 @@ public class SemanticAstCreator {
 		}
 
 		@Override
-		public ExprOperatorNode visitExpressionOperator(BMoThParser.ExpressionOperatorContext ctx) {
+		public ExpressionOperatorNode visitExpressionOperator(BMoThParser.ExpressionOperatorContext ctx) {
 			String operator = ctx.operator.getText();
-			return new ExprOperatorNode(ctx, createExprNodeList(ctx.expression()), operator);
+			return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression()), operator);
 		}
 
 		@Override
@@ -113,7 +112,7 @@ public class SemanticAstCreator {
 
 		@Override
 		public PredicateNode visitPredicateOperatorWithExprArgs(BMoThParser.PredicateOperatorWithExprArgsContext ctx) {
-			return new PredicateOperatorWithExprArgs(ctx, createExprNodeList(ctx.expression()));
+			return new PredicateOperatorWithExprArgsNode(ctx, createExprNodeList(ctx.expression()));
 		}
 
 		private List<ExprNode> createExprNodeList(List<ExpressionContext> list) {
@@ -149,7 +148,7 @@ public class SemanticAstCreator {
 						expressions.get(i));
 				sublist.add(singleAssignSubstitution);
 			}
-			if (sublist.size() > 1) {
+			if (sublist.size() == 1) {
 				return sublist.get(0);
 			} else {
 				return new ParallelSubstitutionNode(sublist);

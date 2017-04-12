@@ -15,10 +15,14 @@ public class IntegerType implements Type {
 		if (otherType == instance) {
 			return instance;
 		} else if (otherType instanceof UntypedType) {
-			((UntypedType) otherType).notifyObservers(instance);
+			((UntypedType) otherType).replaceBy(this);
 			return instance;
 		}
 		throw new UnificationException();
 	}
 
+	@Override
+	public String toString() {
+		return "INTEGER";
+	}
 }

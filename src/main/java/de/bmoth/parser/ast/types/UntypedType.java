@@ -9,11 +9,15 @@ public class UntypedType extends Observable implements Type {
 	@Override
 	public Type unify(Type otherType) throws UnificationException {
 		if (otherType instanceof UntypedType) {
-			((UntypedType) otherType).notifyObservers(this);
+			((UntypedType) otherType).replaceBy(this);
 			return this;
 		} else {
 			return otherType.unify(this);
 		}
 	}
 
+	public void replaceBy(Type otherType) {
+		this.setChanged();
+		this.notifyObservers(otherType);
+	}
 }

@@ -11,7 +11,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import static de.bmoth.antlr.BMoThParser.*;
 
 import de.bmoth.antlr.BMoThParser;
-import de.bmoth.antlr.BMoThParser.Identifier_listContext;
 import de.bmoth.antlr.BMoThParser.OperationContext;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
 import de.bmoth.exceptions.ScopeException;

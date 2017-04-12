@@ -2,11 +2,11 @@ package de.bmoth.parser.ast.types;
 
 import de.bmoth.exceptions.UnificationException;
 
-public class BooleanType implements Type {
+public class BoolType implements Type {
 
-	private static BooleanType instance = new BooleanType();
+	private static BoolType instance = new BoolType();
 
-	public static BooleanType getInstance() {
+	public static BoolType getInstance() {
 		return instance;
 	}
 
@@ -15,10 +15,15 @@ public class BooleanType implements Type {
 		if (otherType == instance) {
 			return instance;
 		} else if (otherType instanceof UntypedType) {
-			((UntypedType) otherType).notifyObservers(instance);
+			((UntypedType) otherType).replaceBy(this);
 			return instance;
 		}
 		throw new UnificationException();
+	}
+
+	@Override
+	public String toString() {
+		return "BOOL";
 	}
 
 }

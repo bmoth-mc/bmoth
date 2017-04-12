@@ -72,5 +72,5 @@ expression
   | expression operator=(MULT|DIVIDE|MOD) expression                        # ExpressionOperator //p190
   | expression operator=(PLUS|MINUS|SET_SUBTRACTION) expression             # ExpressionOperator //p180
   | expression operator=INTERVAL expression                                 # ExpressionOperator //p170
-  | expression operator=(UNION|MAPLET) expression                           # ExpressionOperator //p160
+  | expression operator=(UNION) expression                                  # ExpressionOperator //p160
   ;
