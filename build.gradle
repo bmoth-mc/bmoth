@@ -103,6 +103,7 @@ compileJava {
 }
 
 tasks.withType(Test) {
+    environment "LD_LIBRARY_PATH", "./libs"
     systemProperty "java.library.path", "./libs"
 }
 
