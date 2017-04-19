@@ -47,7 +47,7 @@ dependencies {
     antlr "org.antlr:antlr4:4.5.3"
     
     // Z3 Java Bindings
-    compile files('libs/com.microsoft.z3.jar')
+    compile files('com.microsoft.z3.jar')
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
@@ -77,13 +77,13 @@ task downloadZ3 {
         }
         download {
                 src url + filename
-                dest 'libs/' + filename
+                dest filename
                 onlyIfNewer true
                 overwrite false
         }
         copy {
-            from zipTree('libs/' + filename)
-            into 'libs/'
+            from zipTree(filename)
+            into '.'
             eachFile { FileCopyDetails fcp ->
                 if (fcp.relativePath.pathString.contains("bin")) {
                     fcp.relativePath = new RelativePath(true, *(fcp.relativePath.getSegments()[2..-1]))
@@ -102,12 +102,12 @@ compileJava {
 }
 
 tasks.withType(Test) {
-    def env_vars =  ['LD_LIBRARY_PATH': ("$System.env.LD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/libs"),
-                     'DYLD_LIBRARY_PATH': ("$System.env.DYLD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/libs"),
-                     'PATH': ("$System.env.PATH" + System.getProperty("path.separator") + "$projectDir/libs")]
+    def env_vars =  ['LD_LIBRARY_PATH': ("$System.env.LD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                     'DYLD_LIBRARY_PATH': ("$System.env.DYLD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                     'PATH': ("$System.env.PATH" + System.getProperty("path.separator") + "$projectDir/")]
     environment env_vars
 
-    systemProperty "java.library.path", "libs"
+    systemProperty "java.library.path", "./"
 }
 
 test {
@@ -119,11 +119,17 @@ test {
 eclipse.classpath.file.whenMerged { classpath ->
     classpath.entries.findResult { entry ->
         if (entry.kind == 'lib' && entry.path.contains('com.microsoft.z3')) {
-            entry.setNativeLibraryLocation('bmoth/libs')
+            entry.setNativeLibraryLocation('bmoth/')
         }
     }
 }
 
 clean {
     delete 'libs'
+    delete 'python'
+    delete 'z3'
+    delete 'com.microsoft.z3.jar'
+    delete fileTree('./') { include 'z3*.zip' }
+    delete fileTree('./') { include 'libz3*.*' }
+    delete fileTree('./') { include 'Microsoft.Z3.*' }
 }

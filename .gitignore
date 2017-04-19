@@ -11,6 +11,11 @@ build/
 
 # downloaded libraries
 libs/
+python/
+z3*.zip
+libz3*.*
+z3
+Microsoft.Z3.*
 
 # packages
 *.jar
