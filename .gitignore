@@ -16,6 +16,8 @@ z3*.zip
 libz3*.*
 z3
 Microsoft.Z3.*
+z3.exe
+*.dll
 
 # packages
 *.jar
