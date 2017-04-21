@@ -149,6 +149,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			for (ExprNode exprNode : expressionNodes) {
 				visitExprNode(exprNode, IntegerType.getInstance());
 			}
+			node.setType(IntegerType.getInstance());
 			return IntegerType.getInstance();
 		}
 		case INTERVAL: {
@@ -160,6 +161,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			}
 			visitExprNode(expressionNodes.get(0), IntegerType.getInstance());
 			visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
+			node.setType(found);
 			return found;
 		}
 		case INTEGER:
@@ -171,6 +173,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			} catch (UnificationException e) {
 				throw new TypeErrorException(node, expected, type);
 			}
+			node.setType(type);
 			return type;
 		}
 		case FALSE:
@@ -180,6 +183,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			} catch (UnificationException e) {
 				throw new TypeErrorException(node, expected, BoolType.getInstance());
 			}
+			node.setType(BoolType.getInstance());
 			return BoolType.getInstance();
 		}
 		case BOOL: {
@@ -189,6 +193,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			} catch (UnificationException e) {
 				throw new TypeErrorException(node, expected, found);
 			}
+			node.setType(found);
 			return found;
 		}
 		case UNION: {
@@ -200,6 +205,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			}
 			type = visitExprNode(expressionNodes.get(0), type);
 			type = visitExprNode(expressionNodes.get(1), type);
+			node.setType(type);
 			return type;
 		}
 

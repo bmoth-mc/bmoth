@@ -8,7 +8,7 @@ import java.util.Map;
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.ExpressionOperatorContext;
 
-public class ExpressionOperatorNode extends ExprNode {
+public class ExpressionOperatorNode extends TypedNode implements ExprNode {
 
 	public static enum ExpressionOperator {
 		PLUS, MINUS, NATURAL, NATURAL1, INTEGER, BOOL, TRUE, FALSE, POWER_OF, MULT, DIVIDE, MOD, SET_SUBTRACTION, INTERVAL, UNION

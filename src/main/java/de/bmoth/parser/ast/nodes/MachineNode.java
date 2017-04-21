@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
-public class MachineNode extends Node {
+public class MachineNode implements Node {
 
 	private List<DeclarationNode> constants;
 	private List<DeclarationNode> variables;

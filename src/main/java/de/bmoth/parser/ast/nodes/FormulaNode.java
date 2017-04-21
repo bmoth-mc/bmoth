@@ -2,7 +2,7 @@ package de.bmoth.parser.ast.nodes;
 
 import java.util.List;
 
-public class FormulaNode extends Node {
+public class FormulaNode implements Node {
 
 	public static enum FormulaType {
 		EXPRESSION_FORMULA, PREDICATE_FORMULA

@@ -2,7 +2,7 @@ package de.bmoth.parser.ast.nodes;
 
 import org.antlr.v4.runtime.Token;
 
-public class IdentifierExprNode extends ExprNode {
+public class IdentifierExprNode implements ExprNode {
 
 	final Token token;
 	final String name;

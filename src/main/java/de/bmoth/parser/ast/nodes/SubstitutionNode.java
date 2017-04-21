@@ -1,5 +1,5 @@
 package de.bmoth.parser.ast.nodes;
 
-public abstract class SubstitutionNode extends Node {
+public interface SubstitutionNode extends Node {
 
 }

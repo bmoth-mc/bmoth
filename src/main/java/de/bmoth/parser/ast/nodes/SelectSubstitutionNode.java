@@ -1,6 +1,6 @@
 package de.bmoth.parser.ast.nodes;
 
-public class SelectSubstitutionNode extends SubstitutionNode {
+public class SelectSubstitutionNode implements SubstitutionNode {
 
 	private final SubstitutionNode substitution;
 	private final PredicateNode condition;

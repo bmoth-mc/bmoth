@@ -2,7 +2,7 @@ package de.bmoth.parser.ast.nodes;
 
 import java.util.List;
 
-public class ParallelSubstitutionNode extends SubstitutionNode {
+public class ParallelSubstitutionNode implements SubstitutionNode {
 
 	private final List<SubstitutionNode> substitutions;
 

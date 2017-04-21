@@ -5,7 +5,7 @@ import java.util.Observer;
 
 import de.bmoth.parser.ast.types.Type;
 
-public abstract class TypedNode extends Node implements Observer {
+public abstract class TypedNode implements Node, Observer {
 
 	private Type type;
 
