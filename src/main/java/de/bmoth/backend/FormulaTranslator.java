@@ -22,7 +22,7 @@ import de.bmoth.parser.ast.types.Type;
 
 public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 
-	Context z3Context;
+	private Context z3Context;
 
 	public FormulaTranslator(Context z3Context) {
 		this.z3Context = z3Context;
@@ -36,7 +36,7 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 		FormulaTranslator formulaTranslator = new FormulaTranslator(z3Context);
 		Expr constraint = formulaTranslator.visitPredicateNode((PredicateNode) node.getFormula(), null);
 		if (!(constraint instanceof BoolExpr)) {
-			throw new RuntimeException("Invalid translation expected boolean expr but found expression.");
+			throw new RuntimeException("Invalid translation. Expected BoolExpr but found " + constraint.getClass());
 		}
 		BoolExpr boolExpr = (BoolExpr) constraint;
 		return boolExpr;
