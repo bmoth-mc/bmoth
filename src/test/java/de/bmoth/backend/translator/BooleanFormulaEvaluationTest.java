@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.microsoft.z3.BoolExpr;
@@ -30,6 +31,7 @@ public class BooleanFormulaEvaluationTest {
 		ctx.close();
 	}
 
+	@Ignore
 	@Test
 	public void testSimpleBooleanFormula() throws Exception {
 		String formula = "x = TRUE & y = FALSE";
