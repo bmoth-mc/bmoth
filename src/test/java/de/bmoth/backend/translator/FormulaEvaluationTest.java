@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.microsoft.z3.BoolExpr;
@@ -31,7 +32,7 @@ public class FormulaEvaluationTest {
 	}
 
 	@Test
-	public void testExpressionFormula() throws Exception {
+	public void testAdditionFormula() throws Exception {
 		String formula = "x = 2 + 3";
 		// getting the translated z3 representation of the formula
 		BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
@@ -43,5 +44,21 @@ public class FormulaEvaluationTest {
 
 		assertEquals(Status.SATISFIABLE, check);
 		assertEquals(ctx.mkInt(5), s.getModel().eval(x, true));
+	}
+
+	@Test
+	@Ignore
+	public void testSubtractionFormula() throws Exception {
+		String formula = "x = 2 - 3";
+		// getting the translated z3 representation of the formula
+		BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+
+		s.add(constraint);
+		Status check = s.check();
+
+		Expr x = ctx.mkIntConst("x");
+
+		assertEquals(Status.SATISFIABLE, check);
+		assertEquals(ctx.mkInt(-1), s.getModel().eval(x, true));
 	}
 }
