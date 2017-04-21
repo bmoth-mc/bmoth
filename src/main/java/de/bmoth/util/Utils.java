@@ -66,8 +66,8 @@ public class Utils {
 		return res;
 	}
 
-	public static final String readFile(final File filePath) throws FileNotFoundException, IOException {
-		final InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(filePath),
+	public static final String readFile(final File file) throws FileNotFoundException, IOException {
+		final InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file),
 				Charset.forName("UTF-8"));
 
 		final StringBuilder builder = new StringBuilder();
