@@ -7,17 +7,15 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 
-import de.bmoth.exceptions.TypeErrorException;
-import de.bmoth.exceptions.UnificationException;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.AbstractVisitor;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
+import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
 import de.bmoth.parser.ast.nodes.IdentifierExprNode;
 import de.bmoth.parser.ast.nodes.NumberNode;
 import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
-import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
 import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
