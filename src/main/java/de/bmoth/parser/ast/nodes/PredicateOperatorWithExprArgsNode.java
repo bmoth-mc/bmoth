@@ -1,6 +1,7 @@
 package de.bmoth.parser.ast.nodes;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,21 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
 
 	public List<ExprNode> getExpressionNodes() {
 		return expressionNodes;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.operator.name()).append("(");
+		Iterator<ExprNode> iter = expressionNodes.iterator();
+		while (iter.hasNext()) {
+			sb.append(iter.next().toString());
+			if (iter.hasNext()) {
+				sb.append(",");
+			}
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 
 }

@@ -1,6 +1,7 @@
 package de.bmoth.parser.ast.nodes;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -62,5 +63,23 @@ public class ExpressionOperatorNode extends ExprNode {
 
 	public int getArity() {
 		return arity;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.operator.name());
+		Iterator<ExprNode> iter = expressionNodes.iterator();
+		if (iter.hasNext()) {
+			sb.append("(");
+			while (iter.hasNext()) {
+				sb.append(iter.next().toString());
+				if (iter.hasNext()) {
+					sb.append(",");
+				}
+			}
+			sb.append(")");
+		}
+		return sb.toString();
 	}
 }
