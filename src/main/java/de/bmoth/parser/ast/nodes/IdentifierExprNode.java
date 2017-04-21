@@ -1,7 +1,5 @@
 package de.bmoth.parser.ast.nodes;
 
-import java.util.Iterator;
-
 import org.antlr.v4.runtime.Token;
 
 public class IdentifierExprNode extends ExprNode {
@@ -19,8 +17,7 @@ public class IdentifierExprNode extends ExprNode {
 	public DeclarationNode getDeclarationNode() {
 		return declarationNode;
 	}
-	
-	
+
 	@Override
 	public String toString() {
 		return name;

@@ -29,9 +29,9 @@ public class Z3ConnectionTest {
 
 	@Test
 	public void testSimpleCallToZ3() {
+		// a = b & a = 5
 		Expr a = ctx.mkIntConst("a"), b = ctx.mkIntConst("b");
 		BoolExpr constraint = ctx.mkAnd(ctx.mkEq(a, b), ctx.mkEq(a, ctx.mkInt(5)));
-
 		s.add(constraint);
 		Status check = s.check();
 
