@@ -23,14 +23,6 @@ public abstract class AbstractVisitor<R, P> {
 		throw new AssertionError(node);
 	}
 
-	public R visitPredicateOperatorNode(PredicateOperatorNode node, P expected) {
-		return null;
-	}
-
-	public R visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, P expected) {
-		return null;
-	}
-
 	public R visitExprNode(ExprNode node, P expected) {
 		if (node instanceof ExpressionOperatorNode) {
 			return visitExprOperatorNode((ExpressionOperatorNode) node, expected);
@@ -40,18 +32,6 @@ public abstract class AbstractVisitor<R, P> {
 			return visitNumberNode((NumberNode) node, expected);
 		}
 		throw new AssertionError();
-	}
-
-	public R visitExprOperatorNode(ExpressionOperatorNode node, P expected) {
-		return null;
-	}
-
-	public R visitIdentifierExprNode(IdentifierExprNode node, P expected) {
-		return null;
-	}
-
-	public R visitNumberNode(NumberNode node, P expected) {
-		return null;
 	}
 
 	public R visitSubstitutionNode(SubstitutionNode node, P expected) {
@@ -65,15 +45,19 @@ public abstract class AbstractVisitor<R, P> {
 		throw new AssertionError();
 	}
 
-	public R visitSelectSubstitutionNode(SelectSubstitutionNode node, P expected) {
-		return null;
-	}
+	public abstract R visitPredicateOperatorNode(PredicateOperatorNode node, P expected);
 
-	public R visitSingleAssignSubstitution(SingleAssignSubstitution node, P expected) {
-		return null;
-	}
+	public abstract R visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, P expected);
 
-	public R visitParallelSubstitutionNode(ParallelSubstitutionNode node, P expected) {
-		return null;
-	}
+	public abstract R visitExprOperatorNode(ExpressionOperatorNode node, P expected);
+
+	public abstract R visitIdentifierExprNode(IdentifierExprNode node, P expected);
+
+	public abstract R visitNumberNode(NumberNode node, P expected);
+
+	public abstract R visitSelectSubstitutionNode(SelectSubstitutionNode node, P expected);
+
+	public abstract R visitSingleAssignSubstitution(SingleAssignSubstitution node, P expected);
+
+	public abstract R visitParallelSubstitutionNode(ParallelSubstitutionNode node, P expected);
 }

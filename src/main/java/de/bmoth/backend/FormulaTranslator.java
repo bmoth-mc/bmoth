@@ -7,6 +7,8 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 
+import de.bmoth.exceptions.TypeErrorException;
+import de.bmoth.exceptions.UnificationException;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.AbstractVisitor;
 import de.bmoth.parser.ast.nodes.ExprNode;
@@ -14,12 +16,25 @@ import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.IdentifierExprNode;
 import de.bmoth.parser.ast.nodes.NumberNode;
+import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
 import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
 import de.bmoth.parser.ast.nodes.PredicateNode;
+import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
+import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
+import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
 import de.bmoth.parser.ast.types.IntegerType;
 import de.bmoth.parser.ast.types.Type;
 
+/**
+ * This class translates a FormulaNode of the parser to a z3 backend node.
+ * 
+ * The second parameter of the AbstractVisitor class is the method parameter of
+ * each method which is inherited form the AbstractVisitor class. In the
+ * FormulaTranslator this parameter is not needed. Hence, the placeholder class
+ * Void is used. Furthermore, each call to a visitXXX method of the
+ * AbstractVisitor class should use the argument null.
+ **/
 public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 
 	private Context z3Context;
@@ -48,7 +63,8 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 		if (type instanceof IntegerType) {
 			return z3Context.mkIntConst("x");
 		} else {
-			throw new RuntimeException("Not implemented");
+			// TODO
+			throw new AssertionError("Not implemented: Identifier with Type " + type.getClass());
 		}
 	}
 
@@ -61,12 +77,8 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 			Expr right = visitExprNode(expressionNodes.get(1), null);
 			return z3Context.mkEq(left, right);
 		}
-		case NOT_EQUAL: {
-			break;
-		}
-		case ELEMENT_OF: {
-			break;
-		}
+		case NOT_EQUAL:
+		case ELEMENT_OF:
 		case LESS_EQUAL:
 		case LESS:
 		case GREATER_EQUAL:
@@ -74,6 +86,7 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 		default:
 			break;
 		}
+		// TODO
 		throw new AssertionError("Not implemented: " + node.getOperator());
 	}
 
@@ -104,12 +117,47 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 		default:
 			break;
 		}
+		// TODO
 		throw new AssertionError("Not implemented: " + node.getOperator());
 	}
 
 	@Override
 	public Expr visitNumberNode(NumberNode node, Void n) {
 		return this.z3Context.mkInt(node.getValue());
+	}
+
+	@Override
+	public Expr visitPredicateOperatorNode(PredicateOperatorNode node, Void n) {
+		List<PredicateNode> predicateArguments = node.getPredicateArguments();
+		switch (node.getOperator()) {
+		default:
+		case AND:
+		case OR:
+		case IMPLIES:
+		case EQUIVALENCE:
+		case NOT:
+		case TRUE:
+		case FALSE:
+
+			break;
+		}
+		// TODO
+		throw new AssertionError("Not implemented: " + node.getOperator());
+	}
+
+	@Override
+	public Expr visitSelectSubstitutionNode(SelectSubstitutionNode node, Void expected) {
+		throw new AssertionError("Not reachable");
+	}
+
+	@Override
+	public Expr visitSingleAssignSubstitution(SingleAssignSubstitution node, Void expected) {
+		throw new AssertionError("Not reachable");
+	}
+
+	@Override
+	public Expr visitParallelSubstitutionNode(ParallelSubstitutionNode node, Void expected) {
+		throw new AssertionError("Not reachable");
 	}
 
 }
