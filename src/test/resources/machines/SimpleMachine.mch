@@ -1,0 +1,8 @@
+MACHINE SimpleMachine
+VARIABLES
+  x
+INVARIANT
+  x : INTEGER
+INITIALISATION
+  x := 1
+END
