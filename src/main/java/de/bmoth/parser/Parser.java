@@ -1,5 +1,9 @@
 package de.bmoth.parser;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.antlr.v4.runtime.*;
 
 import de.bmoth.antlr.BMoThLexer;
@@ -12,6 +16,7 @@ import de.bmoth.parser.ast.SemanticAstCreator;
 import de.bmoth.parser.ast.TypeChecker;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.util.Utils;
 
 public class Parser {
 
@@ -49,6 +54,15 @@ public class Parser {
 		FormulaAnalyser formulaAnalyser = new FormulaAnalyser(formula);
 		SemanticAstCreator astCreator = new SemanticAstCreator(formulaAnalyser);
 		return (FormulaNode) astCreator.getAstNode();
+	}
+
+	public static MachineNode getMachineFileAsSemanticAst(String file) throws FileNotFoundException, IOException {
+		Parser parser = new Parser();
+		String fileContent = Utils.readFile(new File(file));
+		StartContext start = parser.parseMachine(fileContent);
+		MachineNode ast = parser.getMachineAst(start);
+		new TypeChecker(ast);
+		return ast;
 	}
 
 	public static MachineNode getMachineAsSemanticAst(String inputString) {
