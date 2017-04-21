@@ -21,6 +21,7 @@ import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
 import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
+import de.bmoth.parser.ast.types.BoolType;
 import de.bmoth.parser.ast.types.IntegerType;
 import de.bmoth.parser.ast.types.Type;
 
@@ -59,7 +60,9 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 	public Expr visitIdentifierExprNode(IdentifierExprNode node, Void n) {
 		Type type = node.getDeclarationNode().getType();
 		if (type instanceof IntegerType) {
-			return z3Context.mkIntConst("x");
+			return z3Context.mkIntConst(node.getName());
+		} else if (type instanceof BoolType) {
+			return z3Context.mkBoolConst(node.getName());
 		} else {
 			// TODO
 			throw new AssertionError("Not implemented: Identifier with Type " + type.getClass());
@@ -129,14 +132,17 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 		List<PredicateNode> predicateArguments = node.getPredicateArguments();
 		switch (node.getOperator()) {
 		default:
-		case AND:
+		case AND: {
+			BoolExpr left = (BoolExpr) visitPredicateNode(predicateArguments.get(0), null);
+			BoolExpr right = (BoolExpr) visitPredicateNode(predicateArguments.get(1), null);
+			return z3Context.mkAnd(left, right);
+		}
 		case OR:
 		case IMPLIES:
 		case EQUIVALENCE:
 		case NOT:
 		case TRUE:
 		case FALSE:
-
 			break;
 		}
 		// TODO
