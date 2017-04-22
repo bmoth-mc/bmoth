@@ -47,7 +47,6 @@ public class FormulaEvaluationTest {
 	}
 
 	@Test
-	@Ignore
 	public void testSubtractionFormula() throws Exception {
 		String formula = "x = 2 - 3";
 		// getting the translated z3 representation of the formula
