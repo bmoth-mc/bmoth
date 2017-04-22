@@ -100,7 +100,11 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 			ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
 			return z3Context.mkAdd(left, right);
 		}
-		case MINUS:
+		case MINUS: {
+			ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
+			ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
+			return z3Context.mkSub(left, right);
+		}
 		case MOD:
 		case MULT:
 		case DIVIDE:
