@@ -76,4 +76,19 @@ public class FormulaEvaluationTest {
 		assertEquals(Status.SATISFIABLE, check);
 		assertNotEquals(ctx.mkInt(0), s.getModel().eval(x, true));
 	}
+
+	@Test
+	public void testModuloFormula() throws Exception {
+		String formula = "x = 3 mod 2";
+		// getting the translated z3 representation of the formula
+		BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+
+		s.add(constraint);
+		Status check = s.check();
+
+		Expr x = ctx.mkIntConst("x");
+
+		assertEquals(Status.SATISFIABLE, check);
+		assertEquals(ctx.mkInt(1), s.getModel().eval(x, true));
+	}
 }
