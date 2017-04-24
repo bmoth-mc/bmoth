@@ -77,16 +77,18 @@ public class BooleanFormulaEvaluationTest {
 		assertEquals(ctx.mkInt(5), s.getModel().eval(x, true));
 	}
 
-	@Ignore
 	@Test
 	public void testImplication() throws Exception {
-		// TODO currently rejected by the parser
+		//Note, rebuild the parser ("gradle clean build") if this test fails.
+		
 		String formula = "1=1 => x";
 		// getting the translated z3 representation of the formula
 		BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
 		s.add(constraint);
 		Status check = s.check();
 
+		Expr x = ctx.mkBoolConst("x");
 		assertEquals(Status.SATISFIABLE, check);
+		assertEquals(ctx.mkBool(true), s.getModel().eval(x, true));
 	}
 }

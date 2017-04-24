@@ -54,10 +54,11 @@ formula
 
 predicate
   : '(' predicate ')'                                                       # ParenthesisPredicate
+  | IDENTIFIER                                                              # PredicateIdentifier
   | operator=(TRUE|FALSE)                                                   # PredicateOperator
   | operator=NOT '(' predicate ')'                                          # PredicateOperator
   | expression operator=(EQUAL|NOT_EQUAL|COLON|ELEMENT_OF
-    |LESS_EQUAL|LESS|GREATER_EQUAL|GREATER) expression                      # PredicateOperatorWithExprArgs
+      |LESS_EQUAL|LESS|GREATER_EQUAL|GREATER) expression                    # PredicateOperatorWithExprArgs
   | predicate operator=EQUIVALENCE predicate                                # PredicateOperator //p60
   | predicate operator=(AND|OR) predicate                                   # PredicateOperator //p40
   | predicate operator=IMPLIES predicate                                    # PredicateOperator //p30

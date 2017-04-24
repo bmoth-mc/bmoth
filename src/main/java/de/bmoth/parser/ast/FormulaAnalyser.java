@@ -21,13 +21,25 @@ public class FormulaAnalyser {
 
 	class VariablesFinder extends BMoThParserBaseVisitor<Void> {
 		/*
-		 * Note, we have to add scope table if quantified variables are
+		 * Note, we have to add a scope table when quantified variables are
 		 * introduced.
 		 */
 
 		@Override
 		public Void visitIdentifierExpression(BMoThParser.IdentifierExpressionContext ctx) {
 			Token identifierToken = ctx.IDENTIFIER().getSymbol();
+			visitIdentifierToken(identifierToken);
+			return null;
+		}
+
+		@Override
+		public Void visitPredicateIdentifier(BMoThParser.PredicateIdentifierContext ctx) {
+			Token identifierToken = ctx.IDENTIFIER().getSymbol();
+			visitIdentifierToken(identifierToken);
+			return null;
+		}
+
+		private void visitIdentifierToken(Token identifierToken) {
 			String name = identifierToken.getText();
 			if (implicitDeclarations.containsKey(name)) {
 				declarationReferences.put(identifierToken, implicitDeclarations.get(name));
@@ -35,7 +47,6 @@ public class FormulaAnalyser {
 				implicitDeclarations.put(name, identifierToken);
 				declarationReferences.put(identifierToken, identifierToken);
 			}
-			return null;
 		}
 	}
 

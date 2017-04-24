@@ -121,6 +121,10 @@ public class SemanticAstCreator {
 			return createIdentifierExprNode(ctx.IDENTIFIER().getSymbol());
 		}
 
+		public IdentifierPredicateNode visitPredicateIdentifier(BMoThParser.PredicateIdentifierContext ctx) {
+			return createIdentifierPredicateNode(ctx.IDENTIFIER().getSymbol());
+		}
+
 		// Predicates
 		@Override
 		public PredicateNode visitPredicateOperator(BMoThParser.PredicateOperatorContext ctx) {
@@ -189,10 +193,18 @@ public class SemanticAstCreator {
 			Token declToken = SemanticAstCreator.this.declarationReferences.get(token);
 			DeclarationNode declarationNode = declarationMap.get(declToken);
 			if (declarationNode == null) {
-				System.out.println(declToken);
 				throw new AssertionError(token.getText() + " Line " + token.getLine());
 			}
 			return new IdentifierExprNode(token, declarationNode);
+		}
+
+		private IdentifierPredicateNode createIdentifierPredicateNode(Token token) {
+			Token declToken = SemanticAstCreator.this.declarationReferences.get(token);
+			DeclarationNode declarationNode = declarationMap.get(declToken);
+			if (declarationNode == null) {
+				throw new AssertionError(token.getText() + " Line " + token.getLine());
+			}
+			return new IdentifierPredicateNode(token, declarationNode);
 		}
 
 		@Override

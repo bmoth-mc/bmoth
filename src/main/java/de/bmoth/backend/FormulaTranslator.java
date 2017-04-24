@@ -15,6 +15,7 @@ import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
 import de.bmoth.parser.ast.nodes.IdentifierExprNode;
+import de.bmoth.parser.ast.nodes.IdentifierPredicateNode;
 import de.bmoth.parser.ast.nodes.NumberNode;
 import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
 import de.bmoth.parser.ast.nodes.PredicateNode;
@@ -68,6 +69,11 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 			// TODO
 			throw new AssertionError("Not implemented: Identifier with Type " + type.getClass());
 		}
+	}
+
+	@Override
+	public Expr visitIdentifierPredicateNode(IdentifierPredicateNode node, Void n) {
+		return z3Context.mkBoolConst(node.getName());
 	}
 
 	@Override

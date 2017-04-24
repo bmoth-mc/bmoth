@@ -225,6 +225,15 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 	}
 
 	@Override
+	public Type visitIdentifierPredicateNode(IdentifierPredicateNode node, Type expected) {
+		try {
+			return node.getDeclarationNode().getType().unify(expected);
+		} catch (UnificationException e) {
+			throw new TypeErrorException(node, expected, node.getDeclarationNode().getType());
+		}
+	}
+
+	@Override
 	public Type visitNumberNode(NumberNode node, Type expected) {
 		try {
 			return IntegerType.getInstance().unify(expected);
