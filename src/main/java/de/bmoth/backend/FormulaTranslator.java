@@ -78,7 +78,11 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 			Expr right = visitExprNode(expressionNodes.get(1), null);
 			return z3Context.mkEq(left, right);
 		}
-		case NOT_EQUAL:
+		case NOT_EQUAL: {
+			Expr left = visitExprNode(expressionNodes.get(0), null);
+			Expr right = visitExprNode(expressionNodes.get(1), null);
+			return z3Context.mkNot(z3Context.mkEq(left, right));
+		}
 		case ELEMENT_OF:
 		case LESS_EQUAL:
 		case LESS:
