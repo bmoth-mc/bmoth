@@ -7,7 +7,7 @@ package de.bmoth.antlr;
 }
 
 start
-  : parse_unit EOF      # ParseUnit
+  : parse_unit EOF                                                        # ParseUnit
   ;
 
 parse_unit
@@ -22,7 +22,7 @@ machine_clause
   ;
 
 single_operation
-  : IDENTIFIER EQUAL substitution   # Operation
+  : IDENTIFIER EQUAL substitution                                         # Operation
   ;
 
 quantified_variables_list
