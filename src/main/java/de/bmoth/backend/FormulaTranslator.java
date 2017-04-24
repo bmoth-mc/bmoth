@@ -116,17 +116,25 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 			return z3Context.mkMod(left, right);
 		}
 		case MULT:
+			break;
 		case DIVIDE:
+			break;
 		case POWER_OF:
+			break;
 		case INTERVAL:
+			break;
 		case INTEGER:
+			break;
 		case NATURAL1:
+			break;
 		case NATURAL:
+			break;
 		case FALSE:
 			return z3Context.mkFalse();
 		case TRUE:
 			return z3Context.mkTrue();
 		case BOOL:
+			break;
 		case UNION:
 			break;
 
