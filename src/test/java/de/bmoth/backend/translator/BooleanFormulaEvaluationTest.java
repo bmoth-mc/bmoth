@@ -46,6 +46,21 @@ public class BooleanFormulaEvaluationTest {
 		assertEquals(ctx.mkTrue(), s.getModel().eval(x, true));
 	}
 
+	@Test
+	public void testFalseFormula() throws Exception {
+		String formula = "x = FALSE";
+		// getting the translated z3 representation of the formula
+		BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+
+		s.add(constraint);
+		Status check = s.check();
+
+		Expr x = ctx.mkBoolConst("x");
+
+		assertEquals(Status.SATISFIABLE, check);
+		assertEquals(ctx.mkFalse(), s.getModel().eval(x, true));
+	}
+
 	@Ignore
 	@Test
 	public void testSimpleBooleanFormula() throws Exception {
