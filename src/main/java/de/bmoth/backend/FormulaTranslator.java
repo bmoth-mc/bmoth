@@ -6,6 +6,7 @@ import com.microsoft.z3.ArithExpr;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
+import com.microsoft.z3.IntExpr;
 
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.AbstractVisitor;
@@ -109,7 +110,11 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 			ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
 			return z3Context.mkSub(left, right);
 		}
-		case MOD:
+		case MOD: {
+			IntExpr left = (IntExpr) visitExprNode(expressionNodes.get(0), null);
+			IntExpr right = (IntExpr) visitExprNode(expressionNodes.get(1), null);
+			return z3Context.mkMod(left, right);
+		}
 		case MULT:
 		case DIVIDE:
 		case POWER_OF:
