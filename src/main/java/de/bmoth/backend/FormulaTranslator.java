@@ -10,6 +10,7 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.IntExpr;
 import com.microsoft.z3.Sort;
 import com.microsoft.z3.Symbol;
+import com.microsoft.z3.TupleSort;
 
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.AbstractVisitor;
@@ -66,18 +67,8 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 	@Override
 	public Expr visitIdentifierExprNode(IdentifierExprNode node, Void n) {
 		Type type = node.getDeclarationNode().getType();
-		if (type instanceof IntegerType) {
-			return z3Context.mkIntConst(node.getName());
-		} else if (type instanceof BoolType) {
-			return z3Context.mkBoolConst(node.getName());
-		} else if (type instanceof SetType) {
-			SetType s = (SetType) type;
-			Sort z3Sort = bTypeToZ3Sort(s.getSubtype());
-			return z3Context.mkArrayConst(node.getName(), z3Sort, z3Context.getBoolSort());
-		} else {
-			// TODO
-			throw new AssertionError("Not implemented: Identifier with Type " + type.getClass());
-		}
+		return z3Context.mkConst(node.getName(), bTypeToZ3Sort(type));
+
 	}
 
 	@Override
@@ -162,15 +153,22 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 			break;
 		case UNION:
 			break;
-		case COUPLE:
-			break;
+		case COUPLE: {
+			CoupleType type = (CoupleType) node.getType();
+			TupleSort bTypeToZ3Sort = (TupleSort) bTypeToZ3Sort(type);
+
+			Expr left = visitExprNode(node.getExpressionNodes().get(0), null);
+			Expr right = visitExprNode(node.getExpressionNodes().get(1), null);
+
+			return bTypeToZ3Sort.mkDecl().apply(left, right);
+		}
 		case DOMAIN:
 			break;
 		case INTERSECTION:
 			break;
 		case RANGE:
 			break;
-		case SET_ENUMERATION:
+		case SET_ENUMERATION: {
 			SetType type = (SetType) node.getType();
 			Type subType = type.getSubtype();
 			ArrayExpr z3Set = z3Context.mkEmptySet(bTypeToZ3Sort(subType));
@@ -178,6 +176,7 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 				z3Set = z3Context.mkSetAdd(z3Set, visitExprNode(exprNode, null));
 			}
 			return z3Set;
+		}
 		case SET_SUBTRACTION:
 			break;
 

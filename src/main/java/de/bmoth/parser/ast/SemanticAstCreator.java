@@ -1,5 +1,8 @@
 package de.bmoth.parser.ast;
 
+import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
+import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,10 +18,25 @@ import de.bmoth.antlr.BMoThParser.FormulaContext;
 import de.bmoth.antlr.BMoThParser.OperationContext;
 import de.bmoth.antlr.BMoThParser.PredicateContext;
 import de.bmoth.antlr.BMoThParser.SubstitutionContext;
-import de.bmoth.parser.ast.nodes.*;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
-import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.*;
+import de.bmoth.parser.ast.nodes.DeclarationNode;
+import de.bmoth.parser.ast.nodes.ExprNode;
+import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
+import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
+import de.bmoth.parser.ast.nodes.FormulaNode;
+import de.bmoth.parser.ast.nodes.IdentifierExprNode;
+import de.bmoth.parser.ast.nodes.IdentifierPredicateNode;
+import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.parser.ast.nodes.Node;
+import de.bmoth.parser.ast.nodes.NumberNode;
+import de.bmoth.parser.ast.nodes.OperationNode;
+import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
+import de.bmoth.parser.ast.nodes.PredicateNode;
+import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
+import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
+import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
+import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
+import de.bmoth.parser.ast.nodes.SubstitutionNode;
 
 public class SemanticAstCreator {
 
@@ -102,6 +120,16 @@ public class SemanticAstCreator {
 		@Override
 		public Node visitChildren(RuleNode node) {
 			throw new AssertionError(node.getClass() + " is not implemented yet in semantic Ast creator.");
+		}
+
+		@Override
+		public Node visitParenthesisPredicate(BMoThParser.ParenthesisPredicateContext ctx) {
+			return ctx.predicate().accept(this);
+		}
+
+		@Override
+		public Node visitParenthesesExpression(BMoThParser.ParenthesesExpressionContext ctx) {
+			return ctx.expression().accept(this);
 		}
 
 		@Override
