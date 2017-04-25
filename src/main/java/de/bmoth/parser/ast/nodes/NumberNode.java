@@ -2,7 +2,7 @@ package de.bmoth.parser.ast.nodes;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
-public class NumberNode implements ExprNode {
+public class NumberNode extends ExprNode {
 
 	private final int value;
 
