@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import de.bmoth.antlr.BMoThParser;
+import de.bmoth.antlr.BMoThParser.ExpressionContext;
 import de.bmoth.antlr.BMoThParser.ExpressionOperatorContext;
 
 public class ExpressionOperatorNode extends TypedNode implements ExprNode {
 
 	public static enum ExpressionOperator {
-		PLUS, MINUS, NATURAL, NATURAL1, INTEGER, BOOL, TRUE, FALSE, POWER_OF, MULT, DIVIDE, MOD, SET_SUBTRACTION, INTERVAL, UNION
+		PLUS, MINUS, NATURAL, NATURAL1, INTEGER, BOOL, TRUE, FALSE, POWER_OF //
+		, MULT, DIVIDE, MOD, SET_SUBTRACTION, INTERVAL, UNION, SET_ENUMERATION, INTERSECTION, COUPLE, DOMAIN, RANGE
 	}
 
 	private static final Map<Integer, ExpressionOperator> map = new HashMap<>();
@@ -31,6 +33,12 @@ public class ExpressionOperatorNode extends TypedNode implements ExprNode {
 		map.put(BMoThParser.SET_SUBTRACTION, ExpressionOperator.SET_SUBTRACTION);
 		map.put(BMoThParser.INTERVAL, ExpressionOperator.INTERVAL);
 		map.put(BMoThParser.UNION, ExpressionOperator.UNION);
+		map.put(BMoThParser.INTERSECTION, ExpressionOperator.INTERSECTION);
+		map.put(BMoThParser.MAPLET, ExpressionOperator.COUPLE);
+		map.put(BMoThParser.DOM, ExpressionOperator.DOMAIN);
+		map.put(BMoThParser.RAN, ExpressionOperator.RANGE);
+		
+		
 	}
 
 	private final List<ExprNode> expressionNodes;
@@ -44,6 +52,14 @@ public class ExpressionOperatorNode extends TypedNode implements ExprNode {
 		this.expressionNodes = expressionNodes;
 		this.operatorString = operatorString;
 		this.operator = loopUpOperator(ctx.operator.getType());
+	}
+
+	public ExpressionOperatorNode(ExpressionContext ctx, List<ExprNode> expressionNodes, ExpressionOperator operator) {
+		// used for set enumeration, e.g. {1,2,3}
+		this.arity = expressionNodes.size();
+		this.expressionNodes = expressionNodes;
+		this.operatorString = null;
+		this.operator = operator;
 	}
 
 	private ExpressionOperator loopUpOperator(int type) {

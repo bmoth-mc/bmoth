@@ -34,4 +34,61 @@ public class FormulaTest {
 		assertEquals("INTEGER", node2.getType().toString());
 	}
 
+	@Test
+	public void testSetEnumerationFormula() throws Exception {
+		String formula = "a = {1,2,3} ";
+		FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+		assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+		DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
+		assertEquals("a", node1.getName());
+		assertEquals("POW(INTEGER)", node1.getType().toString());
+	}
+
+	@Test
+	public void testUnionIntersectionFormula() throws Exception {
+		String formula = "a = {1} \\/ b  /\\ {c} ";
+		FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+		assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+		DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
+		assertEquals("a", a.getName());
+		assertEquals("POW(INTEGER)", a.getType().toString());
+
+		DeclarationNode b = formulaNode.getImplicitDeclarations().get(1);
+		assertEquals("b", b.getName());
+		assertEquals("POW(INTEGER)", b.getType().toString());
+
+		DeclarationNode c = formulaNode.getImplicitDeclarations().get(2);
+		assertEquals("c", c.getName());
+		assertEquals("INTEGER", c.getType().toString());
+	}
+
+	@Test
+	public void testCoupleFormula() throws Exception {
+		String formula = "a = 1 |-> 2 ";
+		FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+		assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+		DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
+		assertEquals("a", a.getName());
+		assertEquals("INTEGER*INTEGER", a.getType().toString());
+	}
+
+	@Test
+	public void testDomOperator() throws Exception {
+		String formula = "a = dom({1 |-> 2}) ";
+		FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+		assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+		DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
+		assertEquals("a", a.getName());
+		assertEquals("POW(INTEGER)", a.getType().toString());
+	}
+	
+	@Test
+	public void testRanOperator() throws Exception {
+		String formula = "a = ran({1 |-> 2}) ";
+		FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+		assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+		DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
+		assertEquals("a", a.getName());
+		assertEquals("POW(INTEGER)", a.getType().toString());
+	}
 }

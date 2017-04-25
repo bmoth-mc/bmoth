@@ -61,7 +61,8 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 
 	public TypeChecker(FormulaNode formulaNode) {
 		for (DeclarationNode node : formulaNode.getImplicitDeclarations()) {
-			node.setType(new UntypedType());
+			UntypedType untypedType = new UntypedType();
+			node.setType(untypedType);
 		}
 		Node formula = formulaNode.getFormula();
 		if (formula instanceof PredicateNode) {
@@ -78,7 +79,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 		// exception
 		for (DeclarationNode node : formulaNode.getImplicitDeclarations()) {
 			if (node.getType().isUntyped()) {
-				throw new TypeErrorException(node, "Can not infer the type of local variable + " + node.getName());
+				throw new TypeErrorException(node, "Can not infer the type of local variable: " + node.getName());
 			}
 		}
 	}
@@ -164,6 +165,20 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			node.setType(found);
 			return found;
 		}
+		case SET_ENUMERATION: {
+
+			Type subtype = new UntypedType();
+			for (ExprNode exprNode : expressionNodes) {
+				subtype = visitExprNode(exprNode, subtype);
+			}
+			SetType found = new SetType(subtype);
+			try {
+				found = (SetType) found.unify(expected);
+			} catch (UnificationException e) {
+				throw new TypeErrorException(node, expected, found);
+			}
+			return found;
+		}
 		case INTEGER:
 		case NATURAL1:
 		case NATURAL: {
@@ -196,8 +211,10 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			node.setType(found);
 			return found;
 		}
+		case INTERSECTION:
 		case UNION: {
-			Type type = new SetType(new UntypedType());
+			UntypedType untypedType = new UntypedType();
+			Type type = new SetType(untypedType);
 			try {
 				type = type.unify(expected);
 			} catch (UnificationException e) {
@@ -208,7 +225,41 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			node.setType(type);
 			return type;
 		}
-
+		case COUPLE: {
+			Type left = visitExprNode(expressionNodes.get(0), new UntypedType());
+			Type right = visitExprNode(expressionNodes.get(1), new UntypedType());
+			CoupleType couple = new CoupleType(left, right);
+			try {
+				couple = couple.unify(expected);
+			} catch (UnificationException e) {
+				throw new TypeErrorException(node, expected, couple);
+			}
+			return couple;
+		}
+		case DOMAIN: {
+			SetType argument = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
+			argument = (SetType) visitExprNode(expressionNodes.get(0), argument);
+			CoupleType subType = (CoupleType) argument.getSubtype();
+			SetType found = new SetType(subType.getLeft());
+			try {
+				found = (SetType) found.unify(expected);
+			} catch (UnificationException e) {
+				throw new TypeErrorException(node, expected, found);
+			}
+			return found;
+		}
+		case RANGE: {
+			SetType argument = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
+			argument = (SetType) visitExprNode(expressionNodes.get(0), argument);
+			CoupleType subType = (CoupleType) argument.getSubtype();
+			SetType found = new SetType(subType.getRight());
+			try {
+				found = (SetType) found.unify(expected);
+			} catch (UnificationException e) {
+				throw new TypeErrorException(node, expected, found);
+			}
+			return found;
+		}
 		default:
 			break;
 		}

@@ -74,9 +74,8 @@ public class SetType extends Observable implements Type, Observer {
 		if (subType instanceof Observable) {
 			((Observable) subType).deleteObserver(this);
 		}
-
 		// notify all observers of this, they should point now to the otherType
-		this.hasChanged();
+		this.setChanged();
 		this.notifyObservers(otherType);
 	}
 
@@ -84,6 +83,10 @@ public class SetType extends Observable implements Type, Observer {
 	public void update(Observable o, Object arg) {
 		o.deleteObserver(this);
 		setSubType((Type) arg);
+	}
+
+	public Type getSubtype() {
+		return this.subType;
 	}
 
 	@Override

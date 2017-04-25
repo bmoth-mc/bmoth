@@ -100,14 +100,19 @@ public class SemanticAstCreator {
 
 		@Override
 		public Node visitChildren(RuleNode node) {
-			System.out.println(node.getClass() + " is not implemented yet in semantic Ast creator.");
-			return super.visitChildren(node);
+			throw new AssertionError(node.getClass() + " is not implemented yet in semantic Ast creator.");
 		}
 
 		@Override
 		public ExpressionOperatorNode visitExpressionOperator(BMoThParser.ExpressionOperatorContext ctx) {
 			String operator = ctx.operator.getText();
 			return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression()), operator);
+		}
+
+		@Override
+		public ExprNode visitSetEnumerationExpression(BMoThParser.SetEnumerationExpressionContext ctx) {
+			return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
+					ExpressionOperator.SET_ENUMERATION);
 		}
 
 		@Override

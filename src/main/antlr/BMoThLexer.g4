@@ -90,6 +90,8 @@ MOD: 'mod';
 POWER_OF: '**';
 INTERVAL: '..' | '\u2025';
 
+INTERSECTION: '/\\';
+
 // predicate infix opertors
 EQUAL: '=' | '\u003d';
 NOT_EQUAL: '/=' | '\u2260';
@@ -110,7 +112,8 @@ FALSE: 'FALSE';
 
 
 // expression prefix operators with one parameter
-
+DOM: 'dom';
+RAN: 'ran';
 
 //keyword operators
 NATURAL: 'NATURAL' | '\u2115';

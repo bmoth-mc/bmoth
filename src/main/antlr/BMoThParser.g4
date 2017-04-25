@@ -68,13 +68,16 @@ expression
   : Number                                                                  # NumberExpression
   | LEFT_PAR expression RIGHT_PAR                                           # ParenthesesExpression
   | IDENTIFIER                                                              # IdentifierExpression
+  | '{' expression_list '}'                                                 # SetEnumerationExpression
+  | '{' identifier_list '|' predicate '}'                                   # SetComprehensionExpression
   | BOOl_CAST '(' predicate ')'                                             # CastPredicateExpression
   | operator=(NATURAL|NATURAL1|INTEGER|BOOL|TRUE|FALSE)                     # ExpressionOperator
+  | operator=(DOM|RAN) '(' expression ')'                                   # ExpressionOperator
   // operators with precedences
   | operator=MINUS expression                                               # ExpressionOperator //P210
   | <assoc=right> expression operator=POWER_OF expression                   # ExpressionOperator //p200
   | expression operator=(MULT|DIVIDE|MOD) expression                        # ExpressionOperator //p190
   | expression operator=(PLUS|MINUS|SET_SUBTRACTION) expression             # ExpressionOperator //p180
   | expression operator=INTERVAL expression                                 # ExpressionOperator //p170
-  | expression operator=UNION expression                                    # ExpressionOperator //p160
+  | expression operator=(UNION|INTERSECTION|MAPLET) expression              # ExpressionOperator //p160
   ;
