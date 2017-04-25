@@ -62,6 +62,23 @@ public class BooleanFormulaEvaluationTest {
 	}
 
 	@Test
+	public void testAndFormula() throws Exception {
+		String formula = "x & y";
+		// getting the translated z3 representation of the formula
+		BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+
+		s.add(constraint);
+		Status check = s.check();
+
+		Expr x = ctx.mkBoolConst("x");
+		Expr y = ctx.mkBoolConst("y");
+
+		assertEquals(Status.SATISFIABLE, check);
+		assertEquals(ctx.mkTrue(), s.getModel().eval(x, true));
+		assertEquals(ctx.mkTrue(), s.getModel().eval(y, true));
+	}
+
+	@Test
 	public void testSimpleBooleanFormula() throws Exception {
 		String formula = "x = TRUE & y = FALSE";
 		// getting the translated z3 representation of the formula
