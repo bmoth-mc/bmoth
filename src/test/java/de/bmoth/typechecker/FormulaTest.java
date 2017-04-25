@@ -81,7 +81,7 @@ public class FormulaTest {
 		assertEquals("a", a.getName());
 		assertEquals("POW(INTEGER)", a.getType().toString());
 	}
-	
+
 	@Test
 	public void testRanOperator() throws Exception {
 		String formula = "a = ran({1 |-> 2}) ";
@@ -90,5 +90,25 @@ public class FormulaTest {
 		DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
 		assertEquals("a", a.getName());
 		assertEquals("POW(INTEGER)", a.getType().toString());
+	}
+
+	@Test
+	public void testTuple() throws Exception {
+		String formula = "a = (1,2,3) ";
+		FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+		assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+		DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
+		assertEquals("a", a.getName());
+		assertEquals("INTEGER*INTEGER*INTEGER", a.getType().toString());
+	}
+
+	@Test
+	public void testTuple2() throws Exception {
+		String formula = "a = (1,(2,3)) ";
+		FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+		assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+		DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
+		assertEquals("a", a.getName());
+		assertEquals("INTEGER*(INTEGER*INTEGER)", a.getType().toString());
 	}
 }

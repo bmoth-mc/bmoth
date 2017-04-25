@@ -114,7 +114,7 @@ public class CoupleType extends Observable implements Type, Observer {
 		sb.append(this.left.toString());
 		sb.append("*");
 		if (this.right instanceof CoupleType) {
-			sb.append("(").append(this.right).append("");
+			sb.append("(").append(this.right).append(")");
 		} else {
 			sb.append(this.right);
 		}

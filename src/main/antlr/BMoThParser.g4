@@ -53,7 +53,7 @@ formula
   ;
 
 predicate
-  : '(' predicate ')'                                                       # ParenthesisPredicate
+  : '(' predicate ')'                                                       # ParenthesesPredicate
   | IDENTIFIER                                                              # PredicateIdentifier
   | operator=(TRUE|FALSE)                                                   # PredicateOperator
   | operator=NOT '(' predicate ')'                                          # PredicateOperator
@@ -70,6 +70,7 @@ expression
   | IDENTIFIER                                                              # IdentifierExpression
   | '{' expression_list '}'                                                 # SetEnumerationExpression
   | '{' identifier_list '|' predicate '}'                                   # SetComprehensionExpression
+  | '(' exprs+=expression COMMA exprs+=expression (COMMA exprs+=expression)* ')'  # NestedCoupleAsTupleExpression
   | BOOl_CAST '(' predicate ')'                                             # CastPredicateExpression
   | operator=(NATURAL|NATURAL1|INTEGER|BOOL|TRUE|FALSE)                     # ExpressionOperator
   | operator=(DOM|RAN) '(' expression ')'                                   # ExpressionOperator

@@ -123,13 +123,26 @@ public class SemanticAstCreator {
 		}
 
 		@Override
-		public Node visitParenthesisPredicate(BMoThParser.ParenthesisPredicateContext ctx) {
+		public Node visitParenthesesPredicate(BMoThParser.ParenthesesPredicateContext ctx) {
 			return ctx.predicate().accept(this);
 		}
 
 		@Override
 		public Node visitParenthesesExpression(BMoThParser.ParenthesesExpressionContext ctx) {
 			return ctx.expression().accept(this);
+		}
+
+		@Override
+		public Node visitNestedCoupleAsTupleExpression(BMoThParser.NestedCoupleAsTupleExpressionContext ctx) {
+			List<ExpressionContext> exprs = ctx.exprs;
+			ExprNode left = (ExprNode) exprs.get(0).accept(this);
+			for (int i = 1; i < exprs.size(); i++) {
+				List<ExprNode> list = new ArrayList<>();
+				list.add(left);
+				list.add((ExprNode) exprs.get(i).accept(this));
+				left = new ExpressionOperatorNode(ctx, list, ExpressionOperator.COUPLE);
+			}
+			return left;
 		}
 
 		@Override
