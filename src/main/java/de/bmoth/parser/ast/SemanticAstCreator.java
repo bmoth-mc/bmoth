@@ -16,6 +16,7 @@ import de.bmoth.antlr.BMoThParser.OperationContext;
 import de.bmoth.antlr.BMoThParser.PredicateContext;
 import de.bmoth.antlr.BMoThParser.SubstitutionContext;
 import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.*;
 
