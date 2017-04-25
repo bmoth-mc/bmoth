@@ -214,8 +214,9 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 		case EQUIVALENCE:
 		case NOT:
 		case TRUE:
-		case FALSE:
 			break;
+		case FALSE:
+			return z3Context.mkFalse();
 		default:
 			break;
 		}
