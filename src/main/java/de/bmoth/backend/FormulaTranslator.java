@@ -167,6 +167,7 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 			return z3Context.mkAnd(left, right);
 		}
 		case OR:
+			break;
 		case IMPLIES: {
 			BoolExpr left = (BoolExpr) visitPredicateNode(predicateArguments.get(0), null);
 			BoolExpr right = (BoolExpr) visitPredicateNode(predicateArguments.get(1), null);
