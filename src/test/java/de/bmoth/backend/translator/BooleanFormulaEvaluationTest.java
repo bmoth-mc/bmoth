@@ -61,7 +61,6 @@ public class BooleanFormulaEvaluationTest {
 		assertEquals(ctx.mkFalse(), s.getModel().eval(x, true));
 	}
 
-	@Ignore
 	@Test
 	public void testSimpleBooleanFormula() throws Exception {
 		String formula = "x = TRUE & y = FALSE";
@@ -71,10 +70,13 @@ public class BooleanFormulaEvaluationTest {
 		s.add(constraint);
 		Status check = s.check();
 
-		Expr x = ctx.mkIntConst("x");
+		Expr x = ctx.mkBoolConst("x");
+		Expr y = ctx.mkBoolConst("y");
 
 		assertEquals(Status.SATISFIABLE, check);
-		assertEquals(ctx.mkInt(5), s.getModel().eval(x, true));
+		assertEquals(ctx.mkBool(true), s.getModel().eval(x, true));
+		assertEquals(ctx.mkBool(false), s.getModel().eval(y, false));
+
 	}
 
 	@Test
