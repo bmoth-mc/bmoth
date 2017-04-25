@@ -121,12 +121,21 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 			IntExpr right = (IntExpr) visitExprNode(expressionNodes.get(1), null);
 			return z3Context.mkMod(left, right);
 		}
-		case MULT:
-			break;
-		case DIVIDE:
-			break;
-		case POWER_OF:
-			break;
+		case MULT: {
+			ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
+			ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
+			return z3Context.mkMul(left, right);
+		}
+		case DIVIDE: {
+			ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
+			ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
+			return z3Context.mkDiv(left, right);
+		}
+		case POWER_OF: {
+			ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
+			ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
+			return z3Context.mkPower(left, right);
+		}
 		case INTERVAL:
 			break;
 		case INTEGER:
