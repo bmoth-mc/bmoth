@@ -73,4 +73,8 @@ public class App extends Application {
     private static void openFile() {
 
     }
+    
+    public static void main(String[] args){
+    	launch(args);
+    }
 }
