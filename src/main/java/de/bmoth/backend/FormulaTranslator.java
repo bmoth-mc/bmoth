@@ -26,6 +26,7 @@ import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
+import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
 import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
 import de.bmoth.parser.ast.types.BoolType;
@@ -271,7 +272,11 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 
 	@Override
 	public Expr visitQuantifiedExpressionNode(QuantifiedExpressionNode node, Void expected) {
-		// TODO Auto-generated method stub
+		throw new AssertionError("Implement: " + node.getClass());
+	}
+
+	@Override
+	public Expr visitQuantifiedPredicateNode(QuantifiedPredicateNode node, Void expected) {
 		throw new AssertionError("Implement: " + node.getClass());
 	}
 

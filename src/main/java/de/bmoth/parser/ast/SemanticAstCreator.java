@@ -36,6 +36,7 @@ import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
+import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
 import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
@@ -122,6 +123,20 @@ public class SemanticAstCreator {
 		@Override
 		public Node visitChildren(RuleNode node) {
 			throw new AssertionError(node.getClass() + " is not implemented yet in semantic Ast creator.");
+		}
+
+		@Override
+		public Node visitQuantifiedPredicate(BMoThParser.QuantifiedPredicateContext ctx) {
+			List<Token> identifiers = ctx.quantified_variables_list().identifier_list().identifiers;
+			List<DeclarationNode> declarationList = new ArrayList<>();
+			for (Token token : identifiers) {
+				DeclarationNode declNode = new DeclarationNode(token, token.getText());
+				declarationList.add(declNode);
+				declarationMap.put(token, declNode);
+			}
+			PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
+			QuantifiedPredicateNode quantifiedPredicate = new QuantifiedPredicateNode(ctx, declarationList, predNode);
+			return quantifiedPredicate;
 		}
 
 		@Override

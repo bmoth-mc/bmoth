@@ -1,8 +1,6 @@
 package de.bmoth.parser.ast;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -14,17 +12,14 @@ import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.OperationContext;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
 import de.bmoth.exceptions.ScopeException;
-import de.bmoth.parser.ast.nodes.Node;
 
-public class MachineAnalyser {
+public class MachineAnalyser extends AbstractAnalyser {
 
 	private final StartContext parseTree;
 
 	final LinkedHashMap<String, Token> constantsDeclarations = new LinkedHashMap<>();
 	final LinkedHashMap<String, Token> variablesDeclarations = new LinkedHashMap<>();
 	final LinkedHashMap<String, OperationContext> operationsDeclarations = new LinkedHashMap<>();
-
-	final LinkedHashMap<Token, Token> declarationReferences = new LinkedHashMap<>();
 
 	PredicateClauseContext properties;
 	PredicateClauseContext invariant;
@@ -38,7 +33,8 @@ public class MachineAnalyser {
 
 		// check that all used identifiers are declared
 		// store a reference for each to identifier to its declaration
-		new ScopeChecker();
+		checkScope();
+
 	}
 
 	class DeclarationFinder extends BMoThParserBaseVisitor<Void> {
@@ -124,92 +120,44 @@ public class MachineAnalyser {
 
 	}
 
-	class ScopeChecker extends BMoThParserBaseVisitor<Void> {
-		private final LinkedList<LinkedHashMap<String, Token>> scopeTable = new LinkedList<>();
-
-		ScopeChecker() {
-			if (MachineAnalyser.this.properties != null) {
-				scopeTable.clear();
-				scopeTable.add(MachineAnalyser.this.constantsDeclarations);
-				MachineAnalyser.this.properties.accept(this);
-				scopeTable.clear();
-			}
-
-			if (MachineAnalyser.this.invariant != null) {
-				scopeTable.clear();
-				scopeTable.add(MachineAnalyser.this.constantsDeclarations);
-				scopeTable.add(MachineAnalyser.this.variablesDeclarations);
-				MachineAnalyser.this.invariant.accept(this);
-				scopeTable.clear();
-			}
-
-			if (MachineAnalyser.this.initialisation != null) {
-				scopeTable.clear();
-				scopeTable.add(MachineAnalyser.this.constantsDeclarations);
-				scopeTable.add(MachineAnalyser.this.variablesDeclarations);
-				MachineAnalyser.this.initialisation.accept(this);
-				scopeTable.clear();
-			}
-
-			for (Entry<String, OperationContext> entry : MachineAnalyser.this.operationsDeclarations.entrySet()) {
-				scopeTable.clear();
-				scopeTable.add(MachineAnalyser.this.constantsDeclarations);
-				scopeTable.add(MachineAnalyser.this.variablesDeclarations);
-				entry.getValue().substitution().accept(this);
-				scopeTable.clear();
-			}
-
+	private void checkScope() {
+		ScopeChecker scopeChecker = new ScopeChecker(this);
+		if (MachineAnalyser.this.properties != null) {
+			scopeChecker.scopeTable.clear();
+			scopeChecker.scopeTable.add(MachineAnalyser.this.constantsDeclarations);
+			MachineAnalyser.this.properties.accept(scopeChecker);
+			scopeChecker.scopeTable.clear();
 		}
 
-		@Override
-		public Void visitIdentifierExpression(BMoThParser.IdentifierExpressionContext ctx) {
-			Token identifierToken = ctx.IDENTIFIER().getSymbol();
-			lookUpToken(identifierToken);
-			return null;
+		if (MachineAnalyser.this.invariant != null) {
+			scopeChecker.scopeTable.clear();
+			scopeChecker.scopeTable.add(MachineAnalyser.this.constantsDeclarations);
+			scopeChecker.scopeTable.add(MachineAnalyser.this.variablesDeclarations);
+			MachineAnalyser.this.invariant.accept(scopeChecker);
+			scopeChecker.scopeTable.clear();
 		}
 
-		@Override
-		public Void visitSetComprehensionExpression(BMoThParser.SetComprehensionExpressionContext ctx) {
-			List<Token> identifiers = ctx.identifier_list().identifiers;
-			LinkedHashMap<String, Token> localIdentifiers = new LinkedHashMap<>();
-			for (Token token : identifiers) {
-				localIdentifiers.put(token.getText(), token);
-			}
-			scopeTable.add(localIdentifiers);
-			ctx.predicate().accept(this);
-			scopeTable.removeLast();
-			return null;
+		if (MachineAnalyser.this.initialisation != null) {
+			scopeChecker.scopeTable.clear();
+			scopeChecker.scopeTable.add(MachineAnalyser.this.constantsDeclarations);
+			scopeChecker.scopeTable.add(MachineAnalyser.this.variablesDeclarations);
+			MachineAnalyser.this.initialisation.accept(scopeChecker);
+			scopeChecker.scopeTable.clear();
 		}
 
-		@Override
-		public Void visitAssignSubstitution(BMoThParser.AssignSubstitutionContext ctx) {
-			List<Token> identifiers = ctx.identifier_list().identifiers;
-			for (Token token : identifiers) {
-				String name = token.getText();
-				if (MachineAnalyser.this.variablesDeclarations.containsKey(name)) {
-					Token variableDeclaration = MachineAnalyser.this.variablesDeclarations.get(name);
-					declarationReferences.put(token, variableDeclaration);
-				} else {
-					throw new ScopeException(token, "Identifier '" + name + "' must be a variable.");
-				}
-			}
-			ctx.expression_list().accept(this);
-			return null;
+		for (Entry<String, OperationContext> entry : MachineAnalyser.this.operationsDeclarations.entrySet()) {
+			scopeChecker.scopeTable.clear();
+			scopeChecker.scopeTable.add(MachineAnalyser.this.constantsDeclarations);
+			scopeChecker.scopeTable.add(MachineAnalyser.this.variablesDeclarations);
+			entry.getValue().substitution().accept(scopeChecker);
+			scopeChecker.scopeTable.clear();
 		}
+	}
 
-		private void lookUpToken(Token identifierToken) {
-			String name = identifierToken.getText();
-			for (int i = scopeTable.size() - 1; i >= 0; i--) {
-				LinkedHashMap<String, Token> map = scopeTable.get(i);
-				if (map.containsKey(name)) {
-					Token declarationToken = map.get(name);
-					declarationReferences.put(identifierToken, declarationToken);
-					return;
-				}
-			}
-			throw new ScopeException(identifierToken, "Unknown identifier: " + name);
-		}
 
+	@Override
+	public void identifierNodeFound(Token identifierToken) {
+		throw new ScopeException(identifierToken, "Unknown identifier: " + identifierToken.getText());
 	}
 
 }

@@ -66,6 +66,7 @@ COMMA: ',';
 REC: 'rec';
 STRUCT: 'struct';
 
+
 //predicate prefix operators
 NOT: 'not' | '\u00ac';
 BOOl_CAST: 'bool';

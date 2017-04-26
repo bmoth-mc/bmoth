@@ -10,6 +10,7 @@ import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
+import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
 
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.*;
 
@@ -158,6 +159,42 @@ public class FormulaTest {
 		assertEquals("INTEGER", c.getType().toString());
 
 		assertEquals("POW(INTEGER*INTEGER*INTEGER)", setComprehension.getType().toString());
+	}
+
+	@Test
+	public void testUniversalQuantification() throws Exception {
+		String formula = "!x,y.(x : NATURAL => x : y)";
+		FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+		assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+		QuantifiedPredicateNode quantification = (QuantifiedPredicateNode) formulaNode.getFormula();
+
+		assertEquals(QuantifiedPredicateNode.QuatifiedPredicateOperator.UNIVERSAL_QUANTIFICATION,
+				quantification.getOperator());
+		List<DeclarationNode> declarationList = quantification.getDeclarationList();
+		DeclarationNode x = declarationList.get(0);
+		DeclarationNode y = declarationList.get(1);
+		assertEquals("x", x.getName());
+		assertEquals("y", y.getName());
+		assertEquals("INTEGER", x.getType().toString());
+		assertEquals("POW(INTEGER)", y.getType().toString());
+	}
+	
+	@Test
+	public void testExistentialQuantification() throws Exception {
+		String formula = "#x,y.(x : NATURAL & x : y)";
+		FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+		assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+		QuantifiedPredicateNode quantification = (QuantifiedPredicateNode) formulaNode.getFormula();
+
+		assertEquals(QuantifiedPredicateNode.QuatifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION,
+				quantification.getOperator());
+		List<DeclarationNode> declarationList = quantification.getDeclarationList();
+		DeclarationNode x = declarationList.get(0);
+		DeclarationNode y = declarationList.get(1);
+		assertEquals("x", x.getName());
+		assertEquals("y", y.getName());
+		assertEquals("INTEGER", x.getType().toString());
+		assertEquals("POW(INTEGER)", y.getType().toString());
 	}
 
 }

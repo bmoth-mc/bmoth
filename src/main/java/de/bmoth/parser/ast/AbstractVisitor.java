@@ -10,6 +10,7 @@ import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
+import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
 import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
@@ -23,6 +24,8 @@ public abstract class AbstractVisitor<R, P> {
 			return visitPredicateOperatorWithExprArgs((PredicateOperatorWithExprArgsNode) node, expected);
 		} else if (node instanceof IdentifierPredicateNode) {
 			return visitIdentifierPredicateNode((IdentifierPredicateNode) node, expected);
+		} else if (node instanceof QuantifiedPredicateNode) {
+			return visitQuantifiedPredicateNode((QuantifiedPredicateNode) node, expected);
 		}
 		throw new AssertionError(node);
 	}
@@ -70,4 +73,6 @@ public abstract class AbstractVisitor<R, P> {
 	public abstract R visitIdentifierPredicateNode(IdentifierPredicateNode node, P expected);
 
 	public abstract R visitQuantifiedExpressionNode(QuantifiedExpressionNode node, P expected);
+
+	public abstract R visitQuantifiedPredicateNode(QuantifiedPredicateNode node, P expected);
 }

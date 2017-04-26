@@ -55,6 +55,8 @@ formula
 predicate
   : '(' predicate ')'                                                       # ParenthesesPredicate
   | IDENTIFIER                                                              # PredicateIdentifier
+  | operator=(FOR_ANY|EXITS) quantified_variables_list
+      DOT LEFT_PAR predicate RIGHT_PAR                                      # QuantifiedPredicate
   | operator=(TRUE|FALSE)                                                   # PredicateOperator
   | operator=NOT '(' predicate ')'                                          # PredicateOperator
   | expression operator=(EQUAL|NOT_EQUAL|COLON|ELEMENT_OF
