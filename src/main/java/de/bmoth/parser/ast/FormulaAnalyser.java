@@ -1,6 +1,8 @@
 package de.bmoth.parser.ast;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.antlr.v4.runtime.Token;
 
@@ -20,6 +22,7 @@ public class FormulaAnalyser {
 	}
 
 	class VariablesFinder extends BMoThParserBaseVisitor<Void> {
+		private final LinkedList<LinkedHashMap<String, Token>> scopeTable = new LinkedList<>();
 		/*
 		 * Note, we have to add a scope table when quantified variables are
 		 * introduced.
@@ -38,9 +41,32 @@ public class FormulaAnalyser {
 			visitIdentifierToken(identifierToken);
 			return null;
 		}
+		
+		
+		@Override
+		public Void visitSetComprehensionExpression(BMoThParser.SetComprehensionExpressionContext ctx) {
+			List<Token> identifiers = ctx.identifier_list().identifiers;
+			LinkedHashMap<String, Token> localIdentifiers = new LinkedHashMap<>();
+			for (Token token : identifiers) {
+				localIdentifiers.put(token.getText(), token);
+			}
+			scopeTable.add(localIdentifiers);
+			ctx.predicate().accept(this);
+			scopeTable.removeLast();
+			return null;
+		}
+		
 
 		private void visitIdentifierToken(Token identifierToken) {
 			String name = identifierToken.getText();
+			for (int i = scopeTable.size() - 1; i >= 0; i--) {
+				LinkedHashMap<String, Token> map = scopeTable.get(i);
+				if (map.containsKey(name)) {
+					Token declarationToken = map.get(name);
+					declarationReferences.put(identifierToken, declarationToken);
+					return;
+				}
+			}
 			if (implicitDeclarations.containsKey(name)) {
 				declarationReferences.put(identifierToken, implicitDeclarations.get(name));
 			} else {

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import de.bmoth.exceptions.TypeErrorException;
+import de.bmoth.parser.Parser;
 
 public class MachinesTest {
 
@@ -191,6 +192,7 @@ public class MachinesTest {
 		assertEquals("INTEGER", t.constants.get("k3").toString());
 	}
 
+	
 	@Test(expected = TypeErrorException.class)
 	public void testModuloException() throws Exception {
 		String machine = "MACHINE test\n" + "CONSTANTS k\n" + "PROPERTIES TRUE = 1 mod 1 \n" + "END";
@@ -208,6 +210,16 @@ public class MachinesTest {
 		TestTypechecker t = new TestTypechecker(machine);
 		assertEquals("INTEGER", t.variables.get("x").toString());
 		assertEquals("BOOL", t.variables.get("y").toString());
+	}
+	
+	@Test
+	public void testSetComprehension() throws Exception {
+		String machine = "MACHINE test\n";
+		machine += "CONSTANTS k\n";
+		machine += "PROPERTIES k = {x | x : INTEGER } \n";
+		machine += "END";
+		TestTypechecker t = new TestTypechecker(machine);
+		assertEquals("POW(INTEGER)", t.constants.get("k").toString());
 	}
 
 }

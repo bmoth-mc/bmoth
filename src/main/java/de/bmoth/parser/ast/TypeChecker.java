@@ -1,5 +1,6 @@
 package de.bmoth.parser.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.bmoth.exceptions.TypeErrorException;
@@ -329,6 +330,28 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 			super.visitSubstitutionNode(sub, null);
 		}
 		return null;
+	}
+
+	@Override
+	public Type visitQuantifiedExpressionNode(QuantifiedExpressionNode node, Type expected) {
+		for (DeclarationNode decl : node.getDeclarationList()) {
+			decl.setType(new UntypedType());
+		}
+		super.visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
+
+		Type left = node.getDeclarationList().get(0).getType();
+		for (int i = 1; i < node.getDeclarationList().size(); i++) {
+			Type right = node.getDeclarationList().get(0).getType();
+			left = new CoupleType(left, right);
+		}
+		Type found = new SetType(left);
+		try {
+			found = found.unify(expected);
+			node.setType(found);
+			return found;
+		} catch (UnificationException e) {
+			throw new TypeErrorException(node, expected, IntegerType.getInstance());
+		}
 	}
 
 }

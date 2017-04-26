@@ -25,6 +25,7 @@ import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
 import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
+import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
 import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
 import de.bmoth.parser.ast.types.BoolType;
@@ -92,8 +93,8 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 		}
 		case ELEMENT_OF:
 		case LESS_EQUAL:
-		case LESS:{
-			ArithExpr left = (ArithExpr)  visitExprNode(expressionNodes.get(0), null);
+		case LESS: {
+			ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
 			ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
 			return z3Context.mkLt(left, right);
 		}
@@ -266,6 +267,12 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 
 		throw new AssertionError("Missing Type Conversion: " + t.getClass());
 
+	}
+
+	@Override
+	public Expr visitQuantifiedExpressionNode(QuantifiedExpressionNode node, Void expected) {
+		// TODO Auto-generated method stub
+		throw new AssertionError("Implement: " + node.getClass());
 	}
 
 }

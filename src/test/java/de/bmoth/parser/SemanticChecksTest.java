@@ -24,6 +24,16 @@ public class SemanticChecksTest {
 		machine += "END";
 		Parser.getMachineAsSemanticAst(machine);
 	}
-
+	
+	
+	@Test
+	public void testLocalIdentifier() throws Exception {
+		String machine = "MACHINE test\n";
+		machine += "CONSTANTS k\n";
+		machine += "PROPERTIES k = {x | x : INTEGER } \n";
+		machine += "END";
+		Parser.getMachineAsSemanticAst(machine);
+	}
+	
 
 }

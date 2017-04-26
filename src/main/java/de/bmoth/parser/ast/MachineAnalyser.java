@@ -2,6 +2,7 @@ package de.bmoth.parser.ast;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -13,6 +14,7 @@ import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.OperationContext;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
 import de.bmoth.exceptions.ScopeException;
+import de.bmoth.parser.ast.nodes.Node;
 
 public class MachineAnalyser {
 
@@ -123,7 +125,7 @@ public class MachineAnalyser {
 	}
 
 	class ScopeChecker extends BMoThParserBaseVisitor<Void> {
-		private final List<LinkedHashMap<String, Token>> scopeTable = new ArrayList<>();
+		private final LinkedList<LinkedHashMap<String, Token>> scopeTable = new LinkedList<>();
 
 		ScopeChecker() {
 			if (MachineAnalyser.this.properties != null) {
@@ -163,6 +165,19 @@ public class MachineAnalyser {
 		public Void visitIdentifierExpression(BMoThParser.IdentifierExpressionContext ctx) {
 			Token identifierToken = ctx.IDENTIFIER().getSymbol();
 			lookUpToken(identifierToken);
+			return null;
+		}
+
+		@Override
+		public Void visitSetComprehensionExpression(BMoThParser.SetComprehensionExpressionContext ctx) {
+			List<Token> identifiers = ctx.identifier_list().identifiers;
+			LinkedHashMap<String, Token> localIdentifiers = new LinkedHashMap<>();
+			for (Token token : identifiers) {
+				localIdentifiers.put(token.getText(), token);
+			}
+			scopeTable.add(localIdentifiers);
+			ctx.predicate().accept(this);
+			scopeTable.removeLast();
 			return null;
 		}
 

@@ -34,6 +34,8 @@ import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
 import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
+import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
+import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
 import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
@@ -130,6 +132,21 @@ public class SemanticAstCreator {
 		@Override
 		public Node visitParenthesesExpression(BMoThParser.ParenthesesExpressionContext ctx) {
 			return ctx.expression().accept(this);
+		}
+
+		@Override
+		public Node visitSetComprehensionExpression(BMoThParser.SetComprehensionExpressionContext ctx) {
+			List<Token> identifiers = ctx.identifier_list().identifiers;
+			List<DeclarationNode> declarationList = new ArrayList<>();
+			for (Token token : identifiers) {
+				DeclarationNode declNode = new DeclarationNode(token, token.getText());
+				declarationList.add(declNode);
+				declarationMap.put(token, declNode);
+			}
+			PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
+			QuantifiedExpressionNode quantifiedExpression = new QuantifiedExpressionNode(ctx, declarationList, predNode,
+					QuatifiedExpressionOperator.SET_COMPREHENSION);
+			return quantifiedExpression;
 		}
 
 		@Override
