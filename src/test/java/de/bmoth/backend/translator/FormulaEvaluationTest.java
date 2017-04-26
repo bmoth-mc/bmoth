@@ -169,4 +169,16 @@ public class FormulaEvaluationTest {
         assertEquals(Status.SATISFIABLE, check);
         assertEquals(ctx.mkInt(256), s.getModel().eval(x, true));
     }
+    
+    @Test
+    public void testLessThanFormula() throws Exception {
+        String formula = "1 < 2";
+        // getting the translated z3 representation of the formula
+        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+
+        s.add(constraint);
+        Status check = s.check();
+
+        assertEquals(Status.SATISFIABLE, check);
+    }
 }
