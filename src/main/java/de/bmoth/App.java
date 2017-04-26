@@ -1,8 +1,10 @@
 package de.bmoth;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 
+import javafx.stage.FileChooser;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -20,16 +22,18 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class App extends Application {
+
     @Override
     public void start(Stage primaryStage) {
         MenuBar menuBar = new MenuBar();
         Menu menuFile = new Menu("File");
         Menu menuCheck = new Menu("Checks");
+        CodeArea codeArea = new CodeArea();
 
         MenuItem open = new MenuItem("Open");
         open.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                openFile();
+                openFile(primaryStage,codeArea);
             }
         });
 
@@ -43,7 +47,6 @@ public class App extends Application {
         menuFile.getItems().addAll(open, new SeparatorMenuItem(), exit);
         menuBar.getMenus().addAll(menuFile, menuCheck);
 
-        CodeArea codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 
         codeArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
@@ -66,10 +69,17 @@ public class App extends Application {
         return spansBuilder.create();
     }
 
-    private static void openFile() {
-
+    private static void openFile(Stage stage,CodeArea codeArea) {
+        FileChooser fileChooser= new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Open MCH File", "*.mch"));
+        fileChooser.setTitle("Choose File");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        File file=fileChooser.showOpenDialog(stage);
+        if(file!=null){
+            codeArea.appendText(file.getAbsolutePath());
+        }
     }
-    
+
     public static void main(String[] args){
     	launch(args);
     }
