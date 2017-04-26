@@ -94,6 +94,7 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
 		}
 		case ELEMENT_OF:
 		case LESS_EQUAL:
+		    break;
 		case LESS: {
 			ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
 			ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
