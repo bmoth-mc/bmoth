@@ -9,7 +9,6 @@ import org.junit.Test;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
-import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
 
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.*;

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import de.bmoth.exceptions.TypeErrorException;
-import de.bmoth.parser.Parser;
 
 public class MachinesTest {
 
