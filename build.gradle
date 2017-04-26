@@ -19,6 +19,7 @@ apply plugin: 'antlr'
 apply plugin: 'application'
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.plugins.ide.eclipse.model.AccessRule
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -123,6 +124,9 @@ eclipse.classpath.file.whenMerged { classpath ->
     classpath.entries.findResult { entry ->
         if (entry.kind == 'lib' && entry.path.contains('com.microsoft.z3')) {
             entry.setNativeLibraryLocation('bmoth/')
+        }
+        if(entry.kind == 'con' && entry.path.contains('org.eclipse.jdt.launching.JRE_CONTAINER')) {
+            entry.accessRules.add(new AccessRule('accessible', 'javafx/**'))
         }
     }
 }
