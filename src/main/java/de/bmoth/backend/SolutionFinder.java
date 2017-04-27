@@ -51,7 +51,7 @@ public class SolutionFinder {
     }
 
     /**
-     * Evaluate a single solution from solver over all variables
+     * Evaluate a single solution from solver over all variables, constraints have to be satisfiable!
      *
      * @return a solution
      */
@@ -85,7 +85,7 @@ public class SolutionFinder {
         // create a solution finding scope to not pollute original one
         solver.push();
 
-        // as long as formula is satisfiable
+        // as long as formula is satisfiable:
         for (int i = 0; solver.check() == Status.SATISFIABLE && i < maxIterations; i++) {
 
             // find a solution ...
@@ -99,6 +99,8 @@ public class SolutionFinder {
 
         // delete solution finding scope to remove all exclusion constraints from solver stack
         solver.pop();
+
+        // TODO getModel() invocation fails if solver.check() hasn't been called in advance. Is here a dummy call necessary?
 
         return result;
     }
