@@ -2,7 +2,9 @@ package de.bmoth.backend.translator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.fail;
 
+import de.bmoth.backend.SolutionFinder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -19,6 +21,7 @@ import de.bmoth.backend.FormulaTranslator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class FormulaEvaluationTest {
 
@@ -185,6 +188,37 @@ public class FormulaEvaluationTest {
 
         assertEquals(Status.SATISFIABLE, check);
     }
+
+    @Test
+    public void testSolutionFinder() throws Exception {
+        String formula = "0 < a & a < 6 & 0 < b & b < 6 & ( 2 * b < a or 2 * b = a )";
+
+        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+
+        s.add(constraint);
+
+        assertEquals(Status.SATISFIABLE, s.check());
+
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+
+        Set<BoolExpr> solutions = finder.findSolutions(20);
+
+        assertEquals(6, solutions.size());
+        for (BoolExpr solution : solutions) {
+            switch (solution.toString()) {
+                case "(and (= a 2) (= b 1))":
+                case "(and (= a 3) (= b 1))":
+                case "(and (= a 4) (= b 1))":
+                case "(and (= a 4) (= b 2))":
+                case "(and (= a 5) (= b 1))":
+                case "(and (= a 5) (= b 2))":
+                    break;
+                default:
+                    fail(solution.toString() + " is not part of found solutions");
+            }
+        }
+    }
+
 
     @Test
     public void testAllSolutions() throws Exception {
