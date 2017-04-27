@@ -8,6 +8,7 @@ build/
 .settings
 .project
 .classpath
+gradle/wrapper/gradle-wrapper.properties
 
 # downloaded libraries
 libs/
