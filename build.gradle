@@ -14,6 +14,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'antlr'
+apply plugin: 'jacoco'
 
 // Apply the application plugin to add support for building an application
 apply plugin: 'application'
@@ -46,7 +47,7 @@ sourceSets {
 dependencies {
     // Antlr4 Parser Generator
     antlr "org.antlr:antlr4:4.5.3"
-    
+
     // Z3 Java Bindings
     compile files('com.microsoft.z3.jar')
 
@@ -140,3 +141,22 @@ clean {
     delete fileTree('./') { include 'libz3*.*' }
     delete fileTree('./') { include 'Microsoft.Z3.*' }
 }
+
+// type 'gradle test jacocoTestReport' in order to run the jacoco code coverage analysis
+jacocoTestReport {
+  reports {
+      xml.enabled false
+      csv.enabled false
+      html.destination "${buildDir}/jacocoHtml"
+  }
+
+  afterEvaluate {
+      classDirectories = files(classDirectories.files.collect {
+          fileTree(dir: it,
+                  exclude: [
+                      '**/antlr/**'
+                  ])
+      })
+  }
+}
+build.dependsOn jacocoTestReport
