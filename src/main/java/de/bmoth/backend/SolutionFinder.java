@@ -82,6 +82,9 @@ public class SolutionFinder {
     public Set<BoolExpr> findSolutions(int maxIterations) {
         Set<BoolExpr> result = new HashSet<>();
 
+        // create a solution finding scope to not pollute original one
+        solver.push();
+
         // as long as formula is satisfiable
         for (int i = 0; solver.check() == Status.SATISFIABLE && i < maxIterations; i++) {
 
@@ -94,7 +97,8 @@ public class SolutionFinder {
             result.add(solution);
         }
 
-        //TODO it might be a good idea to remove all exclusion constraints from solver stack
+        // delete solution finding scope to remove all exclusion constraints from solver stack
+        solver.pop();
 
         return result;
     }
