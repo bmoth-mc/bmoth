@@ -139,7 +139,7 @@ public class App extends Application {
         if(!file.exists()) {
             file.createNewFile();
         }
-        FileWriter fileWriter = null;
+        FileWriter fileWriter;
         fileWriter = new FileWriter(file);
         fileWriter.write(codeArea.getText());
         fileWriter.close();
@@ -148,6 +148,7 @@ public class App extends Application {
     private void saveFileAs(Stage stage, CodeArea codeArea) throws IOException{
         FileChooser fileChooser=new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MCH File","*.mch"));
         File file = fileChooser.showSaveDialog(stage);
             saveFile(file.getAbsolutePath(),codeArea);
 
