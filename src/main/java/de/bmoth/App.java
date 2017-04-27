@@ -1,14 +1,13 @@
 package de.bmoth;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 
+import javafx.application.Platform;
 import javafx.stage.FileChooser;
-import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -26,6 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class App extends Application {
+    private String currentFile;
 
     @Override
     public void start(Stage primaryStage) {
@@ -33,34 +33,56 @@ public class App extends Application {
         Menu menuFile = new Menu("File");
         Menu menuCheck = new Menu("Checks");
         CodeArea codeArea = new CodeArea();
-
         MenuItem open = new MenuItem("Open");
+        MenuItem saveAs = new MenuItem("Save As");
+        MenuItem save = new MenuItem("Save");
+        MenuItem exit = new MenuItem("Exit");
+
+
+
+
         open.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                openFile(primaryStage,codeArea);
+                String s=openFile(primaryStage,codeArea);
+                currentFile=s;
             }
         });
 
-        MenuItem exit = new MenuItem("Exit");
         exit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 System.exit(0);
             }
         });
 
-        MenuItem save = new MenuItem("Save");
         save.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                saveFile();
+
+                if(currentFile!=null){
+                    try {
+                        saveFile(currentFile,codeArea);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else{
+                    try {
+                        saveFileAs(primaryStage,codeArea);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }
         });
 
-        MenuItem saveAs = new MenuItem("Save As");
         saveAs.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                saveFileAS();
+                try {
+                    saveFileAs(primaryStage,codeArea);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -90,7 +112,7 @@ public class App extends Application {
         return spansBuilder.create();
     }
 
-    private static void openFile(Stage stage,CodeArea codeArea)  {
+    private static String openFile(Stage stage,CodeArea codeArea)  {
         FileChooser fileChooser= new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Open MCH File", "*.mch"));
         fileChooser.setTitle("Choose File");
@@ -104,16 +126,31 @@ public class App extends Application {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            try{codeArea.clear();}catch (Exception e){
-                e.printStackTrace();
-            }
-            codeArea.appendText(content);
+            codeArea.replaceText(content);
+            stage.setTitle("Bmoth - " +file.getName());
+
+
         }
-    }
-    private void saveFileAS() {
+        return file.getAbsolutePath();
     }
 
-    private void saveFile() {
+    private void saveFile(String path,CodeArea codeArea) throws IOException {
+        File file = new File(path);
+        if(!file.exists()) {
+            file.createNewFile();
+        }
+        FileWriter fileWriter = null;
+        fileWriter = new FileWriter(file);
+        fileWriter.write(codeArea.getText());
+        fileWriter.close();
+    }
+
+    private void saveFileAs(Stage stage, CodeArea codeArea) throws IOException{
+        FileChooser fileChooser=new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        File file = fileChooser.showSaveDialog(stage);
+            saveFile(file.getAbsolutePath(),codeArea);
+
     }
 
     public static void main(String[] args){
