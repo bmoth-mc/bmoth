@@ -61,6 +61,12 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
         Expr expr = formulaTranslator.visitExprNode((ExprNode) node.getFormula(), null);
         return expr;
     }
+    
+    public static Expr translateExpression(ExprNode exprNode, Context z3Context) {
+        FormulaTranslator formulaTranslator = new FormulaTranslator(z3Context);
+        Expr expr = formulaTranslator.visitExprNode(exprNode, null);
+        return expr;
+    }
 
     public static BoolExpr translatePredicate(String formula, Context z3Context) {
         FormulaNode node = Parser.getFormulaAsSemanticAst(formula);
