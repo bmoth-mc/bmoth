@@ -1,8 +1,4 @@
 MACHINE SimpleMachine
-CONSTANTS
-  con
-PROPERTIES
-  con : BOOL
 VARIABLES
   x
 INVARIANT
