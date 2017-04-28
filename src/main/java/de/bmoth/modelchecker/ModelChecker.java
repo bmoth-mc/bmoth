@@ -23,15 +23,14 @@ public class ModelChecker {
         SingleAssignSubstitution initialization = (SingleAssignSubstitution) machine.getInitialisation();
         ExprNode initialValue = initialization.getValue();
 
-        Expr initialValueAsZ3Expression = translator.translateExpression(initialValue, ctx);
+        Expr initialValueAsZ3Expression = translator.translateExpression(initialValue);
         Sort z3TypeOfInitialValue = translator.bTypeToZ3Sort(initialValue.getType());
 
-        Expr theIdentifier = ctx.mkConst(initialization.getIdentifier().getName(),z3TypeOfInitialValue);
+        Expr theIdentifier = ctx.mkConst(initialization.getIdentifier().getName(), z3TypeOfInitialValue);
 
-        BoolExpr initialValueConstraint = ctx.mkEq(theIdentifier,initialValueAsZ3Expression);
+        BoolExpr initialValueConstraint = ctx.mkEq(theIdentifier, initialValueAsZ3Expression);
 
-
-        while(!queue.isEmpty()) {
+        while (!queue.isEmpty()) {
             State current = queue.pop();
 
             // check invariant
@@ -40,7 +39,7 @@ public class ModelChecker {
             // add to queue if not in visited
 
         }
-        
-        return false;//TODO
+
+        return false;// TODO
     }
 }
