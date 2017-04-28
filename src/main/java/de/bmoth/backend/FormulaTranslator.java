@@ -61,7 +61,7 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
         Expr expr = formulaTranslator.visitExprNode((ExprNode) node.getFormula(), null);
         return expr;
     }
-    
+
     public static Expr translateExpression(ExprNode exprNode, Context z3Context) {
         FormulaTranslator formulaTranslator = new FormulaTranslator(z3Context);
         Expr expr = formulaTranslator.visitExprNode(exprNode, null);
@@ -108,7 +108,11 @@ public class FormulaTranslator extends AbstractVisitor<Expr, Void> {
             Expr right = visitExprNode(expressionNodes.get(1), null);
             return z3Context.mkNot(z3Context.mkEq(left, right));
         }
-        case ELEMENT_OF:
+        case ELEMENT_OF: {
+            Expr left = visitExprNode(expressionNodes.get(0), null);
+            ArrayExpr right =  (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
+            return z3Context.mkSetMembership(left, right);
+        }
         case LESS_EQUAL:
             break;
         case LESS: {

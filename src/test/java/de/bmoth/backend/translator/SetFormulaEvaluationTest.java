@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.microsoft.z3.BoolExpr;
@@ -16,61 +17,86 @@ import de.bmoth.backend.FormulaTranslator;
 
 public class SetFormulaEvaluationTest {
 
-	private Context ctx;
-	private Solver s;
+    private Context ctx;
+    private Solver s;
 
-	@Before
-	public void setup() {
-		ctx = new Context();
-		s = ctx.mkSolver();
-	}
+    @Before
+    public void setup() {
+        ctx = new Context();
+        s = ctx.mkSolver();
+    }
 
-	@After
-	public void cleanup() {
-		ctx.close();
-	}
+    @After
+    public void cleanup() {
+        ctx.close();
+    }
 
-	@Test
-	public void testSimpleSetExtensionFormula() throws Exception {
-		String formula = "{1,2} = {2,3}";
-		// getting the translated z3 representation of the formula
-		BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+    @Test
+    public void testSimpleSetExtensionFormula() throws Exception {
+        String formula = "{1,2} = {2,3}";
+        // getting the translated z3 representation of the formula
+        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
 
-		s.add(constraint);
-		Status check = s.check();
+        s.add(constraint);
+        Status check = s.check();
 
-		assertEquals(Status.UNSATISFIABLE, check);
-	}
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
 
-	@Test
-	public void testSetExtensionFormulaWithSingleVarModel() throws Exception {
-		String formula = "{1,2} = {2,x}";
-		// getting the translated z3 representation of the formula
-		BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+    @Test
+    public void testSetExtensionFormulaWithSingleVarModel() throws Exception {
+        String formula = "{1,2} = {2,x}";
+        // getting the translated z3 representation of the formula
+        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
 
-		s.add(constraint);
-		Status check = s.check();
+        s.add(constraint);
+        Status check = s.check();
 
-		Expr x = ctx.mkIntConst("x");
+        Expr x = ctx.mkIntConst("x");
 
-		assertEquals(Status.SATISFIABLE, check);
-		assertEquals(ctx.mkInt(1), s.getModel().eval(x, true));
-	}
+        assertEquals(Status.SATISFIABLE, check);
+        assertEquals(ctx.mkInt(1), s.getModel().eval(x, true));
+    }
 
-	@Test
-	public void testSetExtensionFormulaWithSetVarModel() throws Exception {
-		String formula = "{1,2} = x";
-		// getting the translated z3 representation of the formula
-		BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+    @Test
+    public void testSetExtensionFormulaWithSetVarModel() throws Exception {
+        String formula = "{1,2} = x";
+        // getting the translated z3 representation of the formula
+        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
 
-		s.add(constraint);
-		Status check = s.check();
+        s.add(constraint);
+        Status check = s.check();
 
-		Expr x = ctx.mkArrayConst("x", ctx.mkIntSort(), ctx.mkBoolSort());
+        Expr x = ctx.mkArrayConst("x", ctx.mkIntSort(), ctx.mkBoolSort());
 
-		assertEquals(Status.SATISFIABLE, check);
-		assertEquals("(store (store ((as const (Array Int Bool)) false) 1 true) 2 true)",
-				s.getModel().eval(x, true).toString());
-	}
+        assertEquals(Status.SATISFIABLE, check);
+        assertEquals("(store (store ((as const (Array Int Bool)) false) 1 true) 2 true)",
+                s.getModel().eval(x, true).toString());
+    }
+
+    @Test
+    public void testSetMembership() throws Exception {
+        String formula = "x : {3}";
+        // getting the translated z3 representation of the formula
+        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+
+        s.add(constraint);
+        Status check = s.check();
+
+        Expr x = ctx.mkIntConst("x");
+
+        assertEquals(Status.SATISFIABLE, check);
+        assertEquals("3", s.getModel().eval(x, true).toString());
+    }
+    
+    @Ignore
+    @Test
+    public void testSetOfNaturalNumbers() throws Exception {
+        String formula = "x : NATURAL";
+        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
 
 }
