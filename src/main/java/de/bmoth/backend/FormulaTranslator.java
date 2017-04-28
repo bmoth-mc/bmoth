@@ -37,7 +37,7 @@ import de.bmoth.parser.ast.types.Type;
 
 /**
  * This class translates a FormulaNode of the parser to a z3 backend node.
- * 
+ *
  * The second parameter of the AbstractVisitor class is the method parameter of
  * each method which is inherited form the AbstractVisitor class. In the
  * FormulaTranslator this parameter is not needed. Hence, the placeholder class
