@@ -13,6 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
+import javafx.stage.WindowEvent;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -124,6 +125,14 @@ public class App extends Application {
 
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, codeArea,infoArea);
 
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                if (hasChanged){
+                    //saveChangeDialog();
+                }
+            }
+        });
         primaryStage.setScene(scene);
         primaryStage.setTitle("BMoth");
         primaryStage.show();
@@ -176,9 +185,12 @@ public class App extends Application {
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MCH File","*.mch"));
         File file = fileChooser.showSaveDialog(stage);
-        if(file!=null)
+        if(file!=null)      //add .mch ending if not added by OS
+            if (!file.getAbsolutePath().endsWith(".mch")) {
+                saveFile(file.getAbsolutePath() + ".mch", codeArea);
+            } else {
             saveFile(file.getAbsolutePath(),codeArea);
-
+            }
     }
 
     public static void main(String[] args){
