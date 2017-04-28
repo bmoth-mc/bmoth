@@ -6,7 +6,12 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 
-import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -17,15 +22,12 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class App extends Application {
     private String currentFile;
+    private Boolean hasChanged;
 
     @Override
     public void start(Stage primaryStage) {
@@ -33,11 +35,12 @@ public class App extends Application {
         Menu menuFile = new Menu("File");
         Menu menuCheck = new Menu("Checks");
         CodeArea codeArea = new CodeArea();
+        TextArea infoArea = new TextArea();
         MenuItem open = new MenuItem("Open");
         MenuItem saveAs = new MenuItem("Save As");
         MenuItem save = new MenuItem("Save");
         MenuItem exit = new MenuItem("Exit");
-
+        hasChanged=false;
 
 
 
@@ -45,6 +48,9 @@ public class App extends Application {
             public void handle(ActionEvent t) {
                 String s=openFile(primaryStage,codeArea);
                 currentFile=s;
+                hasChanged=false;
+                infoArea.clear();
+                codeArea.showParagraphAtTop(0);
             }
         });
 
@@ -61,6 +67,8 @@ public class App extends Application {
                 if(currentFile!=null){
                     try {
                         saveFile(currentFile,codeArea);
+                        hasChanged=false;
+                        infoArea.clear();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -74,12 +82,15 @@ public class App extends Application {
 
             }
         });
+        save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
 
         saveAs.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try {
                     saveFileAs(primaryStage,codeArea);
+                    hasChanged=false;
+                    infoArea.clear();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -95,9 +106,23 @@ public class App extends Application {
                     codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
                 });
         codeArea.setPrefSize(800,600);
+
+        codeArea.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                hasChanged=true;
+                infoArea.setText("Unsaved Changes");
+            }
+        });
+
+        infoArea.setEditable(false);
+        infoArea.setPrefSize(0,0);
+
+
+
         Scene scene = new Scene(new VBox(), 800, 600);
 
-        ((VBox) scene.getRoot()).getChildren().addAll(menuBar, codeArea);
+        ((VBox) scene.getRoot()).getChildren().addAll(menuBar, codeArea,infoArea);
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("BMoth");
@@ -129,12 +154,13 @@ public class App extends Application {
             codeArea.replaceText(content);
             stage.setTitle("Bmoth - " +file.getName());
 
+            return file.getAbsolutePath();
 
         }
-        return file.getAbsolutePath();
+        return null;
     }
 
-    private void saveFile(String path,CodeArea codeArea) throws IOException {
+    private static void saveFile(String path,CodeArea codeArea) throws IOException {
         File file = new File(path);
         if(!file.exists()) {
             file.createNewFile();
@@ -145,11 +171,12 @@ public class App extends Application {
         fileWriter.close();
     }
 
-    private void saveFileAs(Stage stage, CodeArea codeArea) throws IOException{
+    private static void saveFileAs(Stage stage, CodeArea codeArea) throws IOException{
         FileChooser fileChooser=new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MCH File","*.mch"));
         File file = fileChooser.showSaveDialog(stage);
+        if(file!=null)
             saveFile(file.getAbsolutePath(),codeArea);
 
     }
