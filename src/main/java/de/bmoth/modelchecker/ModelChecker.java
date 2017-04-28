@@ -1,9 +1,6 @@
 package de.bmoth.modelchecker;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Expr;
-import com.microsoft.z3.Sort;
+import com.microsoft.z3.*;
 import de.bmoth.backend.FormulaTranslator;
 import de.bmoth.parser.ast.nodes.*;
 
@@ -15,6 +12,7 @@ import java.util.*;
 public class ModelChecker {
     public static boolean doModelCheck(MachineNode machine) {
         Context ctx = new Context();
+        Solver solver = ctx.mkSolver();
         FormulaTranslator translator = new FormulaTranslator(ctx);
 
         Set<State> visited = new HashSet<>();
@@ -45,6 +43,26 @@ public class ModelChecker {
 
         // insert initial state
         queue.add(new State(null, initialStateValue));
+
+        // prepare invariant
+        {
+            PredicateNode invariantNode = machine.getInvariant();
+
+            // TODO this is ugly, we need a top level method here!
+            if (invariantNode instanceof PredicateOperatorNode) {
+                invariant = (BoolExpr) translator.visitPredicateOperatorNode((PredicateOperatorNode) invariantNode, null);
+            } else if (invariantNode instanceof PredicateOperatorWithExprArgsNode) {
+                invariant = (BoolExpr) translator.visitPredicateOperatorWithExprArgs((PredicateOperatorWithExprArgsNode) invariantNode, null);
+            } else {
+                throw new AssertionError("Invariant generating not implemented for: " + invariantNode.getClass());
+            }
+
+            solver.add(invariant);
+
+            if (solver.check() != Status.SATISFIABLE) {
+                throw new AssertionError("Invariant not satisfiable:" + invariant);
+            }
+        }
 
         while (!queue.isEmpty()) {
             State current = queue.pop();
