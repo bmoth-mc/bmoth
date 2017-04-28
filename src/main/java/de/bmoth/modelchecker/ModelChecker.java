@@ -16,7 +16,7 @@ public class ModelChecker {
         FormulaTranslator translator = new FormulaTranslator(ctx);
 
         Set<State> visited = new HashSet<>();
-        Stack<State> queue = new Stack<>();
+        Queue<State> queue = new LinkedList<>();
 
         // prepare initial state value
 
@@ -65,7 +65,7 @@ public class ModelChecker {
         }
 
         while (!queue.isEmpty()) {
-            State current = queue.pop();
+            State current = queue.poll();
 
             // check invariant
 
