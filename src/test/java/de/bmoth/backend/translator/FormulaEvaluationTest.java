@@ -219,6 +219,30 @@ public class FormulaEvaluationTest {
         }
     }
 
+    @Test
+    public void testSolutionFinder2() throws Exception {
+        String formula = "1 < x & x < 5";
+        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+
+        s.add(constraint);
+        assertEquals(Status.SATISFIABLE, s.check());
+
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<BoolExpr> solutions = finder.findSolutions(20);
+
+        assertEquals(3, solutions.size());
+        for (BoolExpr solution : solutions) {
+            switch (solution.toString()) {
+                case "(= x 2)":
+                case "(= x 3)":
+                case "(= x 4)":
+                    break;
+                default:
+                    fail(solution.toString() + " is not part of found solutions");
+            }
+        }
+    }
+
 
     @Test
     public void testAllSolutions() throws Exception {
