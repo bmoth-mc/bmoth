@@ -20,6 +20,7 @@ public class ModelChecker {
         Set<State> visited = new HashSet<>();
         Stack<State> queue = new Stack<>();
 
+        // prepare initial state value
         SingleAssignSubstitution initialization = (SingleAssignSubstitution) machine.getInitialisation();
         ExprNode initialValue = initialization.getValue();
 
@@ -29,6 +30,16 @@ public class ModelChecker {
         Expr theIdentifier = ctx.mkConst(initialization.getIdentifier().getName(), z3TypeOfInitialValue);
 
         BoolExpr initialValueConstraint = ctx.mkEq(theIdentifier, initialValueAsZ3Expression);
+
+        Map<String, Expr> initialStateValue = new HashMap<>();
+
+        BoolExpr invariant;
+
+        // prepare initial state value
+        initialStateValue.put(initialization.getIdentifier().getName(), initialValueConstraint);
+
+        // insert initial state
+        queue.add(new State(null, initialStateValue));
 
         while (!queue.isEmpty()) {
             State current = queue.pop();
