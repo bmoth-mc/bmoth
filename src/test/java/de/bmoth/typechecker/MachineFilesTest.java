@@ -20,9 +20,5 @@ public class MachineFilesTest {
 		assertEquals(1, variables.size());
 		assertEquals("x", variables.get(0).getName());
 		assertEquals("INTEGER", variables.get(0).getType().toString());
-		List<DeclarationNode> constants = machineNode.getConstants();
-		assertEquals(1, constants.size());
-		assertEquals("con", constants.get(0).getName());
-		assertEquals("BOOL", constants.get(0).getType().toString());
 	}
 }
