@@ -21,6 +21,11 @@ public class ModelChecker {
         Stack<State> queue = new Stack<>();
 
         // prepare initial state value
+
+        // TODO implement FormulaTranslator::visitSingleAssignSubstitution(...)
+        // BoolExpr initialValueConstraint = translator.visitSingleAssignSubstitution(initialization,null);
+
+        // TODO take care of other types of SubstitutionNodes
         SingleAssignSubstitution initialization = (SingleAssignSubstitution) machine.getInitialisation();
         ExprNode initialValue = initialization.getValue();
 
