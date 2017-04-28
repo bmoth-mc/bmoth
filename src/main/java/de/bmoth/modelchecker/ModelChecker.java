@@ -66,12 +66,20 @@ public class ModelChecker {
 
         while (!queue.isEmpty()) {
             State current = queue.poll();
+            BoolExpr stateValues = current.getValuesExpression(ctx);
+
+            solver.push();
+            solver.add(stateValues);
 
             // check invariant
-
-            // compute successors
-            // add to queue if not in visited
-
+            if (solver.check() == Status.SATISFIABLE) {
+                solver.pop();
+                // compute successors
+                // add to queue if not in visited
+            } else {
+                throw new AssertionError("State values invalid: " + stateValues);
+                //return false;
+            }
         }
 
         return false;// TODO
