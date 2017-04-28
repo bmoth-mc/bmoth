@@ -57,6 +57,9 @@ public class App extends Application {
 
         exit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
+                if(hasChanged){
+                    saveChangeDialog();
+                }
                 System.exit(0);
             }
         });
@@ -129,8 +132,9 @@ public class App extends Application {
             @Override
             public void handle(WindowEvent event) {
                 if (hasChanged){
-                    //saveChangeDialog();
+                    saveChangeDialog();
                 }
+                System.exit(0);
             }
         });
         primaryStage.setScene(scene);
@@ -138,6 +142,8 @@ public class App extends Application {
         primaryStage.show();
     }
 
+    private void saveChangeDialog() {
+    }
 
 
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
