@@ -50,7 +50,13 @@ import de.bmoth.parser.ast.types.Type;
 public class Z3Translator extends AbstractVisitor<Expr, Void> {
 
     private Context z3Context;
+    // the context which is used to create z3 objects
     private final LinkedList<BoolExpr> constraintList = new LinkedList<>();
+    // A list of z3 constraints which are separately created by the translation.
+    // For example, for the B keyword NATURAL an ordinary z3 identifier will be
+    // created because there no corresponding keyword in z3.
+    // Additionally, a constraint axiomatizing this identifier will be added to
+    // this list.
 
     public Z3Translator(Context z3Context) {
         this.z3Context = z3Context;
@@ -66,7 +72,9 @@ public class Z3Translator extends AbstractVisitor<Expr, Void> {
         if (!(constraint instanceof BoolExpr)) {
             throw new RuntimeException("Invalid translation. Expected BoolExpr but found " + constraint.getClass());
         }
+
         BoolExpr boolExpr = (BoolExpr) constraint;
+        // adding all additional constraints to result
         for (BoolExpr bExpr : formulaTranslator.constraintList) {
             boolExpr = z3Context.mkAnd(boolExpr, bExpr);
         }
