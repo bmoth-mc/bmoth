@@ -17,7 +17,7 @@ import com.microsoft.z3.IntNum;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 
-import de.bmoth.backend.FormulaTranslator;
+import de.bmoth.backend.Z3Translator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class FormulaEvaluationTest {
     public void testAdditionFormula() throws Exception {
         String formula = "x = 2 + 3";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -58,7 +58,7 @@ public class FormulaEvaluationTest {
     public void testSubtractionFormula() throws Exception {
         String formula = "x = 2 - 3";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -73,7 +73,7 @@ public class FormulaEvaluationTest {
     public void testEqualityFormula() throws Exception {
         String formula = "x = 5";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -88,7 +88,7 @@ public class FormulaEvaluationTest {
     public void testInequalityFormula() throws Exception {
         String formula = "x /= 0";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -103,7 +103,7 @@ public class FormulaEvaluationTest {
     public void testModuloFormula() throws Exception {
         String formula = "x = 3 mod 2";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -118,7 +118,7 @@ public class FormulaEvaluationTest {
     public void testMultiplicationFormula() throws Exception {
         String formula = "x = 3 * 2";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -136,7 +136,7 @@ public class FormulaEvaluationTest {
          */
         String formula = "x = 4 + 3 * 2 * 2";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -151,7 +151,7 @@ public class FormulaEvaluationTest {
     public void testDivisionFormula() throws Exception {
         String formula = "x = 8 / 2";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -166,7 +166,7 @@ public class FormulaEvaluationTest {
     public void testPowerFormula() throws Exception {
         String formula = "x = 2 ** 8";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -181,7 +181,7 @@ public class FormulaEvaluationTest {
     public void testLessThanFormula() throws Exception {
         String formula = "1 < 2";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -193,7 +193,7 @@ public class FormulaEvaluationTest {
     public void testSolutionFinder() throws Exception {
         String formula = "0 < a & a < 6 & 0 < b & b < 6 & ( 2 * b < a or 2 * b = a )";
 
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
 
@@ -222,7 +222,7 @@ public class FormulaEvaluationTest {
     @Test
     public void testSolutionFinder2() throws Exception {
         String formula = "1 < x & x < 5";
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         assertEquals(Status.SATISFIABLE, s.check());
@@ -248,7 +248,7 @@ public class FormulaEvaluationTest {
     public void testAllSolutions() throws Exception {
         String formula = "1 < x & x < 5";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaTranslator.translatePredicate(formula, ctx);
+        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
 
