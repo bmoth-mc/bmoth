@@ -119,8 +119,6 @@ public class BooleanFormulaEvaluationTest {
 
     @Test
     public void testImplication() throws Exception {
-        // Note, rebuild the parser ("gradle clean build") if this test fails.
-
         String formula = "1=1 => x";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
@@ -133,14 +131,22 @@ public class BooleanFormulaEvaluationTest {
     }
 
     @Test
+    public void testImplication2() throws Exception {
+        Map<String, Status> map = new HashMap<>();
+        map.put("TRUE => TRUE", SATISFIABLE);
+        map.put("TRUE => FALSE", UNSATISFIABLE);
+        map.put("FALSE => TRUE", SATISFIABLE);
+        map.put("FALSE => FALSE", SATISFIABLE);
+        check(map);
+    }
+
+    @Test
     public void testEquivalence() throws Exception {
         Map<String, Status> map = new HashMap<>();
         map.put("TRUE <=> TRUE", SATISFIABLE);
         map.put("FALSE <=> FALSE", SATISFIABLE);
-
         map.put("TRUE <=> FALSE", UNSATISFIABLE);
         map.put("FALSE <=> TRUE", UNSATISFIABLE);
-
         check(map);
     }
 
