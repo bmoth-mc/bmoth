@@ -4,7 +4,9 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
-import de.bmoth.backend.Z3Translator;
+
+import de.bmoth.backend.MachineToZ3Translator;
+import de.bmoth.backend.FormulaToZ3Translator;
 import de.bmoth.parser.ast.nodes.*;
 
 import java.util.*;
@@ -15,18 +17,13 @@ import java.util.*;
 public class ModelChecker {
     public static boolean doModelCheck(MachineNode machine) {
         Context ctx = new Context();
-        Z3Translator translator = new Z3Translator(ctx);
+        MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);
 
         Set<State> visited = new HashSet<>();
         Stack<State> queue = new Stack<>();
 
-        SingleAssignSubstitution initialization = (SingleAssignSubstitution) machine.getInitialisation();
+        BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
 
-        BoolExpr initialValueConstraint = translator.translateSingleAssignSubstitution(initialization);
-
-        Expr theIdentifier = ctx.mkConst(initialization.getIdentifier().getName(),
-                translator.bTypeToZ3Sort(initialization.getIdentifier().getType()));
-        
         while (!queue.isEmpty()) {
             State current = queue.pop();
 

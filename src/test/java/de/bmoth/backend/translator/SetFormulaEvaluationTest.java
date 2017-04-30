@@ -18,7 +18,7 @@ import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 import static com.microsoft.z3.Status.*;
 
-import de.bmoth.backend.Z3Translator;
+import de.bmoth.backend.FormulaToZ3Translator;
 
 public class SetFormulaEvaluationTest {
 
@@ -40,7 +40,7 @@ public class SetFormulaEvaluationTest {
     public void testSimpleSetExtensionFormula() throws Exception {
         String formula = "{1,2} = {2,3}";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -52,7 +52,7 @@ public class SetFormulaEvaluationTest {
     public void testSetExtensionFormulaWithSingleVarModel() throws Exception {
         String formula = "{1,2} = {2,x}";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -67,7 +67,7 @@ public class SetFormulaEvaluationTest {
     public void testSetExtensionFormulaWithSetVarModel() throws Exception {
         String formula = "{1,2} = x";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -83,7 +83,7 @@ public class SetFormulaEvaluationTest {
     public void testSetMembership() throws Exception {
         String formula = "x : {3}";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -109,7 +109,7 @@ public class SetFormulaEvaluationTest {
     private void check(Map<String, Status> map) {
         for (Entry<String, Status> entry : map.entrySet()) {
             System.out.println(entry.getKey());
-            BoolExpr constraint = Z3Translator.translatePredicate(entry.getKey(), ctx);
+            BoolExpr constraint = FormulaToZ3Translator.translatePredicate(entry.getKey(), ctx);
             System.out.println(constraint);
             s.add(constraint);
             Status check = s.check();

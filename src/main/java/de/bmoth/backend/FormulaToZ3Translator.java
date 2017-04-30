@@ -47,7 +47,7 @@ import de.bmoth.parser.ast.types.Type;
  * Void is used. Furthermore, each call to a visitXXX method of the
  * AbstractVisitor class should use the argument null.
  **/
-public class Z3Translator extends AbstractVisitor<Expr, Void> {
+public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
 
     private Context z3Context;
     // the context which is used to create z3 objects
@@ -58,7 +58,7 @@ public class Z3Translator extends AbstractVisitor<Expr, Void> {
     // Additionally, a constraint axiomatizing this identifier will be added to
     // this list.
 
-    public Z3Translator(Context z3Context) {
+    public FormulaToZ3Translator(Context z3Context) {
         this.z3Context = z3Context;
     }
 
@@ -67,7 +67,7 @@ public class Z3Translator extends AbstractVisitor<Expr, Void> {
         if (node.getFormulaType() != FormulaType.PREDICATE_FORMULA) {
             throw new RuntimeException("Expected predicate.");
         }
-        Z3Translator formulaTranslator = new Z3Translator(z3Context);
+        FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(z3Context);
         Expr constraint = formulaTranslator.visitPredicateNode((PredicateNode) node.getFormula(), null);
         if (!(constraint instanceof BoolExpr)) {
             throw new RuntimeException("Invalid translation. Expected BoolExpr but found " + constraint.getClass());
@@ -79,10 +79,6 @@ public class Z3Translator extends AbstractVisitor<Expr, Void> {
             boolExpr = z3Context.mkAnd(boolExpr, bExpr);
         }
         return boolExpr;
-    }
-
-    public BoolExpr translateSingleAssignSubstitution(SingleAssignSubstitution initialization) {
-        throw new AssertionError("Not implemented");
     }
 
     @Override

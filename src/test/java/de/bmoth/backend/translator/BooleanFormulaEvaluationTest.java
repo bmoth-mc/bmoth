@@ -19,7 +19,7 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 
-import de.bmoth.backend.Z3Translator;
+import de.bmoth.backend.FormulaToZ3Translator;
 
 public class BooleanFormulaEvaluationTest {
 
@@ -41,7 +41,7 @@ public class BooleanFormulaEvaluationTest {
     public void testTrueFormula() throws Exception {
         String formula = "x = TRUE";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -56,7 +56,7 @@ public class BooleanFormulaEvaluationTest {
     public void testFalseFormula() throws Exception {
         String formula = "x = FALSE";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -71,7 +71,7 @@ public class BooleanFormulaEvaluationTest {
     public void testAndFormula() throws Exception {
         String formula = "x & y";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -88,7 +88,7 @@ public class BooleanFormulaEvaluationTest {
     public void testOrFormula() throws Exception {
         String formula = "FALSE or x";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -103,7 +103,7 @@ public class BooleanFormulaEvaluationTest {
     public void testSimpleBooleanFormula() throws Exception {
         String formula = "x = TRUE & y = FALSE";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         Status check = s.check();
@@ -121,7 +121,7 @@ public class BooleanFormulaEvaluationTest {
     public void testImplication() throws Exception {
         String formula = "1=1 => x";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
         s.add(constraint);
         Status check = s.check();
 
@@ -153,7 +153,7 @@ public class BooleanFormulaEvaluationTest {
     private void check(Map<String, Status> map) {
         for (Entry<String, Status> entry : map.entrySet()) {
             System.out.println(entry.getKey());
-            BoolExpr constraint = Z3Translator.translatePredicate(entry.getKey(), ctx);
+            BoolExpr constraint = FormulaToZ3Translator.translatePredicate(entry.getKey(), ctx);
             System.out.println(constraint);
             s.add(constraint);
             Status check = s.check();

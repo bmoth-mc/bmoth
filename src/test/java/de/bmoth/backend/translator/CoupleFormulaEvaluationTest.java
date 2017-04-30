@@ -11,7 +11,7 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 
-import de.bmoth.backend.Z3Translator;
+import de.bmoth.backend.FormulaToZ3Translator;
 
 public class CoupleFormulaEvaluationTest {
 
@@ -33,7 +33,7 @@ public class CoupleFormulaEvaluationTest {
 	public void testIntegerCoupleFormula() throws Exception {
 		String formula = "x = (1 |-> 2) & y = (2 |-> 3) & x = y";
 		// getting the translated z3 representation of the formula
-		BoolExpr constraint = Z3Translator.translatePredicate(formula, ctx);
+		BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
 		s.add(constraint);
 		Status check = s.check();
