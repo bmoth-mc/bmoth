@@ -80,6 +80,24 @@ public class SetFormulaTest {
         assertEquals("INTEGER", formulaTypes.get("x"));
     }
     
+    @Test
+    public void testQuantifiedUnion() throws Exception {
+        String formula = "x = UNION(a).(a : 1..10 | {a|->a}) ";
+        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("x"));
+    }
+    
+    @Test
+    public void testGeneralizedUnion() throws Exception {
+        String formula = "a = union({{1},{b},c}\\/d)";
+        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(INTEGER)", formulaTypes.get("a"));
+        assertEquals("INTEGER", formulaTypes.get("b"));
+        assertEquals("POW(INTEGER)", formulaTypes.get("c"));
+        assertEquals("POW(POW(INTEGER))", formulaTypes.get("d"));
+    }
+    
+    
     public static HashMap<String, String> getFormulaTypes(String formula) {
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         HashMap<String, String> map = new HashMap<>();

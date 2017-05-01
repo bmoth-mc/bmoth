@@ -292,8 +292,8 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         }
         case DIRECT_PRODUCT: {
             /*
-             * In the expression E ⊗ F, E must be a P(T × U) type and F must be
-             * a P(T × V) type. Then E ⊗ F is a P(T ×(U × V)) type relation.
+             * E ⊗ F type of result is is P(T ×(U × V)) type of E is P(T × U)
+             * type of F is P(T × V)
              * 
              */
             SetType found = new SetType(
@@ -344,8 +344,8 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         }
         case INSERT_FRONT: {
             /*
-             * E1 → s1, s1 refers to a P(Z × T) type sequence and E1 refers to
-             * an element in the sequence, of type T.
+             * s <- E type of result is is P(Z × T) type of s is P(Z × T) type
+             * of E is T
              */
             SetType found = new SetType(new CoupleType(IntegerType.getInstance(), new UntypedType()));
             try {
@@ -361,8 +361,8 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         }
         case INSERT_TAIL: {
             /*
-             * In expressions s1 ← E1, s1 refers to a P(Z × T) type sequence and
-             * E1 refers to an element in the sequence, of type T.
+             * s <- E type of result is is P(Z × T) type of s is P(Z × T) type
+             * of E is T
              */
             SetType found = new SetType(new CoupleType(IntegerType.getInstance(), new UntypedType()));
             try {
@@ -392,8 +392,8 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         case RESTRICT_FRONT:
         case RESTRICT_TAIL: {
             /*
-             * In expressions s1 /|\ n and s1 \|/ n, s1 refers to a type P(Z ×
-             * T) sequence and n must be an integer type.
+             * s /|\ n s \|/ n type of result is is P(Z × T) type of s is P(Z
+             * ×T) type of n is INTEGER
              */
             Type found = new SetType(new CoupleType(IntegerType.getInstance(), new UntypedType()));
             try {
@@ -405,6 +405,18 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
             returnType = found;
             break;
+        }
+        case GENERALIZED_INTER:
+        case GENERALIZED_UNION:{
+            Type found = new SetType(new UntypedType());
+            try {
+                found = found.unify(expected);
+            } catch (UnificationException e) {
+                throw new TypeErrorException(node, expected, found);
+            }
+            SetType s =(SetType) visitExprNode(expressionNodes.get(0), new SetType(found));
+            returnType = s.getSubtype();
+            break; 
         }
         default:
             throw new AssertionError();
@@ -476,20 +488,38 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             decl.setType(new UntypedType());
         }
         super.visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
-
-        Type left = node.getDeclarationList().get(0).getType();
-        for (int i = 1; i < node.getDeclarationList().size(); i++) {
-            Type right = node.getDeclarationList().get(0).getType();
-            left = new CoupleType(left, right);
-        }
-        Type found = new SetType(left);
-        try {
-            found = found.unify(expected);
+        switch (node.getOperator()) {
+        case QUANTIFIED_INTER:
+        case QUANTIFIED_UNION: {
+            Type found = new SetType(new UntypedType());
+            try {
+                found = found.unify(expected);
+            } catch (UnificationException e) {
+                throw new TypeErrorException(node, expected, IntegerType.getInstance());
+            }
+            found = visitExprNode(node.getExpressionNode(), found);
             node.setType(found);
             return found;
-        } catch (UnificationException e) {
-            throw new TypeErrorException(node, expected, IntegerType.getInstance());
         }
+        case SET_COMPREHENSION: {
+            Type left = node.getDeclarationList().get(0).getType();
+            for (int i = 1; i < node.getDeclarationList().size(); i++) {
+                Type right = node.getDeclarationList().get(0).getType();
+                left = new CoupleType(left, right);
+            }
+            Type found = new SetType(left);
+            try {
+                found = found.unify(expected);
+                node.setType(found);
+                return found;
+            } catch (UnificationException e) {
+                throw new TypeErrorException(node, expected, IntegerType.getInstance());
+            }
+        }
+        default:
+            break;
+        }
+        throw new AssertionError("Not implemented.");
     }
 
     @Override

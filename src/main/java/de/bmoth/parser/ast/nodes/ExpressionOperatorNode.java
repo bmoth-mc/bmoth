@@ -18,7 +18,7 @@ public class ExpressionOperatorNode extends ExprNode {
         , OVERWRITE_RELATION, DIRECT_PRODUCT, CONCAT, DOMAIN_RESTRICTION//
         , DOMAIN_SUBSTRACTION, RANGE_RESTRICTION//
         , RANGE_SUBSTRATION, INSERT_FRONT, INSERT_TAIL, RESTRICT_FRONT//
-        , RESTRICT_TAIL
+        , RESTRICT_TAIL, GENERALIZED_UNION, GENERALIZED_INTER//
     }
 
     private static final Map<Integer, ExpressionOperator> map = new HashMap<>();
@@ -52,6 +52,8 @@ public class ExpressionOperatorNode extends ExprNode {
         map.put(BMoThParser.INSERT_TAIL, ExpressionOperator.INSERT_TAIL);
         map.put(BMoThParser.RESTRICT_FRONT, ExpressionOperator.RESTRICT_FRONT);
         map.put(BMoThParser.RESTRICT_TAIL, ExpressionOperator.RESTRICT_TAIL);
+        map.put(BMoThParser.GENERALIZED_UNION, ExpressionOperator.GENERALIZED_UNION);
+        map.put(BMoThParser.GENERALIZED_INTER, ExpressionOperator.GENERALIZED_INTER);
 
     }
 

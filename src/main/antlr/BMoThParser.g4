@@ -76,7 +76,12 @@ expression
   | '(' exprs+=expression COMMA exprs+=expression (COMMA exprs+=expression)* ')'  # NestedCoupleAsTupleExpression
   | BOOl_CAST '(' predicate ')'                                             # CastPredicateExpression
   | operator=(NATURAL|NATURAL1|INTEGER|BOOL|TRUE|FALSE)                     # ExpressionOperator
-  | operator=(DOM|RAN) '(' expression ')'                                   # ExpressionOperator
+  | operator=(DOM|RAN|GENERALIZED_UNION|GENERALIZED_INTER)
+        '(' expression ')'                                                  # ExpressionOperator
+  | operator=(QUANTIFIED_UNION|QUANTIFIED_INTER|SIGMA|PI)
+      quantified_variables_list
+        DOT LEFT_PAR predicate VERTICAL_BAR expression RIGHT_PAR            # QuantifiedExpression
+
   // operators with precedences
   | operator=MINUS expression                                               # ExpressionOperator //P210
   | <assoc=right> expression operator=POWER_OF expression                   # ExpressionOperator //p200

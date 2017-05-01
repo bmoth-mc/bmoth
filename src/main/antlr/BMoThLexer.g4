@@ -128,12 +128,18 @@ RAN: 'ran';
 //keyword operators
 NATURAL: 'NATURAL' | '\u2115';
 NATURAL1: 'NATURAL1' | '\u2115' '\u0031' | '\u2115' '\u2081';
-
 INTEGER: 'INTEGER' | '\u2124';
-
 BOOL: 'BOOL';
 
 
+//special
+SIGMA: 'SIGMA' | '∑'; //0x2211;
+PI: 'PI' | '∏'; //0x220f;
+QUANTIFIED_UNION: 'UNION';
+QUANTIFIED_INTER: 'INTER';
+
+GENERALIZED_UNION: 'union' | '⋃';//'\u22c3';
+GENERALIZED_INTER: 'inter'; //TODO unicode missing
 
 fragment TSQ: '\'\'\'';
 fragment SQ: '\'';
