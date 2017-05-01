@@ -12,7 +12,7 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
 
     public static enum PredOperatorExprArgs {
         EQUAL, NOT_EQUAL, ELEMENT_OF, LESS_EQUAL, LESS, GREATER_EQUAL, GREATER//
-        , EQUIVALENCE
+        , NOT_BELONGING, INCLUSION, STRICT_INCLUSION, NON_INCLUSION, STRICT_NON_INCLUSION//
     }
 
     private static final Map<Integer, PredOperatorExprArgs> map = new HashMap<>();
@@ -25,7 +25,11 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
         map.put(BMoThParser.LESS, PredOperatorExprArgs.LESS);
         map.put(BMoThParser.GREATER_EQUAL, PredOperatorExprArgs.GREATER_EQUAL);
         map.put(BMoThParser.GREATER, PredOperatorExprArgs.GREATER);
-        map.put(BMoThParser.EQUIVALENCE, PredOperatorExprArgs.EQUIVALENCE);
+        map.put(BMoThParser.NOT_BELONGING, PredOperatorExprArgs.NOT_BELONGING);
+        map.put(BMoThParser.INCLUSION, PredOperatorExprArgs.INCLUSION);
+        map.put(BMoThParser.STRICT_INCLUSION, PredOperatorExprArgs.STRICT_INCLUSION);
+        map.put(BMoThParser.NON_INCLUSION, PredOperatorExprArgs.NON_INCLUSION);
+        map.put(BMoThParser.STRICT_NON_INCLUSION, PredOperatorExprArgs.STRICT_NON_INCLUSION);
     }
 
     private final List<ExprNode> expressionNodes;

@@ -75,10 +75,21 @@ BOOl_CAST: 'bool';
 AND: '&';
 OR: 'or';
 
-
+// expression infix operators P160
+OVERWRITE_RELATION: '<+';
+DIRECT_PRODUCT: '><'| '⊗' ; //'\u2297'; ?
+CONCAT: '^';
+DOMAIN_RESTRICTION: '<|';
+DOMAIN_SUBSTRACTION: '<<|';
+RANGE_RESTRICTION:  '|>';
+RANGE_SUBSTRATION:  '|>>';
+INSERT_FRONT: '->'| '\u21fe';
+INSERT_TAIL:  '<-' | '\u21fd';
+INTERSECTION: '/\\' | '\u2229';
+RESTRICT_FRONT: '/|\\' | '\u2191';
+RESTRICT_TAIL: '\\|/' | '\u2193';
 MAPLET: '|->' | '\u21a6';
 UNION: '\\/' | '\u222a';
-
 
 UNDERSCORE: '_';
 
@@ -90,8 +101,6 @@ DIVIDE: '/';
 MOD: 'mod';
 POWER_OF: '**';
 INTERVAL: '..' | '\u2025';
-
-INTERSECTION: '/\\';
 
 // predicate infix opertors
 EQUAL: '=' | '\u003d';

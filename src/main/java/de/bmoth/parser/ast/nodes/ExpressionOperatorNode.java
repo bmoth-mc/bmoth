@@ -14,7 +14,11 @@ public class ExpressionOperatorNode extends ExprNode {
     public static enum ExpressionOperator {
         PLUS, MINUS, NATURAL, NATURAL1, INTEGER, BOOL, TRUE, FALSE, POWER_OF //
         , MULT, DIVIDE, MOD, SET_SUBTRACTION, INTERVAL, UNION, SET_ENUMERATION//
-        , INTERSECTION, COUPLE, DOMAIN, RANGE, UNARY_MINUS
+        , INTERSECTION, COUPLE, DOMAIN, RANGE, UNARY_MINUS//
+        , OVERWRITE_RELATION, DIRECT_PRODUCT, CONCAT, DOMAIN_RESTRICTION//
+        , DOMAIN_SUBSTRACTION, RANGE_RESTRICTION//
+        , RANGE_SUBSTRATION, INSERT_FRONT, INSERT_TAIL, RESTRICT_FRONT//
+        , RESTRICT_TAIL
     }
 
     private static final Map<Integer, ExpressionOperator> map = new HashMap<>();
@@ -37,6 +41,17 @@ public class ExpressionOperatorNode extends ExprNode {
         map.put(BMoThParser.MAPLET, ExpressionOperator.COUPLE);
         map.put(BMoThParser.DOM, ExpressionOperator.DOMAIN);
         map.put(BMoThParser.RAN, ExpressionOperator.RANGE);
+        map.put(BMoThParser.OVERWRITE_RELATION, ExpressionOperator.OVERWRITE_RELATION);
+        map.put(BMoThParser.DIRECT_PRODUCT, ExpressionOperator.DIRECT_PRODUCT);
+        map.put(BMoThParser.CONCAT, ExpressionOperator.CONCAT);
+        map.put(BMoThParser.DOMAIN_RESTRICTION, ExpressionOperator.DOMAIN_RESTRICTION);
+        map.put(BMoThParser.DOMAIN_SUBSTRACTION, ExpressionOperator.DOMAIN_SUBSTRACTION);
+        map.put(BMoThParser.RANGE_RESTRICTION, ExpressionOperator.RANGE_RESTRICTION);
+        map.put(BMoThParser.RANGE_SUBSTRATION, ExpressionOperator.RANGE_SUBSTRATION);
+        map.put(BMoThParser.INSERT_FRONT, ExpressionOperator.INSERT_FRONT);
+        map.put(BMoThParser.INSERT_TAIL, ExpressionOperator.INSERT_TAIL);
+        map.put(BMoThParser.RESTRICT_FRONT, ExpressionOperator.RESTRICT_FRONT);
+        map.put(BMoThParser.RESTRICT_TAIL, ExpressionOperator.RESTRICT_TAIL);
 
     }
 
