@@ -15,10 +15,13 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Solver;
+import com.microsoft.z3.Sort;
 import com.microsoft.z3.Status;
 import static com.microsoft.z3.Status.*;
 
 import de.bmoth.backend.FormulaToZ3Translator;
+import de.bmoth.parser.ast.types.IntegerType;
+import de.bmoth.parser.ast.types.SetType;
 
 public class SetFormulaEvaluationTest {
 
@@ -104,6 +107,16 @@ public class SetFormulaEvaluationTest {
         map.put("-10000 : NATURAL", UNSATISFIABLE);
 
         check(map);
+    }
+
+    @Ignore
+    @Test
+    public void testGeneralizedUnion() throws Exception {
+        String formula = "union({{1},{2},{3}}) = {1,2,3} ";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
     }
 
     private void check(Map<String, Status> map) {

@@ -222,7 +222,26 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         }
         case SET_SUBTRACTION:
             break;
-
+        case CONCAT:
+        case DIRECT_PRODUCT:
+        case DOMAIN_RESTRICTION:
+        case DOMAIN_SUBSTRACTION:
+        case GENERALIZED_INTER:
+            break;
+        case GENERALIZED_UNION: {
+            // union(S)
+            // return $Res
+            // !($r).($r : $Res <=> #($s).($s : S & $r : $s)
+            break;
+        }
+        case INSERT_FRONT:
+        case INSERT_TAIL:
+        case OVERWRITE_RELATION:
+        case RANGE_RESTRICTION:
+        case RANGE_SUBSTRATION:
+        case RESTRICT_FRONT:
+        case RESTRICT_TAIL:
+            break;
         default:
             break;
         }
