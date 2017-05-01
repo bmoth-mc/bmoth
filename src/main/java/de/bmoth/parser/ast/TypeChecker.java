@@ -141,6 +141,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 		switch (node.getOperator()) {
 		case PLUS:
 		case MINUS:
+		case UNARY_MINUS:
 		case MOD:
 		case MULT:
 		case DIVIDE:

@@ -1,7 +1,14 @@
 package de.bmoth.modelchecker;
 
-import com.microsoft.z3.*;
-import de.bmoth.backend.FormulaTranslator;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Expr;
+import com.microsoft.z3.Model;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Status;
+
+import de.bmoth.backend.FormulaToZ3Translator;
+import de.bmoth.backend.MachineToZ3Translator;
 import de.bmoth.parser.ast.nodes.*;
 
 import java.util.*;
@@ -13,38 +20,22 @@ public class ModelChecker {
     public static boolean doModelCheck(MachineNode machine) {
         Context ctx = new Context();
         Solver solver = ctx.mkSolver();
-        FormulaTranslator translator = new FormulaTranslator(ctx);
+        FormulaToZ3Translator translator = new FormulaToZ3Translator(ctx);
+        MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);
 
         Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
 
-        // prepare initial state value
-
-        // TODO implement FormulaTranslator::visitSingleAssignSubstitution(...)
-        // BoolExpr initialValueConstraint = translator.visitSingleAssignSubstitution(initialization,null);
-
-        // TODO take care of other types of SubstitutionNodes
-        SingleAssignSubstitution initialization = (SingleAssignSubstitution) machine.getInitialisation();
-        ExprNode initialValue = initialization.getValue();
-
-        Expr initialValueAsZ3Expression = translator.translateExpression(initialValue);
-        Sort z3TypeOfInitialValue = translator.bTypeToZ3Sort(initialValue.getType());
-
-        Expr theIdentifier = ctx.mkConst(initialization.getIdentifier().getName(), z3TypeOfInitialValue);
-
-        BoolExpr initialValueConstraint = ctx.mkEq(theIdentifier, initialValueAsZ3Expression);
-
+        // prepare initial state
         Map<String, Expr> initialStateValue = new HashMap<>();
-
-        BoolExpr invariant;
-
-        // prepare initial state value
-        initialStateValue.put(initialization.getIdentifier().getName(), initialValueConstraint);
+        BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
+        initialStateValue.put("Initial", initialValueConstraint);
 
         // insert initial state
         queue.add(new State(null, initialStateValue));
 
         // prepare invariant
+        BoolExpr invariant;
         {
             PredicateNode invariantNode = machine.getInvariant();
 
@@ -56,12 +47,12 @@ public class ModelChecker {
             } else {
                 throw new AssertionError("Invariant generating not implemented for: " + invariantNode.getClass());
             }
+        }
 
-            solver.add(invariant);
+        solver.add(invariant);
 
-            if (solver.check() != Status.SATISFIABLE) {
-                throw new AssertionError("Invariant not satisfiable:" + invariant);
-            }
+        if (solver.check() != Status.SATISFIABLE) {
+            throw new AssertionError("Invariant not satisfiable:" + invariant);
         }
 
         while (!queue.isEmpty()) {
@@ -83,5 +74,16 @@ public class ModelChecker {
         }
 
         return false;// TODO
+    }
+
+    private static State getStateFromModel(State predecessor, Model model, MachineToZ3Translator machineTranslator) {
+        HashMap<String, Expr> map = new HashMap<>();
+        for (DeclarationNode declNode : machineTranslator.getVariables()) {
+            Expr expr = machineTranslator.getPrimedVariable(declNode);
+            Expr value = model.eval(expr, true);
+            map.put(declNode.getName(), value);
+        }
+        State newState = new State(predecessor, map);
+        return newState;
     }
 }
