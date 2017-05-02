@@ -349,7 +349,10 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             BoolExpr right = (BoolExpr) visitPredicateNode(predicateArguments.get(1), null);
             return z3Context.mkEq(left, right);
         }
-        case NOT:
+        case NOT:{
+            BoolExpr child = (BoolExpr) visitPredicateNode(predicateArguments.get(0), null);
+            return z3Context.mkNot(child);
+        }
         case TRUE:
             return z3Context.mkTrue();
         case FALSE:
