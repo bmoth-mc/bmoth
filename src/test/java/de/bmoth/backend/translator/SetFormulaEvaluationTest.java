@@ -109,9 +109,38 @@ public class SetFormulaEvaluationTest {
         check(map);
     }
 
+    
+    @Test
+    public void testSetComprehension1() throws Exception {
+        String formula = "{x | x : {1} } = {1} ";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    
+    @Test
+    public void testSetComprehension2() throws Exception {
+        String formula = "{x,y | x : {1,2,3} & y = 2} = {1|->2, 2|->2, 3|->2} ";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    
+    @Test
+    public void testSetComprehension3() throws Exception {
+        String formula = "{x | x : {1} } = {x | x > 0 & x < 2} ";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    
     @Ignore
     @Test
     public void testGeneralizedUnion() throws Exception {
+        //TODO z3 is currently not able to handle sets of sets and reports the status UNKNOWN
         String formula = "union({{1},{2},{3}}) = {1,2,3} ";
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
         s.add(constraint);

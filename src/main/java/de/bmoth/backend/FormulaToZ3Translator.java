@@ -1,5 +1,6 @@
 package de.bmoth.backend;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import com.microsoft.z3.TupleSort;
 
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.AbstractVisitor;
+import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
@@ -57,9 +59,16 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
     // created because there no corresponding keyword in z3.
     // Additionally, a constraint axiomatizing this identifier will be added to
     // this list.
+    private int tempoVariablesCounter = 0;
+    // used to generate unique identifiers
 
     public FormulaToZ3Translator(Context z3Context) {
         this.z3Context = z3Context;
+    }
+
+    private String createFreshTemporaryVariable() {
+        this.tempoVariablesCounter++;
+        return "$t_" + this.tempoVariablesCounter;
     }
 
     public static BoolExpr translatePredicate(String formula, Context z3Context) {
@@ -121,7 +130,11 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         }
         case GREATER_EQUAL:
             break;
-        case GREATER:
+        case GREATER: {
+            ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
+            ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
+            return z3Context.mkGt(left, right);
+        }
         default:
             break;
         }
@@ -230,9 +243,20 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             break;
         case GENERALIZED_UNION: {
             // union(S)
-            // return $Res
-            // !($r).($r : $Res <=> #($s).($s : S & $r : $s)
-            break;
+            // return Res
+            // !(r).(r : Res <=> #(s).(s : S & r : s)
+            // !(s).(s : S <=> s <: Res)
+            Expr S = visitExprNode(expressionNodes.get(0), null);
+            Expr res = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
+            Expr s = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
+            Expr[] bound = new Expr[] { s };
+            BoolExpr a = z3Context.mkSetMembership(s, (ArrayExpr) S);
+            BoolExpr b = z3Context.mkSetSubset((ArrayExpr) s, (ArrayExpr) res);
+            // a <=> b
+            BoolExpr body = z3Context.mkEq(a, b);
+            Quantifier q = z3Context.mkForall(bound, body, 1, null, null, null, null);
+            this.constraintList.add(q);
+            return res;
         }
         case INSERT_FRONT:
         case INSERT_TAIL:
@@ -332,6 +356,42 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
 
     @Override
     public Expr visitQuantifiedExpressionNode(QuantifiedExpressionNode node, Void expected) {
+        switch (node.getOperator()) {
+        case SET_COMPREHENSION: {
+            // {e| P}
+            // return T
+            // !(e).(e : T <=> P )
+            Expr P = visitPredicateNode(node.getPredicateNode(), null);
+            Expr T = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
+
+            Expr[] array = new Expr[node.getDeclarationList().size()];
+            for (int i = 0; i < array.length; i++) {
+                DeclarationNode decl = node.getDeclarationList().get(i);
+                Expr e = z3Context.mkConst(decl.getName(), bTypeToZ3Sort(decl.getType()));
+                array[i] = e;
+            }
+            Expr tuple = null;
+            if (array.length > 1) {
+                TupleSort tupleSort = (TupleSort) bTypeToZ3Sort(((SetType) node.getType()).getSubtype());
+                tuple = tupleSort.mkDecl().apply(array);
+            } else {
+                tuple = array[0];
+            }
+
+            Expr[] bound = array;
+            BoolExpr a = z3Context.mkSetMembership(tuple, (ArrayExpr) T);
+            // a <=> P
+            BoolExpr body = z3Context.mkEq(a, P);
+            Quantifier q = z3Context.mkForall(bound, body, array.length, null, null, null, null);
+            this.constraintList.add(q);
+            return T;
+        }
+        case QUANTIFIED_INTER:
+        case QUANTIFIED_UNION:
+            break;
+        default:
+            break;
+        }
         throw new AssertionError("Implement: " + node.getClass());
     }
 
