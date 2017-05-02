@@ -1,6 +1,5 @@
 package de.bmoth.backend;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,8 +7,10 @@ import com.microsoft.z3.ArithExpr;
 import com.microsoft.z3.ArrayExpr;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
+import com.microsoft.z3.DatatypeExpr;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.IntExpr;
+import com.microsoft.z3.IntNum;
 import com.microsoft.z3.Quantifier;
 import com.microsoft.z3.Sort;
 import com.microsoft.z3.Symbol;
@@ -37,6 +38,7 @@ import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
 import de.bmoth.parser.ast.types.BoolType;
 import de.bmoth.parser.ast.types.CoupleType;
 import de.bmoth.parser.ast.types.IntegerType;
+import de.bmoth.parser.ast.types.SequenceType;
 import de.bmoth.parser.ast.types.SetType;
 import de.bmoth.parser.ast.types.Type;
 
@@ -258,6 +260,38 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             this.constraintList.add(q);
             return res;
         }
+        case EMPTY_SEQUENCE: {
+            Sort int_type = z3Context.getIntSort();
+            Type type = ((SequenceType) node.getType()).getSubtype();
+            Sort rangeType = this.bTypeToZ3Sort(type);
+            ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), int_type, rangeType);
+            TupleSort mkTupleSort = (TupleSort) bTypeToZ3Sort(node.getType());
+            return mkTupleSort.mkDecl().apply(a, z3Context.mkInt(expressionNodes.size()));
+        }
+        case SEQ_ENUMERATION: {
+            Sort int_type = z3Context.getIntSort();
+            Type type = ((SequenceType) node.getType()).getSubtype();
+            Sort rangeType = this.bTypeToZ3Sort(type);
+            ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), int_type, rangeType);
+            for (int i = 0; i < expressionNodes.size(); i++) {
+                int j = i + 1;
+                IntNum index = z3Context.mkInt(j);
+                Expr value = visitExprNode(expressionNodes.get(i), null);
+                a = z3Context.mkStore(a, index, value);
+            }
+            TupleSort mkTupleSort = (TupleSort) bTypeToZ3Sort(node.getType());
+            return mkTupleSort.mkDecl().apply(a, z3Context.mkInt(expressionNodes.size()));
+        }
+        case FIRST: {
+            Expr expr = visitExprNode(expressionNodes.get(0), null);
+            DatatypeExpr d = (DatatypeExpr) expr;
+            Expr[] args = d.getArgs();
+            ArrayExpr array = (ArrayExpr) args[0];
+            ArithExpr size = (ArithExpr) args[1];
+            //add WD constraint
+            this.constraintList.add(z3Context.mkLe(z3Context.mkInt(1), size));
+            return z3Context.mkSelect(array, z3Context.mkInt(1));
+        }
         case INSERT_FRONT:
         case INSERT_TAIL:
         case OVERWRITE_RELATION:
@@ -265,8 +299,6 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         case RANGE_SUBSTRATION:
         case RESTRICT_FRONT:
         case RESTRICT_TAIL:
-            break;
-        default:
             break;
         }
         // TODO
@@ -348,6 +380,17 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             subSorts[1] = bTypeToZ3Sort(c.getRight());
             return z3Context.mkTupleSort(z3Context.mkSymbol("couple"),
                     new Symbol[] { z3Context.mkSymbol("left"), z3Context.mkSymbol("right") }, subSorts);
+        }
+        if (t instanceof SequenceType) {
+            SequenceType s = (SequenceType) t;
+            Sort subSort = bTypeToZ3Sort(s.getSubtype());
+            Sort int_type = z3Context.getIntSort();
+            Sort[] subSorts = new Sort[2];
+            subSorts[0] = z3Context.mkArraySort(int_type, subSort);
+            subSorts[1] = int_type;
+            TupleSort mkTupleSort = z3Context.mkTupleSort(z3Context.mkSymbol("sequence"),
+                    new Symbol[] { z3Context.mkSymbol("array"), z3Context.mkSymbol("size") }, subSorts);
+            return mkTupleSort;
         }
 
         throw new AssertionError("Missing Type Conversion: " + t.getClass());
