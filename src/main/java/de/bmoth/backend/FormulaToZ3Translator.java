@@ -123,15 +123,21 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
             return z3Context.mkSetMembership(left, right);
         }
-        case LESS_EQUAL:
-            break;
+        case LESS_EQUAL: {
+            ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
+            ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
+            return z3Context.mkLe(left, right);
+        }
         case LESS: {
             ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
             ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
             return z3Context.mkLt(left, right);
         }
-        case GREATER_EQUAL:
-            break;
+        case GREATER_EQUAL:{
+            ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
+            ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
+            return z3Context.mkGe(left, right);
+        }
         case GREATER: {
             ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
             ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
