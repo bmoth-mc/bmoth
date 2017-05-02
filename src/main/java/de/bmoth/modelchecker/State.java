@@ -19,6 +19,7 @@ public class State {
         return this.values.toString();
     }
 
+    @Deprecated
     public BoolExpr getValuesExpression(Context context) {
         BoolExpr result = null;
         for (Map.Entry<String, Expr> entry : values.entrySet()) {

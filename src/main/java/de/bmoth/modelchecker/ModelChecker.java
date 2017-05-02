@@ -19,8 +19,6 @@ import java.util.*;
 public class ModelChecker {
     public static boolean doModelCheck(MachineNode machine) {
         Context ctx = new Context();
-        Solver solver = ctx.mkSolver();
-        FormulaToZ3Translator translator = new FormulaToZ3Translator(ctx);
         MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);
 
         Set<State> visited = new HashSet<>();
@@ -29,14 +27,22 @@ public class ModelChecker {
         // prepare initial state
         Map<String, Expr> initialStateValue = new HashMap<>();
         BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
-        initialStateValue.put("Initial", initialValueConstraint);
 
-        // insert initial state
-        queue.add(new State(null, initialStateValue));
+        Solver solver = ctx.mkSolver();
+        solver.add(initialValueConstraint);
+        Status check = solver.check();
+        if (check == Status.SATISFIABLE) {
+            State state = getStateFromModel(null, solver.getModel(), machineTranslator);
+            System.out.println(state);
+            queue.add(state);
+        } else {
+            throw new AssertionError("Initial constraint state not satisfiable: " + initialValueConstraint);
+        }
 
         // prepare invariant
         BoolExpr invariant;
         {
+            FormulaToZ3Translator translator = new FormulaToZ3Translator(ctx);
             PredicateNode invariantNode = machine.getInvariant();
 
             // TODO this is ugly, we need a top level method here!
@@ -50,27 +56,19 @@ public class ModelChecker {
         }
 
         solver.add(invariant);
-
-        if (solver.check() != Status.SATISFIABLE) {
+        check = solver.check();
+        if (check != Status.SATISFIABLE) {
             throw new AssertionError("Invariant not satisfiable:" + invariant);
         }
 
         while (!queue.isEmpty()) {
             State current = queue.poll();
-            BoolExpr stateValues = current.getValuesExpression(ctx);
 
-            solver.push();
-            solver.add(stateValues);
-
+            // apply current state
             // check invariant
-            if (solver.check() == Status.SATISFIABLE) {
-                solver.pop();
-                // compute successors
-                // add to queue if not in visited
-            } else {
-                throw new AssertionError("State values invalid: " + stateValues);
-                //return false;
-            }
+
+            // compute successors
+            // add to queue if not in visited
         }
 
         return false;// TODO
