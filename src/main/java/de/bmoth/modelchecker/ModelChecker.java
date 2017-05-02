@@ -39,20 +39,7 @@ public class ModelChecker {
         }
 
         // prepare invariant
-        BoolExpr invariant;
-        {
-            FormulaToZ3Translator translator = new FormulaToZ3Translator(ctx);
-            PredicateNode invariantNode = machine.getInvariant();
-
-            // TODO this is ugly, we need a top level method here!
-            if (invariantNode instanceof PredicateOperatorNode) {
-                invariant = (BoolExpr) translator.visitPredicateOperatorNode((PredicateOperatorNode) invariantNode, null);
-            } else if (invariantNode instanceof PredicateOperatorWithExprArgsNode) {
-                invariant = (BoolExpr) translator.visitPredicateOperatorWithExprArgs((PredicateOperatorWithExprArgsNode) invariantNode, null);
-            } else {
-                throw new AssertionError("Invariant generating not implemented for: " + invariantNode.getClass());
-            }
-        }
+        BoolExpr invariant = machineTranslator.getInvariantConstraint();
 
         solver.add(invariant);
         check = solver.check();
