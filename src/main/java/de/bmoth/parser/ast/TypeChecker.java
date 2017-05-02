@@ -279,14 +279,14 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             break;
         }
         case CONCAT: {
-            SetType found = new SetType(new CoupleType(IntegerType.getInstance(), new UntypedType()));
+            SequenceType found = new SequenceType(new UntypedType());
             try {
-                found = (SetType) found.unify(expected);
+                found = (SequenceType) found.unify(expected);
             } catch (UnificationException e) {
                 throw new TypeErrorException(node, expected, found);
             }
-            found = (SetType) visitExprNode(expressionNodes.get(0), found);
-            found = (SetType) visitExprNode(expressionNodes.get(1), found);
+            found = (SequenceType) visitExprNode(expressionNodes.get(0), found);
+            found = (SequenceType) visitExprNode(expressionNodes.get(1), found);
             returnType = found;
             break;
         }
@@ -452,6 +452,21 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
                 throw new TypeErrorException(node, expected, found);
             }
             found = (SequenceType) visitExprNode(expressionNodes.get(0), found);
+            returnType = found;
+            break;
+        }
+        case SEQ:
+        case SEQ1:
+        case ISEQ:
+        case ISEQ1: {
+            SetType found = new SetType(new SequenceType(new UntypedType()));
+            try {
+                found = (SetType) found.unify(expected);
+            } catch (UnificationException e) {
+                throw new TypeErrorException(node, expected, found);
+            }
+            Type type = ((SequenceType) found.getSubtype()).getSubtype();
+            visitExprNode(expressionNodes.get(0), new SetType(type));
             returnType = found;
             break;
         }

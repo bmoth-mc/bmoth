@@ -69,5 +69,41 @@ public class SequenceFormulaTest {
         String formula = "[1] /=[]";
         getFormulaTypes(formula);
     }
-    
+
+    @Test
+    public void testConc() throws Exception {
+        String formula = "[1,2] = [a] ^ b";
+        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("INTEGER", formulaTypes.get("a"));
+        assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("b"));
+    }
+
+    @Test
+    public void testSeq() throws Exception {
+        String formula = "[1] : seq(a)";
+        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(INTEGER)", formulaTypes.get("a"));
+    }
+
+    @Test
+    public void testSeq1() throws Exception {
+        String formula = "[a] : seq(INTEGER)";
+        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("INTEGER", formulaTypes.get("a"));
+    }
+
+    @Test
+    public void testiSeq() throws Exception {
+        String formula = "a : seq(INTEGER)";
+        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
+    }
+
+    @Test
+    public void testiSeq1() throws Exception {
+        String formula = "[1] : seq({a})";
+        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("INTEGER", formulaTypes.get("a"));
+    }
+
 }

@@ -22,6 +22,7 @@ public class ExpressionOperatorNode extends ExprNode {
 
         // sequence operators
         , FIRST, LAST, FRONT, TAIL, CONC, SET_ENUMERATION, SEQ_ENUMERATION, EMPTY_SEQUENCE//
+        , SEQ, SEQ1, ISEQ, ISEQ1
     }
 
     private static final Map<Integer, ExpressionOperator> map = new HashMap<>();
@@ -51,11 +52,11 @@ public class ExpressionOperatorNode extends ExprNode {
         map.put(BMoThParser.DOMAIN_SUBSTRACTION, ExpressionOperator.DOMAIN_SUBSTRACTION);
         map.put(BMoThParser.RANGE_RESTRICTION, ExpressionOperator.RANGE_RESTRICTION);
         map.put(BMoThParser.RANGE_SUBSTRATION, ExpressionOperator.RANGE_SUBSTRATION);
-        
+
         map.put(BMoThParser.GENERALIZED_UNION, ExpressionOperator.GENERALIZED_UNION);
         map.put(BMoThParser.GENERALIZED_INTER, ExpressionOperator.GENERALIZED_INTER);
 
-        //sequence operators
+        // sequence operators
         map.put(BMoThParser.FIRST, ExpressionOperator.FIRST);
         map.put(BMoThParser.LAST, ExpressionOperator.LAST);
         map.put(BMoThParser.FRONT, ExpressionOperator.FRONT);
@@ -65,6 +66,10 @@ public class ExpressionOperatorNode extends ExprNode {
         map.put(BMoThParser.INSERT_TAIL, ExpressionOperator.INSERT_TAIL);
         map.put(BMoThParser.RESTRICT_FRONT, ExpressionOperator.RESTRICT_FRONT);
         map.put(BMoThParser.RESTRICT_TAIL, ExpressionOperator.RESTRICT_TAIL);
+        map.put(BMoThParser.SEQ, ExpressionOperator.SEQ);
+        map.put(BMoThParser.SEQ1, ExpressionOperator.SEQ1);
+        map.put(BMoThParser.ISEQ, ExpressionOperator.ISEQ);
+        map.put(BMoThParser.ISEQ1, ExpressionOperator.ISEQ1);
 
     }
 
