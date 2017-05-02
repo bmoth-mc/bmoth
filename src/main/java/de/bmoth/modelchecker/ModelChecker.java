@@ -25,7 +25,6 @@ public class ModelChecker {
         Queue<State> queue = new LinkedList<>();
 
         // prepare initial state
-        Map<String, Expr> initialStateValue = new HashMap<>();
         BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
 
         Solver solver = ctx.mkSolver();
