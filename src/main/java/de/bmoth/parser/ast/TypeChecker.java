@@ -470,6 +470,32 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             returnType = found;
             break;
         }
+        case FUNCTION_CALL: {
+            // currently only for sequences
+            {
+                SequenceType seqType = (SequenceType) visitExprNode(expressionNodes.get(0),
+                        new SequenceType(new UntypedType()));
+                visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
+                Type found = seqType.getSubtype();
+                try {
+                    found = found.unify(expected);
+                } catch (UnificationException e) {
+                    throw new TypeErrorException(node, expected, found);
+                }
+                returnType = found;
+                break;
+            }
+        }
+        case CARD: {
+            try {
+                IntegerType.getInstance().unify(expected);
+            } catch (UnificationException e) {
+                throw new TypeErrorException(node, expected, IntegerType.getInstance());
+            }
+            visitExprNode(expressionNodes.get(0), new SetType(new UntypedType()));
+            returnType = IntegerType.getInstance();
+            break;
+        }
         default:
             throw new AssertionError();
         }

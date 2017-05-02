@@ -99,35 +99,24 @@ public class SetFormulaEvaluationTest {
 
     @Test
     public void testNATURAL() throws Exception {
-        Map<String, Status> map = new HashMap<>();
-        map.put("0 : NATURAL", SATISFIABLE);
-        map.put("1 : NATURAL", SATISFIABLE);
-        map.put("1000000 : NATURAL", SATISFIABLE);
-        map.put("-1 : NATURAL", UNSATISFIABLE);
-        map.put("-10000 : NATURAL", UNSATISFIABLE);
-
-        check(map);
+        check(SATISFIABLE, "0 : NATURAL");
+        check(SATISFIABLE, "1 : NATURAL");
+        check(SATISFIABLE, "1000000 : NATURAL");
+        check(UNSATISFIABLE, "-1 : NATURAL");
+        check(UNSATISFIABLE, "-10000 : NATURAL");
     }
 
-    
     @Test
     public void testSetComprehension1() throws Exception {
-        String formula = "{x | x : {1} } = {1} ";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
-        assertEquals(Status.SATISFIABLE, check);
+        check(SATISFIABLE, "{x | x : {1} } = {1} ");
     }
-    
+
     @Test
     public void testSetComprehension2() throws Exception {
         String formula = "{x,y | x : {1,2,3} & y = 2} = {1|->2, 2|->2, 3|->2} ";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
-        assertEquals(Status.SATISFIABLE, check);
+        check(SATISFIABLE, formula);
     }
-    
+
     @Test
     public void testSetComprehension3() throws Exception {
         String formula = "{x | x : {1} } = {x | x > 0 & x < 2} ";
@@ -136,11 +125,12 @@ public class SetFormulaEvaluationTest {
         Status check = s.check();
         assertEquals(Status.SATISFIABLE, check);
     }
-    
+
     @Ignore
     @Test
     public void testGeneralizedUnion() throws Exception {
-        //TODO z3 is currently not able to handle sets of sets and reports the status UNKNOWN
+        // TODO z3 is currently not able to handle sets of sets and reports the
+        // status UNKNOWN
         String formula = "union({{1},{2},{3}}) = {1,2,3} ";
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
         s.add(constraint);
@@ -148,16 +138,19 @@ public class SetFormulaEvaluationTest {
         assertEquals(Status.SATISFIABLE, check);
     }
 
-    private void check(Map<String, Status> map) {
-        for (Entry<String, Status> entry : map.entrySet()) {
-            System.out.println(entry.getKey());
-            BoolExpr constraint = FormulaToZ3Translator.translatePredicate(entry.getKey(), ctx);
-            System.out.println(constraint);
-            s.add(constraint);
-            Status check = s.check();
-            assertEquals(entry.getValue(), check);
-            s.reset();
-        }
+    
+    @Ignore
+    @Test
+    public void testCard() throws Exception {
+        check(SATISFIABLE, "card({1,2,3,4}) = 3");
+    }
+    
+    private void check(Status satisfiable, String formula) {
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        System.out.println(constraint);
+        s.add(constraint);
+        Status check = s.check();
+        assertEquals(satisfiable, check);
     }
 
 }

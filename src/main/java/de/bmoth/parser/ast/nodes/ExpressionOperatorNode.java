@@ -19,7 +19,11 @@ public class ExpressionOperatorNode extends ExprNode {
         , DOMAIN_SUBSTRACTION, RANGE_RESTRICTION//
         , RANGE_SUBSTRATION, INSERT_FRONT, INSERT_TAIL, RESTRICT_FRONT//
         , RESTRICT_TAIL, GENERALIZED_UNION, GENERALIZED_INTER//
-
+        
+        //relations
+        , CARD
+        //function
+        , FUNCTION_CALL
         // sequence operators
         , FIRST, LAST, FRONT, TAIL, CONC, SET_ENUMERATION, SEQ_ENUMERATION, EMPTY_SEQUENCE//
         , SEQ, SEQ1, ISEQ, ISEQ1
@@ -56,6 +60,10 @@ public class ExpressionOperatorNode extends ExprNode {
         map.put(BMoThParser.GENERALIZED_UNION, ExpressionOperator.GENERALIZED_UNION);
         map.put(BMoThParser.GENERALIZED_INTER, ExpressionOperator.GENERALIZED_INTER);
 
+        //relations
+        map.put(BMoThParser.CARD, ExpressionOperator.CARD);
+        
+        
         // sequence operators
         map.put(BMoThParser.FIRST, ExpressionOperator.FIRST);
         map.put(BMoThParser.LAST, ExpressionOperator.LAST);

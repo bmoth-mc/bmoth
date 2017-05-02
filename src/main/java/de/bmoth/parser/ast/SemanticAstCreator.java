@@ -151,6 +151,12 @@ public class SemanticAstCreator {
         }
 
         @Override
+        public Node visitFunctionCallExpression(BMoThParser.FunctionCallExpressionContext ctx) {
+            return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression()),
+                    ExpressionOperator.FUNCTION_CALL);
+        }
+
+        @Override
         public Node visitParenthesesPredicate(BMoThParser.ParenthesesPredicateContext ctx) {
             return ctx.predicate().accept(this);
         }

@@ -39,11 +39,16 @@ public class SequenceFormulaTest {
     }
 
     @Test
-    public void testSimpleSequenceExtensionFormula2() throws Exception {
+    public void testFirst() throws Exception {
         check(Status.SATISFIABLE, "first([4,5]) = 4");
         check(Status.UNSATISFIABLE, "first([5]) = 4");
         check(Status.UNSATISFIABLE, "first([]) = x & x = 1 ");
 
+    }
+    
+    @Test
+    public void testFunctionCall() throws Exception {
+        check(Status.SATISFIABLE, "[4,5](1) = 4 & [4,5](2) = 5  ");
     }
 
     private void check(Status satisfiable, String formula) {

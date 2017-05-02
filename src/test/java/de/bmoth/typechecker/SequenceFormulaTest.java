@@ -106,4 +106,11 @@ public class SequenceFormulaTest {
         assertEquals("INTEGER", formulaTypes.get("a"));
     }
 
+    @Test
+    public void testFunctionCall() throws Exception {
+        String formula = "[4,5,6](2) = a";
+        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("INTEGER", formulaTypes.get("a"));
+    }
+    
 }

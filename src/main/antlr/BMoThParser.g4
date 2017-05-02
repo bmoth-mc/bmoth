@@ -78,6 +78,8 @@ expression
   | BOOl_CAST '(' predicate ')'                                             # CastPredicateExpression
   | '[' expression_list? ']'                                                # SequenceEnumerationExpression
   | operator=(NATURAL|NATURAL1|INTEGER|BOOL|TRUE|FALSE)                     # ExpressionOperator
+  | exprs+=expression '(' exprs+=expression
+      (',' exprs+=expression)* ')'                                          # FunctionCallExpression
   | operator=(DOM|RAN|CARD|CONC|FIRST|FRONT|ID|ISEQ|ISEQ1
       |LAST|MAX|MIN|POW|REV|SEQ|SEQ1|TAIL
       |GENERALIZED_UNION|GENERALIZED_INTER)

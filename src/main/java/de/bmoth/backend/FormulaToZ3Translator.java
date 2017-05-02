@@ -288,9 +288,24 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             Expr[] args = d.getArgs();
             ArrayExpr array = (ArrayExpr) args[0];
             ArithExpr size = (ArithExpr) args[1];
-            //add WD constraint
+            // add WD constraint
             this.constraintList.add(z3Context.mkLe(z3Context.mkInt(1), size));
             return z3Context.mkSelect(array, z3Context.mkInt(1));
+        }
+        case FUNCTION_CALL: {
+            Expr expr = visitExprNode(expressionNodes.get(0), null);
+            DatatypeExpr d = (DatatypeExpr) expr;
+            Expr[] args = d.getArgs();
+            ArrayExpr array = (ArrayExpr) args[0];
+            ArithExpr size = (ArithExpr) args[1];
+            ArithExpr index = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
+            // add WD constraint
+            this.constraintList
+                    .add(z3Context.mkAnd(z3Context.mkGe(index, z3Context.mkInt(1)), z3Context.mkLe(index, size)));
+            return z3Context.mkSelect(array, index);
+        }
+        case CARD:{
+            break;
         }
         case INSERT_FRONT:
         case INSERT_TAIL:
