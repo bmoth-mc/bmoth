@@ -343,36 +343,30 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             break;
         }
         case INSERT_FRONT: {
-            /*
-             * s <- E type of result is is P(Z × T) type of s is P(Z × T) type
-             * of E is T
-             */
-            SetType found = new SetType(new CoupleType(IntegerType.getInstance(), new UntypedType()));
+            // E -> s
+            SequenceType found = new SequenceType(new UntypedType());
             try {
-                found = (SetType) found.unify(expected);
+                found = (SequenceType) found.unify(expected);
             } catch (UnificationException e) {
                 throw new TypeErrorException(node, expected, found);
             }
-            found = (SetType) visitExprNode(expressionNodes.get(0), found);
-            Type right = ((CoupleType) found.getSubtype()).getLeft();
-            visitExprNode(expressionNodes.get(1), right);
+            found = (SequenceType) visitExprNode(expressionNodes.get(1), found);
+            Type elemType = found.getSubtype();
+            visitExprNode(expressionNodes.get(0), elemType);
             returnType = found;
             break;
         }
         case INSERT_TAIL: {
-            /*
-             * s <- E type of result is is P(Z × T) type of s is P(Z × T) type
-             * of E is T
-             */
-            SetType found = new SetType(new CoupleType(IntegerType.getInstance(), new UntypedType()));
+            // s <- E
+            SequenceType found = new SequenceType(new UntypedType());
             try {
-                found = (SetType) found.unify(expected);
+                found = (SequenceType) found.unify(expected);
             } catch (UnificationException e) {
                 throw new TypeErrorException(node, expected, found);
             }
-            found = (SetType) visitExprNode(expressionNodes.get(1), found);
-            Type right = ((CoupleType) found.getSubtype()).getRight();
-            visitExprNode(expressionNodes.get(0), right);
+            found = (SequenceType) visitExprNode(expressionNodes.get(0), found);
+            Type elemType = found.getSubtype();
+            visitExprNode(expressionNodes.get(1), elemType);
             returnType = found;
             break;
         }
@@ -407,16 +401,59 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             break;
         }
         case GENERALIZED_INTER:
-        case GENERALIZED_UNION:{
+        case GENERALIZED_UNION: {
             Type found = new SetType(new UntypedType());
             try {
                 found = found.unify(expected);
             } catch (UnificationException e) {
                 throw new TypeErrorException(node, expected, found);
             }
-            SetType s =(SetType) visitExprNode(expressionNodes.get(0), new SetType(found));
+            SetType s = (SetType) visitExprNode(expressionNodes.get(0), new SetType(found));
             returnType = s.getSubtype();
-            break; 
+            break;
+        }
+        case EMPTY_SEQUENCE: {
+            SequenceType found = new SequenceType(new UntypedType());
+            try {
+                found = (SequenceType) found.unify(expected);
+            } catch (UnificationException e) {
+                throw new TypeErrorException(node, expected, found);
+            }
+            returnType = found;
+            break;
+        }
+        case SEQ_ENUMERATION: {
+            SequenceType found = new SequenceType(new UntypedType());
+            try {
+                found = (SequenceType) found.unify(expected);
+            } catch (UnificationException e) {
+                throw new TypeErrorException(node, expected, found);
+            }
+            Type subtype = found.getSubtype();
+            for (ExprNode exprNode : expressionNodes) {
+                subtype = visitExprNode(exprNode, subtype);
+            }
+            returnType = new SequenceType(subtype);
+            break;
+        }
+        case LAST:
+        case FIRST: {
+            SequenceType seq = new SequenceType(expected);
+            seq = (SequenceType) visitExprNode(expressionNodes.get(0), seq);
+            returnType = seq.getSubtype();
+            break;
+        }
+        case FRONT:
+        case TAIL: {
+            SequenceType found = new SequenceType(new UntypedType());
+            try {
+                found = (SequenceType) found.unify(expected);
+            } catch (UnificationException e) {
+                throw new TypeErrorException(node, expected, found);
+            }
+            found = (SequenceType) visitExprNode(expressionNodes.get(0), found);
+            returnType = found;
+            break;
         }
         default:
             throw new AssertionError();

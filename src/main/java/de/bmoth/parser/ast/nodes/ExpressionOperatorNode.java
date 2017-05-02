@@ -13,12 +13,15 @@ public class ExpressionOperatorNode extends ExprNode {
 
     public static enum ExpressionOperator {
         PLUS, MINUS, NATURAL, NATURAL1, INTEGER, BOOL, TRUE, FALSE, POWER_OF //
-        , MULT, DIVIDE, MOD, SET_SUBTRACTION, INTERVAL, UNION, SET_ENUMERATION//
+        , MULT, DIVIDE, MOD, SET_SUBTRACTION, INTERVAL, UNION//
         , INTERSECTION, COUPLE, DOMAIN, RANGE, UNARY_MINUS//
         , OVERWRITE_RELATION, DIRECT_PRODUCT, CONCAT, DOMAIN_RESTRICTION//
         , DOMAIN_SUBSTRACTION, RANGE_RESTRICTION//
         , RANGE_SUBSTRATION, INSERT_FRONT, INSERT_TAIL, RESTRICT_FRONT//
         , RESTRICT_TAIL, GENERALIZED_UNION, GENERALIZED_INTER//
+
+        // sequence operators
+        , FIRST, LAST, FRONT, TAIL, CONC, SET_ENUMERATION, SEQ_ENUMERATION, EMPTY_SEQUENCE//
     }
 
     private static final Map<Integer, ExpressionOperator> map = new HashMap<>();
@@ -48,12 +51,20 @@ public class ExpressionOperatorNode extends ExprNode {
         map.put(BMoThParser.DOMAIN_SUBSTRACTION, ExpressionOperator.DOMAIN_SUBSTRACTION);
         map.put(BMoThParser.RANGE_RESTRICTION, ExpressionOperator.RANGE_RESTRICTION);
         map.put(BMoThParser.RANGE_SUBSTRATION, ExpressionOperator.RANGE_SUBSTRATION);
+        
+        map.put(BMoThParser.GENERALIZED_UNION, ExpressionOperator.GENERALIZED_UNION);
+        map.put(BMoThParser.GENERALIZED_INTER, ExpressionOperator.GENERALIZED_INTER);
+
+        //sequence operators
+        map.put(BMoThParser.FIRST, ExpressionOperator.FIRST);
+        map.put(BMoThParser.LAST, ExpressionOperator.LAST);
+        map.put(BMoThParser.FRONT, ExpressionOperator.FRONT);
+        map.put(BMoThParser.TAIL, ExpressionOperator.TAIL);
+        map.put(BMoThParser.CONC, ExpressionOperator.CONC);
         map.put(BMoThParser.INSERT_FRONT, ExpressionOperator.INSERT_FRONT);
         map.put(BMoThParser.INSERT_TAIL, ExpressionOperator.INSERT_TAIL);
         map.put(BMoThParser.RESTRICT_FRONT, ExpressionOperator.RESTRICT_FRONT);
         map.put(BMoThParser.RESTRICT_TAIL, ExpressionOperator.RESTRICT_TAIL);
-        map.put(BMoThParser.GENERALIZED_UNION, ExpressionOperator.GENERALIZED_UNION);
-        map.put(BMoThParser.GENERALIZED_INTER, ExpressionOperator.GENERALIZED_INTER);
 
     }
 

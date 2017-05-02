@@ -73,10 +73,14 @@ expression
   | IDENTIFIER                                                              # IdentifierExpression
   | '{' expression_list '}'                                                 # SetEnumerationExpression
   | '{' identifier_list '|' predicate '}'                                   # SetComprehensionExpression
-  | '(' exprs+=expression COMMA exprs+=expression (COMMA exprs+=expression)* ')'  # NestedCoupleAsTupleExpression
+  | '(' exprs+=expression COMMA exprs+=expression
+      (COMMA exprs+=expression)* ')'                                        # NestedCoupleAsTupleExpression
   | BOOl_CAST '(' predicate ')'                                             # CastPredicateExpression
+  | '[' expression_list? ']'                                                # SequenceEnumerationExpression
   | operator=(NATURAL|NATURAL1|INTEGER|BOOL|TRUE|FALSE)                     # ExpressionOperator
-  | operator=(DOM|RAN|GENERALIZED_UNION|GENERALIZED_INTER)
+  | operator=(DOM|RAN|CARD|CONC|FIRST|FRONT|ID|ISEQ|ISEQ1
+      |LAST|MAX|MIN|POW|REV|SEQ|SEQ1|TAIL
+      |GENERALIZED_UNION|GENERALIZED_INTER)
         '(' expression ')'                                                  # ExpressionOperator
   | operator=(QUANTIFIED_UNION|QUANTIFIED_INTER|SIGMA|PI)
       quantified_variables_list

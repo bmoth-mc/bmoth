@@ -140,6 +140,17 @@ public class SemanticAstCreator {
         }
 
         @Override
+        public Node visitSequenceEnumerationExpression(BMoThParser.SequenceEnumerationExpressionContext ctx) {
+            if (ctx.expression_list() == null) {
+                return new ExpressionOperatorNode(ctx, new ArrayList<>(), ExpressionOperator.EMPTY_SEQUENCE);
+            } else {
+                return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
+                        ExpressionOperator.SEQ_ENUMERATION);
+            }
+
+        }
+
+        @Override
         public Node visitParenthesesPredicate(BMoThParser.ParenthesesPredicateContext ctx) {
             return ctx.predicate().accept(this);
         }

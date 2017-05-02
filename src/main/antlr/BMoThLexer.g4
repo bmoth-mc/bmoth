@@ -52,6 +52,8 @@ LEFT_BRACE: '{';
 RIGHT_BRACE: '}';
 LEFT_PAR: '(';
 RIGHT_PAR: ')';
+LEFT_BRACKET: '[';
+RIGHT_BRACKET: ']';
 
 MINUS: '-' | '\u2212';
 SET_SUBTRACTION: '\\';
@@ -124,6 +126,23 @@ FALSE: 'FALSE';
 // expression prefix operators with one parameter
 DOM: 'dom';
 RAN: 'ran';
+CARD: 'card';
+CONC: 'conc';
+FIRST: 'first';
+FRONT: 'front';
+ID: 'id';
+ISEQ: 'iseq';
+ISEQ1: 'iseq1' ; // add 'iseq'0x8321 ?
+LAST: 'last';
+MAX: 'max';
+MIN: 'min';
+POW: 'POW';
+REV: 'rev';
+SEQ: 'seq';
+SEQ1: 'seq1'; // add | 'seq'0x8321 ?
+TAIL: 'tail';
+GENERALIZED_UNION: 'union' | '⋃';//'\u22c3';
+GENERALIZED_INTER: 'inter'; //TODO unicode missing
 
 //keyword operators
 NATURAL: 'NATURAL' | '\u2115';
@@ -138,8 +157,6 @@ PI: 'PI' | '∏'; //0x220f;
 QUANTIFIED_UNION: 'UNION';
 QUANTIFIED_INTER: 'INTER';
 
-GENERALIZED_UNION: 'union' | '⋃';//'\u22c3';
-GENERALIZED_INTER: 'inter'; //TODO unicode missing
 
 fragment TSQ: '\'\'\'';
 fragment SQ: '\'';
