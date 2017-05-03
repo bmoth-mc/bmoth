@@ -61,7 +61,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
     // created because there no corresponding keyword in z3.
     // Additionally, a constraint axiomatizing this identifier will be added to
     // this list.
-    private int tempoVariablesCounter = 0;
+    private int tempVariablesCounter = 0;
     // used to generate unique identifiers
 
     public FormulaToZ3Translator(Context z3Context) {
@@ -69,12 +69,14 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
     }
 
     private String createFreshTemporaryVariable() {
-        this.tempoVariablesCounter++;
-        return "$t_" + this.tempoVariablesCounter;
+        this.tempVariablesCounter++;
+        return "$t_" + this.tempVariablesCounter;
     }
 
     public static BoolExpr translatePredicate(String formula, Context z3Context) {
         FormulaNode node = Parser.getFormulaAsSemanticAst(formula);
+        List<DeclarationNode> implicitDeclarations = node.getImplicitDeclarations();
+        System.out.println(implicitDeclarations);
         if (node.getFormulaType() != FormulaType.PREDICATE_FORMULA) {
             throw new RuntimeException("Expected predicate.");
         }
@@ -146,8 +148,12 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         case NOT_BELONGING:
             break;
         case INCLUSION:
-            break;
+            // a <: S
+            ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
+            ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
+            return z3Context.mkSetSubset(arg0, arg1);
         case STRICT_INCLUSION:
+            // a <<: S
             break;
         case NON_INCLUSION:
             break;
@@ -199,11 +205,25 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             break;
         case INTEGER:
             break;
-        case NATURAL1:
-            break;
+        case NATURAL1:{
+            Type type = node.getType();// POW(INTEGER)
+            // !x.(x >= 0 <=> x : NATURAL)
+            Expr x = z3Context.mkConst("x", z3Context.getIntSort());
+            Expr natural1 = z3Context.mkConst("NATURAL1", bTypeToZ3Sort(type));
+            Expr[] bound = new Expr[] { x };
+            // x >= 0
+            BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(1));
+            // x : NATURAL
+            BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) natural1);
+            // a <=> b
+            BoolExpr body = z3Context.mkEq(a, b);
+            Quantifier q = z3Context.mkForall(bound, body, 1, null, null, null, null);
+            this.constraintList.add(q);
+            return natural1;
+        }
         case NATURAL: {
             Type type = node.getType();// POW(INTEGER)
-            // !x.(x : INTEGER & x >= 0 <=> x : NATURAL)
+            // !x.(x >= 0 <=> x : NATURAL)
             Expr x = z3Context.mkConst("x", z3Context.getIntSort());
             Expr natural = z3Context.mkConst(ExpressionOperator.NATURAL.toString(), bTypeToZ3Sort(type));
             Expr[] bound = new Expr[] { x };

@@ -5,6 +5,7 @@ import de.bmoth.backend.FormulaToZ3Translator;
 import de.bmoth.backend.SolutionFinder;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -30,6 +31,19 @@ public class SolutionFinderTest {
         ctx.close();
     }
 
+    @Ignore
+    @Test
+    public void testSolutionFinder1() throws Exception {
+        String formula = "a : NATURAL & a < 1";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<BoolExpr> solutions = finder.findSolutions(20);
+
+        assertEquals(0, solutions.size());
+        
+    }
+    
     @Test
     public void testSolutionFinder() throws Exception {
         String formula = "0 < a & a < 6 & 0 < b & b < 6 & ( 2 * b < a or 2 * b = a )";

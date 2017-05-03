@@ -13,9 +13,7 @@ import de.bmoth.parser.ast.nodes.*;
 
 import java.util.*;
 
-/**
- * Created by krings on 28.04.17.
- */
+
 public class ModelChecker {
     public static boolean doModelCheck(MachineNode machine) {
         Context ctx = new Context();
