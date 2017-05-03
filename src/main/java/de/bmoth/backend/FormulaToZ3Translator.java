@@ -64,6 +64,9 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
     private int tempVariablesCounter = 0;
     // used to generate unique identifiers
 
+    List<DeclarationNode> implicitDeclarations;
+    FormulaNode formulaNode;
+
     public FormulaToZ3Translator(Context z3Context) {
         this.z3Context = z3Context;
     }
@@ -73,22 +76,28 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         return "$t_" + this.tempVariablesCounter;
     }
 
+    public List<DeclarationNode> getImplicitDeclarations() {
+        return this.implicitDeclarations;
+    }
+
     public static BoolExpr translatePredicate(String formula, Context z3Context) {
-        FormulaNode node = Parser.getFormulaAsSemanticAst(formula);
-        List<DeclarationNode> implicitDeclarations = node.getImplicitDeclarations();
-        System.out.println(implicitDeclarations);
-        if (node.getFormulaType() != FormulaType.PREDICATE_FORMULA) {
+        FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(z3Context);
+        return formulaTranslator.translatePredicate(formula);
+    }
+
+    public BoolExpr translatePredicate(String formula) {
+        formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        this.implicitDeclarations = formulaNode.getImplicitDeclarations();
+        if (formulaNode.getFormulaType() != FormulaType.PREDICATE_FORMULA) {
             throw new RuntimeException("Expected predicate.");
         }
-        FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(z3Context);
-        Expr constraint = formulaTranslator.visitPredicateNode((PredicateNode) node.getFormula(), null);
+        Expr constraint = this.visitPredicateNode((PredicateNode) formulaNode.getFormula(), null);
         if (!(constraint instanceof BoolExpr)) {
             throw new RuntimeException("Invalid translation. Expected BoolExpr but found " + constraint.getClass());
         }
-
         BoolExpr boolExpr = (BoolExpr) constraint;
         // adding all additional constraints to result
-        for (BoolExpr bExpr : formulaTranslator.constraintList) {
+        for (BoolExpr bExpr : this.constraintList) {
             boolExpr = z3Context.mkAnd(boolExpr, bExpr);
         }
         return boolExpr;
@@ -135,7 +144,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
             return z3Context.mkLt(left, right);
         }
-        case GREATER_EQUAL:{
+        case GREATER_EQUAL: {
             ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), null);
             ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
             return z3Context.mkGe(left, right);
@@ -205,7 +214,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             break;
         case INTEGER:
             break;
-        case NATURAL1:{
+        case NATURAL1: {
             Type type = node.getType();// POW(INTEGER)
             // !x.(x >= 0 <=> x : NATURAL)
             Expr x = z3Context.mkConst("x", z3Context.getIntSort());
@@ -346,7 +355,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
                     .add(z3Context.mkAnd(z3Context.mkGe(index, z3Context.mkInt(1)), z3Context.mkLe(index, size)));
             return z3Context.mkSelect(array, index);
         }
-        case CARD:{
+        case CARD: {
             break;
         }
         case INSERT_FRONT:
@@ -357,14 +366,14 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         case RESTRICT_FRONT:
         case RESTRICT_TAIL:
             break;
-            case SEQ:
-                break;
-            case SEQ1:
-                break;
-            case ISEQ:
-                break;
-            case ISEQ1:
-                break;
+        case SEQ:
+            break;
+        case SEQ1:
+            break;
+        case ISEQ:
+            break;
+        case ISEQ1:
+            break;
         }
         throw new AssertionError("Not implemented: " + node.getOperator());
     }
@@ -398,7 +407,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             BoolExpr right = (BoolExpr) visitPredicateNode(predicateArguments.get(1), null);
             return z3Context.mkEq(left, right);
         }
-        case NOT:{
+        case NOT: {
             BoolExpr child = (BoolExpr) visitPredicateNode(predicateArguments.get(0), null);
             return z3Context.mkNot(child);
         }

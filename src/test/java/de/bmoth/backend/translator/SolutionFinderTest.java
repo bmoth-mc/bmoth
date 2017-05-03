@@ -31,42 +31,42 @@ public class SolutionFinderTest {
         ctx.close();
     }
 
-    @Ignore
     @Test
     public void testSolutionFinder1() throws Exception {
         String formula = "a : NATURAL & a < 1";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
-        Set<BoolExpr> solutions = finder.findSolutions(20);
+        FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(ctx);
+        BoolExpr constraint = formulaTranslator.translatePredicate(formula);
 
-        assertEquals(0, solutions.size());
-        
+        SolutionFinder finder = new SolutionFinder(constraint, formulaTranslator, s, ctx);
+        Set<BoolExpr> solutions = finder.findSolutions(20);
+        assertEquals(1, solutions.size());
+
     }
-    
+
     @Test
     public void testSolutionFinder() throws Exception {
         String formula = "0 < a & a < 6 & 0 < b & b < 6 & ( 2 * b < a or 2 * b = a )";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(ctx);
+        BoolExpr constraint = formulaTranslator.translatePredicate(formula);
 
         s.add(constraint);
         assertEquals(Status.SATISFIABLE, s.check());
 
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, formulaTranslator, s, ctx);
         Set<BoolExpr> solutions = finder.findSolutions(20);
 
         assertEquals(6, solutions.size());
         for (BoolExpr solution : solutions) {
             switch (solution.toString()) {
-                case "(and (= a 2) (= b 1))":
-                case "(and (= a 3) (= b 1))":
-                case "(and (= a 4) (= b 1))":
-                case "(and (= a 4) (= b 2))":
-                case "(and (= a 5) (= b 1))":
-                case "(and (= a 5) (= b 2))":
-                    break;
-                default:
-                    fail(solution.toString() + " is not part of found solutions");
+            case "(and (= a 2) (= b 1))":
+            case "(and (= a 3) (= b 1))":
+            case "(and (= a 4) (= b 1))":
+            case "(and (= a 4) (= b 2))":
+            case "(and (= a 5) (= b 1))":
+            case "(and (= a 5) (= b 2))":
+                break;
+            default:
+                fail(solution.toString() + " is not part of found solutions");
             }
         }
     }
@@ -74,23 +74,24 @@ public class SolutionFinderTest {
     @Test
     public void testSolutionFinder2() throws Exception {
         String formula = "1 < x & x < 5";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(ctx);
+        BoolExpr constraint = formulaTranslator.translatePredicate(formula);
 
         s.add(constraint);
         assertEquals(Status.SATISFIABLE, s.check());
 
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, formulaTranslator, s, ctx);
         Set<BoolExpr> solutions = finder.findSolutions(20);
 
         assertEquals(3, solutions.size());
         for (BoolExpr solution : solutions) {
             switch (solution.toString()) {
-                case "(= x 2)":
-                case "(= x 3)":
-                case "(= x 4)":
-                    break;
-                default:
-                    fail(solution.toString() + " is not part of found solutions");
+            case "(= x 2)":
+            case "(= x 3)":
+            case "(= x 4)":
+                break;
+            default:
+                fail(solution.toString() + " is not part of found solutions");
             }
         }
     }
@@ -98,23 +99,24 @@ public class SolutionFinderTest {
     @Test
     public void testSolutionFinder3() throws Exception {
         String formula = "0 < x & x < 5 & 1 < y & y < 6 & y < x";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(ctx);
+        BoolExpr constraint = formulaTranslator.translatePredicate(formula);
 
         s.add(constraint);
         assertEquals(Status.SATISFIABLE, s.check());
 
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, formulaTranslator, s, ctx);
         Set<BoolExpr> solutions = finder.findSolutions(20);
 
         assertEquals(3, solutions.size());
         for (BoolExpr solution : solutions) {
             switch (solution.toString()) {
-                case "(and (= y 2) (= x 3))":
-                case "(and (= y 2) (= x 4))":
-                case "(and (= y 3) (= x 4))":
-                    break;
-                default:
-                    fail(solution.toString() + " is not part of found solutions");
+            case "(and (= y 2) (= x 3))":
+            case "(and (= y 2) (= x 4))":
+            case "(and (= y 3) (= x 4))":
+                break;
+            default:
+                fail(solution.toString() + " is not part of found solutions");
             }
         }
     }
@@ -129,7 +131,8 @@ public class SolutionFinderTest {
         Expr x = ctx.mkIntConst("x");
 
         // 1st try: brute force over 'all' satisfying solutions
-        // credit goes to: http://stackoverflow.com/questions/13395391/z3-finding-all-satisfying-models#answer-13398853
+        // credit goes to:
+        // http://stackoverflow.com/questions/13395391/z3-finding-all-satisfying-models#answer-13398853
 
         List<Number> solutions = new ArrayList<>();
 
