@@ -143,7 +143,15 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), null);
             return z3Context.mkGt(left, right);
         }
-        default:
+        case NOT_BELONGING:
+            break;
+        case INCLUSION:
+            break;
+        case STRICT_INCLUSION:
+            break;
+        case NON_INCLUSION:
+            break;
+        case STRICT_NON_INCLUSION:
             break;
         }
         // TODO
@@ -231,6 +239,14 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         case INTERSECTION:
             break;
         case RANGE:
+            break;
+        case LAST:
+            break;
+        case FRONT:
+            break;
+        case TAIL:
+            break;
+        case CONC:
             break;
         case SET_ENUMERATION: {
             SetType type = (SetType) node.getType();
@@ -321,8 +337,15 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         case RESTRICT_FRONT:
         case RESTRICT_TAIL:
             break;
+            case SEQ:
+                break;
+            case SEQ1:
+                break;
+            case ISEQ:
+                break;
+            case ISEQ1:
+                break;
         }
-        // TODO
         throw new AssertionError("Not implemented: " + node.getOperator());
     }
 
