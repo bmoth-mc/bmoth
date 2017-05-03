@@ -4,6 +4,7 @@
 }
 .semicolon {
     -fx-font-weight: bold;
+    -fx-fill: orange;
 }
 .paren {
     -fx-fill: firebrick;

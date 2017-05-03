@@ -65,8 +65,8 @@ public class App extends Application {
                     int nextStep = saveChangedDialog();
                     switch (nextStep){
                         case 0: break;
-                        case 1: save.fire(); break;
-                        case 2: saveAs.fire(); break;
+                        case 1: save.fire(); Platform.exit(); break;
+                        case 2: saveAs.fire(); Platform.exit(); break;
                         case -1: Platform.exit(); break;
                     }
                 } else {
@@ -143,18 +143,8 @@ public class App extends Application {
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                if (hasChanged){
-                    event.consume();
-                    int nextStep = saveChangedDialog();
-                    switch (nextStep){
-                        case 0: break;
-                        case 1: save.fire(); break;
-                        case 2: saveAs.fire(); break;
-                        case -1: Platform.exit(); break;
-                    }
-                } else{
-                    Platform.exit();
-                }
+                event.consume();
+                exit.fire();
             }
         });
         primaryStage.setScene(scene);
