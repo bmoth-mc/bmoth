@@ -1,4 +1,4 @@
-package de.bmoth;
+package de.bmoth.App;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -61,7 +61,17 @@ public class App extends Application {
 
         exit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                System.exit(0);
+                if (hasChanged){
+                    int nextStep = saveChangedDialog();
+                    switch (nextStep){
+                        case 0: break;
+                        case 1: save.fire(); break;
+                        case 2: saveAs.fire(); break;
+                        case -1: Platform.exit(); break;
+                    }
+                } else {
+                    Platform.exit();
+                }
             }
         });
 
@@ -108,8 +118,9 @@ public class App extends Application {
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
-                    codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
+                    codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
                 });
+
         codeArea.setPrefSize(800,600);
 
         codeArea.textProperty().addListener(new ChangeListener<String>() {
@@ -126,7 +137,7 @@ public class App extends Application {
 
 
         Scene scene = new Scene(new VBox(), 800, 600);
-
+        scene.getStylesheets().add(App.class.getResource("keywords.css").toExternalForm());
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, codeArea,infoArea);
 
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -141,6 +152,8 @@ public class App extends Application {
                         case 2: saveAs.fire(); break;
                         case -1: Platform.exit(); break;
                     }
+                } else{
+                    Platform.exit();
                 }
             }
         });
