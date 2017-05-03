@@ -1,11 +1,13 @@
-package de.bmoth;
+package de.bmoth.App;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
@@ -35,6 +37,8 @@ public class App extends Application {
         MenuBar menuBar = new MenuBar();
         Menu menuFile = new Menu("File");
         Menu menuCheck = new Menu("Checks");
+
+
         CodeArea codeArea = new CodeArea();
         TextArea infoArea = new TextArea();
         MenuItem open = new MenuItem("Open");
@@ -57,10 +61,17 @@ public class App extends Application {
 
         exit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                if(hasChanged){
-                    saveChangeDialog();
+                if (hasChanged){
+                    int nextStep = saveChangedDialog();
+                    switch (nextStep){
+                        case 0: break;
+                        case 1: save.fire(); break;
+                        case 2: saveAs.fire(); break;
+                        case -1: Platform.exit(); break;
+                    }
+                } else {
+                    Platform.exit();
                 }
-                System.exit(0);
             }
         });
 
@@ -107,8 +118,9 @@ public class App extends Application {
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
-                    codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
+                    codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
                 });
+
         codeArea.setPrefSize(800,600);
 
         codeArea.textProperty().addListener(new ChangeListener<String>() {
@@ -125,16 +137,24 @@ public class App extends Application {
 
 
         Scene scene = new Scene(new VBox(), 800, 600);
-
+        scene.getStylesheets().add(App.class.getResource("keywords.css").toExternalForm());
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, codeArea,infoArea);
 
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
                 if (hasChanged){
-                    saveChangeDialog();
+                    event.consume();
+                    int nextStep = saveChangedDialog();
+                    switch (nextStep){
+                        case 0: break;
+                        case 1: save.fire(); break;
+                        case 2: saveAs.fire(); break;
+                        case -1: Platform.exit(); break;
+                    }
+                } else{
+                    Platform.exit();
                 }
-                System.exit(0);
             }
         });
         primaryStage.setScene(scene);
@@ -142,7 +162,24 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    private void saveChangeDialog() {
+    private int saveChangedDialog() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("UNSAVED CHANGES!");
+        alert.setHeaderText("Unsaved Changes! What do you want to do");
+        alert.setContentText(null);
+
+        ButtonType buttonTypeSave = new ButtonType("Save");
+        ButtonType buttonTypeSaveAs = new ButtonType("Save As");
+        ButtonType buttonTypeExitAnway = new ButtonType("Exit anyway!");
+        ButtonType buttonTypeCancel = new ButtonType("Back", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(buttonTypeSave,buttonTypeSaveAs,buttonTypeExitAnway,buttonTypeCancel);
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get() == buttonTypeSave) return 1;
+        if(result.get() == buttonTypeSaveAs) return 2;
+        if(result.get() == buttonTypeCancel) return 0;
+        if(result.get() == buttonTypeExitAnway) return -1;
+        return 0;
     }
 
 

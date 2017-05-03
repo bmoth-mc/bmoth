@@ -52,6 +52,8 @@ LEFT_BRACE: '{';
 RIGHT_BRACE: '}';
 LEFT_PAR: '(';
 RIGHT_PAR: ')';
+LEFT_BRACKET: '[';
+RIGHT_BRACKET: ']';
 
 MINUS: '-' | '\u2212';
 SET_SUBTRACTION: '\\';
@@ -75,10 +77,21 @@ BOOl_CAST: 'bool';
 AND: '&';
 OR: 'or';
 
-
+// expression infix operators P160
+OVERWRITE_RELATION: '<+';
+DIRECT_PRODUCT: '><'| '⊗' ; //'\u2297'; ?
+CONCAT: '^';
+DOMAIN_RESTRICTION: '<|';
+DOMAIN_SUBSTRACTION: '<<|';
+RANGE_RESTRICTION:  '|>';
+RANGE_SUBSTRATION:  '|>>';
+INSERT_FRONT: '->'| '\u21fe';
+INSERT_TAIL:  '<-' | '\u21fd';
+INTERSECTION: '/\\' | '\u2229';
+RESTRICT_FRONT: '/|\\' | '\u2191';
+RESTRICT_TAIL: '\\|/' | '\u2193';
 MAPLET: '|->' | '\u21a6';
 UNION: '\\/' | '\u222a';
-
 
 UNDERSCORE: '_';
 
@@ -90,8 +103,6 @@ DIVIDE: '/';
 MOD: 'mod';
 POWER_OF: '**';
 INTERVAL: '..' | '\u2025';
-
-INTERSECTION: '/\\';
 
 // predicate infix opertors
 EQUAL: '=' | '\u003d';
@@ -115,15 +126,36 @@ FALSE: 'FALSE';
 // expression prefix operators with one parameter
 DOM: 'dom';
 RAN: 'ran';
+CARD: 'card';
+CONC: 'conc';
+FIRST: 'first';
+FRONT: 'front';
+ID: 'id';
+ISEQ: 'iseq';
+ISEQ1: 'iseq1' ; // add 'iseq'0x8321 ?
+LAST: 'last';
+MAX: 'max';
+MIN: 'min';
+POW: 'POW';
+REV: 'rev';
+SEQ: 'seq';
+SEQ1: 'seq1'; // add | 'seq'0x8321 ?
+TAIL: 'tail';
+GENERALIZED_UNION: 'union' | '⋃';//'\u22c3';
+GENERALIZED_INTER: 'inter'; //TODO unicode missing
 
 //keyword operators
 NATURAL: 'NATURAL' | '\u2115';
 NATURAL1: 'NATURAL1' | '\u2115' '\u0031' | '\u2115' '\u2081';
-
 INTEGER: 'INTEGER' | '\u2124';
-
 BOOL: 'BOOL';
 
+
+//special
+SIGMA: 'SIGMA' | '∑'; //0x2211;
+PI: 'PI' | '∏'; //0x220f;
+QUANTIFIED_UNION: 'UNION';
+QUANTIFIED_INTER: 'INTER';
 
 
 fragment TSQ: '\'\'\'';

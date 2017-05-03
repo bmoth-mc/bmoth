@@ -59,7 +59,8 @@ predicate
       DOT LEFT_PAR predicate RIGHT_PAR                                      # QuantifiedPredicate
   | operator=(TRUE|FALSE)                                                   # PredicateOperator
   | operator=NOT '(' predicate ')'                                          # PredicateOperator
-  | expression operator=(EQUAL|NOT_EQUAL|COLON|ELEMENT_OF
+  | expression operator=(EQUAL|NOT_EQUAL|COLON|ELEMENT_OF|NOT_BELONGING
+      |INCLUSION|STRICT_INCLUSION|NON_INCLUSION|STRICT_NON_INCLUSION
       |LESS_EQUAL|LESS|GREATER_EQUAL|GREATER) expression                    # PredicateOperatorWithExprArgs
   | predicate operator=EQUIVALENCE predicate                                # PredicateOperator //p60
   | predicate operator=(AND|OR) predicate                                   # PredicateOperator //p40
@@ -72,15 +73,29 @@ expression
   | IDENTIFIER                                                              # IdentifierExpression
   | '{' expression_list '}'                                                 # SetEnumerationExpression
   | '{' identifier_list '|' predicate '}'                                   # SetComprehensionExpression
-  | '(' exprs+=expression COMMA exprs+=expression (COMMA exprs+=expression)* ')'  # NestedCoupleAsTupleExpression
+  | '(' exprs+=expression COMMA exprs+=expression
+      (COMMA exprs+=expression)* ')'                                        # NestedCoupleAsTupleExpression
   | BOOl_CAST '(' predicate ')'                                             # CastPredicateExpression
+  | '[' expression_list? ']'                                                # SequenceEnumerationExpression
   | operator=(NATURAL|NATURAL1|INTEGER|BOOL|TRUE|FALSE)                     # ExpressionOperator
-  | operator=(DOM|RAN) '(' expression ')'                                   # ExpressionOperator
+  | exprs+=expression '(' exprs+=expression
+      (',' exprs+=expression)* ')'                                          # FunctionCallExpression
+  | operator=(DOM|RAN|CARD|CONC|FIRST|FRONT|ID|ISEQ|ISEQ1
+      |LAST|MAX|MIN|POW|REV|SEQ|SEQ1|TAIL
+      |GENERALIZED_UNION|GENERALIZED_INTER)
+        '(' expression ')'                                                  # ExpressionOperator
+  | operator=(QUANTIFIED_UNION|QUANTIFIED_INTER|SIGMA|PI)
+      quantified_variables_list
+        DOT LEFT_PAR predicate VERTICAL_BAR expression RIGHT_PAR            # QuantifiedExpression
+
   // operators with precedences
   | operator=MINUS expression                                               # ExpressionOperator //P210
   | <assoc=right> expression operator=POWER_OF expression                   # ExpressionOperator //p200
   | expression operator=(MULT|DIVIDE|MOD) expression                        # ExpressionOperator //p190
   | expression operator=(PLUS|MINUS|SET_SUBTRACTION) expression             # ExpressionOperator //p180
   | expression operator=INTERVAL expression                                 # ExpressionOperator //p170
-  | expression operator=(UNION|INTERSECTION|MAPLET) expression              # ExpressionOperator //p160
+  | expression operator=(OVERWRITE_RELATION|DIRECT_PRODUCT|CONCAT
+      |DOMAIN_RESTRICTION|DOMAIN_SUBSTRACTION|RANGE_RESTRICTION
+      |RANGE_SUBSTRATION|INSERT_FRONT|INSERT_TAIL|UNION|INTERSECTION
+      |RESTRICT_FRONT|RESTRICT_TAIL|MAPLET) expression                      # ExpressionOperator //p160
   ;

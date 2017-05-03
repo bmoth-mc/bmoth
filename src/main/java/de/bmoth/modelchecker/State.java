@@ -1,13 +1,12 @@
 package de.bmoth.modelchecker;
 
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
+import com.microsoft.z3.Sort;
 
 import java.util.Map;
 
-/**
- * Created by krings on 28.04.17.
- * fixed by hansen on 28.04.17.
- */
 public class State {
     State predecessor;
     Map<String, Expr> values;
@@ -15,5 +14,25 @@ public class State {
     public State(State predecessor, Map<String, Expr> values) {
         this.predecessor = predecessor;
         this.values = values;
+    }
+
+    public String toString() {
+        return this.values.toString();
+    }
+
+    public BoolExpr getStateConstraint(Context context) {
+        BoolExpr result = null;
+        for (Map.Entry<String, Expr> entry : values.entrySet()) {
+            Expr singleExpression =  entry.getValue();
+            Sort sort = singleExpression.getSort();
+            Expr identifierExpr = context.mkConst(entry.getKey(), sort);
+            BoolExpr eq = context.mkEq(identifierExpr, singleExpression);
+            if (result == null) {
+                result = eq;
+            } else {
+                result = context.mkAnd(result, eq);
+            }
+        }
+        return result;
     }
 }
