@@ -8,9 +8,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -34,11 +32,10 @@ public class SolutionFinderTest {
     @Test
     public void testSolutionFinder1() throws Exception {
         String formula = "a : NATURAL & a < 1";
-        FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(ctx);
-        BoolExpr constraint = formulaTranslator.translatePredicate(formula);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
-        SolutionFinder finder = new SolutionFinder(constraint, formulaTranslator, s, ctx);
-        Set<BoolExpr> solutions = finder.findSolutions(20);
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<Model> solutions = finder.findSolutions(20);
         assertEquals(1, solutions.size());
 
     }
@@ -46,27 +43,29 @@ public class SolutionFinderTest {
     @Test
     public void testSolutionFinder() throws Exception {
         String formula = "0 < a & a < 6 & 0 < b & b < 6 & ( 2 * b < a or 2 * b = a )";
-        FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(ctx);
-        BoolExpr constraint = formulaTranslator.translatePredicate(formula);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         assertEquals(Status.SATISFIABLE, s.check());
 
-        SolutionFinder finder = new SolutionFinder(constraint, formulaTranslator, s, ctx);
-        Set<BoolExpr> solutions = finder.findSolutions(20);
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<Model> solutions = finder.findSolutions(20);
 
         assertEquals(6, solutions.size());
-        for (BoolExpr solution : solutions) {
-            switch (solution.toString()) {
-            case "(and (= a 2) (= b 1))":
-            case "(and (= a 3) (= b 1))":
-            case "(and (= a 4) (= b 1))":
-            case "(and (= a 4) (= b 2))":
-            case "(and (= a 5) (= b 1))":
-            case "(and (= a 5) (= b 2))":
-                break;
-            default:
-                fail(solution.toString() + " is not part of found solutions");
+
+        for (Model solution : solutions) {
+            String solutionAsString = z3ModelToString(solution);
+            switch (solutionAsString) {
+                case "{a=2, b=1}":
+                case "{a=3, b=1}":
+                case "{a=4, b=1}":
+                case "{a=4, b=2}":
+                case "{a=5, b=1}":
+                case "{a=5, b=2}":
+                case "{a=5, b=3}":
+                    break;
+                default:
+                    fail(solutionAsString + " is not part of found solutions");
             }
         }
     }
@@ -74,24 +73,25 @@ public class SolutionFinderTest {
     @Test
     public void testSolutionFinder2() throws Exception {
         String formula = "1 < x & x < 5";
-        FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(ctx);
-        BoolExpr constraint = formulaTranslator.translatePredicate(formula);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         assertEquals(Status.SATISFIABLE, s.check());
 
-        SolutionFinder finder = new SolutionFinder(constraint, formulaTranslator, s, ctx);
-        Set<BoolExpr> solutions = finder.findSolutions(20);
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<Model> solutions = finder.findSolutions(20);
 
         assertEquals(3, solutions.size());
-        for (BoolExpr solution : solutions) {
-            switch (solution.toString()) {
-            case "(= x 2)":
-            case "(= x 3)":
-            case "(= x 4)":
-                break;
-            default:
-                fail(solution.toString() + " is not part of found solutions");
+
+        for (Model solution : solutions) {
+            String solutionAsString = z3ModelToString(solution);
+            switch (solutionAsString) {
+                case "{x=2}":
+                case "{x=3}":
+                case "{x=4}":
+                    break;
+                default:
+                    fail(solutionAsString + " is not part of found solutions");
             }
         }
     }
@@ -99,24 +99,24 @@ public class SolutionFinderTest {
     @Test
     public void testSolutionFinder3() throws Exception {
         String formula = "0 < x & x < 5 & 1 < y & y < 6 & y < x";
-        FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(ctx);
-        BoolExpr constraint = formulaTranslator.translatePredicate(formula);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 
         s.add(constraint);
         assertEquals(Status.SATISFIABLE, s.check());
 
-        SolutionFinder finder = new SolutionFinder(constraint, formulaTranslator, s, ctx);
-        Set<BoolExpr> solutions = finder.findSolutions(20);
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<Model> solutions = finder.findSolutions(20);
 
         assertEquals(3, solutions.size());
-        for (BoolExpr solution : solutions) {
-            switch (solution.toString()) {
-            case "(and (= y 2) (= x 3))":
-            case "(and (= y 2) (= x 4))":
-            case "(and (= y 3) (= x 4))":
-                break;
-            default:
-                fail(solution.toString() + " is not part of found solutions");
+        for (Model solution : solutions) {
+            String solutionAsString = z3ModelToString(solution);
+            switch (solutionAsString) {
+                case "{x=3, y=2}":
+                case "{x=4, y=2}":
+                case "{x=4, y=3}":
+                    break;
+                default:
+                    fail(solutionAsString + " is not part of found solutions");
             }
         }
     }
@@ -149,4 +149,12 @@ public class SolutionFinderTest {
         assertEquals("[2, 3, 4]", solutions.toString());
     }
 
+    static String z3ModelToString(Model m) {
+        Map<String,String> values = new HashMap<>();
+        for(FuncDecl constant : m.getConstDecls()) {
+            String value = m.eval(constant.apply(),true).toString();
+            values.put(constant.apply().toString(),value);
+        }
+        return values.toString();
+    }
 }
