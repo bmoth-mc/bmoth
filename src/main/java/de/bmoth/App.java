@@ -5,7 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
@@ -35,6 +37,8 @@ public class App extends Application {
         MenuBar menuBar = new MenuBar();
         Menu menuFile = new Menu("File");
         Menu menuCheck = new Menu("Checks");
+
+
         CodeArea codeArea = new CodeArea();
         TextArea infoArea = new TextArea();
         MenuItem open = new MenuItem("Open");
@@ -129,7 +133,14 @@ public class App extends Application {
             @Override
             public void handle(WindowEvent event) {
                 if (hasChanged){
-                    //saveChangeDialog();
+                    event.consume();
+                    int nextStep = saveChangedDialog();
+                    switch (nextStep){
+                        case 0: break;
+                        case 1: save.fire(); break;
+                        case 2: saveAs.fire(); break;
+                        case -1: Platform.exit(); break;
+                    }
                 }
             }
         });
@@ -138,6 +149,25 @@ public class App extends Application {
         primaryStage.show();
     }
 
+    private int saveChangedDialog() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("UNSAVED CHANGES!");
+        alert.setHeaderText("Unsaved Changes! What do you want to do");
+        alert.setContentText(null);
+
+        ButtonType buttonTypeSave = new ButtonType("Save");
+        ButtonType buttonTypeSaveAs = new ButtonType("Save As");
+        ButtonType buttonTypeExitAnway = new ButtonType("Exit anyway!");
+        ButtonType buttonTypeCancel = new ButtonType("Back", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(buttonTypeSave,buttonTypeSaveAs,buttonTypeExitAnway,buttonTypeCancel);
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get() == buttonTypeSave) return 1;
+        if(result.get() == buttonTypeSaveAs) return 2;
+        if(result.get() == buttonTypeCancel) return 0;
+        if(result.get() == buttonTypeExitAnway) return -1;
+        return 0;
+    }
 
 
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
