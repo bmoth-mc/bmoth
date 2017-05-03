@@ -9,14 +9,19 @@ import com.microsoft.z3.Status;
 
 import de.bmoth.backend.FormulaToZ3Translator;
 import de.bmoth.backend.MachineToZ3Translator;
+import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.*;
 
 import java.util.*;
 
-/**
- * Created by krings on 28.04.17.
- */
+
 public class ModelChecker {
+    
+    public static boolean doModelCheck(String machineAsString){
+        MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
+        return doModelCheck(machineAsSemanticAst);
+    }
+    
     public static boolean doModelCheck(MachineNode machine) {
         Context ctx = new Context();
         MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);

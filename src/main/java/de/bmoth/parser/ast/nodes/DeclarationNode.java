@@ -17,5 +17,10 @@ public class DeclarationNode extends TypedNode {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	@Override
+	public String toString(){
+	    return name;
+	}
 
 }

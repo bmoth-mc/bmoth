@@ -3,6 +3,7 @@ package de.bmoth.modelchecker;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
+import com.microsoft.z3.Sort;
 
 import java.util.Map;
 
@@ -19,16 +20,17 @@ public class State {
         return this.values.toString();
     }
 
-    @Deprecated
-    public BoolExpr getValuesExpression(Context context) {
+    public BoolExpr getStateConstraint(Context context) {
         BoolExpr result = null;
         for (Map.Entry<String, Expr> entry : values.entrySet()) {
-            BoolExpr singleExpression = (BoolExpr) entry.getValue();
-
+            Expr singleExpression =  entry.getValue();
+            Sort sort = singleExpression.getSort();
+            Expr identifierExpr = context.mkConst(entry.getKey(), sort);
+            BoolExpr eq = context.mkEq(identifierExpr, singleExpression);
             if (result == null) {
-                result = singleExpression;
+                result = eq;
             } else {
-                result = context.mkAnd(result, singleExpression);
+                result = context.mkAnd(result, eq);
             }
         }
         return result;
