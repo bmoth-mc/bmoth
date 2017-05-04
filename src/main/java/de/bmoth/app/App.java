@@ -135,6 +135,7 @@ public class App extends Application {
                 } else {
                     alert.setContentText("No Model Found");
                 }
+                alert.showAndWait();
             }
         });
 

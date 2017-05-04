@@ -56,7 +56,7 @@ public class PersonalPreference {
     public static void savePrefToFile(PersonalPreference personalPreference){
 
         try {
-            File file = new File(System.getProperty("user.dir").concat("/src/main/resources/de/bmoth/App/pref.xml"));
+            File file = new File(System.getProperty("user.dir").concat("/src/main/resources/de/bmoth/app/pref.xml"));
 
             JAXBContext jaxbContext = JAXBContext.newInstance(PersonalPreference.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -75,7 +75,7 @@ public class PersonalPreference {
     public static PersonalPreference loadPreferenceFromFile(){
         try {
 
-            File file = new File(System.getProperty("user.dir").concat("/src/main/resources/de/bmoth/App/pref.xml"));
+            File file = new File(System.getProperty("user.dir").concat("/src/main/resources/de/bmoth/app/pref.xml"));
             JAXBContext jaxbContext = JAXBContext.newInstance(PersonalPreference.class);
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();

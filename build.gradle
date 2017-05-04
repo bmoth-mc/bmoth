@@ -59,7 +59,7 @@ dependencies {
 }
 
 // Define the main class for the application
-mainClassName = 'de.bmoth.app.App'
+mainClassName = 'de.bmoth.app.app'
 
 
 // gradle generateGrammarSource
