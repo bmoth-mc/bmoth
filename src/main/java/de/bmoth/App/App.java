@@ -41,10 +41,12 @@ public class App extends Application {
         MenuBar menuBar = new MenuBar();
         Menu menuFile = new Menu("File");
         Menu menuCheck = new Menu("Checks");
-
-
-
         CodeArea codeArea = new CodeArea();
+
+        if(personalPreference.getLastFile()!=null) {
+            openFile(primaryStage, codeArea, new File(personalPreference.getLastFile()));
+        }
+
         TextArea infoArea = new TextArea();
         MenuItem open = new MenuItem("Open");
         MenuItem saveAs = new MenuItem("Save As");
@@ -146,7 +148,7 @@ public class App extends Application {
                 .subscribe(change -> {
                     codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
                 });
-
+        codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));             //Needed to apply Highlighting on last used File
         codeArea.setPrefSize(800,600);
 
         codeArea.textProperty().addListener(new ChangeListener<String>() {
@@ -156,10 +158,8 @@ public class App extends Application {
                 infoArea.setText("Unsaved Changes");
             }
         });
-
         infoArea.setEditable(false);
         infoArea.setPrefSize(0,0);
-
 
 
         Scene scene = new Scene(new VBox(), 800, 600);
