@@ -56,15 +56,15 @@ public class Highlighter  {
         while(matcher.find()) {
             String styleClass =
                 matcher.group("START") !=null ? "start":
-                matcher.group("KEYWORD") != null ? "keyword" :
-                    matcher.group("KEYWORD2")!=null?"keyword2":
-                        matcher.group("PAREN") != null ? "paren" :
-                            matcher.group("BRACE") != null ? "brace" :
-                                matcher.group("BRACKET") != null ? "bracket" :
-                                    matcher.group("SEMICOLON") != null ? "semicolon" :
-                                        matcher.group("STRING") != null ? "string" :
-                                            matcher.group("COMMENT") != null ? "comment" :
-                                                null; /* never happens */ assert styleClass != null;
+                    matcher.group("KEYWORD") != null ? "keyword" :
+                        matcher.group("KEYWORD2")!=null?"keyword2":
+                            matcher.group("PAREN") != null ? "paren" :
+                                matcher.group("BRACE") != null ? "brace" :
+                                    matcher.group("BRACKET") != null ? "bracket" :
+                                        matcher.group("SEMICOLON") != null ? "semicolon" :
+                                            matcher.group("STRING") != null ? "string" :
+                                                matcher.group("COMMENT") != null ? "comment" :
+                                                    null; /* never happens */ assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
             lastKwEnd = matcher.end();

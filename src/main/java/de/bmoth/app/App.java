@@ -17,7 +17,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
-import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -243,6 +242,7 @@ public class App extends Application {
             e.printStackTrace();
         }
         codeArea.replaceText(content);
+        codeArea.deletehistory();
         stage.setTitle("Bmoth - " +file.getName());
 
     }
