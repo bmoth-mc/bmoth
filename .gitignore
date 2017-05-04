@@ -32,3 +32,4 @@ hs_err_pid*
 .idea/
 .gradle/
 *.iml
+src/main/resources/de/bmoth/App/pref.xml
