@@ -546,7 +546,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
     }
 
     @Override
-    public Type visitSingleAssignSubstitution(SingleAssignSubstitution node, Type expected) {
+    public Type visitSingleAssignSubstitution(SingleAssignSubstitutionNode node, Type expected) {
         Type type = visitIdentifierExprNode(node.getIdentifier(), new UntypedType());
         super.visitExprNode(node.getValue(), type);
         return null;
@@ -612,6 +612,16 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         }
         super.visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
         return BoolType.getInstance();
+    }
+
+    @Override
+    public Type visitAnySubstitution(AnySubstitutionNode node, Type expected) {
+        for (DeclarationNode decl : node.getParameters()) {
+            decl.setType(new UntypedType());
+        }
+        super.visitPredicateNode(node.getWherePredicate(), BoolType.getInstance());
+        super.visitSubstitutionNode(node.getThenSubstitution(), null);
+        return null;
     }
 
 }

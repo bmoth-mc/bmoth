@@ -1,6 +1,5 @@
 package de.bmoth.backend;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,10 +8,11 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
 
+import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
+import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
 
 public class MachineToZ3Translator {
@@ -59,12 +59,18 @@ public class MachineToZ3Translator {
     }
 
     private BoolExpr visitSubstitution(SubstitutionNode node) {
-        if (node instanceof SingleAssignSubstitution) {
-            return visitSingleAssignSubstitution((SingleAssignSubstitution) node);
+        if (node instanceof SingleAssignSubstitutionNode) {
+            return visitSingleAssignSubstitution((SingleAssignSubstitutionNode) node);
         } else if (node instanceof ParallelSubstitutionNode) {
             return visitParallelSubstitution((ParallelSubstitutionNode) node);
+        } else if (node instanceof AnySubstitutionNode) {
+            return visitAnySubstitution((AnySubstitutionNode) node);
         }
         throw new AssertionError("Not implemented" + node.getClass());
+    }
+
+    private BoolExpr visitAnySubstitution(AnySubstitutionNode node) {
+        throw new AssertionError("Not implemented: " + node.getClass());// TODO
     }
 
     private BoolExpr visitParallelSubstitution(ParallelSubstitutionNode node) {
@@ -81,7 +87,7 @@ public class MachineToZ3Translator {
         return boolExpr;
     }
 
-    private BoolExpr visitSingleAssignSubstitution(SingleAssignSubstitution node) {
+    private BoolExpr visitSingleAssignSubstitution(SingleAssignSubstitutionNode node) {
         FormulaToZ3Translator translator = new FormulaToZ3Translator(this.z3Context);
         Sort bTypeToZ3Sort = translator.bTypeToZ3Sort(node.getIdentifier().getType());
         Expr value = translator.visitExprNode(node.getValue(), null);

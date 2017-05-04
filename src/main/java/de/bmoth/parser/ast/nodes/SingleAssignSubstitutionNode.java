@@ -1,11 +1,11 @@
 package de.bmoth.parser.ast.nodes;
 
-public class SingleAssignSubstitution implements SubstitutionNode {
+public class SingleAssignSubstitutionNode implements SubstitutionNode {
 
 	private final IdentifierExprNode identifier;
 	private final ExprNode value;
 
-	public SingleAssignSubstitution(IdentifierExprNode identifier, ExprNode expr) {
+	public SingleAssignSubstitutionNode(IdentifierExprNode identifier, ExprNode expr) {
 		this.identifier = identifier;
 		this.value = expr;
 	}

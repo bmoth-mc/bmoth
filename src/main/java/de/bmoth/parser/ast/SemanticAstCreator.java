@@ -19,6 +19,7 @@ import de.bmoth.antlr.BMoThParser.OperationContext;
 import de.bmoth.antlr.BMoThParser.PredicateContext;
 import de.bmoth.antlr.BMoThParser.SubstitutionContext;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
+import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
@@ -38,7 +39,7 @@ import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
 import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
 import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
+import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
 
 public class SemanticAstCreator {
@@ -283,7 +284,7 @@ public class SemanticAstCreator {
 
             List<SubstitutionNode> sublist = new ArrayList<>();
             for (int i = 0; i < idents.size(); i++) {
-                SingleAssignSubstitution singleAssignSubstitution = new SingleAssignSubstitution(idents.get(i),
+                SingleAssignSubstitutionNode singleAssignSubstitution = new SingleAssignSubstitutionNode(idents.get(i),
                         expressions.get(i));
                 sublist.add(singleAssignSubstitution);
             }
@@ -292,6 +293,20 @@ public class SemanticAstCreator {
             } else {
                 return new ParallelSubstitutionNode(sublist);
             }
+        }
+
+        @Override
+        public SubstitutionNode visitAnySubstitution(BMoThParser.AnySubstitutionContext ctx) {
+            List<Token> identifiers = ctx.identifier_list().identifiers;
+            List<DeclarationNode> declarationList = new ArrayList<>();
+            for (Token token : identifiers) {
+                DeclarationNode declNode = new DeclarationNode(token, token.getText());
+                declarationList.add(declNode);
+                declarationMap.put(token, declNode);
+            }
+            PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
+            SubstitutionNode sub = (SubstitutionNode) ctx.substitution().accept(this);
+            return new AnySubstitutionNode(declarationList, predNode, sub);
         }
 
         @Override

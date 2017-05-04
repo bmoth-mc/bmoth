@@ -18,6 +18,7 @@ import com.microsoft.z3.TupleSort;
 
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.AbstractVisitor;
+import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
@@ -34,7 +35,7 @@ import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
 import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
 import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SingleAssignSubstitution;
+import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
 import de.bmoth.parser.ast.types.BoolType;
 import de.bmoth.parser.ast.types.CoupleType;
 import de.bmoth.parser.ast.types.IntegerType;
@@ -428,7 +429,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
     }
 
     @Override
-    public Expr visitSingleAssignSubstitution(SingleAssignSubstitution node, Void expected) {
+    public Expr visitSingleAssignSubstitution(SingleAssignSubstitutionNode node, Void expected) {
         throw new AssertionError("Not reachable");
     }
 
@@ -517,6 +518,11 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
     @Override
     public Expr visitQuantifiedPredicateNode(QuantifiedPredicateNode node, Void expected) {
         throw new AssertionError("Implement: " + node.getClass());
+    }
+
+    @Override
+    public Expr visitAnySubstitution(AnySubstitutionNode node, Void expected) {
+        throw new AssertionError("Not reachable");
     }
 
 }
