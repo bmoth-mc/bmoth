@@ -2,7 +2,7 @@ MACHINE SimpleMachine
 VARIABLES
   x
 INVARIANT
-  x : INTEGER & x : 1..10 & x /= 1
+  x : NATURAL & x : 1..10 & x /= 1
 INITIALISATION
   x := 1
 OPERATIONS

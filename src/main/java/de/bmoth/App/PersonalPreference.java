@@ -17,7 +17,8 @@ import java.io.IOException;
 @XmlRootElement
 public class PersonalPreference {
 
-    String prefdir;
+    private String prefdir;
+    private String lastFile;
 
     public PersonalPreference() {
         this.prefdir = System.getProperty("user.dir");
@@ -43,7 +44,16 @@ public class PersonalPreference {
         this.prefdir = prefdir;
     }
 
-public static void savePrefToFile(PersonalPreference personalPreference){
+    public String getLastFile() {
+        return lastFile;
+    }
+    @XmlElement
+    public void setLastFile(String lastFile) {
+        this.lastFile = lastFile;
+    }
+
+
+    public static void savePrefToFile(PersonalPreference personalPreference){
 
         try {
             File file = new File(System.getProperty("user.dir").concat("/src/main/resources/de/bmoth/App/pref.xml"));

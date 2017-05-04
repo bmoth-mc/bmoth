@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import com.sun.javafx.runtime.SystemProperties;
+import de.bmoth.modelchecker.ModelChecker;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -37,7 +37,7 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         personalPreference=PersonalPreference.loadPreferenceFromFile();
-
+        currentFile=personalPreference.getLastFile();
         MenuBar menuBar = new MenuBar();
         Menu menuFile = new Menu("File");
         Menu menuCheck = new Menu("Checks");
@@ -50,19 +50,22 @@ public class App extends Application {
         MenuItem saveAs = new MenuItem("Save As");
         MenuItem save = new MenuItem("Save");
         MenuItem exit = new MenuItem("Exit");
+        MenuItem modelCheck = new MenuItem("Start Modelchecking");
         hasChanged=false;
 
 
 
         open.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                String s=openFile(primaryStage,codeArea,personalPreference);
+                String s= openFileChooser(primaryStage,codeArea,personalPreference);
                 currentFile=s;
                 hasChanged=false;
                 infoArea.clear();
                 codeArea.showParagraphAtTop(0);
             }
         });
+
+
 
         exit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
@@ -118,7 +121,24 @@ public class App extends Application {
             }
         });
 
+
+
+        modelCheck.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                boolean hasModel;
+                hasModel = ModelChecker.doModelCheck(codeArea.getText());
+                Alert alert= new Alert(Alert.AlertType.CONFIRMATION);
+                if(hasModel){
+                    alert.setContentText("Model Found");
+                } else {
+                    alert.setContentText("No Model Found");
+                }
+            }
+        });
+
         menuFile.getItems().addAll(open,save,saveAs, new SeparatorMenuItem(), exit);
+        menuCheck.getItems().add(modelCheck);
         menuBar.getMenus().addAll(menuFile, menuCheck);
 
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -185,7 +205,7 @@ public class App extends Application {
         return spansBuilder.create();
     }
 
-    private static String openFile(Stage stage, CodeArea codeArea, PersonalPreference personalPreference)  {
+    private static String openFileChooser(Stage stage, CodeArea codeArea, PersonalPreference personalPreference)  {
         FileChooser fileChooser= new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Open MCH File", "*.mch"));
         fileChooser.setTitle("Choose File");
@@ -193,20 +213,25 @@ public class App extends Application {
         File file=fileChooser.showOpenDialog(stage);
 
         if(file!=null){
+            personalPreference.setLastFile(file.getAbsolutePath());
             personalPreference.setPrefdir(file.getParent());
-            String content = null;
-            try {
-                content = new String(Files.readAllBytes(Paths.get(file.getPath())));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            codeArea.replaceText(content);
-            stage.setTitle("Bmoth - " +file.getName());
-
+            openFile(stage,codeArea,file);
             return file.getAbsolutePath();
 
         }
         return null;
+    }
+
+    private static void openFile(Stage stage, CodeArea codeArea, File file) {
+        String content = null;
+        try {
+            content = new String(Files.readAllBytes(Paths.get(file.getPath())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        codeArea.replaceText(content);
+        stage.setTitle("Bmoth - " +file.getName());
+
     }
 
     private static void saveFile(String path,CodeArea codeArea) throws IOException {
