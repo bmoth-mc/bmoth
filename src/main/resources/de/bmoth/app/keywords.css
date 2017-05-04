@@ -1,10 +1,18 @@
+.start {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
 .keyword {
-    -fx-fill: purple;
+    -fx-fill: darkblue;
+    -fx-font-weight: bold;
+}
+.keyword2 {
+    -fx-fill: cadetblue;
     -fx-font-weight: bold;
 }
 .semicolon {
     -fx-font-weight: bold;
-    -fx-fill: orange;
+    -fx-fill: darkgreen;
 }
 .paren {
     -fx-fill: firebrick;

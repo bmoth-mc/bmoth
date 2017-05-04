@@ -23,7 +23,8 @@ INITIALISATION
 || doors_open := FALSE
 OPERATIONS
   CloseDoors =
-    BEGIN doors_open := FALSE END
+    BEGIN doors_open := FALSE 
+    END
 ;
   OpenDoors =
     SELECT
