@@ -47,13 +47,7 @@ public static void savePrefToFile(PersonalPreference personalPreference){
 
         try {
             File file = new File(System.getProperty("user.dir").concat("/src/main/resources/de/bmoth/App/pref.xml"));
-            if(!file.exists()){
-                try {
-                    file.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+
             JAXBContext jaxbContext = JAXBContext.newInstance(PersonalPreference.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
