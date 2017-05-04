@@ -1,4 +1,4 @@
-package de.bmoth.App;
+package de.bmoth.app;
 
 /**
  * Created by julian on 03.05.17.

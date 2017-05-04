@@ -1,4 +1,4 @@
-package de.bmoth.App;
+package de.bmoth.app;
 
 import java.io.*;
 import java.nio.file.Files;

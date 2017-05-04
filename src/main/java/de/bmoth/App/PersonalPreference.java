@@ -1,4 +1,4 @@
-package de.bmoth.App;
+package de.bmoth.app;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
