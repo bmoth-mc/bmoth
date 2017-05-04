@@ -66,8 +66,7 @@ public class App extends Application {
                     }
                 }
                 if(nextStep!=0) {
-                    String s = openFileChooser(primaryStage, codeArea, personalPreference);
-                    currentFile = s;
+                    currentFile = openFileChooser(primaryStage, codeArea, personalPreference);
                     hasChanged = false;
                     infoArea.clear();
                     codeArea.selectRange(0, 0);
@@ -205,10 +204,12 @@ public class App extends Application {
 
         alert.getButtonTypes().setAll(buttonTypeSave,buttonTypeSaveAs,buttonTypeIgnoreChanges,buttonTypeCancel);
         Optional<ButtonType> result = alert.showAndWait();
-        if(result.get() == buttonTypeSave) return 1;
-        if(result.get() == buttonTypeSaveAs) return 2;
-        if(result.get() == buttonTypeCancel) return 0;
-        if(result.get() == buttonTypeIgnoreChanges) return -1;
+        if(result.isPresent()) {
+            if (result.get() == buttonTypeSave) return 1;
+            if (result.get() == buttonTypeSaveAs) return 2;
+            if (result.get() == buttonTypeCancel) return 0;
+            if (result.get() == buttonTypeIgnoreChanges) return -1;
+        }
         return 0;
     }
 
@@ -278,8 +279,8 @@ public class App extends Application {
     /**
      * Asks for location and name and saves code
      * @see #saveFile(String, CodeArea)
-     * @param stage
-     * @param codeArea
+     * @param stage Place to display Filechooser-Dialog
+     * @param codeArea includes the code which is saved
      * @throws IOException
      */
     private static void saveFileAs(Stage stage, CodeArea codeArea) throws IOException{
