@@ -45,8 +45,8 @@ public class App extends Application {
 
         if(personalPreference.getLastFile()!=null) {
             openFile(primaryStage, codeArea, new File(personalPreference.getLastFile()));
+            codeArea.selectRange(0,0);
         }
-
         TextArea infoArea = new TextArea();
         MenuItem open = new MenuItem("Open");
         MenuItem saveAs = new MenuItem("Save As");
@@ -59,10 +59,23 @@ public class App extends Application {
 
         open.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                String s= openFileChooser(primaryStage,codeArea,personalPreference);
-                currentFile=s;
-                hasChanged=false;
-                infoArea.clear();
+                int nextStep=-1;
+                if (hasChanged){
+                    nextStep=saveChangedDialog();
+                    switch (nextStep){
+                        case 0: break;
+                        case 1: save.fire(); break;
+                        case 2: saveAs.fire(); break;
+                        case -1: break;
+                    }
+                }
+                if(nextStep!=0) {
+                    String s = openFileChooser(primaryStage, codeArea, personalPreference);
+                    currentFile = s;
+                    hasChanged = false;
+                    infoArea.clear();
+                    codeArea.selectRange(0, 0);
+                }
             }
         });
 
@@ -186,7 +199,7 @@ public class App extends Application {
 
         ButtonType buttonTypeSave = new ButtonType("Save");
         ButtonType buttonTypeSaveAs = new ButtonType("Save As");
-        ButtonType buttonTypeExitAnway = new ButtonType("Exit anyway!");
+        ButtonType buttonTypeExitAnway = new ButtonType("Ignore Changes!");
         ButtonType buttonTypeCancel = new ButtonType("Back", ButtonBar.ButtonData.CANCEL_CLOSE);
 
         alert.getButtonTypes().setAll(buttonTypeSave,buttonTypeSaveAs,buttonTypeExitAnway,buttonTypeCancel);
