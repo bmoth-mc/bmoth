@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
+import com.sun.javafx.runtime.SystemProperties;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -30,13 +31,17 @@ import javafx.stage.Stage;
 
 public class App extends Application {
     private String currentFile;
+    private PersonalPreference personalPreference;
     private Boolean hasChanged;
 
     @Override
     public void start(Stage primaryStage) {
+        personalPreference=PersonalPreference.loadPreferenceFromFile();
+
         MenuBar menuBar = new MenuBar();
         Menu menuFile = new Menu("File");
         Menu menuCheck = new Menu("Checks");
+
 
 
         CodeArea codeArea = new CodeArea();
@@ -51,7 +56,7 @@ public class App extends Application {
 
         open.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                String s=openFile(primaryStage,codeArea);
+                String s=openFile(primaryStage,codeArea,personalPreference);
                 currentFile=s;
                 hasChanged=false;
                 infoArea.clear();
@@ -61,6 +66,7 @@ public class App extends Application {
 
         exit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
+                PersonalPreference.savePrefToFile(personalPreference);
                 if (hasChanged){
                     int nextStep = saveChangedDialog();
                     switch (nextStep){
@@ -179,14 +185,15 @@ public class App extends Application {
         return spansBuilder.create();
     }
 
-    private static String openFile(Stage stage,CodeArea codeArea)  {
+    private static String openFile(Stage stage, CodeArea codeArea, PersonalPreference personalPreference)  {
         FileChooser fileChooser= new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Open MCH File", "*.mch"));
         fileChooser.setTitle("Choose File");
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setInitialDirectory(new File(personalPreference.getPrefdir()));
         File file=fileChooser.showOpenDialog(stage);
 
         if(file!=null){
+            personalPreference.setPrefdir(file.getParent());
             String content = null;
             try {
                 content = new String(Files.readAllBytes(Paths.get(file.getPath())));
