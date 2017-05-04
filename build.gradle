@@ -52,14 +52,14 @@ dependencies {
     compile files('com.microsoft.z3.jar')
 
     // JavaFX RichText Editor
-    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M5'
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
 }
 
 // Define the main class for the application
-mainClassName = 'de.bmoth.App'
+mainClassName = 'de.bmoth.app.App'
 
 
 // gradle generateGrammarSource

@@ -63,7 +63,6 @@ public class App extends Application {
                 currentFile=s;
                 hasChanged=false;
                 infoArea.clear();
-                codeArea.showParagraphAtTop(0);
             }
         });
 
