@@ -3,8 +3,6 @@ package de.bmoth.app;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 import de.bmoth.modelchecker.ModelChecker;
@@ -18,8 +16,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
 import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -32,6 +28,7 @@ public class App extends Application {
     private String currentFile;
     private PersonalPreference personalPreference;
     private Boolean hasChanged;
+    private final static String APPNAME="Bmoth";
 
     @Override
     public void start(Stage primaryStage) {
@@ -186,10 +183,15 @@ public class App extends Application {
             }
         });
         primaryStage.setScene(scene);
-        primaryStage.setTitle("BMoth");
+        if(primaryStage.getTitle()==null) primaryStage.setTitle(APPNAME);
         primaryStage.show();
     }
 
+    /**
+     * Opens a Confirmation-Alert to decide how to proceed with unsaved Changes
+     *
+     * @return UserChoice as Integer: -1 = Ignore, 0 = Cancel, 1 = Save , 2 = SaveAs
+     */
     private int saveChangedDialog() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("UNSAVED CHANGES!");
@@ -198,25 +200,27 @@ public class App extends Application {
 
         ButtonType buttonTypeSave = new ButtonType("Save");
         ButtonType buttonTypeSaveAs = new ButtonType("Save As");
-        ButtonType buttonTypeExitAnway = new ButtonType("Ignore Changes!");
+        ButtonType buttonTypeIgnoreChanges = new ButtonType("Ignore Changes!");
         ButtonType buttonTypeCancel = new ButtonType("Back", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        alert.getButtonTypes().setAll(buttonTypeSave,buttonTypeSaveAs,buttonTypeExitAnway,buttonTypeCancel);
+        alert.getButtonTypes().setAll(buttonTypeSave,buttonTypeSaveAs,buttonTypeIgnoreChanges,buttonTypeCancel);
         Optional<ButtonType> result = alert.showAndWait();
         if(result.get() == buttonTypeSave) return 1;
         if(result.get() == buttonTypeSaveAs) return 2;
         if(result.get() == buttonTypeCancel) return 0;
-        if(result.get() == buttonTypeExitAnway) return -1;
+        if(result.get() == buttonTypeIgnoreChanges) return -1;
         return 0;
     }
 
-
-    private static StyleSpans<Collection<String>> computeHighlighting(String text) {
-        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-        spansBuilder.add(Collections.emptyList(), text.length());
-        return spansBuilder.create();
-    }
-
+    /**
+     * Asking the user which File to open into a Textarea, if the file is found, openFile is called
+     *@see #openFile(Stage, CodeArea, File)
+     *
+     * @param stage Stage to open Dialog
+     * @param codeArea  Textarea which will display the Code
+     * @param personalPreference Preference for Initialdirectory
+     * @return Returns the filepath as String or null if canceled
+     */
     private static String openFileChooser(Stage stage, CodeArea codeArea, PersonalPreference personalPreference)  {
         FileChooser fileChooser= new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Open MCH File", "*.mch"));
@@ -234,6 +238,14 @@ public class App extends Application {
         return null;
     }
 
+    /**
+     * Open a given File into the CodeArea
+     * Change title of Stage
+     *
+     * @param stage     Stage for changing Title
+     * @param codeArea  CodeArea to display code
+     * @param file      File to read code
+     */
     private static void openFile(Stage stage, CodeArea codeArea, File file) {
         String content = null;
         try {
@@ -243,10 +255,15 @@ public class App extends Application {
         }
         codeArea.replaceText(content);
         codeArea.deletehistory();
-        stage.setTitle("Bmoth - " +file.getName());
-
+        stage.setTitle( APPNAME + " - " +file.getName());
     }
 
+    /**
+     * Saves Code into a File
+     * @param path  Save-Location
+     * @param codeArea  Codearea to read text from
+     * @throws IOException
+     */
     private static void saveFile(String path,CodeArea codeArea) throws IOException {
         File file = new File(path);
         if(!file.exists()) {
@@ -258,6 +275,13 @@ public class App extends Application {
         fileWriter.close();
     }
 
+    /**
+     * Asks for location and name and saves code
+     * @see #saveFile(String, CodeArea)
+     * @param stage
+     * @param codeArea
+     * @throws IOException
+     */
     private static void saveFileAs(Stage stage, CodeArea codeArea) throws IOException{
         FileChooser fileChooser=new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
