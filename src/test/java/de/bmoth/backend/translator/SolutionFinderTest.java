@@ -30,6 +30,7 @@ public class SolutionFinderTest {
     }
 
     @Test
+    @Ignore
     public void testSolutionFinder1() throws Exception {
         String formula = "a : NATURAL & a < 1";
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
@@ -38,6 +39,8 @@ public class SolutionFinderTest {
         Set<Model> solutions = finder.findSolutions(20);
         assertEquals(1, solutions.size());
 
+        // solution shouldn't contain NATURAL=(_ as-array k!3)
+        assertEquals("{a=0}", z3ModelToString((Model) solutions.toArray()[0]));
     }
 
     @Test
