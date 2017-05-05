@@ -156,7 +156,9 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             return z3Context.mkGt(left, right);
         }
         case NOT_BELONGING:
-            break;
+        	Expr left = visitExprNode(expressionNodes.get(0), null);
+            ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
+            return z3Context.mkNot(z3Context.mkSetMembership(left, right));
         case INCLUSION:
             // a <: S
             ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
@@ -164,11 +166,18 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             return z3Context.mkSetSubset(arg0, arg1);
         case STRICT_INCLUSION:
             // a <<: S
-            break;
+        	ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
+            ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
+            return z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arg0, arg1)),z3Context.mkSetSubset(arg0, arg1));
         case NON_INCLUSION:
-            break;
+        	ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
+            ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
+            return z3Context.mkNot(z3Context.mkSetSubset(arg0, arg1));
         case STRICT_NON_INCLUSION:
-            break;
+        	ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
+            ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
+            return z3Context.mkNot(z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arg0, arg1)),z3Context.mkSetSubset(arg0, arg1)));
+
         }
         // TODO
         throw new AssertionError("Not implemented: " + node.getOperator());
