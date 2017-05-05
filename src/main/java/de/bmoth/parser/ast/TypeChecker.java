@@ -192,9 +192,20 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             returnType = new SetType(subtype);
             break;
         }
+        case MININT:
+        case MAXINT: {
+            try {
+                IntegerType.getInstance().unify(expected);
+            } catch (UnificationException e) {
+                throw new TypeErrorException(node, expected, IntegerType.getInstance());
+            }
+            return IntegerType.getInstance();
+        }
         case INTEGER:
         case NATURAL1:
-        case NATURAL: {
+        case NATURAL:
+        case INT:
+        case NAT: {
             Type type = new SetType(IntegerType.getInstance());
             try {
                 type = type.unify(expected);
