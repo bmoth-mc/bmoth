@@ -1,5 +1,6 @@
 package de.bmoth.backend;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import com.microsoft.z3.Sort;
 import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.parser.ast.nodes.OperationNode;
 import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
@@ -98,6 +100,15 @@ public class MachineToZ3Translator {
 
     private String getPrimedName(String name) {
         return name + "'";
+    }
+
+    public List<BoolExpr> getOperationConstraints() {
+        List<BoolExpr> results = new ArrayList<>();
+
+        for (OperationNode operationNode : this.machineNode.getOperations()) {
+
+        }
+        return results;
     }
 
 }

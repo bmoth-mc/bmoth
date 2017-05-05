@@ -9,60 +9,73 @@ import com.microsoft.z3.Status;
 
 import de.bmoth.backend.FormulaToZ3Translator;
 import de.bmoth.backend.MachineToZ3Translator;
+import de.bmoth.backend.SolutionFinder;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.*;
 
 import java.util.*;
 
-
 public class ModelChecker {
-    
-    public static boolean doModelCheck(String machineAsString){
+
+    public static boolean doModelCheck(String machineAsString) {
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doModelCheck(machineAsSemanticAst);
     }
-    
+
     public static boolean doModelCheck(MachineNode machine) {
         Context ctx = new Context();
+        Solver solver = ctx.mkSolver();
         MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);
 
         Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
 
-        // prepare initial state
+        // prepare initial states
         BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
-
-        Solver solver = ctx.mkSolver();
-        solver.add(initialValueConstraint);
-        Status check = solver.check();
-        if (check == Status.SATISFIABLE) {
-            State state = getStateFromModel(null, solver.getModel(), machineTranslator);
-            System.out.println(state);
+        SolutionFinder finder = new SolutionFinder(initialValueConstraint, solver, ctx);
+        Set<Model> models = finder.findSolutions(5);
+        for (Model model : models) {
+            State state = getStateFromModel(null, model, machineTranslator);
             queue.add(state);
-        } else {
-            throw new AssertionError("Initial constraint state not satisfiable: " + initialValueConstraint);
         }
 
-        // prepare invariant
-        BoolExpr invariant = machineTranslator.getInvariantConstraint();
-
-        solver.add(invariant);
-        check = solver.check();
-        if (check != Status.SATISFIABLE) {
-            throw new AssertionError("Invariant not satisfiable:" + invariant);
-        }
-
+        final BoolExpr invariant = machineTranslator.getInvariantConstraint();
         while (!queue.isEmpty()) {
             State current = queue.poll();
-
+            // prepare invariant
+            solver.reset();
             // apply current state
+            BoolExpr stateConstraint = current.getStateConstraint(ctx);
+            solver.add(stateConstraint);
             // check invariant
+            solver.add(invariant);
+            // check invariant
+            Status check = solver.check();
+            if (check != Status.SATISFIABLE) {
+                return false;
+            }
+            visited.add(current);
 
-            // compute successors
-            // add to queue if not in visited
+            solver.reset();
+            solver.add(stateConstraint);
+            List<BoolExpr> constraints = machineTranslator.getOperationConstraints();
+            for (BoolExpr boolExpr : constraints) {
+                // compute successors
+                finder = new SolutionFinder(boolExpr, solver, ctx);
+                models = finder.findSolutions(5);
+                for (Model model : models) {
+                    State state = getStateFromModel(current, model, machineTranslator);
+                    // add to queue if not in visited
+                    if (!visited.contains(state)) {
+                        queue.add(state);
+                    }
+                }
+            }
+
         }
 
-        return false;// TODO
+        return true;
+
     }
 
     private static State getStateFromModel(State predecessor, Model model, MachineToZ3Translator machineTranslator) {
