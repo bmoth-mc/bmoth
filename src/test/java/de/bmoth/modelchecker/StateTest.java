@@ -39,6 +39,7 @@ public class StateTest {
         State state1 = new State(null, map1);
         State state2 = new State(null, map2);
         assertEquals(state1, state2);
+        assertEquals(state1.hashCode(), state2.hashCode());
     }
 
     @Test
@@ -53,5 +54,6 @@ public class StateTest {
         State state1 = new State(null, map1);
         State state2 = new State(null, map2);
         assertNotEquals(state1, state2);
+        assertNotEquals(state1.hashCode(), state2.hashCode());
     }
 }

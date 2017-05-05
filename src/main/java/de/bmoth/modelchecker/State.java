@@ -21,6 +21,11 @@ public class State {
     }
 
     @Override
+    public int hashCode() {
+        return values.hashCode();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof State)){
             return false;
