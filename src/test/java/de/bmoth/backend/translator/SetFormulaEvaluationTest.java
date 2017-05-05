@@ -125,6 +125,143 @@ public class SetFormulaEvaluationTest {
         Status check = s.check();
         assertEquals(Status.SATISFIABLE, check);
     }
+    
+    @Test
+    public void testSubset() throws Exception{
+    	String formula = "{1} <: {1,2}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    
+    @Test
+    public void testSubset2() throws Exception{
+    	String formula = "{1} <: {3,2}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+    
+    @Test
+    public void testStrictSubset() throws Exception{
+    	String formula = "{1} <<: {1,2}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    
+    @Test
+    public void testStrictSubset2() throws Exception{
+    	String formula = "{1} <<: {1}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+    
+    @Test
+    public void testStrictSubset3() throws Exception{
+    	String formula = "{1} <<: {1,1}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+    
+    @Test
+    public void testnoSubset() throws Exception{
+    	String formula = "{1} /<: {1}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+    @Test
+    public void testnoSubset2() throws Exception{
+    	String formula = "{1} /<: {2,3}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    @Test
+    public void testnoSubset3() throws Exception{
+    	String formula = "{1} /<: {1,2}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+    @Test
+    public void testNoProperSubset() throws Exception{
+    	String formula = "{1} /<<: {1}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    @Test
+    public void testNoProperSubset2() throws Exception{
+    	String formula = "{1} /<<: {1,2}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+    @Test
+    public void testNoProperSubset3() throws Exception{
+    	String formula = "{1} /<<: {2,3}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    @Test
+    public void testNotBelonging() throws Exception{
+    	String formula = "1 /: {2,3}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    @Test
+    public void testNotBelonging2() throws Exception{
+    	String formula = "{1} /: {{1}}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+    @Test
+    public void testBelonging() throws Exception{
+    	String formula = "1 : {1}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    @Test
+    public void testBelonging2() throws Exception{
+    	String formula = "x: {1}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    @Test
+    public void testBelonging3() throws Exception{
+    	String formula = "1 : {2,3}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+
+
+
 
     @Ignore
     @Test
