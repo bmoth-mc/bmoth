@@ -166,28 +166,32 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             return z3Context.mkGt(left, right);
         }
         case NOT_BELONGING:
-        	Expr left = visitExprNode(expressionNodes.get(0), null);
+            Expr left = visitExprNode(expressionNodes.get(0), null);
             ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
             return z3Context.mkNot(z3Context.mkSetMembership(left, right));
-        case INCLUSION:
+        case INCLUSION: {
             // a <: S
             ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
             ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
             return z3Context.mkSetSubset(arg0, arg1);
-        case STRICT_INCLUSION:
+        }
+        case STRICT_INCLUSION: {
             // a <<: S
-        	ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
+            ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
             ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
-            return z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arg0, arg1)),z3Context.mkSetSubset(arg0, arg1));
-        case NON_INCLUSION:
-        	ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
+            return z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arg0, arg1)), z3Context.mkSetSubset(arg0, arg1));
+        }
+        case NON_INCLUSION: {
+            ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
             ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
             return z3Context.mkNot(z3Context.mkSetSubset(arg0, arg1));
-        case STRICT_NON_INCLUSION:
-        	ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
+        }
+        case STRICT_NON_INCLUSION: {
+            ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
             ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
-            return z3Context.mkNot(z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arg0, arg1)),z3Context.mkSetSubset(arg0, arg1)));
-
+            return z3Context.mkNot(
+                    z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arg0, arg1)), z3Context.mkSetSubset(arg0, arg1)));
+        }
         }
         // TODO
         throw new AssertionError("Not implemented: " + node.getOperator());
