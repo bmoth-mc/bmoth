@@ -1,5 +1,6 @@
 package de.bmoth.backend;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -84,6 +85,15 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
     public static BoolExpr translatePredicate(String formula, Context z3Context) {
         FormulaToZ3Translator formulaTranslator = new FormulaToZ3Translator(z3Context);
         return formulaTranslator.translatePredicate(formula);
+    }
+
+    public List<Expr> getImplicitVariablesAsZ3Expression() {
+        List<Expr> list = new ArrayList<>();
+        for (DeclarationNode decl : implicitDeclarations) {
+            Expr mkConst = this.z3Context.mkConst(decl.getName(), this.bTypeToZ3Sort(decl.getType()));
+            list.add(mkConst);
+        }
+        return list;
     }
 
     public BoolExpr translatePredicate(String formula) {
