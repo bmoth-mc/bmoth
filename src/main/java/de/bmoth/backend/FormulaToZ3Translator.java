@@ -236,15 +236,25 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         }
         case INTERVAL:
             break;
-        case INTEGER:
-            break;
+        case INTEGER: {
+            Type type = node.getType();// POW(INTEGER)
+            // !x.(x : INTEGER)
+            Expr x = z3Context.mkConst("x", z3Context.getIntSort());
+            Expr integer = z3Context.mkConst("INTEGER", bTypeToZ3Sort(type));
+            Expr[] bound = new Expr[] { x };
+            // x : INTEGER
+            BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) integer);
+            Quantifier q = z3Context.mkForall(bound, b, 1, null, null, null, null);
+            this.constraintList.add(q);
+            return integer;
+        }
         case NATURAL1: {
             Type type = node.getType();// POW(INTEGER)
-            // !x.(x >= 0 <=> x : NATURAL)
+            // !x.(x >= 1 <=> x : NATURAL)
             Expr x = z3Context.mkConst("x", z3Context.getIntSort());
             Expr natural1 = z3Context.mkConst("NATURAL1", bTypeToZ3Sort(type));
             Expr[] bound = new Expr[] { x };
-            // x >= 0
+            // x >= 1
             BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(1));
             // x : NATURAL
             BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) natural1);
