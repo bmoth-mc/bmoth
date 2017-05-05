@@ -274,8 +274,18 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             return z3Context.mkFalse();
         case TRUE:
             return z3Context.mkTrue();
-        case BOOL:
-            break;
+        case BOOL: {
+            Type type = node.getType();// BOOL ?
+            // !x.(x \in {true,false})
+            Expr x = z3Context.mkConst("x", z3Context.getBoolSort());
+            Expr bool = z3Context.mkConst(ExpressionOperator.BOOL.toString(), bTypeToZ3Sort(type));
+            Expr[] bound = new Expr[] { x };
+            // x \in {true,false}
+            BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) bool);
+            Quantifier q = z3Context.mkForall(bound, b, 1, null, null, null, null);
+            this.constraintList.add(q);
+            return bool;
+        }
         case UNION:
             break;
         case COUPLE: {
