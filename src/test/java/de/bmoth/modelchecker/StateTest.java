@@ -56,4 +56,15 @@ public class StateTest {
         assertNotEquals(state1, state2);
         assertNotEquals(state1.hashCode(), state2.hashCode());
     }
+
+    @Test
+    public void testStateEquals3() throws Exception {
+        HashMap<String, Expr> map = new HashMap<>();
+
+        map.put("x", ctx.mkInt(11));
+
+        State state = new State(null, map);
+        assertEquals(state, state);
+        assertNotEquals(state, new Object());
+    }
 }

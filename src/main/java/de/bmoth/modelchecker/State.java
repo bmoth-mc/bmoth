@@ -31,7 +31,7 @@ public class State {
             return false;
         }
         if (this == obj){
-            return false;
+            return true;
         }
 
         State that = (State) obj;
