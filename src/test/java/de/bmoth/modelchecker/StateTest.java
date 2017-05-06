@@ -29,6 +29,19 @@ public class StateTest {
     }
 
     @Test
+    public void testToString() throws Exception {
+        HashMap<String, Expr> map = new HashMap<>();
+
+        map.put("z", ctx.mkInt(13));
+        map.put("x", ctx.mkInt(11));
+        map.put("y", ctx.mkInt(12));
+        map.put("a", ctx.mkInt(-200));
+
+        State state = new State(null, map);
+        assertEquals("{a=-200, x=11, y=12, z=13}", state.toString());
+    }
+
+    @Test
     public void testStateEquals() throws Exception {
         HashMap<String, Expr> map1 = new HashMap<>();
         HashMap<String, Expr> map2 = new HashMap<>();
