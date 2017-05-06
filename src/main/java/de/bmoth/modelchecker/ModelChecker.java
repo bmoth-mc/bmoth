@@ -56,10 +56,12 @@ public class ModelChecker {
             }
             visited.add(current);
 
-            solver.reset();
-            solver.add(stateConstraint);
             List<BoolExpr> operationConstraints = machineTranslator.getOperationConstraints();
             for (BoolExpr currentOperationConstraint : operationConstraints) {
+
+                solver.reset();
+                solver.add(stateConstraint);
+
                 // compute successors
                 finder = new SolutionFinder(currentOperationConstraint, solver, ctx);
                 models = finder.findSolutions(5);
