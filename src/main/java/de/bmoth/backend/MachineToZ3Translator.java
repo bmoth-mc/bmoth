@@ -15,6 +15,7 @@ import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.nodes.OperationNode;
 import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
+import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
 
 public class MachineToZ3Translator {
@@ -77,8 +78,16 @@ public class MachineToZ3Translator {
             return visitParallelSubstitution((ParallelSubstitutionNode) node);
         } else if (node instanceof AnySubstitutionNode) {
             return visitAnySubstitution((AnySubstitutionNode) node);
+        } else if (node instanceof SelectSubstitutionNode) {
+            return visitSelectSubstitutionNode((SelectSubstitutionNode) node);
         }
         throw new AssertionError("Not implemented" + node.getClass());
+    }
+
+    private BoolExpr visitSelectSubstitutionNode(SelectSubstitutionNode node) {
+        BoolExpr condition = (BoolExpr) formulaTranslator.visitPredicateNode(node.getCondition(), null);
+        BoolExpr substitution = visitSubstitution(node.getSubstitution());
+        return z3Context.mkAnd(condition, substitution);
     }
 
     private BoolExpr visitAnySubstitution(AnySubstitutionNode node) {
