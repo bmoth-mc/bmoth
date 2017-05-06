@@ -152,6 +152,16 @@ public class SolutionFinderTest {
         assertEquals("[2, 3, 4]", solutions.toString());
     }
 
+    @Test
+    public void testSolutionFinder4() throws Exception {
+        String formula = "a > 0";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<Model> solutions = finder.findSolutions(20);
+        assertEquals(20, solutions.size());
+    }
+
     static String z3ModelToString(Model m) {
         Map<String,String> values = new HashMap<>();
         for(FuncDecl constant : m.getConstDecls()) {
