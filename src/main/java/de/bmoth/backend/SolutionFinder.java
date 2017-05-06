@@ -37,15 +37,15 @@ public class SolutionFinder {
      * Evaluate a single solution from solver over all variables, constraints
      * have to be satisfiable!
      *
+     * @param model current model to find a solution in
      * @return a solution
      */
-    private BoolExpr findSolution() {
-        Model m = solver.getModel();
-        FuncDecl[] constants = m.getConstDecls();
+    private BoolExpr findSolution(Model model) {
+        FuncDecl[] constants = model.getConstDecls();
 
         BoolExpr result = null;
         for (FuncDecl var : constants) {
-            Expr value = solver.getModel().eval(var.apply(), true);
+            Expr value = model.eval(var.apply(), true);
 
             if (result == null) {
                 result = z3Context.mkEq(var.apply(), value);
@@ -76,13 +76,15 @@ public class SolutionFinder {
 
         // as long as formula is satisfiable:
         for (int i = 0; solver.check() == Status.SATISFIABLE && i < maxIterations; i++) {
-            result.add(solver.getModel());
+            Model currentModel = solver.getModel();
 
             // find a solution ...
-            BoolExpr solution = findSolution();
+            BoolExpr solution = findSolution(currentModel);
 
             // ... and add it as an exclusion constraint to solver stack
             solver.add(z3Context.mkNot(solution));
+
+            result.add(currentModel);
         }
 
         // delete solution finding scope to remove all exclusion constraints
