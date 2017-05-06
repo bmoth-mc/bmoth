@@ -4,6 +4,7 @@ import com.microsoft.z3.Expr;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -36,5 +37,22 @@ public class ModelCheckerTest {
         ModelChecker.doModelCheck(machineAsSemanticAst);
 
         //TODO finish test
+    }
+
+    @Test
+    @Ignore
+    public void testSimpleMachineWithOperations() throws Exception {
+        String machine = "MACHINE SimpleMachine\n";
+        machine += "VARIABLES x\n";
+        machine += "INVARIANT x : NATURAL & x >= 0 & x <= 2\n";
+        machine += "INITIALISATION x := 0\n";
+        machine += "OPERATIONS\n";
+        machine += "\tInc = SELECT x < 2 THEN x := x + 1 END;\n";
+        machine += "\tDec = SELECT x > 0 THEN x := x - 1 END\n";
+        machine += "END";
+
+        MachineNode simpleMachine = Parser.getMachineAsSemanticAst(machine);
+        boolean result = ModelChecker.doModelCheck(simpleMachine);
+        assertEquals(true, result);
     }
 }
