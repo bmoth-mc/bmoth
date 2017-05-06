@@ -24,4 +24,17 @@ public class ModelCheckerTest {
         result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
         assertEquals(true, result);
     }
+
+    @Test
+    public void testSubstitution() throws Exception {
+        String machine = "MACHINE test \n";
+        machine += "VARIABLES x,y \n";
+        machine += "INVARIANT x:NATURAL & y : NATURAL \n";
+        machine += "INITIALISATION x,y:= 1,2 \n";
+        machine += "END";
+        MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machine);
+        ModelChecker.doModelCheck(machineAsSemanticAst);
+
+        //TODO finish test
+    }
 }
