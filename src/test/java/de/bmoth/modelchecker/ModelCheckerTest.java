@@ -40,7 +40,6 @@ public class ModelCheckerTest {
     }
 
     @Test
-    @Ignore
     public void testSimpleMachineWithOperations() throws Exception {
         String machine = "MACHINE SimpleMachine\n";
         machine += "VARIABLES x\n";
