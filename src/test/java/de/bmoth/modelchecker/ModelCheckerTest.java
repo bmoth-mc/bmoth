@@ -53,4 +53,19 @@ public class ModelCheckerTest {
         boolean result = ModelChecker.doModelCheck(machine);
         assertEquals(true, result);
     }
+
+    @Test
+    @Ignore
+    public void testSimpleMachineWithOperations2() throws Exception {
+        String machine = "MACHINE SimpleMachine\n";
+        machine += "VARIABLES x\n";
+        machine += "INVARIANT x : NATURAL & x >= 0 & x <= 2\n";
+        machine += "INITIALISATION x := 0\n";
+        machine += "OPERATIONS\n";
+        machine += "\tBlockSubstitution = BEGIN x := x + 1 END\n";
+        machine += "END";
+
+        boolean result = ModelChecker.doModelCheck(machine);
+        assertEquals(true, result);
+    }
 }
