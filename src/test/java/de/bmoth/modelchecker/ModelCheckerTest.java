@@ -50,8 +50,7 @@ public class ModelCheckerTest {
         machine += "\tDec = SELECT x > 0 THEN x := x - 1 END\n";
         machine += "END";
 
-        MachineNode simpleMachine = Parser.getMachineAsSemanticAst(machine);
-        boolean result = ModelChecker.doModelCheck(simpleMachine);
+        boolean result = ModelChecker.doModelCheck(machine);
         assertEquals(true, result);
     }
 }
