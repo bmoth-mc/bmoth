@@ -6,11 +6,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import de.bmoth.util.UtilMethodsTest;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.microsoft.z3.BoolExpr;
@@ -132,7 +131,7 @@ public class BooleanFormulaEvaluationTest {
         map.put("TRUE => FALSE", UNSATISFIABLE);
         map.put("FALSE => TRUE", SATISFIABLE);
         map.put("FALSE => FALSE", SATISFIABLE);
-        check(map);
+        UtilMethodsTest.checkTruthTable(map, ctx, s);
     }
 
     @Test
@@ -142,19 +141,7 @@ public class BooleanFormulaEvaluationTest {
         map.put("FALSE <=> FALSE", SATISFIABLE);
         map.put("TRUE <=> FALSE", UNSATISFIABLE);
         map.put("FALSE <=> TRUE", UNSATISFIABLE);
-        check(map);
-    }
-
-    private void check(Map<String, Status> map) {
-        for (Entry<String, Status> entry : map.entrySet()) {
-            System.out.println(entry.getKey());
-            BoolExpr constraint = FormulaToZ3Translator.translatePredicate(entry.getKey(), ctx);
-            System.out.println(constraint);
-            s.add(constraint);
-            Status check = s.check();
-            assertEquals(entry.getValue(), check);
-            s.reset();
-        }
+        UtilMethodsTest.checkTruthTable(map, ctx, s);
     }
 
 }

@@ -18,7 +18,7 @@ import org.junit.Test;
 
 public class UtilMethodsTest {
 
-	@Test
+    @Test
 	public void testSort() throws Exception {
 		Map<String, Set<String>> dependencies = new HashMap<>();
 		dependencies.put("a", new HashSet<>());
@@ -35,6 +35,13 @@ public class UtilMethodsTest {
         s.add(constraint);
         Status check = s.check();
         assertEquals(satisfiable, check);
+    }
+
+    public static void checkTruthTable(Map<String, Status> map, Context ctx, Solver s) {
+        for (Map.Entry<String, Status> entry : map.entrySet()) {
+            check(entry.getValue(), entry.getKey(), ctx, s);
+            s.reset();
+        }
     }
 
 }
