@@ -66,32 +66,25 @@ public class BooleanFormulaEvaluationTest {
 
     @Test
     public void testAndFormula() throws Exception {
-        String formula = "x & y";
-        // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
-
-        Expr x = ctx.mkBoolConst("x");
-        Expr y = ctx.mkBoolConst("y");
-
-        assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkTrue(), s.getModel().eval(x, true));
-        assertEquals(ctx.mkTrue(), s.getModel().eval(y, true));
+        Map<String, Status> map = new HashMap<>();
+        map.put("TRUE & TRUE", SATISFIABLE);
+        map.put("TRUE & x", SATISFIABLE);
+        map.put("TRUE & FALSE", UNSATISFIABLE);
+        map.put("FALSE & TRUE", UNSATISFIABLE);
+        map.put("FALSE & FALSE", UNSATISFIABLE);
+        map.put("FALSE & x", UNSATISFIABLE);
+        UtilMethodsTest.checkTruthTable(map, ctx, s);
     }
 
     @Test
     public void testOrFormula() throws Exception {
-        String formula = "FALSE or x";
-        // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
+        Map<String, Status> map = new HashMap<>();
+        map.put("TRUE or TRUE", SATISFIABLE);
+        map.put("TRUE or FALSE", SATISFIABLE);
+        map.put("FALSE or TRUE", SATISFIABLE);
+        map.put("FALSE or FALSE", UNSATISFIABLE);
+        UtilMethodsTest.checkTruthTable(map, ctx, s);
 
-        Expr x = ctx.mkBoolConst("x");
-
-        assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkTrue(), s.getModel().eval(x, true));
     }
 
     @Test

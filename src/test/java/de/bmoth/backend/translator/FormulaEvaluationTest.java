@@ -181,9 +181,6 @@ public class FormulaEvaluationTest {
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
         s.add(constraint);
-        Status check = s.check();
-
-        Expr x = ctx.mkIntConst("x");
 
         SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
         Set<Model> solutions = finder.findSolutions(20);
@@ -210,9 +207,6 @@ public class FormulaEvaluationTest {
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
         s.add(constraint);
-        Status check = s.check();
-
-        Expr x = ctx.mkIntConst("x");
 
         SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
         Set<Model> solutions = finder.findSolutions(20);
