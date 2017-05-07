@@ -267,6 +267,11 @@ public class SemanticAstCreator {
         // Substitutions
 
         @Override
+        public Node visitBlockSubstitution(BMoThParser.BlockSubstitutionContext ctx) {
+            return ctx.substitution().accept(this);
+        }
+
+        @Override
         public SubstitutionNode visitAssignSubstitution(BMoThParser.AssignSubstitutionContext ctx) {
             List<IdentifierExprNode> idents = new ArrayList<>();
             List<Token> identifierTokens = ctx.identifier_list().identifiers;

@@ -55,7 +55,6 @@ public class ModelCheckerTest {
     }
 
     @Test
-    @Ignore
     public void testSimpleMachineWithOperations2() throws Exception {
         String machine = "MACHINE SimpleMachine\n";
         machine += "VARIABLES x\n";
@@ -66,6 +65,7 @@ public class ModelCheckerTest {
         machine += "END";
 
         boolean result = ModelChecker.doModelCheck(machine);
-        assertEquals(true, result);
+        // the operation BlockSubstitution will finally violate the invariant x<=2
+        assertEquals(false, result);
     }
 }
