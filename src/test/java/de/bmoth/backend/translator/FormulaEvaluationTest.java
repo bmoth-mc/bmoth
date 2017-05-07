@@ -12,6 +12,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import de.bmoth.backend.FormulaToZ3Translator;
+import de.bmoth.util.UtilMethodsTest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,6 @@ public class FormulaEvaluationTest {
         String formula = "x = 2 + 3";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -53,7 +53,6 @@ public class FormulaEvaluationTest {
         String formula = "x = 2 - 3";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -68,7 +67,6 @@ public class FormulaEvaluationTest {
         String formula = "x = 5";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -83,7 +81,6 @@ public class FormulaEvaluationTest {
         String formula = "x /= 0";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -98,7 +95,6 @@ public class FormulaEvaluationTest {
         String formula = "x = 3 mod 2";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -113,7 +109,6 @@ public class FormulaEvaluationTest {
         String formula = "x = 3 * 2";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -131,7 +126,6 @@ public class FormulaEvaluationTest {
         String formula = "x = 4 + 3 * 2 * 2";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -146,7 +140,6 @@ public class FormulaEvaluationTest {
         String formula = "x = 8 / 2";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -161,7 +154,6 @@ public class FormulaEvaluationTest {
         String formula = "x = 2 ** 8";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -174,25 +166,13 @@ public class FormulaEvaluationTest {
     @Test
     public void testLessThanFormula() throws Exception {
         String formula = "1 < 2";
-        // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
-        s.add(constraint);
-        Status check = s.check();
-
-        assertEquals(Status.SATISFIABLE, check);
+        UtilMethodsTest.check(Status.SATISFIABLE, formula, ctx, s);
     }
 
     @Test
     public void testGreaterThanFormula() throws Exception {
         String formula = "2 > 1";
-        // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
-        s.add(constraint);
-        Status check = s.check();
-
-        assertEquals(Status.SATISFIABLE, check);
+        UtilMethodsTest.check(Status.SATISFIABLE, formula, ctx, s);
     }
 
     @Test
@@ -200,7 +180,6 @@ public class FormulaEvaluationTest {
         String formula = "x <= 4 & x > 0";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -230,7 +209,6 @@ public class FormulaEvaluationTest {
         String formula = "x >= 4 & x < 8";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 

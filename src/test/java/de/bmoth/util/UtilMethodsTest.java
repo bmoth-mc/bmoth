@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Status;
+import de.bmoth.backend.FormulaToZ3Translator;
 import org.junit.Test;
 
 public class UtilMethodsTest {
@@ -23,5 +28,13 @@ public class UtilMethodsTest {
 		List<String> sorted = Utils.sortByTopologicalOrder(dependencies);
 		assertEquals(Arrays.asList("a", "b", "d", "c"), sorted);
 	}
+
+    public static void check(Status satisfiable, String formula, Context ctx, Solver s) {
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        System.out.println(constraint);
+        s.add(constraint);
+        Status check = s.check();
+        assertEquals(satisfiable, check);
+    }
 
 }
