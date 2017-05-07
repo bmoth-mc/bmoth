@@ -57,6 +57,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
 
     private Context z3Context;
     // the context which is used to create z3 objects
+
     private final LinkedList<BoolExpr> constraintList = new LinkedList<>();
     // A list of z3 constraints which are separately created by the translation.
     // For example, for the B keyword NATURAL an ordinary z3 identifier will be
@@ -560,6 +561,22 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
 
     @Override
     public Expr visitQuantifiedPredicateNode(QuantifiedPredicateNode node, Void expected) {
+        switch (node.getOperator()) {
+        case EXISTENTIAL_QUANTIFICATION: {
+            Expr[] identifiers = new Expr[node.getDeclarationList().size()];
+            for (int i = 0; i < node.getDeclarationList().size(); i++) {
+                DeclarationNode declNode = node.getDeclarationList().get(i);
+                identifiers[i] = z3Context.mkConst(declNode.getName(), bTypeToZ3Sort(declNode.getType()));
+            }
+            Expr predicate = visitPredicateNode(node.getPredicateNode(), null);
+            Quantifier q = z3Context.mkExists(identifiers, predicate, identifiers.length, null, null, null, null);
+            return q;
+        }
+        case UNIVERSAL_QUANTIFICATION:
+        default:
+            break;
+        }
+
         throw new AssertionError("Implement: " + node.getClass());
     }
 
