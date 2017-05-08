@@ -322,6 +322,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             break;
         case CONC:
             break;
+        case EMPTY_SET:
         case SET_ENUMERATION: {
             SetType type = (SetType) node.getType();
             Type subType = type.getSubtype();

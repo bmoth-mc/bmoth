@@ -40,6 +40,13 @@ public class SetFormulaEvaluationTest {
     }
 
     @Test
+    public void testEmptySet() throws Exception {
+        UtilMethodsTest.check(Status.SATISFIABLE, "1 /: {}", ctx, s);
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "{1} = {}", ctx, s);
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "{} = {1}", ctx, s);
+    }
+
+    @Test
     public void testSetExtensionFormulaWithSingleVarModel() throws Exception {
         String formula = "{1,2} = {2,x}";
         // getting the translated z3 representation of the formula
@@ -117,7 +124,6 @@ public class SetFormulaEvaluationTest {
         String formula = "union({{1},{2},{3}}) = {1,2,3} ";
         UtilMethodsTest.check(SATISFIABLE, formula, ctx, s);
     }
-
 
     @Ignore
     @Test

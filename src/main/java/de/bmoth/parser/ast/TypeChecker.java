@@ -507,6 +507,16 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             returnType = IntegerType.getInstance();
             break;
         }
+        case EMPTY_SET: {
+            SetType found = new SetType(new UntypedType());
+            try {
+                found.unify(expected);
+            } catch (UnificationException e) {
+                throw new TypeErrorException(node, expected, IntegerType.getInstance());
+            }
+            returnType = found;
+            break;
+        }
         default:
             throw new AssertionError();
         }

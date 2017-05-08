@@ -71,6 +71,7 @@ expression
   : Number                                                                  # NumberExpression
   | LEFT_PAR expression RIGHT_PAR                                           # ParenthesesExpression
   | IDENTIFIER                                                              # IdentifierExpression
+  | '{' '}'                                                                 # EmptySetExpression
   | '{' expression_list '}'                                                 # SetEnumerationExpression
   | '{' identifier_list '|' predicate '}'                                   # SetComprehensionExpression
   | '(' exprs+=expression COMMA exprs+=expression

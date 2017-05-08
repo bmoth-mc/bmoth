@@ -21,13 +21,14 @@ public class ExpressionOperatorNode extends ExprNode {
         , DOMAIN_SUBSTRACTION, RANGE_RESTRICTION//
         , RANGE_SUBSTRATION, INSERT_FRONT, INSERT_TAIL, RESTRICT_FRONT//
         , RESTRICT_TAIL, GENERALIZED_UNION, GENERALIZED_INTER//
-
+        // set operators
+        , SET_ENUMERATION, EMPTY_SET
         // relations
         , CARD
         // function
         , FUNCTION_CALL
         // sequence operators
-        , FIRST, LAST, FRONT, TAIL, CONC, SET_ENUMERATION, SEQ_ENUMERATION, EMPTY_SEQUENCE//
+        , FIRST, LAST, FRONT, TAIL, CONC, SEQ_ENUMERATION, EMPTY_SEQUENCE//
         , SEQ, SEQ1, ISEQ, ISEQ1
     }
 
