@@ -13,8 +13,9 @@ import java.util.Set;
  *
  */
 public class SolutionFinder {
-    private Solver solver;
-    private Context z3Context;
+    private final BoolExpr constraint;
+    private final Solver solver;
+    private final Context z3Context;
 
     /**
      * Solution finder expects the constraint to be already added to the
@@ -30,7 +31,7 @@ public class SolutionFinder {
     public SolutionFinder(BoolExpr constraint, Solver solver, Context z3Context) {
         this.solver = solver;
         this.z3Context = z3Context;
-        this.solver.add(constraint);
+        this.constraint = constraint;
     }
 
     /**
@@ -73,6 +74,7 @@ public class SolutionFinder {
 
         // create a solution finding scope to not pollute original one
         solver.push();
+        solver.add(constraint);
 
         // as long as formula is satisfiable:
         for (int i = 0; solver.check() == Status.SATISFIABLE && i < maxIterations; i++) {

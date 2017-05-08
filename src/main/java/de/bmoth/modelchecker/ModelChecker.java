@@ -41,16 +41,16 @@ public class ModelChecker {
 
         final BoolExpr invariant = machineTranslator.getInvariantConstraint();
         while (!queue.isEmpty()) {
+            solver.push();
             State current = queue.poll();
-            // prepare invariant
-            solver.reset();
-            // apply current state
+            // apply current state - remains stored in server for loop iteration
             BoolExpr stateConstraint = current.getStateConstraint(ctx);
             solver.add(stateConstraint);
             // check invariant
+            solver.push();
             solver.add(invariant);
-            // check invariant
             Status check = solver.check();
+            solver.pop();
             if (check != Status.SATISFIABLE) {
                 return false;
             }
@@ -58,10 +58,6 @@ public class ModelChecker {
 
             List<BoolExpr> operationConstraints = machineTranslator.getOperationConstraints();
             for (BoolExpr currentOperationConstraint : operationConstraints) {
-
-                solver.reset();
-                solver.add(stateConstraint);
-
                 // compute successors
                 finder = new SolutionFinder(currentOperationConstraint, solver, ctx);
                 models = finder.findSolutions(5);
@@ -73,7 +69,7 @@ public class ModelChecker {
                     }
                 }
             }
-
+            solver.pop();
         }
 
         return true;
