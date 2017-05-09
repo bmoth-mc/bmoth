@@ -1,22 +1,17 @@
 package de.bmoth.modelchecker;
 
-import com.microsoft.z3.Expr;
 import de.bmoth.parser.Parser;
-import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 
 public class ModelCheckerTest {
+    private String dir = "src/test/resources/machines/";
+
     @Test
     public void testSimpleModelsWithoutOperations() throws Exception {
-        String dir = "src/test/resources/machines/";
-
         MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "OnlyInitViolation.mch");
         boolean result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result);
@@ -68,4 +63,20 @@ public class ModelCheckerTest {
         // the operation BlockSubstitution will finally violate the invariant x<=2
         assertEquals(false, result);
     }
+
+    @Test
+    public void testLeuschelPerformanceMachines1() throws Exception {
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "/performance/CounterErr.mch");
+        boolean result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result);
+    }
+
+    @Test
+    @Ignore
+    public void testLeuschelPerformanceMachines2() throws Exception {
+        MachineNode simpleMachineWithoutViolation = Parser.getMachineFileAsSemanticAst(dir + "/performance/SimpleSetIncrease.mch");
+        boolean result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
+        assertEquals(false, result);
+    }
+
 }
