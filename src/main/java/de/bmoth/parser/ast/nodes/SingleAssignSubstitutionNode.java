@@ -18,4 +18,8 @@ public class SingleAssignSubstitutionNode implements SubstitutionNode {
 		return value;
 	}
 
+    @Override
+    public String toString() {
+        return identifier + " := " + value;
+    }
 }

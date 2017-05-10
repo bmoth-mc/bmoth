@@ -18,4 +18,8 @@ public class SelectSubstitutionNode implements SubstitutionNode {
 		return condition;
 	}
 
+    @Override
+    public String toString() {
+        return "SELECT " + condition + " THEN " + substitution + " END";
+    }
 }

@@ -71,13 +71,15 @@ expression
   : Number                                                                  # NumberExpression
   | LEFT_PAR expression RIGHT_PAR                                           # ParenthesesExpression
   | IDENTIFIER                                                              # IdentifierExpression
+  | '{' '}'                                                                 # EmptySetExpression
   | '{' expression_list '}'                                                 # SetEnumerationExpression
   | '{' identifier_list '|' predicate '}'                                   # SetComprehensionExpression
   | '(' exprs+=expression COMMA exprs+=expression
       (COMMA exprs+=expression)* ')'                                        # NestedCoupleAsTupleExpression
   | BOOl_CAST '(' predicate ')'                                             # CastPredicateExpression
   | '[' expression_list? ']'                                                # SequenceEnumerationExpression
-  | operator=(NATURAL|NATURAL1|INTEGER|BOOL|TRUE|FALSE)                     # ExpressionOperator
+  | operator=(NATURAL|NATURAL1|INTEGER|INT|NAT
+      |MININT|MAXINT|BOOL|TRUE|FALSE)                                        # ExpressionOperator
   | exprs+=expression '(' exprs+=expression
       (',' exprs+=expression)* ')'                                          # FunctionCallExpression
   | operator=(DOM|RAN|CARD|CONC|FIRST|FRONT|ID|ISEQ|ISEQ1

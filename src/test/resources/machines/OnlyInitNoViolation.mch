@@ -1,0 +1,8 @@
+MACHINE OnlyInitNoViolation
+VARIABLES
+  x
+INVARIANT
+  x = 0
+INITIALISATION
+  x := 0
+END

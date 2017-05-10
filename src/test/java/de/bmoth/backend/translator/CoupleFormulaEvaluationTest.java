@@ -1,17 +1,14 @@
 package de.bmoth.backend.translator;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 
-import de.bmoth.backend.FormulaToZ3Translator;
+import de.bmoth.util.UtilMethodsTest;
 
 public class CoupleFormulaEvaluationTest {
 
@@ -32,13 +29,7 @@ public class CoupleFormulaEvaluationTest {
 	@Test
 	public void testIntegerCoupleFormula() throws Exception {
 		String formula = "x = (1 |-> 2) & y = (2 |-> 3) & x = y";
-		// getting the translated z3 representation of the formula
-		BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
-		s.add(constraint);
-		Status check = s.check();
-
-		assertEquals(Status.UNSATISFIABLE, check);
+		UtilMethodsTest.check(Status.UNSATISFIABLE, formula, ctx, s);
 	}
 
 }

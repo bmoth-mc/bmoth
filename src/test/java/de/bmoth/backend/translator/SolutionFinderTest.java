@@ -5,7 +5,6 @@ import de.bmoth.backend.FormulaToZ3Translator;
 import de.bmoth.backend.SolutionFinder;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -30,19 +29,35 @@ public class SolutionFinderTest {
     }
 
     @Test
-    @Ignore
     public void testSolutionFinder1() throws Exception {
         String formula = "a : NATURAL & a < 1";
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
         Set<Model> solutions = finder.findSolutions(20);
         assertEquals(1, solutions.size());
-
-        // solution shouldn't contain NATURAL=(_ as-array k!3)
-        assertEquals("{a=0}", z3ModelToString((Model) solutions.toArray()[0]));
     }
 
+    @Test
+    public void testExistsSolutionFinder() throws Exception {
+        String formula = "#x.(x : {1,2} & a = x)";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<Model> solutions = finder.findSolutions(20);
+        assertEquals(2, solutions.size());
+    }
+    
+    @Test
+    public void testExistsSolutionFinder2() throws Exception {
+        String formula = "#a,b,c.(c = TRUE & a : {1,2} & b : {1,2} & a /= b & x = a+b)";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<Model> solutions = finder.findSolutions(20);
+        //all existentially quantified variables are part of the model
+        //{c!0=true, a!2=2, b!1=1, x=3}
+        //{c!0=true, a!2=1, b!1=2, x=3}
+        assertEquals(2, solutions.size());
+    }
+    
     @Test
     public void testSolutionFinder() throws Exception {
         String formula = "0 < a & a < 6 & 0 < b & b < 6 & ( 2 * b < a or 2 * b = a )";
@@ -150,6 +165,16 @@ public class SolutionFinderTest {
         }
 
         assertEquals("[2, 3, 4]", solutions.toString());
+    }
+
+    @Test
+    public void testSolutionFinder4() throws Exception {
+        String formula = "a > 0";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<Model> solutions = finder.findSolutions(20);
+        assertEquals(20, solutions.size());
     }
 
     static String z3ModelToString(Model m) {

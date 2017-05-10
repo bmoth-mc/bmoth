@@ -33,3 +33,6 @@ hs_err_pid*
 .gradle/
 *.iml
 src/main/resources/de/bmoth/App/pref.xml
+
+# ProB files
+*.prob

@@ -148,7 +148,12 @@ GENERALIZED_INTER: 'inter'; //TODO unicode missing
 NATURAL: 'NATURAL' | '\u2115';
 NATURAL1: 'NATURAL1' | '\u2115' '\u0031' | '\u2115' '\u2081';
 INTEGER: 'INTEGER' | '\u2124';
+INT: 'INT' ;
+NAT: 'NAT' ;
 BOOL: 'BOOL';
+
+MININT: 'MININT';
+MAXINT: 'MAXINT';
 
 
 //special

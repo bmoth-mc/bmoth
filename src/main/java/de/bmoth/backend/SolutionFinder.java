@@ -13,8 +13,9 @@ import java.util.Set;
  *
  */
 public class SolutionFinder {
-    private Solver solver;
-    private Context z3Context;
+    private final BoolExpr constraint;
+    private final Solver solver;
+    private final Context z3Context;
 
     /**
      * Solution finder expects the constraint to be already added to the
@@ -30,22 +31,22 @@ public class SolutionFinder {
     public SolutionFinder(BoolExpr constraint, Solver solver, Context z3Context) {
         this.solver = solver;
         this.z3Context = z3Context;
-        this.solver.add(constraint);
+        this.constraint = constraint;
     }
 
     /**
      * Evaluate a single solution from solver over all variables, constraints
      * have to be satisfiable!
      *
+     * @param model current model to find a solution in
      * @return a solution
      */
-    private BoolExpr findSolution() {
-        Model m = solver.getModel();
-        FuncDecl[] constants = m.getConstDecls();
+    private BoolExpr findSolution(Model model) {
+        FuncDecl[] constants = model.getConstDecls();
 
         BoolExpr result = null;
         for (FuncDecl var : constants) {
-            Expr value = solver.getModel().eval(var.apply(), true);
+            Expr value = model.eval(var.apply(), true);
 
             if (result == null) {
                 result = z3Context.mkEq(var.apply(), value);
@@ -73,16 +74,19 @@ public class SolutionFinder {
 
         // create a solution finding scope to not pollute original one
         solver.push();
+        solver.add(constraint);
 
         // as long as formula is satisfiable:
         for (int i = 0; solver.check() == Status.SATISFIABLE && i < maxIterations; i++) {
-            result.add(solver.getModel());
+            Model currentModel = solver.getModel();
 
             // find a solution ...
-            BoolExpr solution = findSolution();
+            BoolExpr solution = findSolution(currentModel);
 
             // ... and add it as an exclusion constraint to solver stack
             solver.add(z3Context.mkNot(solution));
+
+            result.add(currentModel);
         }
 
         // delete solution finding scope to remove all exclusion constraints

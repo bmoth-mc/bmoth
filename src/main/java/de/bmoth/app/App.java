@@ -135,13 +135,13 @@ public class App extends Application {
         modelCheck.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                boolean hasModel;
-                hasModel = ModelChecker.doModelCheck(codeArea.getText());
+                boolean noCounterExample;
+                noCounterExample = ModelChecker.doModelCheck(codeArea.getText());
                 Alert alert= new Alert(Alert.AlertType.CONFIRMATION);
-                if(hasModel){
-                    alert.setContentText("Model Found");
+                if(noCounterExample){
+                    alert.setContentText("No Counter-Example Found");
                 } else {
-                    alert.setContentText("No Model Found");
+                    alert.setContentText("Counter-Example Found");
                 }
                 alert.showAndWait();
             }

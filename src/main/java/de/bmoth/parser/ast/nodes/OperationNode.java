@@ -20,4 +20,12 @@ public class OperationNode {
 		return substitution;
 	}
 
+    @Override
+    public String toString() {
+        if (substitution instanceof SingleAssignSubstitutionNode){
+            return name + " = BEGIN " + substitution + " END";
+        } else {
+            return name + " = " + substitution;
+        }
+    }
 }

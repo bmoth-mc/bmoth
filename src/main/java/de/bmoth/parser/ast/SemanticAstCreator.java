@@ -224,6 +224,11 @@ public class SemanticAstCreator {
         }
 
         @Override
+        public ExprNode visitEmptySetExpression(BMoThParser.EmptySetExpressionContext ctx) {
+            return new ExpressionOperatorNode(ctx, new ArrayList<>(), ExpressionOperator.EMPTY_SET);
+        }
+
+        @Override
         public ExprNode visitNumberExpression(BMoThParser.NumberExpressionContext ctx) {
             int value = Integer.parseInt(ctx.Number().getText());
             return new NumberNode(ctx, value);
@@ -265,6 +270,11 @@ public class SemanticAstCreator {
         }
 
         // Substitutions
+
+        @Override
+        public Node visitBlockSubstitution(BMoThParser.BlockSubstitutionContext ctx) {
+            return ctx.substitution().accept(this);
+        }
 
         @Override
         public SubstitutionNode visitAssignSubstitution(BMoThParser.AssignSubstitutionContext ctx) {

@@ -6,11 +6,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import de.bmoth.util.UtilMethodsTest;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.microsoft.z3.BoolExpr;
@@ -42,7 +41,6 @@ public class BooleanFormulaEvaluationTest {
         String formula = "x = TRUE";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -57,7 +55,6 @@ public class BooleanFormulaEvaluationTest {
         String formula = "x = FALSE";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -69,34 +66,25 @@ public class BooleanFormulaEvaluationTest {
 
     @Test
     public void testAndFormula() throws Exception {
-        String formula = "x & y";
-        // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
-        s.add(constraint);
-        Status check = s.check();
-
-        Expr x = ctx.mkBoolConst("x");
-        Expr y = ctx.mkBoolConst("y");
-
-        assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkTrue(), s.getModel().eval(x, true));
-        assertEquals(ctx.mkTrue(), s.getModel().eval(y, true));
+        Map<String, Status> map = new HashMap<>();
+        map.put("TRUE & TRUE", SATISFIABLE);
+        map.put("TRUE & x", SATISFIABLE);
+        map.put("TRUE & FALSE", UNSATISFIABLE);
+        map.put("FALSE & TRUE", UNSATISFIABLE);
+        map.put("FALSE & FALSE", UNSATISFIABLE);
+        map.put("FALSE & x", UNSATISFIABLE);
+        UtilMethodsTest.checkTruthTable(map, ctx, s);
     }
 
     @Test
     public void testOrFormula() throws Exception {
-        String formula = "FALSE or x";
-        // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        Map<String, Status> map = new HashMap<>();
+        map.put("TRUE or TRUE", SATISFIABLE);
+        map.put("TRUE or FALSE", SATISFIABLE);
+        map.put("FALSE or TRUE", SATISFIABLE);
+        map.put("FALSE or FALSE", UNSATISFIABLE);
+        UtilMethodsTest.checkTruthTable(map, ctx, s);
 
-        s.add(constraint);
-        Status check = s.check();
-
-        Expr x = ctx.mkBoolConst("x");
-
-        assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkTrue(), s.getModel().eval(x, true));
     }
 
     @Test
@@ -104,7 +92,6 @@ public class BooleanFormulaEvaluationTest {
         String formula = "x = TRUE & y = FALSE";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-
         s.add(constraint);
         Status check = s.check();
 
@@ -137,7 +124,7 @@ public class BooleanFormulaEvaluationTest {
         map.put("TRUE => FALSE", UNSATISFIABLE);
         map.put("FALSE => TRUE", SATISFIABLE);
         map.put("FALSE => FALSE", SATISFIABLE);
-        check(map);
+        UtilMethodsTest.checkTruthTable(map, ctx, s);
     }
 
     @Test
@@ -147,19 +134,7 @@ public class BooleanFormulaEvaluationTest {
         map.put("FALSE <=> FALSE", SATISFIABLE);
         map.put("TRUE <=> FALSE", UNSATISFIABLE);
         map.put("FALSE <=> TRUE", UNSATISFIABLE);
-        check(map);
-    }
-
-    private void check(Map<String, Status> map) {
-        for (Entry<String, Status> entry : map.entrySet()) {
-            System.out.println(entry.getKey());
-            BoolExpr constraint = FormulaToZ3Translator.translatePredicate(entry.getKey(), ctx);
-            System.out.println(constraint);
-            s.add(constraint);
-            Status check = s.check();
-            assertEquals(entry.getValue(), check);
-            s.reset();
-        }
+        UtilMethodsTest.checkTruthTable(map, ctx, s);
     }
 
 }

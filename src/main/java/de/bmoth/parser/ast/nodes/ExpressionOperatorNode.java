@@ -12,20 +12,23 @@ import de.bmoth.antlr.BMoThParser.ExpressionOperatorContext;
 public class ExpressionOperatorNode extends ExprNode {
 
     public static enum ExpressionOperator {
-        PLUS, MINUS, NATURAL, NATURAL1, INTEGER, BOOL, TRUE, FALSE, POWER_OF //
+        PLUS, MINUS //
+        , NATURAL, NATURAL1, INTEGER, INT, NAT, MININT, MAXINT//
+        , BOOL, TRUE, FALSE, POWER_OF //
         , MULT, DIVIDE, MOD, SET_SUBTRACTION, INTERVAL, UNION//
         , INTERSECTION, COUPLE, DOMAIN, RANGE, UNARY_MINUS//
         , OVERWRITE_RELATION, DIRECT_PRODUCT, CONCAT, DOMAIN_RESTRICTION//
         , DOMAIN_SUBSTRACTION, RANGE_RESTRICTION//
         , RANGE_SUBSTRATION, INSERT_FRONT, INSERT_TAIL, RESTRICT_FRONT//
         , RESTRICT_TAIL, GENERALIZED_UNION, GENERALIZED_INTER//
-        
-        //relations
+        // set operators
+        , SET_ENUMERATION, EMPTY_SET
+        // relations
         , CARD
-        //function
+        // function
         , FUNCTION_CALL
         // sequence operators
-        , FIRST, LAST, FRONT, TAIL, CONC, SET_ENUMERATION, SEQ_ENUMERATION, EMPTY_SEQUENCE//
+        , FIRST, LAST, FRONT, TAIL, CONC, SEQ_ENUMERATION, EMPTY_SEQUENCE//
         , SEQ, SEQ1, ISEQ, ISEQ1
     }
 
@@ -35,6 +38,11 @@ public class ExpressionOperatorNode extends ExprNode {
         map.put(BMoThParser.NATURAL, ExpressionOperator.NATURAL);
         map.put(BMoThParser.NATURAL1, ExpressionOperator.NATURAL1);
         map.put(BMoThParser.INTEGER, ExpressionOperator.INTEGER);
+        map.put(BMoThParser.NAT, ExpressionOperator.NAT);
+        map.put(BMoThParser.INT, ExpressionOperator.INT);
+        map.put(BMoThParser.MININT, ExpressionOperator.MININT);
+        map.put(BMoThParser.MAXINT, ExpressionOperator.MAXINT);
+
         map.put(BMoThParser.BOOL, ExpressionOperator.BOOL);
         map.put(BMoThParser.TRUE, ExpressionOperator.TRUE);
         map.put(BMoThParser.FALSE, ExpressionOperator.FALSE);
@@ -60,10 +68,9 @@ public class ExpressionOperatorNode extends ExprNode {
         map.put(BMoThParser.GENERALIZED_UNION, ExpressionOperator.GENERALIZED_UNION);
         map.put(BMoThParser.GENERALIZED_INTER, ExpressionOperator.GENERALIZED_INTER);
 
-        //relations
+        // relations
         map.put(BMoThParser.CARD, ExpressionOperator.CARD);
-        
-        
+
         // sequence operators
         map.put(BMoThParser.FIRST, ExpressionOperator.FIRST);
         map.put(BMoThParser.LAST, ExpressionOperator.LAST);

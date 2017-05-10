@@ -57,6 +57,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
 
     private Context z3Context;
     // the context which is used to create z3 objects
+
     private final LinkedList<BoolExpr> constraintList = new LinkedList<>();
     // A list of z3 constraints which are separately created by the translation.
     // For example, for the B keyword NATURAL an ordinary z3 identifier will be
@@ -236,15 +237,25 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         }
         case INTERVAL:
             break;
-        case INTEGER:
-            break;
+        case INTEGER: {
+            Type type = node.getType();// POW(INTEGER)
+            // !x.(x : INTEGER)
+            Expr x = z3Context.mkConst("x", z3Context.getIntSort());
+            Expr integer = z3Context.mkConst("INTEGER", bTypeToZ3Sort(type));
+            Expr[] bound = new Expr[] { x };
+            // x : INTEGER
+            BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) integer);
+            Quantifier q = z3Context.mkForall(bound, b, 1, null, null, null, null);
+            this.constraintList.add(q);
+            return integer;
+        }
         case NATURAL1: {
             Type type = node.getType();// POW(INTEGER)
-            // !x.(x >= 0 <=> x : NATURAL)
+            // !x.(x >= 1 <=> x : NATURAL)
             Expr x = z3Context.mkConst("x", z3Context.getIntSort());
             Expr natural1 = z3Context.mkConst("NATURAL1", bTypeToZ3Sort(type));
             Expr[] bound = new Expr[] { x };
-            // x >= 0
+            // x >= 1
             BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(1));
             // x : NATURAL
             BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) natural1);
@@ -274,8 +285,18 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             return z3Context.mkFalse();
         case TRUE:
             return z3Context.mkTrue();
-        case BOOL:
-            break;
+        case BOOL: {
+            Type type = node.getType();// BOOL ?
+            // !x.(x \in {true,false}) TODO do we need this additional constraint?
+            Expr x = z3Context.mkConst("x", z3Context.getBoolSort());
+            Expr bool = z3Context.mkConst(ExpressionOperator.BOOL.toString(), bTypeToZ3Sort(type));
+            Expr[] bound = new Expr[] { x };
+            // x \in {true,false} 
+            BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) bool);
+            Quantifier q = z3Context.mkForall(bound, b, 1, null, null, null, null);
+            this.constraintList.add(q);
+            return bool;
+        }
         case UNION:
             break;
         case COUPLE: {
@@ -301,6 +322,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             break;
         case CONC:
             break;
+        case EMPTY_SET:
         case SET_ENUMERATION: {
             SetType type = (SetType) node.getType();
             Type subType = type.getSubtype();
@@ -540,6 +562,22 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
 
     @Override
     public Expr visitQuantifiedPredicateNode(QuantifiedPredicateNode node, Void expected) {
+        switch (node.getOperator()) {
+        case EXISTENTIAL_QUANTIFICATION: {
+            Expr[] identifiers = new Expr[node.getDeclarationList().size()];
+            for (int i = 0; i < node.getDeclarationList().size(); i++) {
+                DeclarationNode declNode = node.getDeclarationList().get(i);
+                identifiers[i] = z3Context.mkConst(declNode.getName(), bTypeToZ3Sort(declNode.getType()));
+            }
+            Expr predicate = visitPredicateNode(node.getPredicateNode(), null);
+            Quantifier q = z3Context.mkExists(identifiers, predicate, identifiers.length, null, null, null, null);
+            return q;
+        }
+        case UNIVERSAL_QUANTIFICATION:
+        default:
+            break;
+        }
+
         throw new AssertionError("Implement: " + node.getClass());
     }
 

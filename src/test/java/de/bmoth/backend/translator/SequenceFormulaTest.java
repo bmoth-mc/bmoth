@@ -1,17 +1,13 @@
 package de.bmoth.backend.translator;
 
-import static org.junit.Assert.assertEquals;
-
+import de.bmoth.util.UtilMethodsTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
-
-import de.bmoth.backend.FormulaToZ3Translator;
 
 public class SequenceFormulaTest {
 
@@ -31,32 +27,25 @@ public class SequenceFormulaTest {
 
     @Test
     public void testSimpleSequenceExtensionFormula() throws Exception {
-        check(Status.SATISFIABLE, "[4,5] = [4,5]");
-        check(Status.SATISFIABLE, "[4,5] = [x,5]");
-        
-        check(Status.UNSATISFIABLE, "[4,5] = [5,4]");
-        check(Status.UNSATISFIABLE, "[4,5] = [4,5,x]");
+        UtilMethodsTest.check(Status.SATISFIABLE, "[4,5] = [4,5]", ctx, s);
+        UtilMethodsTest.check(Status.SATISFIABLE, "[4,5] = [x,5]", ctx, s);
+
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "[4,5] = [5,4]", ctx, s);
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "[4,5] = [4,5,x]", ctx, s);
     }
 
     @Test
     public void testFirst() throws Exception {
-        check(Status.SATISFIABLE, "first([4,5]) = 4");
-        check(Status.UNSATISFIABLE, "first([5]) = 4");
-        check(Status.UNSATISFIABLE, "first([]) = x & x = 1 ");
+        UtilMethodsTest.check(Status.SATISFIABLE, "first([4,5]) = 4", ctx, s);
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "first([5]) = 4", ctx, s);
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "first([]) = x & x = 1", ctx, s);
 
     }
-    
+
     @Test
     public void testFunctionCall() throws Exception {
-        check(Status.SATISFIABLE, "[4,5](1) = 4 & [4,5](2) = 5  ");
+        UtilMethodsTest.check(Status.SATISFIABLE, "[4,5](1) = 4 & [4,5](2) = 5", ctx, s);
     }
 
-    private void check(Status satisfiable, String formula) {
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        System.out.println(constraint);
-        s.add(constraint);
-        Status check = s.check();
-        assertEquals(satisfiable, check);
-    }
 
 }
