@@ -38,7 +38,7 @@ public class AppController implements Initializable {
     private Stage primaryStage = new Stage();
     private PersonalPreference personalPreference = new PersonalPreference();
     private String content = "";
-    private Boolean hasChanged = false;
+    private static Boolean hasChanged = false;
     private final String APPNAME = "Bmoth";
 
 
@@ -63,13 +63,13 @@ public class AppController implements Initializable {
 
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
             hasChanged = true;
-            infoArea.setText("Unsaved Changes");
+            infoArea.setText("Unsaved changes");
         });
     }
 
     void setupStage(Stage stage) {
         primaryStage = stage;
-        if (primaryStage.getTitle() == null) primaryStage.setTitle(APPNAME);
+        primaryStage.setTitle(APPNAME);
         primaryStage.setOnCloseRequest(event -> {
             event.consume();
             handleExit();
@@ -180,7 +180,7 @@ public class AppController implements Initializable {
     /**
      * Save codeArea to a file.
      *
-     * @param path     Save-location
+     * @param path Save-location
      * @throws IOException
      */
     private void saveFile(String path) throws IOException {
