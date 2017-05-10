@@ -1,0 +1,95 @@
+package de.bmoth.parser.ast.types;
+
+import java.util.Observable;
+import java.util.Observer;
+
+import de.bmoth.exceptions.UnificationException;
+
+public class SetOrIntegerType extends Observable implements Type, Observer {
+
+    private Type argType;
+
+    public SetOrIntegerType(Type left, Type right) {
+        setArgType(right);
+    }
+
+    private void setArgType(Type argType) {
+        this.argType = argType;
+        if (argType instanceof Observable) {
+            ((Observable) argType).addObserver(this);
+        }
+    }
+
+    public Type getArgType() {
+        return this.argType;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        o.deleteObserver(this);
+        Type newType = (Type) arg;
+        if (newType instanceof IntegerType || newType instanceof SetType) {
+            this.setChanged();
+            this.notifyObservers(newType);
+        } else {
+            setArgType(newType);
+        }
+
+    }
+
+    @Override
+    public Type unify(Type otherType) throws UnificationException {
+        if (otherType instanceof IntegerType || otherType instanceof SetType) {
+            if (argType instanceof Observable) {
+                ((Observable) argType).deleteObserver(this);
+            }
+            this.argType.unify(otherType);
+            this.setChanged();
+            this.notifyObservers(otherType);
+            return otherType;
+        } else if (otherType instanceof UntypedType) {
+            ((UntypedType) otherType).replaceBy(this);
+            return this;
+        } else if (otherType instanceof SetOrIntegerType) {
+            SetOrIntegerType other = (SetOrIntegerType) otherType;
+            other.replaceBy(this);
+            this.argType.unify(other.argType);
+            return this;
+        }
+        throw new UnificationException();
+    }
+
+    public void replaceBy(Type otherType) {
+        /*
+         * unregister this instance from the sub types, i.e. it will be no
+         * longer updated
+         */
+        if (argType instanceof Observable) {
+            ((Observable) argType).deleteObserver(this);
+        }
+        // notify all observers of this, they should point now to the otherType
+        this.setChanged();
+        this.notifyObservers(otherType);
+    }
+
+    @Override
+    public boolean unifiable(Type otherType) {
+        if (otherType instanceof SetOrIntegerType || otherType instanceof IntegerType || otherType instanceof SetType
+                || otherType instanceof UntypedType) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean contains(Type other) {
+        return false;
+    }
+
+    @Override
+    public boolean isUntyped() {
+        return true;
+    }
+
+}

@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
 import de.bmoth.antlr.BMoThParser;
@@ -35,26 +36,33 @@ public class ScopeChecker extends BMoThParserBaseVisitor<Void> {
     @Override
     public Void visitSetComprehensionExpression(BMoThParser.SetComprehensionExpressionContext ctx) {
         List<Token> identifiers = ctx.identifier_list().identifiers;
-        PredicateContext predicate = ctx.predicate();
-        visitQuantifiedFormula(identifiers, predicate);
+        visitQuantifiedFormula(identifiers, ctx.predicate());
+        return null;
+    }
+
+    @Override
+    public Void visitQuantifiedExpression(BMoThParser.QuantifiedExpressionContext ctx) {
+        List<Token> identifiers = ctx.quantified_variables_list().identifier_list().identifiers;
+        visitQuantifiedFormula(identifiers, ctx.predicate(), ctx.expression());
         return null;
     }
 
     @Override
     public Void visitQuantifiedPredicate(BMoThParser.QuantifiedPredicateContext ctx) {
         List<Token> identifiers = ctx.quantified_variables_list().identifier_list().identifiers;
-        PredicateContext predicate = ctx.predicate();
-        visitQuantifiedFormula(identifiers, predicate);
+        visitQuantifiedFormula(identifiers, ctx.predicate());
         return null;
     }
 
-    private void visitQuantifiedFormula(List<Token> identifiers, PredicateContext predicate) {
+    private void visitQuantifiedFormula(List<Token> identifiers, ParserRuleContext... contexts) {
         LinkedHashMap<String, Token> localIdentifiers = new LinkedHashMap<>();
         for (Token token : identifiers) {
             localIdentifiers.put(token.getText(), token);
         }
         scopeTable.add(localIdentifiers);
-        predicate.accept(this);
+        for (ParserRuleContext node : contexts) {
+            node.accept(this);
+        }
         scopeTable.removeLast();
     }
 

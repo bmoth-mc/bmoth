@@ -17,7 +17,7 @@ public class UntypedType extends Observable implements Type {
 
 	@Override
 	public Type unify(Type otherType) throws UnificationException {
-		if (unifiable(otherType)) {
+		if (this.unifiable(otherType)) {
 			if (otherType instanceof UntypedType) {
 				((UntypedType) otherType).replaceBy(this);
 				return this;

@@ -337,7 +337,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         case CONCAT:
         case DIRECT_PRODUCT:
         case DOMAIN_RESTRICTION:
-        case DOMAIN_SUBSTRACTION:
+        case DOMAIN_SUBTRACTION:
         case GENERALIZED_INTER:
             break;
         case GENERALIZED_UNION: {
@@ -408,7 +408,7 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         case INSERT_TAIL:
         case OVERWRITE_RELATION:
         case RANGE_RESTRICTION:
-        case RANGE_SUBSTRATION:
+        case RANGE_SUBTRATION:
         case RESTRICT_FRONT:
         case RESTRICT_TAIL:
             break;

@@ -1,6 +1,8 @@
 package de.bmoth.parser.ast;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.bmoth.exceptions.TypeErrorException;
 import de.bmoth.exceptions.UnificationException;
@@ -8,6 +10,9 @@ import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.types.*;
 
 public class TypeChecker extends AbstractVisitor<Type, Type> {
+
+    Set<ExpressionOperatorNode> minusNodes = new HashSet<>();
+    Set<TypedNode> typedNodes = new HashSet<>();
 
     public TypeChecker(MachineNode machineNode) {
         // set all constants to untyped
@@ -52,17 +57,12 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             super.visitSubstitutionNode(op.getSubstitution(), null);
         }
 
-        /*
-         * Currently there are no local variables, e.g. quantified variables or
-         * VAR variables. Hence, a check is missing that all local variables
-         * have type.
-         */
+        performPostActions();
     }
 
     public TypeChecker(FormulaNode formulaNode) {
         for (DeclarationNode node : formulaNode.getImplicitDeclarations()) {
-            UntypedType untypedType = new UntypedType();
-            node.setType(untypedType);
+            node.setType(new UntypedType());
         }
         Node formula = formulaNode.getFormula();
         if (formula instanceof PredicateNode) {
@@ -75,11 +75,36 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             }
         }
 
-        // check that all local variables have a type, otherwise throw an
-        // exception
+        // check that all implicitly declared variables have a type, otherwise
+        // throw an exception
         for (DeclarationNode node : formulaNode.getImplicitDeclarations()) {
             if (node.getType().isUntyped()) {
                 throw new TypeErrorException(node, "Can not infer the type of local variable: " + node.getName());
+            }
+        }
+        performPostActions();
+    }
+
+    private void performPostActions() {
+        // Check that all local variables have type.
+        for (TypedNode node : typedNodes) {
+            if (node.getType().isUntyped()) {
+                if (node instanceof DeclarationNode) {
+                    DeclarationNode var = (DeclarationNode) node;
+                    throw new TypeErrorException(var, "Can not infer the type of local variable " + var.getName());
+                } else if (node instanceof ExpressionOperatorNode) {
+                    ExpressionOperatorNode exprNode = (ExpressionOperatorNode) node;
+                    throw new TypeErrorException(node,
+                            "Can not infer the complete type of operator " + exprNode.getOperator());
+                }
+            }
+        }
+        
+        // post actions
+        for (ExpressionOperatorNode minusNode : minusNodes) {
+            Type type = minusNode.getType();
+            if (type instanceof SetType) {
+                minusNode.changeOperator(ExpressionOperatorNode.ExpressionOperator.SET_SUBTRACTION);
             }
         }
     }
@@ -149,7 +174,6 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         Type returnType = null;
         switch (node.getOperator()) {
         case PLUS:
-        case MINUS:
         case UNARY_MINUS:
         case MOD:
         case MULT:
@@ -164,6 +188,20 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
                 visitExprNode(exprNode, IntegerType.getInstance());
             }
             returnType = IntegerType.getInstance();
+            break;
+        }
+        case MINUS: {
+            Type found = new SetOrIntegerType(new UntypedType(), new UntypedType());
+            try {
+                found = found.unify(expected);
+            } catch (UnificationException e) {
+                throw new TypeErrorException(node, expected, found);
+            }
+            found = visitExprNode(expressionNodes.get(0), found);
+            found = visitExprNode(expressionNodes.get(1), found);
+            returnType = found;
+            this.minusNodes.add(node);
+            this.typedNodes.add(node);
             break;
         }
         case INTERVAL: {
@@ -326,7 +364,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             break;
         }
         case DOMAIN_RESTRICTION:
-        case DOMAIN_SUBSTRACTION: {
+        case DOMAIN_SUBTRACTION: {
             SetType found = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             try {
                 found = (SetType) found.unify(expected);
@@ -340,7 +378,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             break;
         }
         case RANGE_RESTRICTION:
-        case RANGE_SUBSTRATION: {
+        case RANGE_SUBTRATION: {
             SetType found = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             try {
                 found = (SetType) found.unify(expected);
@@ -431,6 +469,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
                 throw new TypeErrorException(node, expected, found);
             }
             returnType = found;
+            typedNodes.add(node);
             break;
         }
         case SEQ_ENUMERATION: {
@@ -515,6 +554,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
                 throw new TypeErrorException(node, expected, IntegerType.getInstance());
             }
             returnType = found;
+            typedNodes.add(node);
             break;
         }
         default:
@@ -581,11 +621,16 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         return null;
     }
 
+    private void setTypes(List<DeclarationNode> list) {
+        for (DeclarationNode decl : list) {
+            decl.setType(new UntypedType());
+            this.typedNodes.add(decl);
+        }
+    }
+
     @Override
     public Type visitQuantifiedExpressionNode(QuantifiedExpressionNode node, Type expected) {
-        for (DeclarationNode decl : node.getDeclarationList()) {
-            decl.setType(new UntypedType());
-        }
+        setTypes(node.getDeclarationList());
         super.visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
         switch (node.getOperator()) {
         case QUANTIFIED_INTER:
@@ -596,7 +641,9 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             } catch (UnificationException e) {
                 throw new TypeErrorException(node, expected, IntegerType.getInstance());
             }
+            visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
             found = visitExprNode(node.getExpressionNode(), found);
+
             node.setType(found);
             return found;
         }
@@ -628,18 +675,14 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         } catch (UnificationException e) {
             throw new TypeErrorException(node, expected, IntegerType.getInstance());
         }
-        for (DeclarationNode decl : node.getDeclarationList()) {
-            decl.setType(new UntypedType());
-        }
+        setTypes(node.getDeclarationList());
         super.visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
         return BoolType.getInstance();
     }
 
     @Override
     public Type visitAnySubstitution(AnySubstitutionNode node, Type expected) {
-        for (DeclarationNode decl : node.getParameters()) {
-            decl.setType(new UntypedType());
-        }
+        setTypes(node.getParameters());
         super.visitPredicateNode(node.getWherePredicate(), BoolType.getInstance());
         super.visitSubstitutionNode(node.getThenSubstitution(), null);
         return null;

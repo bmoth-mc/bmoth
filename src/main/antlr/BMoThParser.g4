@@ -97,7 +97,7 @@ expression
   | expression operator=(PLUS|MINUS|SET_SUBTRACTION) expression             # ExpressionOperator //p180
   | expression operator=INTERVAL expression                                 # ExpressionOperator //p170
   | expression operator=(OVERWRITE_RELATION|DIRECT_PRODUCT|CONCAT
-      |DOMAIN_RESTRICTION|DOMAIN_SUBSTRACTION|RANGE_RESTRICTION
-      |RANGE_SUBSTRATION|INSERT_FRONT|INSERT_TAIL|UNION|INTERSECTION
+      |DOMAIN_RESTRICTION|DOMAIN_SUBTRACTION|RANGE_RESTRICTION
+      |RANGE_SUBTRACTION|INSERT_FRONT|INSERT_TAIL|UNION|INTERSECTION
       |RESTRICT_FRONT|RESTRICT_TAIL|MAPLET) expression                      # ExpressionOperator //p160
   ;

@@ -143,7 +143,7 @@ public class MachinesTest {
 
     @Test
     public void testSub() throws Exception {
-        String machine = "MACHINE test\n" + "CONSTANTS k,k2,k3 \n" + "PROPERTIES k = k2 - k3 \n" + "END";
+        String machine = "MACHINE test\n" + "CONSTANTS k,k2,k3 \n" + "PROPERTIES k = k2 + k3 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
         assertEquals("INTEGER", t.constants.get("k").toString());
         assertEquals("INTEGER", t.constants.get("k2").toString());

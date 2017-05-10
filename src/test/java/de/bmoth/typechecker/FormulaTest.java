@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.bmoth.exceptions.TypeErrorException;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
@@ -37,6 +38,39 @@ public class FormulaTest {
         assertEquals("b", node2.getName());
         assertEquals("INTEGER", node1.getType().toString());
         assertEquals("INTEGER", node2.getType().toString());
+    }
+
+    @Test
+    public void testArithmeticMinus() throws Exception {
+        String formula = "a - 1";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("a", node1.getName());
+        assertEquals("INTEGER", node1.getType().toString());
+    }
+
+    @Test
+    public void testSetMinus() throws Exception {
+        String formula = "a - {1}";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("a", node1.getName());
+        assertEquals("POW(INTEGER)", node1.getType().toString());
+    }
+
+    @Test(expected = TypeErrorException.class)
+    public void testEmptySetError() throws Exception {
+        String formula = "{} = {}";
+        Parser.getFormulaAsSemanticAst(formula);
+    }
+
+    @Test
+    public void testSetMinus2() throws Exception {
+        String formula = "a - b = c & c = {TRUE}";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("a", node1.getName());
+        assertEquals("POW(BOOL)", node1.getType().toString());
     }
 
     @Test
@@ -76,7 +110,7 @@ public class FormulaTest {
         assertEquals("a", a.getName());
         assertEquals("INTEGER*INTEGER", a.getType().toString());
     }
-    
+
     @Test
     public void testCouple2() throws Exception {
         String formula = "1|->x = y |-> 2 ";
@@ -89,7 +123,7 @@ public class FormulaTest {
         assertEquals("y", y.getName());
         assertEquals("INTEGER", y.getType().toString());
     }
-    
+
     @Test
     public void testRelation() throws Exception {
         String formula = "{1|->x} = {y |-> 2} ";
@@ -122,7 +156,7 @@ public class FormulaTest {
         assertEquals("a", a.getName());
         assertEquals("POW(INTEGER)", a.getType().toString());
     }
-    
+
     @Test
     public void testMinintMaxint() throws Exception {
         String formula = "a = MININT & b = MAXINT ";
@@ -131,12 +165,12 @@ public class FormulaTest {
         DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", a.getName());
         assertEquals("INTEGER", a.getType().toString());
-        
+
         DeclarationNode b = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("b", b.getName());
         assertEquals("INTEGER", b.getType().toString());
     }
-    
+
     @Test
     public void testNatInt() throws Exception {
         String formula = "a : NAT & b : INT ";
@@ -145,7 +179,7 @@ public class FormulaTest {
         DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", a.getName());
         assertEquals("INTEGER", a.getType().toString());
-        
+
         DeclarationNode b = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("b", b.getName());
         assertEquals("INTEGER", b.getType().toString());

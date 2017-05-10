@@ -4,23 +4,29 @@ import org.antlr.v4.runtime.Token;
 
 public class DeclarationNode extends TypedNode {
 
-	private String name;
+    private final String name;
+    private final Token token;
 
-	public DeclarationNode(Token token, String name) {
-		this.setName(name);
-	}
+    public DeclarationNode(Token token, String name) {
+        this.name = name;
+        this.token = token;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	@Override
-	public String toString(){
-	    return name;
-	}
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    public int getLine() {
+        return token.getLine();
+    }
+
+    public int getPos() {
+        return token.getCharPositionInLine();
+    }
 
 }
