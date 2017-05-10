@@ -250,9 +250,61 @@ public class SetFormulaEvaluationTest {
         assertEquals(Status.UNSATISFIABLE, check);
     }
 
+    @Test
+    public void testIntersection() throws Exception{
+    	String formula = "{1,2} /\\ {2,3} = {2}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
+
+    @Test
+    public void testIntersection2() throws Exception{
+    	String formula = "{1} /\\ {2,3} = {2}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+    
+    @Test
+    public void testUnion() throws Exception{
+    	String formula = "{1,2} \\/ {2,3} = {2}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+    
+    @Test
+    public void testUnion2() throws Exception{
+    	String formula = "{1,2} \\/ {2,3} = {1,2,3}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }
 
 
+    @Test
+    public void testDifference() throws Exception{
+    	String formula = "{1,2}\\{2,3} = {1}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.SATISFIABLE, check);
+    }    
 
+    @Test
+    public void testDifference2() throws Exception{
+    	String formula = "{1,2}\\{3} = {1}";
+    	BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+    	s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+    
     @Ignore
     @Test
     public void testGeneralizedUnion() throws Exception {
