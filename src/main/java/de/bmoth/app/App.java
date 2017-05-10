@@ -1,8 +1,6 @@
 package de.bmoth.app;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,7 +11,7 @@ import javafx.stage.Stage;
 
 public class App extends Application {
     PersonalPreference personalPreference;
-    AppController appController = new AppController();
+    private AppController appController = new AppController();
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -28,22 +26,6 @@ public class App extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-
-    /**
-     * Load a given file into the CodeArea and change the title of the stage.
-     *
-     * @param file File to read from
-     */
-    private static String openFile(File file) {
-        String content = null;
-        try {
-            content = new String(Files.readAllBytes(Paths.get(file.getPath())));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return content;
     }
 
     public static void main(String[] args) {

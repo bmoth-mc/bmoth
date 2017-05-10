@@ -2,7 +2,6 @@ package de.bmoth.app;
 
 import de.bmoth.modelchecker.ModelChecker;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -68,13 +67,12 @@ public class AppController implements Initializable {
         });
     }
 
-
-    public void setupStage(Stage stage) {
+    void setupStage(Stage stage) {
         primaryStage = stage;
         if (primaryStage.getTitle() == null) primaryStage.setTitle(APPNAME);
         primaryStage.setOnCloseRequest(event -> {
             event.consume();
-            exit.fire();
+            handleExit();
         });
     }
 
@@ -83,7 +81,7 @@ public class AppController implements Initializable {
     }
 
     @FXML
-    public void handleOpen(ActionEvent t) {
+    public void handleOpen() {
         int nextStep = -1;
         if (hasChanged) {
             nextStep = saveChangedDialog();
@@ -111,7 +109,7 @@ public class AppController implements Initializable {
     }
 
     @FXML
-    public void handleSave(ActionEvent t) {
+    public void handleSave() {
         if (content != null) {
             try {
                 saveFile(content);
@@ -130,7 +128,7 @@ public class AppController implements Initializable {
     }
 
     @FXML
-    public void handleSaveAs(ActionEvent t) {
+    public void handleSaveAs() {
         try {
             saveFileAs();
             hasChanged = false;
@@ -141,7 +139,7 @@ public class AppController implements Initializable {
     }
 
     @FXML
-    public void handleExit(ActionEvent t) {
+    public void handleExit() {
         PersonalPreference.savePrefToFile(personalPreference);
         if (hasChanged) {
             int nextStep = saveChangedDialog();
@@ -166,7 +164,7 @@ public class AppController implements Initializable {
     }
 
     @FXML
-    public void handleCheck(ActionEvent t) {
+    public void handleCheck() {
         boolean noCounterExample;
         noCounterExample = ModelChecker.doModelCheck(codeArea.getText());
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
