@@ -297,8 +297,11 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             this.constraintList.add(q);
             return bool;
         }
-        case UNION:
-            break;
+        case UNION:{
+        ArrayExpr left = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
+        ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
+        return z3Context.mkSetUnion(left, right);
+        }
         case COUPLE: {
             CoupleType type = (CoupleType) node.getType();
             TupleSort bTypeToZ3Sort = (TupleSort) bTypeToZ3Sort(type);
@@ -310,8 +313,11 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
         }
         case DOMAIN:
             break;
-        case INTERSECTION:
-            break;
+        case INTERSECTION:{
+        	ArrayExpr left = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
+            ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
+            return z3Context.mkSetIntersection(left, right);
+        }
         case RANGE:
             break;
         case LAST:
@@ -332,8 +338,11 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             }
             return z3Set;
         }
-        case SET_SUBTRACTION:
-            break;
+        case SET_SUBTRACTION:{
+        	ArrayExpr left = (ArrayExpr) visitExprNode(expressionNodes.get(0), null);
+            ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), null);
+            return z3Context.mkSetDifference(left, right);
+        }
         case CONCAT:
         case DIRECT_PRODUCT:
         case DOMAIN_RESTRICTION:
