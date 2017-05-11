@@ -13,12 +13,12 @@ public class ModelCheckerTest {
     @Test
     public void testSimpleModelsWithoutOperations() throws Exception {
         MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "OnlyInitViolation.mch");
-        boolean result = ModelChecker.doModelCheck(simpleMachineWithViolation);
-        assertEquals(false, result);
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result.isCorrect());
 
         MachineNode simpleMachineWithoutViolation = Parser.getMachineFileAsSemanticAst(dir + "OnlyInitNoViolation.mch");
         result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
-        assertEquals(true, result);
+        assertEquals(true, result.isCorrect());
     }
 
     @Test
@@ -45,8 +45,8 @@ public class ModelCheckerTest {
         machine += "\tDec = SELECT x > 0 THEN x := x - 1 END\n";
         machine += "END";
 
-        boolean result = ModelChecker.doModelCheck(machine);
-        assertEquals(true, result);
+        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        assertEquals(true, result.isCorrect());
     }
 
     @Test
@@ -59,24 +59,24 @@ public class ModelCheckerTest {
         machine += "\tBlockSubstitution = BEGIN x := x + 1 END\n";
         machine += "END";
 
-        boolean result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
         // the operation BlockSubstitution will finally violate the invariant x<=2
-        assertEquals(false, result);
+        assertEquals(false, result.isCorrect());
     }
 
     @Test
     public void testLeuschelPerformanceMachines1() throws Exception {
         MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "/performance/CounterErr.mch");
-        boolean result = ModelChecker.doModelCheck(simpleMachineWithViolation);
-        assertEquals(false, result);
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result.isCorrect());
     }
 
     @Test
     @Ignore
     public void testLeuschelPerformanceMachines2() throws Exception {
         MachineNode simpleMachineWithoutViolation = Parser.getMachineFileAsSemanticAst(dir + "/performance/SimpleSetIncrease.mch");
-        boolean result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
-        assertEquals(false, result);
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
+        assertEquals(false, result.isCorrect());
     }
 
 }
