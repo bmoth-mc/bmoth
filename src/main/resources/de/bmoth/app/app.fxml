@@ -13,6 +13,8 @@
             <MenuItem text="Save As" fx:id="saveAs" onAction="#handleSaveAs"/>
             <MenuItem text="Save" fx:id="save" onAction="#handleSave"/>
             <SeparatorMenuItem/>
+            <MenuItem text="Options" fx:id="options" onAction="#handleOptions"/>
+            <SeparatorMenuItem/>
             <MenuItem text="Exit" fx:id="exit" onAction="#handleExit"/>
         </Menu>
         <Menu text="Checks">

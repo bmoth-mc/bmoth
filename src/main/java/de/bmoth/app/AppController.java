@@ -3,8 +3,13 @@ package de.bmoth.app;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -12,6 +17,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.fxmisc.richtext.LineNumberFactory;
 
 import java.io.File;
@@ -28,6 +34,7 @@ public class AppController implements Initializable {
     @FXML MenuItem open;
     @FXML MenuItem save;
     @FXML MenuItem saveAs;
+    @FXML MenuItem options;
     @FXML MenuItem exit;
     @FXML MenuItem modelCheck;
 
@@ -96,11 +103,13 @@ public class AppController implements Initializable {
         }
         if (nextStep != 0) {
             String fileContent = openFileChooser();
-            codeArea.selectRange(0, 0);
-            codeArea.replaceText(fileContent);
-            codeArea.deletehistory();
-            hasChanged = false;
-            infoArea.clear();
+            if(fileContent!=null) {
+                codeArea.replaceText(fileContent);
+                codeArea.deletehistory();
+                codeArea.selectRange(0, 0);
+                hasChanged = false;
+                infoArea.clear();
+            }
         }
     }
 
@@ -157,6 +166,10 @@ public class AppController implements Initializable {
         } else {
             Platform.exit();
         }
+    }
+
+    public void handleOptions() throws IOException {
+
     }
 
     @FXML

@@ -18,6 +18,10 @@ public class PersonalPreference {
 
     private String prefdir;
     private String lastFile;
+    private int minINT;
+    private int maxINT;
+    private int maxInitialStates;
+    private int maxOutgoingStates;
     int prefID;
 
     public PersonalPreference() {
