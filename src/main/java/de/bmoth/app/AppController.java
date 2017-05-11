@@ -164,10 +164,12 @@ public class AppController implements Initializable {
     public void handleCheck() {
         ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText());
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Model Checking Result");
+        alert.setHeaderText("The model is...");
         if (result.isCorrect()) {
-            alert.setContentText("Correct!\nNo counter-example found.");
+            alert.setContentText("...correct!\nNo counter-example found.");
         } else {
-            alert.setContentText("Not correct!\nCounter-example found in state " + result.getLastState().toString()
+            alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
                 + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
         }
         alert.showAndWait();
@@ -217,7 +219,7 @@ public class AppController implements Initializable {
     private int saveChangedDialog() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("UNSAVED CHANGES!");
-        alert.setHeaderText("Unsaved Changes! What do you want to do");
+        alert.setHeaderText("Unsaved Changes! What do you want to do?g");
         alert.setContentText(null);
 
         ButtonType buttonTypeSave = new ButtonType("Save");
