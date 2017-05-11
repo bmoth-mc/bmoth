@@ -583,8 +583,14 @@ public class FormulaToZ3Translator extends AbstractVisitor<Expr, Void> {
             return q;
         }
         case UNIVERSAL_QUANTIFICATION:
-        default:
-            break;
+        	Expr[] identifiers = new Expr[node.getDeclarationList().size()];
+        	for (int i = 0; i < node.getDeclarationList().size(); i++) {
+                DeclarationNode declNode = node.getDeclarationList().get(i);
+                identifiers[i] = z3Context.mkConst(declNode.getName(), bTypeToZ3Sort(declNode.getType()));
+            }
+            Expr predicate = visitPredicateNode(node.getPredicateNode(), null);
+            Quantifier q = z3Context.mkForall(identifiers, predicate, identifiers.length, null, null, null, null);
+            return q;
         }
 
         throw new AssertionError("Implement: " + node.getClass());
