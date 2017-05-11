@@ -1,6 +1,7 @@
 package de.bmoth.app;
 
 import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,9 +22,6 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-/**
- * Created by Jessy on 10.05.17.
- */
 public class AppController implements Initializable {
 
     @FXML MenuItem open;
@@ -40,7 +38,7 @@ public class AppController implements Initializable {
     private String content = "";
     private Boolean hasChanged = false;
     private final String APPNAME = "Bmoth";
-    
+
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
@@ -164,13 +162,15 @@ public class AppController implements Initializable {
 
     @FXML
     public void handleCheck() {
-        boolean noCounterExample;
-        noCounterExample = ModelChecker.doModelCheck(codeArea.getText());
+        ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText());
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        if (noCounterExample) {
-            alert.setContentText("No Counter-Example Found");
+        alert.setTitle("Model Checking Result");
+        alert.setHeaderText("The model is...");
+        if (result.isCorrect()) {
+            alert.setContentText("...correct!\nNo counter-example found.");
         } else {
-            alert.setContentText("Counter-Example Found");
+            alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
+                + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
         }
         alert.showAndWait();
     }
@@ -219,7 +219,7 @@ public class AppController implements Initializable {
     private int saveChangedDialog() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("UNSAVED CHANGES!");
-        alert.setHeaderText("Unsaved Changes! What do you want to do");
+        alert.setHeaderText("Unsaved Changes! What do you want to do?g");
         alert.setContentText(null);
 
         ButtonType buttonTypeSave = new ButtonType("Save");

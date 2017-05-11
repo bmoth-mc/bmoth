@@ -17,12 +17,12 @@ import java.util.*;
 
 public class ModelChecker {
 
-    public static boolean doModelCheck(String machineAsString) {
+    public static ModelCheckingResult doModelCheck(String machineAsString) {
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doModelCheck(machineAsSemanticAst);
     }
 
-    public static boolean doModelCheck(MachineNode machine) {
+    public static ModelCheckingResult doModelCheck(MachineNode machine) {
         Context ctx = new Context();
         Solver solver = ctx.mkSolver();
         MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);
@@ -52,7 +52,7 @@ public class ModelChecker {
             Status check = solver.check();
             solver.pop();
             if (check != Status.SATISFIABLE) {
-                return false;
+                return new ModelCheckingResult(current);
             }
             visited.add(current);
 
@@ -72,7 +72,7 @@ public class ModelChecker {
             solver.pop();
         }
 
-        return true;
+        return new ModelCheckingResult("correct");
 
     }
 

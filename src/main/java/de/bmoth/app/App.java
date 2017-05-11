@@ -10,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
-    private AppController appController;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -21,7 +20,7 @@ public class App extends Application {
 
         PersonalPreference personalPreference = PersonalPreference.loadPreferenceFromFile();
 
-        appController = loader.getController();
+        AppController appController = loader.getController();
         appController.setupStage(primaryStage);
         appController.setupPersonalPreference(personalPreference);
 
