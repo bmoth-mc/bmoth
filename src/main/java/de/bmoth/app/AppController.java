@@ -167,7 +167,8 @@ public class AppController implements Initializable {
         if (result.isCorrect()) {
             alert.setContentText("Correct!\nNo counter-example found.");
         } else {
-            alert.setContentText("Not correct!\nCounter-example found in state " + result.getLastState() + ".");
+            alert.setContentText("Not correct!\nCounter-example found in state " + result.getLastState().toString()
+                + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
         }
         alert.showAndWait();
     }
