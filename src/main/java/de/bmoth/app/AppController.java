@@ -38,10 +38,9 @@ public class AppController implements Initializable {
     private Stage primaryStage = new Stage();
     private PersonalPreference personalPreference = new PersonalPreference();
     private String content = "";
-    private static Boolean hasChanged = false;
+    private Boolean hasChanged = false;
     private final String APPNAME = "Bmoth";
-
-
+    
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
@@ -147,11 +146,11 @@ public class AppController implements Initializable {
                 case 0:
                     break;
                 case 1:
-                    save.fire();
+                    handleSave();
                     Platform.exit();
                     break;
                 case 2:
-                    saveAs.fire();
+                    handleSaveAs();
                     Platform.exit();
                     break;
                 case -1:
@@ -267,7 +266,7 @@ public class AppController implements Initializable {
      *
      * @param file     File to read from
      */
-    private static String openFile(File file) {
+    private String openFile(File file) {
         String content = null;
         try {
             content = new String(Files.readAllBytes(Paths.get(file.getPath())));

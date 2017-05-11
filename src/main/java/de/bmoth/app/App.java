@@ -10,17 +10,18 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
-    PersonalPreference personalPreference;
-    private AppController appController = new AppController();
+    private AppController appController;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("app.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("app.fxml"));
+        Parent root = loader.load();
         Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(App.class.getResource("keywords.css").toExternalForm());
 
-        personalPreference = PersonalPreference.loadPreferenceFromFile();
+        PersonalPreference personalPreference = PersonalPreference.loadPreferenceFromFile();
 
+        appController = loader.getController();
         appController.setupStage(primaryStage);
         appController.setupPersonalPreference(personalPreference);
 
