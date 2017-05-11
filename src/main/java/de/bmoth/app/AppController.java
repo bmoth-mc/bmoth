@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -34,8 +35,8 @@ public class AppController implements Initializable {
     @FXML TextArea infoArea;
 
     private Stage primaryStage = new Stage();
-    private PersonalPreference personalPreference = new PersonalPreference();
-    private String content = "";
+    private PersonalPreference personalPreference;
+    private String currentFile;
     private Boolean hasChanged = false;
     private final String APPNAME = "Bmoth";
 
@@ -50,18 +51,6 @@ public class AppController implements Initializable {
                 codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
             });
         codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
-
-        if (personalPreference.getLastFile() != null) {
-            content = personalPreference.getLastFile();
-            String fileContent = openFile(new File(personalPreference.getLastFile()));
-            codeArea.replaceText(fileContent);
-            codeArea.deletehistory();
-        }
-
-        codeArea.textProperty().addListener((observableValue, s, t1) -> {
-            hasChanged = true;
-            infoArea.setText("Unsaved changes");
-        });
     }
 
     void setupStage(Stage stage) {
@@ -75,6 +64,16 @@ public class AppController implements Initializable {
 
     void setupPersonalPreference(PersonalPreference preference) {
         personalPreference = preference;
+        if (personalPreference.getLastFile() != null) {
+            currentFile = personalPreference.getLastFile();
+            String fileContent = openFile(new File(personalPreference.getLastFile()));
+            codeArea.replaceText(fileContent);
+            codeArea.deletehistory();
+        }
+        codeArea.textProperty().addListener((observableValue, s, t1) -> {
+            hasChanged = true;
+            infoArea.setText("Unsaved changes");
+        });
     }
 
     @FXML
@@ -107,9 +106,9 @@ public class AppController implements Initializable {
 
     @FXML
     public void handleSave() {
-        if (content != null) {
+        if (currentFile != null) {
             try {
-                saveFile(content);
+                saveFile(currentFile);
                 hasChanged = false;
                 infoArea.clear();
             } catch (IOException e) {
@@ -172,6 +171,7 @@ public class AppController implements Initializable {
             alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
                 + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
         }
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         alert.showAndWait();
     }
 
@@ -219,15 +219,16 @@ public class AppController implements Initializable {
     private int saveChangedDialog() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("UNSAVED CHANGES!");
-        alert.setHeaderText("Unsaved Changes! What do you want to do?g");
+        alert.setHeaderText("Unsaved Changes! What do you want to do?");
         alert.setContentText(null);
 
         ButtonType buttonTypeSave = new ButtonType("Save");
         ButtonType buttonTypeSaveAs = new ButtonType("Save As");
-        ButtonType buttonTypeIgnoreChanges = new ButtonType("Ignore Changes!");
+        ButtonType buttonTypeIgnoreChanges = new ButtonType("Ignore");
         ButtonType buttonTypeCancel = new ButtonType("Back", ButtonBar.ButtonData.CANCEL_CLOSE);
 
         alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeSaveAs, buttonTypeIgnoreChanges, buttonTypeCancel);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent()) {
             if (result.get() == buttonTypeSave) return 1;
