@@ -172,11 +172,9 @@ applicationDistribution.from("./") {
     include('Microsoft.Z3.*')
 }
 
-applicationDefaultJvmArgs = ["-Djava.library.path=MY_APP_HOME/lib"]
-
 startScripts {
 	doLast {
-		unixScript.text = unixScript.text.replace('MY_APP_HOME', '\$APP_HOME')
-		windowsScript.text = windowsScript.text.replace('MY_APP_HOME', '%~dp0..')
+		unixScript.text = unixScript.text.replace('APP_HOME="`pwd -P`"', 'APP_HOME="`pwd -P`"\nexport LD_LIBRARY_PATH="$APP_HOME/lib"\nexport DYLD_LIBRARY_PATH="$APP_HOME/lib"')
+		windowsScript.text = windowsScript.text.replace('set APP_HOME=%DIRNAME%..', 'set APP_HOME=%DIRNAME%..\nset PATH=%PATH%;%APP_HOME%/lib')
 	}
 }
