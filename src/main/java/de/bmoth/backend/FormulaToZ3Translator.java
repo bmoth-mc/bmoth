@@ -274,17 +274,17 @@ public class FormulaToZ3Translator {
 
                     ArithExpr x = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), z3Context.getIntSort());
                     Expr T = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
-                    
+
                     BoolExpr leftLe = z3Context.mkLe(left, x);
                     BoolExpr rightGe = z3Context.mkGe(right, x);
-                    BoolExpr interval = z3Context.mkAnd(leftLe , rightGe);
+                    BoolExpr interval = z3Context.mkAnd(leftLe, rightGe);
                     BoolExpr member = z3Context.mkSetMembership(x, (ArrayExpr) T);
                     BoolExpr equality = z3Context.mkEq(interval, member);
-                    
-                    Expr[] bound = new Expr[] {x};
-                    
+
+                    Expr[] bound = new Expr[]{x};
+
                     Quantifier q = z3Context.mkForall(bound, equality, 1, null, null, null, null);
-                    constraintList.add(q);                    
+                    constraintList.add(q);
                     return T;
                 }
                 case INTEGER: {

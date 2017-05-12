@@ -1,14 +1,13 @@
 package de.bmoth.typechecker;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import de.bmoth.exceptions.TypeErrorException;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class MachinesTest {
 

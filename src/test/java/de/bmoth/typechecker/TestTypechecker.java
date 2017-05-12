@@ -1,13 +1,13 @@
 package de.bmoth.typechecker;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
 
 public class TestTypechecker {
 

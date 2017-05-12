@@ -45,7 +45,7 @@ public class SolutionFinderTest {
         Set<Model> solutions = finder.findSolutions(20);
         assertEquals(2, solutions.size());
     }
-    
+
     @Test
     public void testExistsSolutionFinder2() throws Exception {
         String formula = "#a,b,c.(c = TRUE & a : {1,2} & b : {1,2} & a /= b & x = a+b)";
@@ -57,7 +57,7 @@ public class SolutionFinderTest {
         //{c!0=true, a!2=1, b!1=2, x=3}
         assertEquals(2, solutions.size());
     }
-    
+
     @Test
     public void testSolutionFinder() throws Exception {
         String formula = "0 < a & a < 6 & 0 < b & b < 6 & ( 2 * b < a or 2 * b = a )";
@@ -178,10 +178,10 @@ public class SolutionFinderTest {
     }
 
     static String z3ModelToString(Model m) {
-        Map<String,String> values = new HashMap<>();
-        for(FuncDecl constant : m.getConstDecls()) {
-            String value = m.eval(constant.apply(),true).toString();
-            values.put(constant.apply().toString(),value);
+        Map<String, String> values = new HashMap<>();
+        for (FuncDecl constant : m.getConstDecls()) {
+            String value = m.eval(constant.apply(), true).toString();
+            values.put(constant.apply().toString(), value);
         }
         return values.toString();
     }

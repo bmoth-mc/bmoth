@@ -1,52 +1,53 @@
 package de.bmoth.parser.ast.nodes;
 
+import de.bmoth.antlr.BMoThParser;
+import de.bmoth.antlr.BMoThParser.QuantifiedPredicateContext;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.bmoth.antlr.BMoThParser;
-import de.bmoth.antlr.BMoThParser.QuantifiedPredicateContext;
-
 public class QuantifiedPredicateNode extends PredicateNode {
 
-	public static enum QuatifiedPredicateOperator {
-		UNIVERSAL_QUANTIFICATION, EXISTENTIAL_QUANTIFICATION
-	}
+    public static enum QuatifiedPredicateOperator {
+        UNIVERSAL_QUANTIFICATION, EXISTENTIAL_QUANTIFICATION
+    }
 
-	private static final Map<Integer, QuatifiedPredicateOperator> map = new HashMap<>();
-	static {
-		map.put(BMoThParser.FOR_ANY, QuatifiedPredicateOperator.UNIVERSAL_QUANTIFICATION);
-		map.put(BMoThParser.EXITS, QuatifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION);
-	}
+    private static final Map<Integer, QuatifiedPredicateOperator> map = new HashMap<>();
 
-	private final List<DeclarationNode> declarationList;
-	private final PredicateNode predicateNode;
-	private QuatifiedPredicateOperator operator;
+    static {
+        map.put(BMoThParser.FOR_ANY, QuatifiedPredicateOperator.UNIVERSAL_QUANTIFICATION);
+        map.put(BMoThParser.EXITS, QuatifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION);
+    }
 
-	public QuantifiedPredicateNode(QuantifiedPredicateContext ctx, List<DeclarationNode> declarationList,
-			PredicateNode predNode) {
-		this.declarationList = declarationList;
-		this.predicateNode = predNode;
-		this.operator = loopUpOperator(ctx.operator.getType());
-	}
+    private final List<DeclarationNode> declarationList;
+    private final PredicateNode predicateNode;
+    private QuatifiedPredicateOperator operator;
 
-	private QuatifiedPredicateOperator loopUpOperator(int type) {
-		if (map.containsKey(type)) {
-			return map.get(type);
-		}
-		throw new AssertionError("Operator not implemented");
-	}
+    public QuantifiedPredicateNode(QuantifiedPredicateContext ctx, List<DeclarationNode> declarationList,
+                                   PredicateNode predNode) {
+        this.declarationList = declarationList;
+        this.predicateNode = predNode;
+        this.operator = loopUpOperator(ctx.operator.getType());
+    }
 
-	public List<DeclarationNode> getDeclarationList() {
-		return declarationList;
-	}
+    private QuatifiedPredicateOperator loopUpOperator(int type) {
+        if (map.containsKey(type)) {
+            return map.get(type);
+        }
+        throw new AssertionError("Operator not implemented");
+    }
 
-	public PredicateNode getPredicateNode() {
-		return predicateNode;
-	}
+    public List<DeclarationNode> getDeclarationList() {
+        return declarationList;
+    }
 
-	public QuatifiedPredicateOperator getOperator() {
-		return operator;
-	}
+    public PredicateNode getPredicateNode() {
+        return predicateNode;
+    }
+
+    public QuatifiedPredicateOperator getOperator() {
+        return operator;
+    }
 
 }

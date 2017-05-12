@@ -1,13 +1,12 @@
 package de.bmoth.backend.translator;
 
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Status;
 import de.bmoth.util.UtilMethodsTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Solver;
-import com.microsoft.z3.Status;
 
 public class SequenceFormulaTest {
 

@@ -6,26 +6,30 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
 import de.bmoth.parser.ast.nodes.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MachineToZ3Translator {
     private final MachineNode machineNode;
     private final Context z3Context;
-    private final BoolExpr initialisationConstraint;
-    private final BoolExpr invariantConstraint;
+    private BoolExpr initialisationConstraint = null;
+    private BoolExpr invariantConstraint = null;
     private final HashMap<String, String> primedVariablesToVariablesMap;
     private final List<BoolExpr> operationConstraints;
 
     public MachineToZ3Translator(MachineNode machineNode, Context ctx) {
         this.machineNode = machineNode;
         this.z3Context = ctx;
-        this.initialisationConstraint = visitSubstitution(machineNode.getInitialisation());
-        this.invariantConstraint = (BoolExpr) FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(),
+
+        if (machineNode.getInitialisation() != null) {
+            this.initialisationConstraint = visitSubstitution(machineNode.getInitialisation());
+        }
+        if (machineNode.getInvariant() != null) {
+            this.invariantConstraint = (BoolExpr) FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(),
                 z3Context);
+        } else {
+            this.invariantConstraint = z3Context.mkTrue();
+        }
+        
         this.operationConstraints = visitOperations(machineNode.getOperations());
 
         {
@@ -76,13 +80,16 @@ public class MachineToZ3Translator {
 
     public BoolExpr getInitialValueConstraint() {
         PredicateNode properties = machineNode.getProperties();
+        BoolExpr prop = z3Context.mkTrue();
         if (properties != null) {
-            BoolExpr prop = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(), z3Context,
-                    new TranslationOptions(1));
-            return z3Context.mkAnd(initialisationConstraint, prop);
-        } else {
-            return initialisationConstraint;
+            prop = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(), z3Context,
+                new TranslationOptions(1));
+
         }
+        if (initialisationConstraint == null) {
+            return prop;
+        }
+        return z3Context.mkAnd(initialisationConstraint, prop);
     }
 
     public BoolExpr getInvariantConstraint() {

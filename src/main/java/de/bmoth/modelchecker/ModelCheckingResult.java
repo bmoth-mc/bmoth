@@ -7,13 +7,13 @@ public class ModelCheckingResult {
     private Boolean correct;
     private State lastState;
 
-    ModelCheckingResult(String result){
+    ModelCheckingResult(String result) {
         if (result.equals("correct")) {
             correct = true;
         }
     }
 
-    ModelCheckingResult(State state){
+    ModelCheckingResult(State state) {
         correct = false;
         lastState = state;
     }

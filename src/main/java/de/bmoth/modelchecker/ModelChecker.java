@@ -20,18 +20,16 @@ public class ModelChecker {
         Context ctx = new Context();
         Solver solver = ctx.mkSolver();
         MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);
-        System.err.println("1");
+
         Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
         // prepare initial states
         BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
-        System.err.println("2 " + initialValueConstraint);
+
         SolutionFinder finder = new SolutionFinder(initialValueConstraint, solver, ctx);
         Set<Model> models = finder.findSolutions(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE));
         for (Model model : models) {
-            //System.err.println("Model: " +model);
             State state = getStateFromModel(null, model, machineTranslator);
-            //System.err.println("StateFromModel" + state);
             queue.add(state);
         }
 
@@ -39,10 +37,11 @@ public class ModelChecker {
         while (!queue.isEmpty()) {
             solver.push();
             State current = queue.poll();
-            System.err.println("Current " + current);
+
             // apply current state - remains stored in server for loop iteration
             BoolExpr stateConstraint = current.getStateConstraint(ctx);
             solver.add(stateConstraint);
+
             // check invariant
             solver.push();
             solver.add(invariant);
@@ -59,9 +58,7 @@ public class ModelChecker {
                 finder = new SolutionFinder(currentOperationConstraint, solver, ctx);
                 models = finder.findSolutions(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS));
                 for (Model model : models) {
-                    System.err.println("Model: " +model);
                     State state = getStateFromModel(current, model, machineTranslator);
-                    System.err.println(state);
 
                     // add to queue if not in visited
                     if (!visited.contains(state)) {
@@ -83,10 +80,10 @@ public class ModelChecker {
             Expr value = model.eval(expr, true);
             map.put(declNode.getName(), value);
         }
-        for(DeclarationNode declarationNode : machineTranslator.getConstants()) {
+        for (DeclarationNode declarationNode : machineTranslator.getConstants()) {
             Expr expr = machineTranslator.getPrimedVariable(declarationNode);
-            Expr value = model.eval(expr,true);
-            map.put(declarationNode.getName(),value);
+            Expr value = model.eval(expr, true);
+            map.put(declarationNode.getName(), value);
         }
 
         State newState = new State(predecessor, map);

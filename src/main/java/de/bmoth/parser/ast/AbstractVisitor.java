@@ -1,20 +1,6 @@
 package de.bmoth.parser.ast;
 
-import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
-import de.bmoth.parser.ast.nodes.ExprNode;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
-import de.bmoth.parser.ast.nodes.IdentifierExprNode;
-import de.bmoth.parser.ast.nodes.IdentifierPredicateNode;
-import de.bmoth.parser.ast.nodes.NumberNode;
-import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
-import de.bmoth.parser.ast.nodes.PredicateNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
-import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
-import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
-import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SubstitutionNode;
+import de.bmoth.parser.ast.nodes.*;
 
 public abstract class AbstractVisitor<R, P> {
 

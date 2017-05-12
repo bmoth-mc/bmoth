@@ -1,12 +1,12 @@
 package de.bmoth.parser.ast.nodes;
 
+import de.bmoth.antlr.BMoThParser;
+import de.bmoth.antlr.BMoThParser.PredicateOperatorWithExprArgsContext;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import de.bmoth.antlr.BMoThParser;
-import de.bmoth.antlr.BMoThParser.PredicateOperatorWithExprArgsContext;
 
 public class PredicateOperatorWithExprArgsNode extends PredicateNode {
 
@@ -16,6 +16,7 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
     }
 
     private static final Map<Integer, PredOperatorExprArgs> map = new HashMap<>();
+
     static {
         map.put(BMoThParser.EQUAL, PredOperatorExprArgs.EQUAL);
         map.put(BMoThParser.NOT_EQUAL, PredOperatorExprArgs.NOT_EQUAL);

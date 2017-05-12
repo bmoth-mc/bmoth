@@ -1,10 +1,9 @@
 package de.bmoth.parser.ast.nodes;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class OperationNode {
 

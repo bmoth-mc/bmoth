@@ -1,15 +1,13 @@
 package de.bmoth.parser.ast;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-
+import de.bmoth.antlr.BMoThParser;
+import de.bmoth.antlr.BMoThParserBaseVisitor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
-import de.bmoth.antlr.BMoThParser;
-import de.bmoth.antlr.BMoThParserBaseVisitor;
-import de.bmoth.antlr.BMoThParser.PredicateContext;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ScopeChecker extends BMoThParserBaseVisitor<Void> {
     final LinkedList<LinkedHashMap<String, Token>> scopeTable = new LinkedList<>();

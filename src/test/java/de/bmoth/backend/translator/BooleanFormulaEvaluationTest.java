@@ -1,24 +1,18 @@
 package de.bmoth.backend.translator;
 
-import static com.microsoft.z3.Status.SATISFIABLE;
-import static com.microsoft.z3.Status.UNSATISFIABLE;
-import static org.junit.Assert.assertEquals;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import com.microsoft.z3.*;
+import de.bmoth.backend.FormulaToZ3Translator;
 import de.bmoth.util.UtilMethodsTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Expr;
-import com.microsoft.z3.Solver;
-import com.microsoft.z3.Status;
+import java.util.HashMap;
+import java.util.Map;
 
-import de.bmoth.backend.FormulaToZ3Translator;
+import static com.microsoft.z3.Status.SATISFIABLE;
+import static com.microsoft.z3.Status.UNSATISFIABLE;
+import static org.junit.Assert.assertEquals;
 
 public class BooleanFormulaEvaluationTest {
 

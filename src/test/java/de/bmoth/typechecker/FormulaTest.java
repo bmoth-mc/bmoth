@@ -1,19 +1,18 @@
 package de.bmoth.typechecker;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
-import org.junit.Test;
-
 import de.bmoth.exceptions.TypeErrorException;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
 import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
+import org.junit.Test;
 
-import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.*;
+import java.util.List;
+
+import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
+import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
+import static org.junit.Assert.assertEquals;
 
 public class FormulaTest {
 
@@ -260,7 +259,7 @@ public class FormulaTest {
         QuantifiedExpressionNode setComprehension = (QuantifiedExpressionNode) formulaNode.getFormula();
 
         assertEquals(QuantifiedExpressionNode.QuatifiedExpressionOperator.SET_COMPREHENSION,
-                setComprehension.getOperator());
+            setComprehension.getOperator());
         List<DeclarationNode> declarationList = setComprehension.getDeclarationList();
         DeclarationNode a = declarationList.get(0);
         DeclarationNode b = declarationList.get(1);
@@ -284,7 +283,7 @@ public class FormulaTest {
         QuantifiedPredicateNode quantification = (QuantifiedPredicateNode) formulaNode.getFormula();
 
         assertEquals(QuantifiedPredicateNode.QuatifiedPredicateOperator.UNIVERSAL_QUANTIFICATION,
-                quantification.getOperator());
+            quantification.getOperator());
         List<DeclarationNode> declarationList = quantification.getDeclarationList();
         DeclarationNode x = declarationList.get(0);
         DeclarationNode y = declarationList.get(1);
@@ -302,7 +301,7 @@ public class FormulaTest {
         QuantifiedPredicateNode quantification = (QuantifiedPredicateNode) formulaNode.getFormula();
 
         assertEquals(QuantifiedPredicateNode.QuatifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION,
-                quantification.getOperator());
+            quantification.getOperator());
         List<DeclarationNode> declarationList = quantification.getDeclarationList();
         DeclarationNode x = declarationList.get(0);
         DeclarationNode y = declarationList.get(1);
