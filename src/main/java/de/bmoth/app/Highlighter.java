@@ -1,8 +1,7 @@
 package de.bmoth.app;
 
-/**
- * Created by julian on 03.05.17.
- * Original Code from https://github.com/TomasMikula/RichTextFX/blob/master/richtextfx-demos/src/main/java/org/fxmisc/richtext/demo/JavaKeywords.java
+/*
+ *Original Code from https://github.com/TomasMikula/RichTextFX/blob/master/richtextfx-demos/src/main/java/org/fxmisc/richtext/demo/JavaKeywords.java
  */
 
 import java.util.Collection;

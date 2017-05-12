@@ -58,7 +58,8 @@ public class MachineToZ3Translator {
     }
 
     public BoolExpr getInitialValueConstraint() {
-        return initialisationConstraint;
+        BoolExpr prop = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(),z3Context,new TranslationOptions(1));
+        return z3Context.mkAnd(initialisationConstraint,prop);
     }
 
     public BoolExpr getInvariantConstraint() {

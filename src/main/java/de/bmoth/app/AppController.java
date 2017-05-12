@@ -279,7 +279,6 @@ public class AppController implements Initializable {
             PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
             PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_DIR, file.getParent());
             String content = openFile(file);
-            primaryStage.setTitle(APPNAME + " - " + file.getName());
             return content;
         }
         return null;
@@ -294,6 +293,7 @@ public class AppController implements Initializable {
         String content = null;
         try {
             content = new String(Files.readAllBytes(Paths.get(file.getPath())));
+            primaryStage.setTitle(APPNAME + " - " + file.getName());
         } catch (IOException e) {
             e.printStackTrace();
         }
