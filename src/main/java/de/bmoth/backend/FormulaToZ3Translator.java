@@ -417,8 +417,9 @@ public class FormulaToZ3Translator {
             case GENERALIZED_UNION: {
                 // union(S)
                 // return Res
-                // !(r).(r : Res <=> #(s).(s : S & r : s)
                 // !(s).(s : S <=> s <: Res)
+                // Alternative encoding:
+                // !(r).(r : Res <=> #(s).(s : S & r : s)
                 Expr S = visitExprNode(expressionNodes.get(0), ops);
                 Expr res = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
                 Expr s = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
