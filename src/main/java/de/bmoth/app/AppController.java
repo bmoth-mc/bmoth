@@ -52,7 +52,7 @@ public class AppController implements Initializable {
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
-
+        setupPersonalPreferences();
         codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
@@ -71,9 +71,8 @@ public class AppController implements Initializable {
         });
     }
 
-    void setupPersonalPreference(PersonalPreferences preference) {
-        personalPreference = preference;
-        if (PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE) != "") {
+    void setupPersonalPreferences() {
+        if (!PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE).isEmpty()) {
             currentFile = PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE);
             String fileContent = openFile(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE)));
             codeArea.replaceText(fileContent);
@@ -181,18 +180,20 @@ public class AppController implements Initializable {
 
     @FXML
     public void handleCheck() {
-        ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText());
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Model Checking Result");
-        alert.setHeaderText("The model is...");
-        if (result.isCorrect()) {
-            alert.setContentText("...correct!\nNo counter-example found.");
-        } else {
-            alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
-                + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
+        if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
+            ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText());
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Model Checking Result");
+            alert.setHeaderText("The model is...");
+            if (result.isCorrect()) {
+                alert.setContentText("...correct!\nNo counter-example found.");
+            } else {
+                alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
+                    + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
+            }
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.showAndWait();
         }
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        alert.showAndWait();
     }
 
 

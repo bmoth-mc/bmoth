@@ -46,6 +46,10 @@ public class MachineToZ3Translator {
         return machineNode.getVariables();
     }
 
+    public List<DeclarationNode> getConstants() {
+        return machineNode.getConstants();
+    }
+
     public Expr getPrimedVariable(DeclarationNode node) {
         String primedName = getPrimedName(node.getName());
         Sort type = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getType());
