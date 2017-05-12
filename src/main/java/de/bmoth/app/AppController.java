@@ -73,7 +73,7 @@ public class AppController implements Initializable {
 
     void setupPersonalPreference(PersonalPreferences preference) {
         personalPreference = preference;
-        if (PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE) != "") {
+        if (!PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE).isEmpty()) {
             currentFile = PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE);
             String fileContent = openFile(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE)));
             codeArea.replaceText(fileContent);
