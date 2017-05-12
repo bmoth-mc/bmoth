@@ -46,6 +46,10 @@ public class MachineToZ3Translator {
         return machineNode.getVariables();
     }
 
+    public List<DeclarationNode> getConstants() {
+        return machineNode.getConstants();
+    }
+
     public Expr getPrimedVariable(DeclarationNode node) {
         String primedName = getPrimedName(node.getName());
         Sort type = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getType());
@@ -54,7 +58,13 @@ public class MachineToZ3Translator {
     }
 
     public BoolExpr getInitialValueConstraint() {
-        return initialisationConstraint;
+        PredicateNode properties = machineNode.getProperties();
+        if (properties != null) {
+            BoolExpr prop = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(), z3Context, new TranslationOptions(1));
+            return z3Context.mkAnd(initialisationConstraint, prop);
+        } else {
+            return initialisationConstraint;
+        }
     }
 
     public BoolExpr getInvariantConstraint() {

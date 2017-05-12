@@ -143,6 +143,7 @@ public class FormulaToZ3Translator {
             int numOfPrimes = ops.getPrimeLevel();
             while (numOfPrimes > 0) {
                 name += "'";
+                numOfPrimes--;
             }
             return name;
         }

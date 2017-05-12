@@ -119,6 +119,15 @@ tasks.withType(Test) {
     systemProperty "java.library.path", "./"
 }
 
+tasks.withType(JavaExec) {
+    def env_vars =  ['LD_LIBRARY_PATH': ("$System.env.LD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                     'DYLD_LIBRARY_PATH': ("$System.env.DYLD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                     'PATH': ("$System.env.PATH" + System.getProperty("path.separator") + "$projectDir/")]
+    environment env_vars
+
+    systemProperty "java.library.path", "./"
+}
+
 test {
     testLogging {
         exceptionFormat = 'full'
