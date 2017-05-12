@@ -276,6 +276,7 @@ public class AppController implements Initializable {
         File file = fileChooser.showOpenDialog(primaryStage);
 
         if (file != null) {
+            currentFile = file.getPath();
             PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
             PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_DIR, file.getParent());
             String content = openFile(file);
