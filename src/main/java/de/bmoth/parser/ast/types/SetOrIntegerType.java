@@ -1,9 +1,9 @@
 package de.bmoth.parser.ast.types;
 
+import de.bmoth.exceptions.UnificationException;
+
 import java.util.Observable;
 import java.util.Observer;
-
-import de.bmoth.exceptions.UnificationException;
 
 public class SetOrIntegerType extends Observable implements Type, Observer {
 
@@ -75,7 +75,7 @@ public class SetOrIntegerType extends Observable implements Type, Observer {
     @Override
     public boolean unifiable(Type otherType) {
         if (otherType instanceof SetOrIntegerType || otherType instanceof IntegerType || otherType instanceof SetType
-                || otherType instanceof UntypedType) {
+            || otherType instanceof UntypedType) {
             return true;
         } else {
             return false;

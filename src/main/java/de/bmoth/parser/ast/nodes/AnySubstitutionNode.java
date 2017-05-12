@@ -9,7 +9,7 @@ public class AnySubstitutionNode extends SubstitutionNode {
     private final SubstitutionNode thenSubstitution;
 
     public AnySubstitutionNode(List<DeclarationNode> parameters, PredicateNode wherePredicate,
-            SubstitutionNode thenSubstitution) {
+                               SubstitutionNode thenSubstitution) {
         this.parameters = parameters;
         this.wherePredicate = wherePredicate;
         this.thenSubstitution = thenSubstitution;

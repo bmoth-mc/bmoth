@@ -59,7 +59,7 @@ public class ModelChecker {
                 finder = new SolutionFinder(currentOperationConstraint, solver, ctx);
                 models = finder.findSolutions(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS));
                 for (Model model : models) {
-                    System.err.println("Model: " +model);
+                    System.err.println("Model: " + model);
                     State state = getStateFromModel(current, model, machineTranslator);
                     System.err.println(state);
 
@@ -83,10 +83,10 @@ public class ModelChecker {
             Expr value = model.eval(expr, true);
             map.put(declNode.getName(), value);
         }
-        for(DeclarationNode declarationNode : machineTranslator.getConstants()) {
+        for (DeclarationNode declarationNode : machineTranslator.getConstants()) {
             Expr expr = machineTranslator.getPrimedVariable(declarationNode);
-            Expr value = model.eval(expr,true);
-            map.put(declarationNode.getName(),value);
+            Expr value = model.eval(expr, true);
+            map.put(declarationNode.getName(), value);
         }
 
         State newState = new State(predecessor, map);

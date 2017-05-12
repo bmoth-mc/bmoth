@@ -4,25 +4,25 @@ package de.bmoth.app;
  *Original Code from https://github.com/TomasMikula/RichTextFX/blob/master/richtextfx-demos/src/main/java/org/fxmisc/richtext/demo/JavaKeywords.java
  */
 
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
+
 import java.util.Collection;
-    import java.util.Collections;
-    import java.util.regex.Matcher;
-    import java.util.regex.Pattern;
+import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-    import org.fxmisc.richtext.model.StyleSpans;
-    import org.fxmisc.richtext.model.StyleSpansBuilder;
+public class Highlighter {
 
-public class Highlighter  {
-
-    private static final String[] START = new String[] {
+    private static final String[] START = new String[]{
         "MACHINE"
     };
 
-    private static final String[] KEYWORDS = new String[] {
-        "VARIABLES","INVARIANT","INITIALISATION","OPERATIONS","CONSTANTS","PROPERTIES"
+    private static final String[] KEYWORDS = new String[]{
+        "VARIABLES", "INVARIANT", "INITIALISATION", "OPERATIONS", "CONSTANTS", "PROPERTIES"
     };
-    private static final String[] KEYWORDS2 = new String[] {
-        "END","SELECT","THEN","BEGIN","WHERE","ANY"
+    private static final String[] KEYWORDS2 = new String[]{
+        "END", "SELECT", "THEN", "BEGIN", "WHERE", "ANY"
     };
 
     private static final String START_PATTERN = "\\b(" + String.join("|", START) + ")\\b";
@@ -52,18 +52,19 @@ public class Highlighter  {
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder
             = new StyleSpansBuilder<>();
-        while(matcher.find()) {
+        while (matcher.find()) {
             String styleClass =
-                matcher.group("START") !=null ? "start":
+                matcher.group("START") != null ? "start" :
                     matcher.group("KEYWORD") != null ? "keyword" :
-                        matcher.group("KEYWORD2")!=null?"keyword2":
+                        matcher.group("KEYWORD2") != null ? "keyword2" :
                             matcher.group("PAREN") != null ? "paren" :
                                 matcher.group("BRACE") != null ? "brace" :
                                     matcher.group("BRACKET") != null ? "bracket" :
                                         matcher.group("SEMICOLON") != null ? "semicolon" :
                                             matcher.group("STRING") != null ? "string" :
                                                 matcher.group("COMMENT") != null ? "comment" :
-                                                    null; /* never happens */ assert styleClass != null;
+                                                    null; /* never happens */
+            assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
             lastKwEnd = matcher.end();

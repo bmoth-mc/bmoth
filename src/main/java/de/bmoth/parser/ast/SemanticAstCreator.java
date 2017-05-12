@@ -1,48 +1,22 @@
 package de.bmoth.parser.ast;
 
-import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
-import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import de.bmoth.antlr.BMoThParser;
+import de.bmoth.antlr.BMoThParser.*;
+import de.bmoth.antlr.BMoThParserBaseVisitor;
+import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
+import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.RuleNode;
 
-import de.bmoth.antlr.BMoThParser;
-import de.bmoth.antlr.BMoThParser.ExpressionContext;
-import de.bmoth.antlr.BMoThParser.FormulaContext;
-import de.bmoth.antlr.BMoThParser.OperationContext;
-import de.bmoth.antlr.BMoThParser.PredicateContext;
-import de.bmoth.antlr.BMoThParser.SubstitutionContext;
-import de.bmoth.antlr.BMoThParserBaseVisitor;
-import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
-import de.bmoth.parser.ast.nodes.DeclarationNode;
-import de.bmoth.parser.ast.nodes.ExprNode;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
-import de.bmoth.parser.ast.nodes.FormulaNode;
-import de.bmoth.parser.ast.nodes.IdentifierExprNode;
-import de.bmoth.parser.ast.nodes.IdentifierPredicateNode;
-import de.bmoth.parser.ast.nodes.MachineNode;
-import de.bmoth.parser.ast.nodes.Node;
-import de.bmoth.parser.ast.nodes.NumberNode;
-import de.bmoth.parser.ast.nodes.OperationNode;
-import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
-import de.bmoth.parser.ast.nodes.PredicateNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
-import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
-import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
-import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
-import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SubstitutionNode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
+import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
+import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
 
 public class SemanticAstCreator {
 
@@ -91,7 +65,7 @@ public class SemanticAstCreator {
 
         if (machineAnalyser.initialisation != null) {
             SubstitutionNode substitution = (SubstitutionNode) machineAnalyser.initialisation.substitution()
-                    .accept(formulaVisitor);
+                .accept(formulaVisitor);
             machineNode.setInitialisation(substitution);
         }
 
@@ -100,7 +74,7 @@ public class SemanticAstCreator {
             for (Entry<String, OperationContext> entry : machineAnalyser.operationsDeclarations.entrySet()) {
                 OperationContext operationContext = entry.getValue();
                 SubstitutionNode substitution = (SubstitutionNode) operationContext.substitution()
-                        .accept(formulaVisitor);
+                    .accept(formulaVisitor);
                 OperationNode operationNode = new OperationNode(entry.getValue(), entry.getKey(), substitution);
                 operationsList.add(operationNode);
             }
@@ -149,7 +123,7 @@ public class SemanticAstCreator {
                 return new ExpressionOperatorNode(ctx, new ArrayList<>(), ExpressionOperator.EMPTY_SEQUENCE);
             } else {
                 return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
-                        ExpressionOperator.SEQ_ENUMERATION);
+                    ExpressionOperator.SEQ_ENUMERATION);
             }
 
         }
@@ -157,7 +131,7 @@ public class SemanticAstCreator {
         @Override
         public Node visitFunctionCallExpression(BMoThParser.FunctionCallExpressionContext ctx) {
             return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression()),
-                    ExpressionOperator.FUNCTION_CALL);
+                ExpressionOperator.FUNCTION_CALL);
         }
 
         @Override
@@ -182,7 +156,7 @@ public class SemanticAstCreator {
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             ExprNode exprNode = (ExprNode) ctx.expression().accept(this);
             QuantifiedExpressionNode quantifiedExpression = new QuantifiedExpressionNode(ctx, declarationList, predNode,
-                    exprNode, ctx.operator);
+                exprNode, ctx.operator);
             return quantifiedExpression;
         }
 
@@ -197,7 +171,7 @@ public class SemanticAstCreator {
             }
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             QuantifiedExpressionNode quantifiedExpression = new QuantifiedExpressionNode(ctx, declarationList, predNode,
-                    null, QuatifiedExpressionOperator.SET_COMPREHENSION);
+                null, QuatifiedExpressionOperator.SET_COMPREHENSION);
             return quantifiedExpression;
         }
 
@@ -223,7 +197,7 @@ public class SemanticAstCreator {
         @Override
         public ExprNode visitSetEnumerationExpression(BMoThParser.SetEnumerationExpressionContext ctx) {
             return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
-                    ExpressionOperator.SET_ENUMERATION);
+                ExpressionOperator.SET_ENUMERATION);
         }
 
         @Override
@@ -298,7 +272,7 @@ public class SemanticAstCreator {
             List<SubstitutionNode> sublist = new ArrayList<>();
             for (int i = 0; i < idents.size(); i++) {
                 SingleAssignSubstitutionNode singleAssignSubstitution = new SingleAssignSubstitutionNode(idents.get(i),
-                        expressions.get(i));
+                    expressions.get(i));
                 sublist.add(singleAssignSubstitution);
             }
             if (sublist.size() == 1) {

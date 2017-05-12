@@ -1,14 +1,13 @@
 package de.bmoth.parser.ast.nodes;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.antlr.v4.runtime.Token;
-
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.ExpressionContext;
 import de.bmoth.antlr.BMoThParser.SetComprehensionExpressionContext;
+import org.antlr.v4.runtime.Token;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class QuantifiedExpressionNode extends ExprNode {
 
@@ -17,6 +16,7 @@ public class QuantifiedExpressionNode extends ExprNode {
     }
 
     private static final Map<Integer, QuatifiedExpressionOperator> map = new HashMap<>();
+
     static {
         map.put(BMoThParser.QUANTIFIED_UNION, QuatifiedExpressionOperator.QUANTIFIED_UNION);
         map.put(BMoThParser.QUANTIFIED_INTER, QuatifiedExpressionOperator.QUANTIFIED_INTER);
@@ -29,7 +29,7 @@ public class QuantifiedExpressionNode extends ExprNode {
     private QuatifiedExpressionOperator operator;
 
     public QuantifiedExpressionNode(ExpressionContext ctx, List<DeclarationNode> declarationList,
-            PredicateNode predNode, ExprNode expressionNode, Token operator2) {
+                                    PredicateNode predNode, ExprNode expressionNode, Token operator2) {
         this.declarationList = declarationList;
         this.predicateNode = predNode;
         this.operator = loopUpOperator(operator2.getType());
@@ -44,7 +44,7 @@ public class QuantifiedExpressionNode extends ExprNode {
     }
 
     public QuantifiedExpressionNode(SetComprehensionExpressionContext ctx, List<DeclarationNode> declarationList,
-            PredicateNode predNode, ExprNode expressionNode, QuatifiedExpressionOperator setComprehension) {
+                                    PredicateNode predNode, ExprNode expressionNode, QuatifiedExpressionOperator setComprehension) {
         this.declarationList = declarationList;
         this.predicateNode = predNode;
         this.operator = setComprehension;

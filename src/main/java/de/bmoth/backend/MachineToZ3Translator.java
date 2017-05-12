@@ -6,11 +6,7 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
 import de.bmoth.parser.ast.nodes.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MachineToZ3Translator {
     private final MachineNode machineNode;
@@ -25,7 +21,7 @@ public class MachineToZ3Translator {
         this.z3Context = ctx;
         this.initialisationConstraint = visitSubstitution(machineNode.getInitialisation());
         this.invariantConstraint = (BoolExpr) FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(),
-                z3Context);
+            z3Context);
         this.operationConstraints = visitOperations(machineNode.getOperations());
 
         {
@@ -78,7 +74,7 @@ public class MachineToZ3Translator {
         PredicateNode properties = machineNode.getProperties();
         if (properties != null) {
             BoolExpr prop = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(), z3Context,
-                    new TranslationOptions(1));
+                new TranslationOptions(1));
             return z3Context.mkAnd(initialisationConstraint, prop);
         } else {
             return initialisationConstraint;

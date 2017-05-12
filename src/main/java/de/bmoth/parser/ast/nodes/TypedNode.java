@@ -1,9 +1,9 @@
 package de.bmoth.parser.ast.nodes;
 
+import de.bmoth.parser.ast.types.Type;
+
 import java.util.Observable;
 import java.util.Observer;
-
-import de.bmoth.parser.ast.types.Type;
 
 public abstract class TypedNode implements Node, Observer {
 

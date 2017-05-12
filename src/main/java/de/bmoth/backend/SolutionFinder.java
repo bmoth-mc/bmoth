@@ -1,12 +1,8 @@
 package de.bmoth.backend;
 
 import com.microsoft.z3.*;
-import com.microsoft.z3.enumerations.Z3_decl_kind;
-
-import de.bmoth.parser.ast.nodes.DeclarationNode;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,12 +17,9 @@ public class SolutionFinder {
      * Solution finder expects the constraint to be already added to the
      * corresponding solver
      *
-     * @param constraint
-     *            the constraint to find solutions for
-     * @param solver
-     *            corresponding z3 solver
-     * @param z3Context
-     *            corresponding z3 context
+     * @param constraint the constraint to find solutions for
+     * @param solver     corresponding z3 solver
+     * @param z3Context  corresponding z3 context
      */
     public SolutionFinder(BoolExpr constraint, Solver solver, Context z3Context) {
         this.solver = solver;
@@ -62,12 +55,11 @@ public class SolutionFinder {
      * <p>
      * credit goes to Taylor
      *
-     * @param maxIterations
-     *            the maximum nr of iterations
+     * @param maxIterations the maximum nr of iterations
      * @return list of found solution
      * @see <a href=
-     *      "http://stackoverflow.com/questions/13395391/z3-finding-all-satisfying-models#answer-13398853">Taylor's
-     *      answer on so.com</a>
+     * "http://stackoverflow.com/questions/13395391/z3-finding-all-satisfying-models#answer-13398853">Taylor's
+     * answer on so.com</a>
      */
     public Set<Model> findSolutions(int maxIterations) {
         Set<Model> result = new HashSet<>();
