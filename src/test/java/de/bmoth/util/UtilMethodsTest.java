@@ -25,9 +25,7 @@ public class UtilMethodsTest {
     }
 
     public static void check(Status satisfiable, String formula, Context ctx, Solver s) {
-
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        System.out.println(constraint);
         s.add(constraint);
         Status check = s.check();
         assertEquals(satisfiable, check);

@@ -60,11 +60,18 @@ public class FormulaToZ3Translator {
         this.z3Context = z3Context;
     }
 
-    public static Expr translateExpr(ExprNode value, Context z3Context) {
+    public static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context) {
+        return translateVariableEqualToExpr(name, value, z3Context, new TranslationOptions());
+    }
+
+    public static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context, TranslationOptions opt) {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context);
         FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
-        Expr exprNode = visitor.visitExprNode(value, new TranslationOptions());
-        return exprNode;
+        Expr z3Value = visitor.visitExprNode(value, opt);
+
+        Expr variable = z3Context.mkConst(name, z3Value.getSort());
+
+        return z3Context.mkEq(variable, z3Value);
     }
 
     public static BoolExpr translatePredicate(String formula, Context z3Context) {
@@ -94,7 +101,13 @@ public class FormulaToZ3Translator {
     public static BoolExpr translatePredicate(PredicateNode pred, Context z3Context, TranslationOptions opt) {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context);
         FormulaToZ3TranslatorVisitor formulaToZ3TranslatorVisitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
-        return (BoolExpr) formulaToZ3TranslatorVisitor.visitPredicateNode(pred, opt);
+
+        BoolExpr boolExpr = (BoolExpr) formulaToZ3TranslatorVisitor.visitPredicateNode(pred, opt);
+        // adding all additional constraints to result
+        for (BoolExpr bExpr : formulaToZ3Translator.constraintList) {
+            boolExpr = z3Context.mkAnd(boolExpr, bExpr);
+        }
+        return boolExpr;
     }
 
     public static Sort bTypeToZ3Sort(Context z3Context, Type t) {
