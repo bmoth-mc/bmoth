@@ -29,7 +29,7 @@ public class MachineToZ3Translator {
         } else {
             this.invariantConstraint = z3Context.mkTrue();
         }
-        
+
         this.operationConstraints = visitOperations(machineNode.getOperations());
 
         {
@@ -135,10 +135,8 @@ public class MachineToZ3Translator {
 
     private BoolExpr visitSingleAssignSubstitution(SingleAssignSubstitutionNode node) {
         Sort bTypeToZ3Sort = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getIdentifier().getType());
-        Expr value = FormulaToZ3Translator.translateExpr(node.getValue(), z3Context);
         String name = getPrimedName(node.getIdentifier().getName());
-        Expr variable = z3Context.mkConst(name, bTypeToZ3Sort);
-        return this.z3Context.mkEq(variable, value);
+        return FormulaToZ3Translator.translateVariableEqualToExpr(name, node.getValue(), z3Context);
     }
 
     private String getPrimedName(String name) {
