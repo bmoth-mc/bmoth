@@ -1,4 +1,4 @@
-MACHINE SetVarToConstantViolation
+MACHINE SetVarToConstantNoViolation
 CONSTANTS
   c
 PROPERTIES
