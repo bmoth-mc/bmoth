@@ -41,6 +41,10 @@ sourceSets {
         java {
           	srcDirs = ['src/main/java', 'build/generated-src']
         }
+        resources {
+            srcDirs = ["src/main/resources"]
+            includes = ["**/*.fxml", "**/*.css"]
+        }
     }
 }
 
@@ -160,3 +164,19 @@ jacocoTestReport {
   }
 }
 build.dependsOn jacocoTestReport
+
+// copy Z3 native files to distribution
+applicationDistribution.from("./") {
+    into "lib"
+    include('libz3*.*')
+    include('Microsoft.Z3.*')
+}
+
+applicationDefaultJvmArgs = ["-Djava.library.path=MY_APP_HOME/lib"]
+
+startScripts {
+	doLast {
+		unixScript.text = unixScript.text.replace('MY_APP_HOME', '\$APP_HOME')
+		windowsScript.text = windowsScript.text.replace('MY_APP_HOME', '%~dp0..')
+	}
+}
