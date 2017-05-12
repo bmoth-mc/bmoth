@@ -3,6 +3,7 @@ package de.bmoth.app;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -25,6 +26,8 @@ import java.util.ResourceBundle;
 
 public class AppController implements Initializable {
 
+    @FXML
+    MenuItem newFile;
     @FXML
     MenuItem open;
     @FXML
@@ -83,6 +86,34 @@ public class AppController implements Initializable {
             infoArea.setText("Unsaved changes");
         });
     }
+
+    @FXML
+    public void handleNew() {
+        int nextStep = -1;
+        if (hasChanged) {
+            nextStep = saveChangedDialog();
+            switch (nextStep) {
+                case 0:
+                    break;
+                case 1:
+                    handleSave();
+                    break;
+                case 2:
+                    handleSaveAs();
+                    break;
+                case -1:
+                    break;
+            }
+        }
+        if (nextStep != 0) {
+            codeArea.replaceText("");
+            codeArea.deletehistory();
+            codeArea.selectRange(0, 0);
+            hasChanged = false;
+            infoArea.clear();
+        }
+    }
+
 
     @FXML
     public void handleOpen() {

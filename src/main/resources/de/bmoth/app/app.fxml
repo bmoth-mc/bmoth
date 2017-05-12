@@ -7,6 +7,7 @@
       fx:controller="de.bmoth.app.AppController">
     <MenuBar>
         <Menu text="File">
+            <MenuItem text="New" fx:id="newFile" onAction="#handleNew"/>
             <MenuItem text="Open" fx:id="open" onAction="#handleOpen"/>
             <MenuItem text="Save As" fx:id="saveAs" onAction="#handleSaveAs"/>
             <MenuItem text="Save" fx:id="save" onAction="#handleSave"/>
