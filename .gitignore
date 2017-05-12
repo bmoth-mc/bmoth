@@ -8,7 +8,17 @@ build/
 .settings
 .project
 .classpath
+gradle/wrapper/gradle-wrapper.properties
 
+# downloaded libraries
+libs/
+python/
+z3*.zip
+libz3*.*
+z3
+Microsoft.Z3.*
+z3.exe
+*.dll
 
 # packages
 *.jar
@@ -17,3 +27,12 @@ build/
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# IntelliJ files
+.idea/
+.gradle/
+*.iml
+src/main/resources/de/bmoth/App/pref.xml
+
+# ProB files
+*.prob

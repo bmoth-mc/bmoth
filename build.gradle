@@ -6,12 +6,21 @@
  * user guide available at https://docs.gradle.org/3.3/userguide/tutorial_java_projects.html
  */
 
+ plugins {
+     id "de.undercouch.download" version "3.2.0"
+ }
+
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'antlr'
+apply plugin: 'jacoco'
 
 // Apply the application plugin to add support for building an application
 apply plugin: 'application'
+
+import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.plugins.ide.eclipse.model.AccessRule
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -27,29 +36,154 @@ repositories {
     }
 }
 
-def parser_version = '2.8.1-SNAPSHOT'
+sourceSets {
+    main {
+        java {
+          	srcDirs = ['src/main/java', 'build/generated-src']
+        }
+        resources {
+            srcDirs = ["src/main/resources"]
+            includes = ["**/*.fxml", "**/*.css"]
+        }
+    }
+}
 
 dependencies {
-    // The production code uses Guava
-    // compile 'com.google.guava:guava:20.0'
+    // Antlr4 Parser Generator
+    antlr "org.antlr:antlr4:4.5.3"
 
-    // ProB's B parser
-    compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "cliparser", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "ltlparser", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "parserbase", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "prologlib", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "unicode", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "typechecker", version: parser_version , changing: true
-    compile group: "de.hhu.stups", name: "theorymapping", version: parser_version , changing: true
+    // Z3 Java Bindings
+    compile files('com.microsoft.z3.jar')
 
-    // Java SMT collection of and API for multiple SMT solvers
-    compile group: 'org.sosy-lab', name: 'java-smt', version: '1.0.1'
+    // JavaFX RichText Editor
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
 }
 
 // Define the main class for the application
-mainClassName = 'de.bmoth.App'
+mainClassName = 'de.bmoth.app.App'
+
+
+// gradle generateGrammarSource
+generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments += ["-visitor", "-long-messages"]
+    outputDirectory = file('build/generated-src/de/bmoth/antlr')
+}
+
+task downloadZ3 {
+    doFirst {
+        def url = 'https://github.com/Z3Prover/bin/raw/master/releases/'
+        def filename = 'z3-4.5.0-x64-'
+        if (Os.isFamily(Os.FAMILY_MAC)) {
+            filename += 'osx-10.11.6.zip'
+        } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            filename += 'win.zip'
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            filename += 'ubuntu-14.04.zip'
+        }
+        download {
+                src url + filename
+                dest filename
+                onlyIfNewer true
+                overwrite false
+        }
+        copy {
+            from zipTree(filename)
+            into '.'
+            eachFile { FileCopyDetails fcp ->
+                if (fcp.relativePath.pathString.contains("bin")) {
+                    fcp.relativePath = new RelativePath(true, *(fcp.relativePath.getSegments()[2..-1]))
+                } else {
+                    fcp.exclude()
+                }
+            }
+        }
+    }
+}
+
+compileJava {
+    dependsOn {
+        downloadZ3
+    }
+}
+
+tasks.withType(Test) {
+    def env_vars =  ['LD_LIBRARY_PATH': ("$System.env.LD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                     'DYLD_LIBRARY_PATH': ("$System.env.DYLD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                     'PATH': ("$System.env.PATH" + System.getProperty("path.separator") + "$projectDir/")]
+    environment env_vars
+
+    systemProperty "java.library.path", "./"
+}
+
+tasks.withType(JavaExec) {
+    def env_vars =  ['LD_LIBRARY_PATH': ("$System.env.LD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                     'DYLD_LIBRARY_PATH': ("$System.env.DYLD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                     'PATH': ("$System.env.PATH" + System.getProperty("path.separator") + "$projectDir/")]
+    environment env_vars
+
+    systemProperty "java.library.path", "./"
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
+
+eclipse.classpath.file.whenMerged { classpath ->
+    classpath.entries.findResult { entry ->
+        if (entry.kind == 'lib' && entry.path.contains('com.microsoft.z3')) {
+            entry.setNativeLibraryLocation('bmoth/')
+        }
+        if(entry.kind == 'con' && entry.path.contains('org.eclipse.jdt.launching.JRE_CONTAINER')) {
+            entry.accessRules.add(new AccessRule('accessible', 'javafx/**'))
+        }
+    }
+}
+
+clean {
+    delete 'libs'
+    delete 'python'
+    delete 'z3'
+    delete 'com.microsoft.z3.jar'
+    delete fileTree('./') { include 'z3*.zip' }
+    delete fileTree('./') { include 'libz3*.*' }
+    delete fileTree('./') { include 'Microsoft.Z3.*' }
+}
+
+// type 'gradle test jacocoTestReport' in order to run the jacoco code coverage analysis
+jacocoTestReport {
+  reports {
+      xml.enabled false
+      csv.enabled false
+      html.destination "${buildDir}/jacocoHtml"
+  }
+
+  afterEvaluate {
+      classDirectories = files(classDirectories.files.collect {
+          fileTree(dir: it,
+                  exclude: [
+                      '**/antlr/**'
+                  ])
+      })
+  }
+}
+build.dependsOn jacocoTestReport
+
+// copy Z3 native files to distribution
+applicationDistribution.from("./") {
+    into "lib"
+    include('libz3*.*')
+    include('Microsoft.Z3.*')
+}
+
+startScripts {
+	doLast {
+		unixScript.text = unixScript.text.replace('APP_HOME="`pwd -P`"', 'APP_HOME="`pwd -P`"\nexport LD_LIBRARY_PATH="$APP_HOME/lib"\nexport DYLD_LIBRARY_PATH="$APP_HOME/lib"')
+		windowsScript.text = windowsScript.text.replace('set APP_HOME=%DIRNAME%..', 'set APP_HOME=%DIRNAME%..\r\nset PATH=%PATH%;%APP_HOME%/lib')
+	}
+}
