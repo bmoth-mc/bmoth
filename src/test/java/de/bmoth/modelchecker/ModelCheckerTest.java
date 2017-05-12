@@ -10,17 +10,6 @@ public class ModelCheckerTest {
     private String dir = "src/test/resources/machines/";
 
     @Test
-    public void testSimpleModelsWithoutOperations() throws Exception {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "OnlyInitViolation.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
-        assertEquals(false, result.isCorrect());
-
-        MachineNode simpleMachineWithoutViolation = Parser.getMachineFileAsSemanticAst(dir + "OnlyInitNoViolation.mch");
-        result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
-        assertEquals(true, result.isCorrect());
-    }
-
-    @Test
     public void testSubstitution() throws Exception {
         String machine = "MACHINE test \n";
         machine += "VARIABLES x,y \n";
@@ -60,20 +49,6 @@ public class ModelCheckerTest {
 
         ModelCheckingResult result = ModelChecker.doModelCheck(machine);
         // the operation BlockSubstitution will finally violate the invariant x<=2
-        assertEquals(false, result.isCorrect());
-    }
-
-    @Test
-    public void testLeuschelPerformanceMachines1() throws Exception {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "/performance/CounterErr.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
-        assertEquals(false, result.isCorrect());
-    }
-
-    @Test
-    public void testLeuschelPerformanceMachines2() throws Exception {
-        MachineNode simpleMachineWithoutViolation = Parser.getMachineFileAsSemanticAst(dir + "/performance/SimpleSetIncrease.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
         assertEquals(false, result.isCorrect());
     }
 
