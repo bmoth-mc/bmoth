@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 public class Issue39Test {
     private String dir = "src/test/resources/machines/";
 
-    @Test
+    @Test @Ignore
     public void testMachine1() throws Exception {
         MachineNode theMachine = Parser.getMachineFileAsSemanticAst(dir + "SetVarToConstantViolation.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(theMachine);
