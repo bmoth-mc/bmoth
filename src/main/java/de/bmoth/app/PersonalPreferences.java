@@ -8,7 +8,7 @@ import java.util.prefs.Preferences;
 
 public class PersonalPreferences {
     public enum StringPreference {
-        LAST_FILE(""), LAST_DIR("");
+        LAST_FILE(""), LAST_DIR(System.getProperty("user.dir"));
 
         private String defaultValue;
 
