@@ -1,0 +1,8 @@
+MACHINE DivWDError
+VARIABLES
+  x
+INVARIANT
+  x : INTEGER & -3 = 1 / 0
+INITIALISATION
+  x := 1
+END
