@@ -61,9 +61,13 @@ public class FormulaToZ3Translator {
     }
 
     public static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context) {
+        return translateVariableEqualToExpr(name, value, z3Context, new TranslationOptions());
+    }
+
+    public static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context, TranslationOptions opt) {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context);
         FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
-        Expr z3Value = visitor.visitExprNode(value, new TranslationOptions());
+        Expr z3Value = visitor.visitExprNode(value, opt);
 
         Expr variable = z3Context.mkConst(name, z3Value.getSort());
 
