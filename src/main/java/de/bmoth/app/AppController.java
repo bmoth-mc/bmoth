@@ -55,6 +55,8 @@ public class AppController implements Initializable {
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
+        newFile.setAccelerator(new KeyCodeCombination(KeyCode.N,KeyCombination.CONTROL_ANY));
+        open.setAccelerator(new KeyCodeCombination(KeyCode.O,KeyCombination.CONTROL_ANY));
         setupPersonalPreferences();
         codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
