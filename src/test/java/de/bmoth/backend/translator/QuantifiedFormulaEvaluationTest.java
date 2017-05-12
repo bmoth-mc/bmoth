@@ -85,7 +85,29 @@ public class QuantifiedFormulaEvaluationTest {
         assertEquals(Status.UNSATISFIABLE, check);
     }
     
-    
+    @Test
+    public void testFailUniversalExistentialFormula() throws Exception {
+        String formula = "#(y).(y:NATURAL & !(x).(x=y))";
+        // getting the translated z3 representation of the formula
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+
+        s.add(constraint);
+        Status check = s.check();
+
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+
+    @Test
+    public void testUniversalExistentialFormula() throws Exception {
+        String formula = "#(y).(!(x).(x*y=y))";
+        // getting the translated z3 representation of the formula
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+
+        s.add(constraint);
+        Status check = s.check();
+
+        assertEquals(Status.SATISFIABLE, check);
+    }
     
 
 }
