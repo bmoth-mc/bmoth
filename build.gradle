@@ -175,6 +175,6 @@ applicationDistribution.from("./") {
 startScripts {
 	doLast {
 		unixScript.text = unixScript.text.replace('APP_HOME="`pwd -P`"', 'APP_HOME="`pwd -P`"\nexport LD_LIBRARY_PATH="$APP_HOME/lib"\nexport DYLD_LIBRARY_PATH="$APP_HOME/lib"')
-		windowsScript.text = windowsScript.text.replace('set APP_HOME=%DIRNAME%..', 'set APP_HOME=%DIRNAME%..\nset PATH=%PATH%;%APP_HOME%/lib')
+		windowsScript.text = windowsScript.text.replace('set APP_HOME=%DIRNAME%..', 'set APP_HOME=%DIRNAME%..\r\nset PATH=%PATH%;%APP_HOME%/lib')
 	}
 }
