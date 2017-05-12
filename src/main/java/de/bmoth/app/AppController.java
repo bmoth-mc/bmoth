@@ -3,7 +3,6 @@ package de.bmoth.app;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
-import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -26,18 +25,26 @@ import java.util.ResourceBundle;
 
 public class AppController implements Initializable {
 
-    @FXML MenuItem open;
-    @FXML MenuItem save;
-    @FXML MenuItem saveAs;
-    @FXML MenuItem options;
-    @FXML MenuItem exit;
-    @FXML MenuItem modelCheck;
+    @FXML
+    MenuItem open;
+    @FXML
+    MenuItem save;
+    @FXML
+    MenuItem saveAs;
+    @FXML
+    MenuItem options;
+    @FXML
+    MenuItem exit;
+    @FXML
+    MenuItem modelCheck;
 
-    @FXML CodeArea codeArea;
-    @FXML TextArea infoArea;
+    @FXML
+    CodeArea codeArea;
+    @FXML
+    TextArea infoArea;
 
     private Stage primaryStage = new Stage();
-    private PersonalPreference personalPreference;
+    private PersonalPreferences personalPreference;
     private String currentFile;
     private Boolean hasChanged = false;
     private final String APPNAME = "Bmoth";
@@ -46,7 +53,7 @@ public class AppController implements Initializable {
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
 
-        codeArea.selectRange(0,0);
+        codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
             .subscribe(change -> {
@@ -64,11 +71,11 @@ public class AppController implements Initializable {
         });
     }
 
-    void setupPersonalPreference(PersonalPreference preference) {
+    void setupPersonalPreference(PersonalPreferences preference) {
         personalPreference = preference;
-        if (personalPreference.getLastFile() != null) {
-            currentFile = personalPreference.getLastFile();
-            String fileContent = openFile(new File(personalPreference.getLastFile()));
+        if (PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE) != "") {
+            currentFile = PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE);
+            String fileContent = openFile(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE)));
             codeArea.replaceText(fileContent);
             codeArea.deletehistory();
         }
@@ -98,7 +105,7 @@ public class AppController implements Initializable {
         }
         if (nextStep != 0) {
             String fileContent = openFileChooser();
-            if(fileContent!=null) {
+            if (fileContent != null) {
                 codeArea.replaceText(fileContent);
                 codeArea.deletehistory();
                 codeArea.selectRange(0, 0);
@@ -144,7 +151,6 @@ public class AppController implements Initializable {
 
     @FXML
     public void handleExit() {
-        PersonalPreference.savePrefToFile(personalPreference);
         if (hasChanged) {
             int nextStep = saveChangedDialog();
             switch (nextStep) {
@@ -176,7 +182,7 @@ public class AppController implements Initializable {
     @FXML
     public void handleCheck() {
         if (codeArea.getText().replaceAll("\\s+","").length()>0) {
-            ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText(), personalPreference);
+            ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText());
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Model Checking Result");
             alert.setHeaderText("The model is...");
@@ -226,8 +232,7 @@ public class AppController implements Initializable {
                 saveFile(file.getAbsolutePath());
             }
             return true;
-        }
-        else return false;
+        } else return false;
     }
 
     /**
@@ -268,12 +273,12 @@ public class AppController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Open MCH File", "*.mch"));
         fileChooser.setTitle("Choose File");
-        fileChooser.setInitialDirectory(new File(personalPreference.getPrefdir()));
+        fileChooser.setInitialDirectory(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_DIR)));
         File file = fileChooser.showOpenDialog(primaryStage);
 
         if (file != null) {
-            personalPreference.setLastFile(file.getAbsolutePath());
-            personalPreference.setPrefdir(file.getParent());
+            PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
+            PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_DIR, file.getParent());
             String content = openFile(file);
             primaryStage.setTitle(APPNAME + " - " + file.getName());
             return content;
@@ -284,7 +289,7 @@ public class AppController implements Initializable {
     /**
      * Load a given file into the CodeArea and change the title of the stage.
      *
-     * @param file     File to read from
+     * @param file File to read from
      */
     private String openFile(File file) {
         String content = null;

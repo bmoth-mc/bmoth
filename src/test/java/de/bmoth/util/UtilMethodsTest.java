@@ -19,17 +19,18 @@ import org.junit.Test;
 public class UtilMethodsTest {
 
     @Test
-	public void testSort() throws Exception {
-		Map<String, Set<String>> dependencies = new HashMap<>();
-		dependencies.put("a", new HashSet<>());
-		dependencies.put("b", new HashSet<>(Arrays.asList("a")));
-		dependencies.put("c", new HashSet<>(Arrays.asList("a", "d")));
-		dependencies.put("d", new HashSet<>(Arrays.asList("b")));
-		List<String> sorted = Utils.sortByTopologicalOrder(dependencies);
-		assertEquals(Arrays.asList("a", "b", "d", "c"), sorted);
-	}
+    public void testSort() throws Exception {
+        Map<String, Set<String>> dependencies = new HashMap<>();
+        dependencies.put("a", new HashSet<>());
+        dependencies.put("b", new HashSet<>(Arrays.asList("a")));
+        dependencies.put("c", new HashSet<>(Arrays.asList("a", "d")));
+        dependencies.put("d", new HashSet<>(Arrays.asList("b")));
+        List<String> sorted = Utils.sortByTopologicalOrder(dependencies);
+        assertEquals(Arrays.asList("a", "b", "d", "c"), sorted);
+    }
 
     public static void check(Status satisfiable, String formula, Context ctx, Solver s) {
+
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
         System.out.println(constraint);
         s.add(constraint);
