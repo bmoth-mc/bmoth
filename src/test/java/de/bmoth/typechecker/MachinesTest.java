@@ -238,4 +238,17 @@ public class MachinesTest {
         assertEquals("INTEGER", p.getType().toString());
     }
 
+    @Test
+    public void testPreSubstitution() throws Exception {
+        String machine = "MACHINE test \n";
+        machine += "VARIABLES x,y \n";
+        machine += "INVARIANT x=1 & y : BOOL \n";
+        machine += "INITIALISATION x,y:= 1,TRUE \n";
+        machine += "OPERATIONS foo = PRE x < 2 THEN x := 2 END \n";
+        machine += "END";
+        TestTypechecker t = new TestTypechecker(machine);
+        assertEquals("INTEGER", t.variables.get("x").toString());
+        assertEquals("BOOL", t.variables.get("y").toString());
+    }
+
 }

@@ -37,7 +37,8 @@ identifier_list
 substitution
   : BEGIN substitution END                                                  # BlockSubstitution
   | SKIP_SUB                                                                # SkipSubstitution
-  | SELECT condition=predicate THEN sub=substitution END                    # SelectSubstitution
+  | SELECT predicate THEN substitution END                                  # SelectSubstitution // WHEN is missing
+  | PRE predicate THEN substitution END                                     # PreSubstitution
   | ANY identifier_list WHERE predicate THEN substitution END               # AnySubstitution
   | identifier_list ':=' expression_list                                    # AssignSubstitution
   | substitution DOUBLE_VERTICAL_BAR substitution                           # ParallelSubstitution
