@@ -1,5 +1,6 @@
 package de.bmoth.modelchecker;
 
+import de.bmoth.app.PersonalPreference;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Ignore;
@@ -45,7 +46,7 @@ public class ModelCheckerTest {
         machine += "\tDec = SELECT x > 0 THEN x := x - 1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = ModelChecker.doModelCheck(machine, new PersonalPreference());
         assertEquals(true, result.isCorrect());
     }
 
@@ -59,7 +60,7 @@ public class ModelCheckerTest {
         machine += "\tBlockSubstitution = BEGIN x := x + 1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = ModelChecker.doModelCheck(machine, new PersonalPreference());
         // the operation BlockSubstitution will finally violate the invariant x<=2
         assertEquals(false, result.isCorrect());
     }
