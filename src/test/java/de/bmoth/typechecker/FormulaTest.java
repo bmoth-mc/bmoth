@@ -58,6 +58,33 @@ public class FormulaTest {
         assertEquals("POW(INTEGER)", node1.getType().toString());
     }
 
+    @Test
+    public void testMult() throws Exception {
+        String formula = "a * 1";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("a", node1.getName());
+        assertEquals("INTEGER", node1.getType().toString());
+    }
+    
+    @Test
+    public void testMult2() throws Exception {
+        String formula = "4 + 3 * 2 * 2";
+        Parser.getFormulaAsSemanticAst(formula);
+    }
+
+    @Test
+    public void testCartesianProduct() throws Exception {
+        String formula = "a * {1} = {TRUE |-> b}";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("a", a.getName());
+        assertEquals("POW(BOOL)", a.getType().toString());
+        DeclarationNode b = formulaNode.getImplicitDeclarations().get(1);
+        assertEquals("b", b.getName());
+        assertEquals("INTEGER", b.getType().toString());
+    }
+
     @Test(expected = TypeErrorException.class)
     public void testEmptySetError() throws Exception {
         String formula = "{} = {}";

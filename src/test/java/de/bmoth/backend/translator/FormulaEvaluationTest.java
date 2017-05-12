@@ -8,7 +8,6 @@ import com.microsoft.z3.*;
 import de.bmoth.backend.SolutionFinder;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.bmoth.backend.FormulaToZ3Translator;
