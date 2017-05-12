@@ -71,6 +71,12 @@ public class MachineToZ3Translator {
         return expr;
     }
 
+    public Expr getVariable(DeclarationNode node) {
+        Sort type = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getType());
+        Expr expr = z3Context.mkConst(node.getName(), type);
+        return expr;
+    }
+
     public Expr getPrimedVariable(DeclarationNode node) {
         String primedName = getPrimedName(node.getName());
         Sort type = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getType());
@@ -82,8 +88,7 @@ public class MachineToZ3Translator {
         PredicateNode properties = machineNode.getProperties();
         BoolExpr prop = z3Context.mkTrue();
         if (properties != null) {
-            prop = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(), z3Context,
-                new TranslationOptions(1));
+            prop = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(), z3Context);
 
         }
         if (initialisationConstraint == null) {
@@ -136,7 +141,7 @@ public class MachineToZ3Translator {
     private BoolExpr visitSingleAssignSubstitution(SingleAssignSubstitutionNode node) {
         Sort bTypeToZ3Sort = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getIdentifier().getType());
         String name = getPrimedName(node.getIdentifier().getName());
-        return FormulaToZ3Translator.translateVariableEqualToExpr(name, node.getValue(), z3Context, new TranslationOptions(1));
+        return FormulaToZ3Translator.translateVariableEqualToExpr(name, node.getValue(), z3Context);
     }
 
     private String getPrimedName(String name) {

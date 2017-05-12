@@ -11,15 +11,15 @@ public class ModelCheckerPerformanceTest {
 
     @Test
     public void testLeuschelPerformanceMachines1() throws Exception {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "/performance/CounterErr.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        MachineNode machine = Parser.getMachineFileAsSemanticAst(dir + "/performance/CounterErr.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
         assertEquals(false, result.isCorrect());
     }
 
     @Test
     public void testLeuschelPerformanceMachines2() throws Exception {
-        MachineNode simpleMachineWithoutViolation = Parser.getMachineFileAsSemanticAst(dir + "/performance/SimpleSetIncrease.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
+        MachineNode machine = Parser.getMachineFileAsSemanticAst(dir + "/performance/SimpleSetIncrease.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
         assertEquals(false, result.isCorrect());
     }
 

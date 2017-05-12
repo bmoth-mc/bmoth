@@ -81,7 +81,7 @@ public class ModelChecker {
             map.put(declNode.getName(), value);
         }
         for (DeclarationNode declarationNode : machineTranslator.getConstants()) {
-            Expr expr = machineTranslator.getPrimedVariable(declarationNode);
+            Expr expr = machineTranslator.getVariable(declarationNode);
             Expr value = model.eval(expr, true);
             map.put(declarationNode.getName(), value);
         }

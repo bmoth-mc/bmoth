@@ -1,9 +1,9 @@
 package de.bmoth.parser.ast.types;
 
+import de.bmoth.exceptions.UnificationException;
+
 import java.util.Observable;
 import java.util.Observer;
-
-import de.bmoth.exceptions.UnificationException;
 
 public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
 
@@ -50,7 +50,6 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
                 }
             }
         } else if (newType instanceof SetType) {
-            System.out.println(newType);
             this.setChanged();
             if (o == getLeft()) {
                 // left is a set
@@ -142,7 +141,7 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
     @Override
     public boolean unifiable(Type otherType) {
         if (otherType instanceof SetOrIntegerType || otherType instanceof IntegerType
-                || otherType instanceof IntegerOrSetOfPairs || otherType instanceof UntypedType) {
+            || otherType instanceof IntegerOrSetOfPairs || otherType instanceof UntypedType) {
             return true;
         } else if (otherType instanceof SetType) {
             SetType setType = (SetType) otherType;
