@@ -18,10 +18,12 @@ public class PersonalPreference {
 
     private String prefdir;
     private String lastFile;
+
+
     private int minINT;
     private int maxINT;
-    private int maxInitialStates;
-    private int maxOutgoingStates;
+    private int maxInitialStates=5;
+    private int maxSolution =5;
     int prefID;
 
     public PersonalPreference() {
@@ -54,6 +56,43 @@ public class PersonalPreference {
     public void setLastFile(String lastFile) {
         this.lastFile = lastFile;
     }
+
+    public int getMinINT() {
+        return minINT;
+    }
+
+    @XmlElement
+    public void setMinINT(int minINT) {
+        this.minINT = minINT;
+    }
+
+    public int getMaxINT() {
+        return maxINT;
+    }
+
+    @XmlElement
+    public void setMaxINT(int maxINT) {
+        this.maxINT = maxINT;
+    }
+
+    public int getMaxInitialStates() {
+        return maxInitialStates;
+    }
+
+    @XmlElement
+    public void setMaxInitialStates(int maxInitialStates) {
+        this.maxInitialStates = maxInitialStates;
+    }
+
+    public int getMaxSolution() {
+        return maxSolution;
+    }
+
+    @XmlElement
+    public void setMaxSolution(int maxSolution) {
+        this.maxSolution = maxSolution;
+    }
+
 
 
     public static void savePrefToFile(PersonalPreference personalPreference) {

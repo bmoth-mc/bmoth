@@ -3,13 +3,8 @@ package de.bmoth.app;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -17,7 +12,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.fxmisc.richtext.LineNumberFactory;
 
 import java.io.File;
@@ -174,7 +168,7 @@ public class AppController implements Initializable {
 
     @FXML
     public void handleCheck() {
-        ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText());
+        ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText(),personalPreference);
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Model Checking Result");
         alert.setHeaderText("The model is...");

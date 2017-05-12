@@ -7,6 +7,7 @@ import com.microsoft.z3.Model;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 
+import de.bmoth.app.PersonalPreference;
 import de.bmoth.backend.FormulaToZ3Translator;
 import de.bmoth.backend.MachineToZ3Translator;
 import de.bmoth.backend.SolutionFinder;
@@ -16,8 +17,9 @@ import de.bmoth.parser.ast.nodes.*;
 import java.util.*;
 
 public class ModelChecker {
-
-    public static ModelCheckingResult doModelCheck(String machineAsString) {
+    static private PersonalPreference pp;
+    public static ModelCheckingResult doModelCheck(String machineAsString, PersonalPreference personalPreference) {
+        pp=personalPreference;
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doModelCheck(machineAsSemanticAst);
     }
@@ -33,7 +35,7 @@ public class ModelChecker {
         // prepare initial states
         BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
         SolutionFinder finder = new SolutionFinder(initialValueConstraint, solver, ctx);
-        Set<Model> models = finder.findSolutions(5);
+        Set<Model> models = finder.findSolutions(pp.getMaxInitialStates());
         for (Model model : models) {
             State state = getStateFromModel(null, model, machineTranslator);
             queue.add(state);
@@ -60,7 +62,7 @@ public class ModelChecker {
             for (BoolExpr currentOperationConstraint : operationConstraints) {
                 // compute successors
                 finder = new SolutionFinder(currentOperationConstraint, solver, ctx);
-                models = finder.findSolutions(5);
+                models = finder.findSolutions(pp.getMaxSolution());
                 for (Model model : models) {
                     State state = getStateFromModel(current, model, machineTranslator);
                     // add to queue if not in visited
