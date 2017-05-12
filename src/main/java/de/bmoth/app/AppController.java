@@ -87,10 +87,10 @@ public class AppController implements Initializable {
                 case 0:
                     break;
                 case 1:
-                    save.fire();
+                    handleSave();
                     break;
                 case 2:
-                    saveAs.fire();
+                    handleSaveAs();
                     break;
                 case -1:
                     break;
@@ -131,8 +131,10 @@ public class AppController implements Initializable {
     public Boolean handleSaveAs() {
         try {
             Boolean saved = saveFileAs();
-            hasChanged = false;
-            infoArea.clear();
+            if (saved) {
+                hasChanged = false;
+                infoArea.clear();
+            }
             return saved;
         } catch (IOException e) {
             e.printStackTrace();
@@ -156,13 +158,8 @@ public class AppController implements Initializable {
                     Boolean saved = handleSaveAs();
                     if (saved) {
                         Platform.exit();
-                        break;
                     }
-                    else {
-                        hasChanged = true;
-                        infoArea.setText("Unsaved changes");
-                        break;
-                    }
+                    break;
                 case -1:
                     Platform.exit();
                     break;
