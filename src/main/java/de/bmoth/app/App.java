@@ -1,13 +1,12 @@
 package de.bmoth.app;
 
-import java.io.*;
-
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-
-import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class App extends Application {
 
@@ -18,11 +17,8 @@ public class App extends Application {
         Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(App.class.getResource("keywords.css").toExternalForm());
 
-        PersonalPreference personalPreference = PersonalPreference.loadPreferenceFromFile();
-
         AppController appController = loader.getController();
         appController.setupStage(primaryStage);
-        appController.setupPersonalPreference(personalPreference);
 
         primaryStage.setScene(scene);
         primaryStage.show();

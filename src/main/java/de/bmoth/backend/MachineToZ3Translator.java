@@ -1,22 +1,14 @@
 package de.bmoth.backend;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
+import de.bmoth.parser.ast.nodes.*;
 
-import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
-import de.bmoth.parser.ast.nodes.DeclarationNode;
-import de.bmoth.parser.ast.nodes.MachineNode;
-import de.bmoth.parser.ast.nodes.OperationNode;
-import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SubstitutionNode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class MachineToZ3Translator {
     private final MachineNode machineNode;
@@ -30,8 +22,7 @@ public class MachineToZ3Translator {
         this.machineNode = machineNode;
         this.z3Context = ctx;
         this.initialisationConstraint = visitSubstitution(machineNode.getInitialisation());
-        this.invariantConstraint = (BoolExpr) FormulaToZ3Translator.translatePredicateNode(z3Context,
-                machineNode.getInvariant(), null);
+        this.invariantConstraint = (BoolExpr) FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(), z3Context);
         this.operationConstraints = visitOperations(machineNode.getOperations());
 
         {
@@ -84,8 +75,7 @@ public class MachineToZ3Translator {
     }
 
     private BoolExpr visitSelectSubstitutionNode(SelectSubstitutionNode node) {
-        BoolExpr condition = (BoolExpr) FormulaToZ3Translator.translatePredicateNode(z3Context, node.getCondition(),
-                null);
+        BoolExpr condition = (BoolExpr) FormulaToZ3Translator.translatePredicate(node.getCondition(), z3Context);
         BoolExpr substitution = visitSubstitution(node.getSubstitution());
         return z3Context.mkAnd(condition, substitution);
     }
@@ -110,7 +100,7 @@ public class MachineToZ3Translator {
 
     private BoolExpr visitSingleAssignSubstitution(SingleAssignSubstitutionNode node) {
         Sort bTypeToZ3Sort = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getIdentifier().getType());
-        Expr value = FormulaToZ3Translator.translateExprNode(z3Context, node.getValue(), null);
+        Expr value = FormulaToZ3Translator.translateExpr(node.getValue(), z3Context);
         String name = getPrimedName(node.getIdentifier().getName());
         Expr variable = z3Context.mkConst(name, bTypeToZ3Sort);
         return this.z3Context.mkEq(variable, value);

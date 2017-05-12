@@ -1,25 +1,17 @@
 package de.bmoth.modelchecker;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Expr;
-import com.microsoft.z3.Model;
-import com.microsoft.z3.Solver;
-import com.microsoft.z3.Status;
-
-import de.bmoth.app.PersonalPreference;
-import de.bmoth.backend.FormulaToZ3Translator;
+import com.microsoft.z3.*;
+import de.bmoth.app.PersonalPreferences;
 import de.bmoth.backend.MachineToZ3Translator;
 import de.bmoth.backend.SolutionFinder;
 import de.bmoth.parser.Parser;
-import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.nodes.DeclarationNode;
+import de.bmoth.parser.ast.nodes.MachineNode;
 
 import java.util.*;
 
 public class ModelChecker {
-    static private PersonalPreference pp;
-    public static ModelCheckingResult doModelCheck(String machineAsString, PersonalPreference personalPreference) {
-        pp=personalPreference;
+    public static ModelCheckingResult doModelCheck(String machineAsString) {
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doModelCheck(machineAsSemanticAst);
     }
@@ -35,7 +27,7 @@ public class ModelChecker {
         // prepare initial states
         BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
         SolutionFinder finder = new SolutionFinder(initialValueConstraint, solver, ctx);
-        Set<Model> models = finder.findSolutions(pp.getMaxInitialStates());
+        Set<Model> models = finder.findSolutions(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE));
         for (Model model : models) {
             State state = getStateFromModel(null, model, machineTranslator);
             queue.add(state);
@@ -62,7 +54,7 @@ public class ModelChecker {
             for (BoolExpr currentOperationConstraint : operationConstraints) {
                 // compute successors
                 finder = new SolutionFinder(currentOperationConstraint, solver, ctx);
-                models = finder.findSolutions(pp.getMaxSolution());
+                models = finder.findSolutions(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS));
                 for (Model model : models) {
                     State state = getStateFromModel(current, model, machineTranslator);
                     // add to queue if not in visited
