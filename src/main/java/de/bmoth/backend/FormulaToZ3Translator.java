@@ -267,8 +267,25 @@ public class FormulaToZ3Translator {
                     ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
                     return z3Context.mkPower(left, right);
                 }
-                case INTERVAL:
-                    break;
+                case INTERVAL: {
+                    ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
+                    ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
+
+                    ArithExpr x = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), z3Context.getIntSort());
+                    Expr T = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
+                    
+                    BoolExpr leftLe = z3Context.mkLe(left, x);
+                    BoolExpr rightGe = z3Context.mkGe(right, x);
+                    BoolExpr interval = z3Context.mkAnd(leftLe , rightGe);
+                    BoolExpr member = z3Context.mkSetMembership(x, (ArrayExpr) T);
+                    BoolExpr equality = z3Context.mkEq(interval, member);
+                    
+                    Expr[] bound = new Expr[] {x};
+                    
+                    Quantifier q = z3Context.mkForall(bound, equality, 1, null, null, null, null);
+                    constraintList.add(q);                    
+                    return T;
+                }
                 case INTEGER: {
                     Type type = node.getType();// POW(INTEGER)
                     // !x.(x : INTEGER)

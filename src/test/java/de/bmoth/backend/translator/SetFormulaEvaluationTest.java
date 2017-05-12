@@ -305,6 +305,28 @@ public class SetFormulaEvaluationTest {
         assertEquals(Status.UNSATISFIABLE, check);
     }
     
+    @Test
+    public void testAdditionFormula() throws Exception {
+        String formula = "x : 2 .. 3";
+        // getting the translated z3 representation of the formula
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        s.add(constraint);
+        Status check = s.check();
+
+        assertEquals(Status.SATISFIABLE, check);
+    }
+    
+    @Test
+    public void testFailAdditionFormula() throws Exception {
+        String formula = "x : 2 .. 3 & x > 3";
+        // getting the translated z3 representation of the formula
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        s.add(constraint);
+        Status check = s.check();
+
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+    
     @Ignore
     @Test
     public void testGeneralizedUnion() throws Exception {
