@@ -36,6 +36,8 @@ public class MachineAnalyser extends AbstractAnalyser {
 		checkScope();
 
 	}
+	
+	
 
 	class DeclarationFinder extends BMoThParserBaseVisitor<Void> {
 		DeclarationFinder() {

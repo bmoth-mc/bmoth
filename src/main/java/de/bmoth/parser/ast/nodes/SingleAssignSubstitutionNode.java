@@ -1,22 +1,28 @@
 package de.bmoth.parser.ast.nodes;
 
-public class SingleAssignSubstitutionNode implements SubstitutionNode {
+import java.util.HashSet;
+import java.util.Set;
 
-	private final IdentifierExprNode identifier;
-	private final ExprNode value;
+public class SingleAssignSubstitutionNode extends SubstitutionNode {
 
-	public SingleAssignSubstitutionNode(IdentifierExprNode identifier, ExprNode expr) {
-		this.identifier = identifier;
-		this.value = expr;
-	}
+    private final IdentifierExprNode identifier;
+    private final ExprNode value;
 
-	public IdentifierExprNode getIdentifier() {
-		return identifier;
-	}
+    public SingleAssignSubstitutionNode(IdentifierExprNode identifier, ExprNode expr) {
+        this.identifier = identifier;
+        this.value = expr;
+        Set<DeclarationNode> set = new HashSet<>();
+        set.add(identifier.getDeclarationNode());
+        super.setAssignedVariables(set);
+    }
 
-	public ExprNode getValue() {
-		return value;
-	}
+    public IdentifierExprNode getIdentifier() {
+        return identifier;
+    }
+
+    public ExprNode getValue() {
+        return value;
+    }
 
     @Override
     public String toString() {

@@ -1,6 +1,6 @@
 package de.bmoth.parser.ast.nodes;
 
-public class SelectSubstitutionNode implements SubstitutionNode {
+public class SelectSubstitutionNode extends SubstitutionNode {
 
 	private final SubstitutionNode substitution;
 	private final PredicateNode condition;
@@ -8,6 +8,7 @@ public class SelectSubstitutionNode implements SubstitutionNode {
 	public SelectSubstitutionNode(PredicateNode condition, SubstitutionNode substitution) {
 		this.condition = condition;
 		this.substitution = substitution;
+		super.setAssignedVariables(substitution.getAssignedVariables());
 	}
 
 	public SubstitutionNode getSubstitution() {

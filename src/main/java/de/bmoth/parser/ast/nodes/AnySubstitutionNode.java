@@ -2,7 +2,7 @@ package de.bmoth.parser.ast.nodes;
 
 import java.util.List;
 
-public class AnySubstitutionNode implements SubstitutionNode {
+public class AnySubstitutionNode extends SubstitutionNode {
 
     private final List<DeclarationNode> parameters;
     private final PredicateNode wherePredicate;
@@ -13,6 +13,7 @@ public class AnySubstitutionNode implements SubstitutionNode {
         this.parameters = parameters;
         this.wherePredicate = wherePredicate;
         this.thenSubstitution = thenSubstitution;
+        super.setAssignedVariables(thenSubstitution.getAssignedVariables());
     }
 
     public List<DeclarationNode> getParameters() {

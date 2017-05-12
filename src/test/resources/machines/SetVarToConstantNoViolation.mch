@@ -4,11 +4,13 @@ CONSTANTS
 PROPERTIES
   c = 1
 VARIABLES
-  x
+  x, y
 INVARIANT
-  x = 0
+  x : {0,1}
+& y = 1
 INITIALISATION
   x := 0
+|| y := 1
 OPERATIONS
-  copy_from_constant = BEGIN x:=c || c:=0 END
+  copy_from_constant = BEGIN x:=c || y:=1 END
 END

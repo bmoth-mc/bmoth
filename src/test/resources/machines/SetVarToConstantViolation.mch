@@ -2,7 +2,7 @@ MACHINE SetVarToConstantViolation
 CONSTANTS
   c
 PROPERTIES
-  c = 0
+  c = 1
 VARIABLES
   x
 INVARIANT

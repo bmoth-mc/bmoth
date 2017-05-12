@@ -1,5 +1,16 @@
 package de.bmoth.parser.ast.nodes;
 
-public interface SubstitutionNode extends Node {
+import java.util.Set;
+
+public abstract class SubstitutionNode implements Node {
+    private Set<DeclarationNode> assignedVariables;
+
+    public Set<DeclarationNode> getAssignedVariables() {
+        return assignedVariables;
+    }
+
+    public void setAssignedVariables(Set<DeclarationNode> assignedVariables) {
+        this.assignedVariables = assignedVariables;
+    }
 
 }

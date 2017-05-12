@@ -5,9 +5,11 @@ import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMUL
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.RuleNode;
@@ -103,9 +105,10 @@ public class SemanticAstCreator {
                 operationsList.add(operationNode);
             }
             machineNode.setOperations(operationsList);
-        }
 
+        }
         this.semanticNode = machineNode;
+
     }
 
     private List<DeclarationNode> createDeclarationList(LinkedHashMap<String, Token> constantsDeclarations) {
