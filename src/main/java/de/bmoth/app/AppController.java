@@ -175,18 +175,20 @@ public class AppController implements Initializable {
 
     @FXML
     public void handleCheck() {
-        ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText(),personalPreference);
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Model Checking Result");
-        alert.setHeaderText("The model is...");
-        if (result.isCorrect()) {
-            alert.setContentText("...correct!\nNo counter-example found.");
-        } else {
-            alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
-                + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
+        if (codeArea.getText().replaceAll("\\s+","").length()>0) {
+            ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText(), personalPreference);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Model Checking Result");
+            alert.setHeaderText("The model is...");
+            if (result.isCorrect()) {
+                alert.setContentText("...correct!\nNo counter-example found.");
+            } else {
+                alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
+                    + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
+            }
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.showAndWait();
         }
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        alert.showAndWait();
     }
 
 
