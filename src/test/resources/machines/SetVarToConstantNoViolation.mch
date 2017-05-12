@@ -10,5 +10,5 @@ INVARIANT
 INITIALISATION
   x := 0
 OPERATIONS
-  copy_from_constant = BEGIN x:=c END
+  copy_from_constant = BEGIN x:=c || c:=0 END
 END

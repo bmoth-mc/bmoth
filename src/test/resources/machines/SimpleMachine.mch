@@ -2,7 +2,7 @@ MACHINE SimpleMachine
 VARIABLES
   x
 INVARIANT
-  x : NATURAL & x > 8 & x < 10
+  x : NATURAL & x > 0 & x < 10
 INITIALISATION
   x := 9
 OPERATIONS
