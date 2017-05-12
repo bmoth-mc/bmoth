@@ -2,7 +2,6 @@ package de.bmoth.modelchecker;
 
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -72,7 +71,6 @@ public class ModelCheckerTest {
     }
 
     @Test
-    @Ignore
     public void testLeuschelPerformanceMachines2() throws Exception {
         MachineNode simpleMachineWithoutViolation = Parser.getMachineFileAsSemanticAst(dir + "/performance/SimpleSetIncrease.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
