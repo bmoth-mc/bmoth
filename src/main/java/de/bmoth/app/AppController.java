@@ -109,7 +109,9 @@ public class AppController implements Initializable {
             codeArea.replaceText("");
             codeArea.deletehistory();
             codeArea.selectRange(0, 0);
+            currentFile=null;
             hasChanged = false;
+            primaryStage.setTitle(APPNAME + " - " + "New Machine");
             infoArea.clear();
         }
     }
