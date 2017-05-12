@@ -3,6 +3,7 @@ package de.bmoth.app;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
+import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -86,10 +87,10 @@ public class AppController implements Initializable {
                 case 0:
                     break;
                 case 1:
-                    save.fire();
+                    handleSave();
                     break;
                 case 2:
-                    saveAs.fire();
+                    handleSaveAs();
                     break;
                 case -1:
                     break;
@@ -127,14 +128,18 @@ public class AppController implements Initializable {
     }
 
     @FXML
-    public void handleSaveAs() {
+    public Boolean handleSaveAs() {
         try {
-            saveFileAs();
-            hasChanged = false;
-            infoArea.clear();
+            Boolean saved = saveFileAs();
+            if (saved) {
+                hasChanged = false;
+                infoArea.clear();
+            }
+            return saved;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     @FXML
@@ -150,8 +155,10 @@ public class AppController implements Initializable {
                     Platform.exit();
                     break;
                 case 2:
-                    handleSaveAs();
-                    Platform.exit();
+                    Boolean saved = handleSaveAs();
+                    if (saved) {
+                        Platform.exit();
+                    }
                     break;
                 case -1:
                     Platform.exit();
@@ -205,17 +212,20 @@ public class AppController implements Initializable {
      * @throws IOException
      * @see #saveFile(String)
      */
-    private void saveFileAs() throws IOException {
+    private Boolean saveFileAs() throws IOException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MCH File", "*.mch"));
         File file = fileChooser.showSaveDialog(primaryStage);
-        if (file != null)      //add .mch ending if not added by OS
+        if (file != null) {     //add .mch ending if not added by OS
             if (!file.getAbsolutePath().endsWith(".mch")) {
                 saveFile(file.getAbsolutePath() + ".mch");
             } else {
                 saveFile(file.getAbsolutePath());
             }
+            return true;
+        }
+        else return false;
     }
 
     /**
