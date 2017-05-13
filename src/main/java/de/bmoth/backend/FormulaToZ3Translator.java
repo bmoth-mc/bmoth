@@ -417,18 +417,19 @@ public class FormulaToZ3Translator {
             case GENERALIZED_UNION: {
                 // union(S)
                 // return Res
-                // !(s).(s : S <=> s <: Res)
-                // Alternative encoding:
-                // !(r).(r : Res <=> #(s).(s : S & r : s)
+                // !(e).(e : Res <=> #(s).(s : S & e : s)
+
+                SetType setType = (SetType) node.getType();
                 Expr S = visitExprNode(expressionNodes.get(0), ops);
-                Expr res = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
-                Expr s = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
-                Expr[] bound = new Expr[] { s };
-                BoolExpr a = z3Context.mkSetMembership(s, (ArrayExpr) S);
-                BoolExpr b = z3Context.mkSetSubset((ArrayExpr) s, (ArrayExpr) res);
-                // a <=> b
-                BoolExpr body = z3Context.mkEq(a, b);
-                Quantifier q = z3Context.mkForall(bound, body, 1, null, null, null, null);
+                Expr res = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType));
+                Expr s = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType));
+                Expr e = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType.getSubtype()));
+                
+                BoolExpr eIsInRes = z3Context.mkSetMembership(e, (ArrayExpr) res);
+                BoolExpr sIsInS = z3Context.mkSetMembership(s, (ArrayExpr) S);
+                BoolExpr eIsIns = z3Context.mkSetMembership(e, (ArrayExpr) s);
+                Quantifier exists = z3Context.mkExists(new Expr[] { s }, z3Context.mkAnd(sIsInS, eIsIns), 1,null ,null ,null,null);
+                Quantifier q = z3Context.mkForall(new Expr[] { e }, z3Context.mkEq(eIsInRes, exists), 1, null, null, null, null);
                 constraintList.add(q);
                 return res;
             }
