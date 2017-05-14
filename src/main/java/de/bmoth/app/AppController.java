@@ -5,7 +5,10 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -210,6 +213,11 @@ public class AppController implements Initializable {
     }
 
     public void handleOptions() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
+        Parent root = loader.load();
+        OptionController optionControler = loader.getController();
+        Stage optionStage = optionControler.getStage(root);
+        optionStage.show();
 
     }
 
