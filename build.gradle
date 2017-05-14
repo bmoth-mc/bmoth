@@ -48,6 +48,16 @@ sourceSets {
     }
 }
 
+test {
+	exclude('de/bmoth/performance')
+}
+
+task performanceTests(type: Test){
+	doFirst{ println("Running performance tests") }
+	scanForTestClasses = true
+	include('de/bmoth/performance/**')
+}
+
 dependencies {
     // Antlr4 Parser Generator
     antlr "org.antlr:antlr4:4.5.3"
