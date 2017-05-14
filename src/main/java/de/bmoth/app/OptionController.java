@@ -20,6 +20,7 @@ public class OptionController {
     Stage stage;
 
     public Stage getStage(Parent root) {
+        if(stage!=null) return stage;
         Scene scene = new Scene(root);
         this.stage = new Stage();
         stage.setScene(scene);
