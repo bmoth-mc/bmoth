@@ -146,6 +146,17 @@ public class FormulaEvaluationTest {
     }
 
     @Test
+    public void testDivisionFormula2() throws Exception {
+        String formula = "x = 1 / 0";
+        // getting the translated z3 representation of the formula
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        s.add(constraint);
+        Status check = s.check();
+
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+
+    @Test
     public void testPowerFormula() throws Exception {
         String formula = "x = 2 ** 8";
         // getting the translated z3 representation of the formula
