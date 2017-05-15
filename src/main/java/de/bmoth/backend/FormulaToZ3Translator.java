@@ -275,6 +275,7 @@ public class FormulaToZ3Translator {
             case DIVIDE: {
                 ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
                 ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
+                constraintList.add(z3Context.mkNot(z3Context.mkEq(right,z3Context.mkInt(0))));
                 return z3Context.mkDiv(left, right);
             }
             case POWER_OF: {
