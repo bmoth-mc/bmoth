@@ -20,7 +20,6 @@ public class Issue59Test {
         machine += "END";
 
         ModelCheckingResult result = ModelChecker.doModelCheck(machine);
-        // the operation BlockSubstitution will finally violate the invariant x<=2
         assertEquals(true, result.isCorrect());
     }
 
