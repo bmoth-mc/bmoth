@@ -10,14 +10,10 @@ public class TypeErrorException extends RuntimeException {
 
     public TypeErrorException(Node node, String message) {
         super(message);
-        ExceptionReporter exceptionReporter = new ExceptionReporter(Alert.AlertType.ERROR,
-            "A type error", message);
     }
 
     public TypeErrorException(Node node, Type expected, Type found) {
         super(String.format("Expected %s but found %s.", expected.toString(), found.toString()));
-        ExceptionReporter exceptionReporter = new ExceptionReporter(Alert.AlertType.ERROR,
-            "A type error", String.format("Expected %s but found %s.", expected.toString(), found.toString()));
     }
 
 }

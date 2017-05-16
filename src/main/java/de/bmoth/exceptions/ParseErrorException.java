@@ -11,8 +11,6 @@ public class ParseErrorException extends RuntimeException {
     public ParseErrorException(CommonToken token, String message) {
         super(message);
         this.token = token;
-        ExceptionReporter exceptionReporter = new ExceptionReporter(Alert.AlertType.ERROR,
-            "A syntax error", toString());
     }
 
     @Override

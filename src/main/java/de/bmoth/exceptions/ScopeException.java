@@ -10,13 +10,9 @@ public class ScopeException extends RuntimeException {
 
     public ScopeException(ParserRuleContext ctx, String message) {
         super(message);
-        ExceptionReporter exceptionReporter = new ExceptionReporter(Alert.AlertType.ERROR,
-            "A scope exception", message);
     }
 
     public ScopeException(Token identifierToken, String message) {
         super(message);
-        ExceptionReporter exceptionReporter = new ExceptionReporter(Alert.AlertType.ERROR,
-            "A scope exception", message);
     }
 }
