@@ -302,18 +302,6 @@ public class FormulaToZ3Translator {
                 constraintList.add(q);
                 return T;
             }
-            case INTEGER: {
-                Type type = node.getType();// POW(INTEGER)
-                // !x.(x : INTEGER)
-                Expr x = z3Context.mkConst("x", z3Context.getIntSort());
-                Expr integer = z3Context.mkConst("INTEGER", bTypeToZ3Sort(type));
-                Expr[] bound = new Expr[] { x };
-                // x : INTEGER
-                BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) integer);
-                Quantifier q = z3Context.mkForall(bound, b, 1, null, null, null, null);
-                constraintList.add(q);
-                return integer;
-            }
             case NATURAL1: {
                 Type type = node.getType();// POW(INTEGER)
                 // !x.(x >= 1 <=> x : NATURAL)
@@ -350,19 +338,6 @@ public class FormulaToZ3Translator {
                 return z3Context.mkFalse();
             case TRUE:
                 return z3Context.mkTrue();
-            case BOOL: {
-                Type type = node.getType();// BOOL ?
-                // !x.(x \in {true,false}) TODO do we need this additional
-                // constraint?
-                Expr x = z3Context.mkConst("x", z3Context.getBoolSort());
-                Expr bool = z3Context.mkConst(ExpressionOperator.BOOL.toString(), bTypeToZ3Sort(type));
-                Expr[] bound = new Expr[] { x };
-                // x \in {true,false}
-                BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) bool);
-                Quantifier q = z3Context.mkForall(bound, b, 1, null, null, null, null);
-                constraintList.add(q);
-                return bool;
-            }
             case UNION: {
                 ArrayExpr left = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
                 ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
@@ -371,6 +346,12 @@ public class FormulaToZ3Translator {
             case COUPLE: {
                 CoupleType type = (CoupleType) node.getType();
                 TupleSort bTypeToZ3Sort = (TupleSort) bTypeToZ3Sort(type);
+                case INTEGER: {
+                    return z3Context.mkFullSet(z3Context.mkIntSort());
+                }
+                case BOOL: {
+                    return z3Context.mkFullSet(z3Context.mkBoolSort());
+                }
 
                 Expr left = visitExprNode(node.getExpressionNodes().get(0), ops);
                 Expr right = visitExprNode(node.getExpressionNodes().get(1), ops);
