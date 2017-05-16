@@ -1,5 +1,7 @@
 package de.bmoth.exceptions;
 
+import de.bmoth.app.ExceptionReporter;
+import javafx.scene.control.Alert;
 import org.antlr.v4.runtime.CommonToken;
 
 public class ParseErrorException extends RuntimeException {
@@ -9,6 +11,8 @@ public class ParseErrorException extends RuntimeException {
     public ParseErrorException(CommonToken token, String message) {
         super(message);
         this.token = token;
+        ExceptionReporter exceptionReporter = new ExceptionReporter(Alert.AlertType.ERROR,
+            "A syntax error", toString());
     }
 
     @Override
