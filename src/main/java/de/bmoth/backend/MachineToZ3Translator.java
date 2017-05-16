@@ -6,23 +6,30 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
 import de.bmoth.parser.ast.nodes.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class MachineToZ3Translator {
     private final MachineNode machineNode;
     private final Context z3Context;
-    private final BoolExpr initialisationConstraint;
-    private final BoolExpr invariantConstraint;
+    private BoolExpr initialisationConstraint = null;
+    private BoolExpr invariantConstraint = null;
     private final HashMap<String, String> primedVariablesToVariablesMap;
     private final List<BoolExpr> operationConstraints;
 
     public MachineToZ3Translator(MachineNode machineNode, Context ctx) {
         this.machineNode = machineNode;
         this.z3Context = ctx;
-        this.initialisationConstraint = visitSubstitution(machineNode.getInitialisation());
-        this.invariantConstraint = (BoolExpr) FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(), z3Context);
+
+        if (machineNode.getInitialisation() != null) {
+            this.initialisationConstraint = visitSubstitution(machineNode.getInitialisation());
+        }
+        if (machineNode.getInvariant() != null) {
+            this.invariantConstraint = (BoolExpr) FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(),
+                z3Context);
+        } else {
+            this.invariantConstraint = z3Context.mkTrue();
+        }
+
         this.operationConstraints = visitOperations(machineNode.getOperations());
 
         {
@@ -37,7 +44,15 @@ public class MachineToZ3Translator {
     private List<BoolExpr> visitOperations(List<OperationNode> operations) {
         List<BoolExpr> results = new ArrayList<>(operations.size());
         for (OperationNode operationNode : this.machineNode.getOperations()) {
-            results.add(visitSubstitution(operationNode.getSubstitution()));
+            BoolExpr temp = visitSubstitution(operationNode.getSubstitution());
+            // for unassigned variables add a dummy assignment, e.g. x' = x
+            Set<DeclarationNode> set = new HashSet<>(this.getVariables());
+            set.removeAll(operationNode.getSubstitution().getAssignedVariables());
+            for (DeclarationNode node : set) {
+                BoolExpr mkEq = z3Context.mkEq(getPrimedVariable(node), getVariableAsZ3Expression(node));
+                temp = z3Context.mkAnd(temp, mkEq);
+            }
+            results.add(temp);
         }
         return results;
     }
@@ -50,6 +65,18 @@ public class MachineToZ3Translator {
         return machineNode.getConstants();
     }
 
+    public Expr getVariableAsZ3Expression(DeclarationNode node) {
+        Sort type = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getType());
+        Expr expr = z3Context.mkConst(node.getName(), type);
+        return expr;
+    }
+
+    public Expr getVariable(DeclarationNode node) {
+        Sort type = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getType());
+        Expr expr = z3Context.mkConst(node.getName(), type);
+        return expr;
+    }
+
     public Expr getPrimedVariable(DeclarationNode node) {
         String primedName = getPrimedName(node.getName());
         Sort type = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getType());
@@ -58,8 +85,16 @@ public class MachineToZ3Translator {
     }
 
     public BoolExpr getInitialValueConstraint() {
-        BoolExpr prop = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(),z3Context,new TranslationOptions(1));
-        return z3Context.mkAnd(initialisationConstraint,prop);
+        PredicateNode properties = machineNode.getProperties();
+        BoolExpr prop = z3Context.mkTrue();
+        if (properties != null) {
+            prop = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(), z3Context);
+
+        }
+        if (initialisationConstraint == null) {
+            return prop;
+        }
+        return z3Context.mkAnd(initialisationConstraint, prop);
     }
 
     public BoolExpr getInvariantConstraint() {
@@ -105,10 +140,8 @@ public class MachineToZ3Translator {
 
     private BoolExpr visitSingleAssignSubstitution(SingleAssignSubstitutionNode node) {
         Sort bTypeToZ3Sort = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getIdentifier().getType());
-        Expr value = FormulaToZ3Translator.translateExpr(node.getValue(), z3Context);
         String name = getPrimedName(node.getIdentifier().getName());
-        Expr variable = z3Context.mkConst(name, bTypeToZ3Sort);
-        return this.z3Context.mkEq(variable, value);
+        return FormulaToZ3Translator.translateVariableEqualToExpr(name, node.getValue(), z3Context);
     }
 
     private String getPrimedName(String name) {

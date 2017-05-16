@@ -1,7 +1,13 @@
 package de.bmoth.parser.ast;
 
-import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
-import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
+import de.bmoth.antlr.BMoThParser;
+import de.bmoth.antlr.BMoThParser.*;
+import de.bmoth.antlr.BMoThParserBaseVisitor;
+import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
+import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.RuleNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,38 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.RuleNode;
-
-import de.bmoth.antlr.BMoThParser;
-import de.bmoth.antlr.BMoThParser.ExpressionContext;
-import de.bmoth.antlr.BMoThParser.FormulaContext;
-import de.bmoth.antlr.BMoThParser.OperationContext;
-import de.bmoth.antlr.BMoThParser.PredicateContext;
-import de.bmoth.antlr.BMoThParser.SubstitutionContext;
-import de.bmoth.antlr.BMoThParserBaseVisitor;
-import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
-import de.bmoth.parser.ast.nodes.DeclarationNode;
-import de.bmoth.parser.ast.nodes.ExprNode;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
-import de.bmoth.parser.ast.nodes.FormulaNode;
-import de.bmoth.parser.ast.nodes.IdentifierExprNode;
-import de.bmoth.parser.ast.nodes.IdentifierPredicateNode;
-import de.bmoth.parser.ast.nodes.MachineNode;
-import de.bmoth.parser.ast.nodes.Node;
-import de.bmoth.parser.ast.nodes.NumberNode;
-import de.bmoth.parser.ast.nodes.OperationNode;
-import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
-import de.bmoth.parser.ast.nodes.PredicateNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
-import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
-import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
-import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
-import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SubstitutionNode;
+import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
+import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
 
 public class SemanticAstCreator {
 
@@ -103,9 +79,10 @@ public class SemanticAstCreator {
                 operationsList.add(operationNode);
             }
             machineNode.setOperations(operationsList);
-        }
 
+        }
         this.semanticNode = machineNode;
+
     }
 
     private List<DeclarationNode> createDeclarationList(LinkedHashMap<String, Token> constantsDeclarations) {
@@ -321,6 +298,13 @@ public class SemanticAstCreator {
 
         @Override
         public SelectSubstitutionNode visitSelectSubstitution(BMoThParser.SelectSubstitutionContext ctx) {
+            PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
+            SubstitutionNode sub = (SubstitutionNode) ctx.substitution().accept(this);
+            return new SelectSubstitutionNode(predicate, sub);
+        }
+
+        @Override
+        public SelectSubstitutionNode visitPreSubstitution(BMoThParser.PreSubstitutionContext ctx) {
             PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
             SubstitutionNode sub = (SubstitutionNode) ctx.substitution().accept(this);
             return new SelectSubstitutionNode(predicate, sub);

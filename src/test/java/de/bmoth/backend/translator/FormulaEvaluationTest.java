@@ -1,22 +1,18 @@
 package de.bmoth.backend.translator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
-
 import com.microsoft.z3.*;
+import de.bmoth.backend.FormulaToZ3Translator;
 import de.bmoth.backend.SolutionFinder;
+import de.bmoth.util.UtilMethodsTest;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-
-import de.bmoth.backend.FormulaToZ3Translator;
-import de.bmoth.util.UtilMethodsTest;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import static org.junit.Assert.*;
 
 public class FormulaEvaluationTest {
 
@@ -150,6 +146,17 @@ public class FormulaEvaluationTest {
     }
 
     @Test
+    public void testDivisionFormula2() throws Exception {
+        String formula = "x = 1 / 0";
+        // getting the translated z3 representation of the formula
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        s.add(constraint);
+        Status check = s.check();
+
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+
+    @Test
     public void testPowerFormula() throws Exception {
         String formula = "x = 2 ** 8";
         // getting the translated z3 representation of the formula
@@ -228,10 +235,10 @@ public class FormulaEvaluationTest {
     }
 
     static String z3ModelToString(Model m) {
-        Map<String,String> values = new HashMap<>();
-        for(FuncDecl constant : m.getConstDecls()) {
-            String value = m.eval(constant.apply(),true).toString();
-            values.put(constant.apply().toString(),value);
+        Map<String, String> values = new HashMap<>();
+        for (FuncDecl constant : m.getConstDecls()) {
+            String value = m.eval(constant.apply(), true).toString();
+            values.put(constant.apply().toString(), value);
         }
         return values.toString();
     }

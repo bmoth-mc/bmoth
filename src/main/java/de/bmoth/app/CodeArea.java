@@ -5,7 +5,7 @@ package de.bmoth.app;
  */
 public class CodeArea extends org.fxmisc.richtext.CodeArea {
 
-    public void deletehistory(){
+    public void deletehistory() {
         this.getUndoManager().forgetHistory();
     }
 }

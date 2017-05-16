@@ -1,13 +1,13 @@
 package de.bmoth.parser.ast.nodes;
 
+import de.bmoth.antlr.BMoThParser;
+import de.bmoth.antlr.BMoThParser.ExpressionContext;
+import de.bmoth.antlr.BMoThParser.ExpressionOperatorContext;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import de.bmoth.antlr.BMoThParser;
-import de.bmoth.antlr.BMoThParser.ExpressionContext;
-import de.bmoth.antlr.BMoThParser.ExpressionOperatorContext;
 
 public class ExpressionOperatorNode extends ExprNode {
 
@@ -22,7 +22,7 @@ public class ExpressionOperatorNode extends ExprNode {
         , SET_ENUMERATION, EMPTY_SET, SET_SUBTRACTION, UNION, INTERSECTION//
         , GENERALIZED_UNION, GENERALIZED_INTER//
         // relations
-        , DOMAIN, RANGE//
+        , DOMAIN, RANGE, CARTESIAN_PRODUCT//
         , CARD, DOMAIN_RESTRICTION, OVERWRITE_RELATION, DIRECT_PRODUCT//
         , DOMAIN_SUBTRACTION, RANGE_RESTRICTION, RANGE_SUBTRATION//
         // function
@@ -36,6 +36,7 @@ public class ExpressionOperatorNode extends ExprNode {
     }
 
     private static final Map<Integer, ExpressionOperator> map = new HashMap<>();
+
     static {
         map.put(BMoThParser.PLUS, ExpressionOperator.PLUS);
         map.put(BMoThParser.NATURAL, ExpressionOperator.NATURAL);
@@ -97,7 +98,7 @@ public class ExpressionOperatorNode extends ExprNode {
     private ExpressionOperator operator;
 
     public ExpressionOperatorNode(ExpressionOperatorContext ctx, List<ExprNode> expressionNodes,
-            String operatorString) {
+                                  String operatorString) {
         this.arity = expressionNodes.size();
         this.expressionNodes = expressionNodes;
         this.operatorString = operatorString;

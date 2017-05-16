@@ -3,8 +3,12 @@ package de.bmoth.app;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -25,6 +29,8 @@ import java.util.ResourceBundle;
 
 public class AppController implements Initializable {
 
+    @FXML
+    MenuItem newFile;
     @FXML
     MenuItem open;
     @FXML
@@ -52,6 +58,8 @@ public class AppController implements Initializable {
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
+        newFile.setAccelerator(new KeyCodeCombination(KeyCode.N,KeyCombination.CONTROL_ANY));
+        open.setAccelerator(new KeyCodeCombination(KeyCode.O,KeyCombination.CONTROL_ANY));
         setupPersonalPreferences();
         codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -83,6 +91,36 @@ public class AppController implements Initializable {
             infoArea.setText("Unsaved changes");
         });
     }
+
+    @FXML
+    public void handleNew() {
+        int nextStep = -1;
+        if (hasChanged) {
+            nextStep = saveChangedDialog();
+            switch (nextStep) {
+                case 0:
+                    break;
+                case 1:
+                    handleSave();
+                    break;
+                case 2:
+                    handleSaveAs();
+                    break;
+                case -1:
+                    break;
+            }
+        }
+        if (nextStep != 0) {
+            codeArea.replaceText("");
+            codeArea.deletehistory();
+            codeArea.selectRange(0, 0);
+            currentFile=null;
+            hasChanged = false;
+            primaryStage.setTitle(APPNAME + " - " + "New Machine");
+            infoArea.clear();
+        }
+    }
+
 
     @FXML
     public void handleOpen() {
@@ -175,6 +213,11 @@ public class AppController implements Initializable {
     }
 
     public void handleOptions() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
+        Parent root = loader.load();
+        OptionController optionControler = loader.getController();
+        Stage optionStage = optionControler.getStage(root);
+        optionStage.show();
 
     }
 

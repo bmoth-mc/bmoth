@@ -1,16 +1,16 @@
 package de.bmoth.parser.ast.types;
 
+import de.bmoth.exceptions.UnificationException;
+
 import java.util.Observable;
 import java.util.Observer;
-
-import de.bmoth.exceptions.UnificationException;
 
 public class SetOrIntegerType extends Observable implements Type, Observer {
 
     private Type argType;
 
-    public SetOrIntegerType(Type left, Type right) {
-        setArgType(right);
+    public SetOrIntegerType(Type arg) {
+        setArgType(arg);
     }
 
     private void setArgType(Type argType) {
@@ -55,6 +55,8 @@ public class SetOrIntegerType extends Observable implements Type, Observer {
             other.replaceBy(this);
             this.argType.unify(other.argType);
             return this;
+        } else if (otherType instanceof IntegerOrSetOfPairs) {
+            return otherType.unify(this);
         }
         throw new UnificationException();
     }
@@ -75,7 +77,7 @@ public class SetOrIntegerType extends Observable implements Type, Observer {
     @Override
     public boolean unifiable(Type otherType) {
         if (otherType instanceof SetOrIntegerType || otherType instanceof IntegerType || otherType instanceof SetType
-                || otherType instanceof UntypedType) {
+                || otherType instanceof UntypedType || otherType instanceof IntegerOrSetOfPairs) {
             return true;
         } else {
             return false;

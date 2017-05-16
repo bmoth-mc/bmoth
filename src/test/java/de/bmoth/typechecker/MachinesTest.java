@@ -1,14 +1,13 @@
 package de.bmoth.typechecker;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import de.bmoth.exceptions.TypeErrorException;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class MachinesTest {
 
@@ -237,6 +236,19 @@ public class MachinesTest {
         DeclarationNode p = any.getParameters().get(0);
         assertEquals("p", p.getName().toString());
         assertEquals("INTEGER", p.getType().toString());
+    }
+
+    @Test
+    public void testPreSubstitution() throws Exception {
+        String machine = "MACHINE test \n";
+        machine += "VARIABLES x,y \n";
+        machine += "INVARIANT x=1 & y : BOOL \n";
+        machine += "INITIALISATION x,y:= 1,TRUE \n";
+        machine += "OPERATIONS foo = PRE x < 2 THEN x := 2 END \n";
+        machine += "END";
+        TestTypechecker t = new TestTypechecker(machine);
+        assertEquals("INTEGER", t.variables.get("x").toString());
+        assertEquals("BOOL", t.variables.get("y").toString());
     }
 
 }

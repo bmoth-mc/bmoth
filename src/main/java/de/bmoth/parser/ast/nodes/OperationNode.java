@@ -2,30 +2,37 @@ package de.bmoth.parser.ast.nodes;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class OperationNode {
 
-	private final String name;
-	private final SubstitutionNode substitution;
+    private final String name;
+    private final SubstitutionNode substitution;
 
-	public OperationNode(ParseTree parseTree, String name, SubstitutionNode substitution) {
-		this.name = name;
-		this.substitution = substitution;
-	}
+    public OperationNode(ParseTree parseTree, String name, SubstitutionNode substitution) {
+        this.name = name;
+        this.substitution = substitution;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public SubstitutionNode getSubstitution() {
-		return substitution;
-	}
+    public SubstitutionNode getSubstitution() {
+        return substitution;
+    }
 
     @Override
     public String toString() {
-        if (substitution instanceof SingleAssignSubstitutionNode){
+        if (substitution instanceof SingleAssignSubstitutionNode) {
             return name + " = BEGIN " + substitution + " END";
         } else {
             return name + " = " + substitution;
         }
+    }
+
+    public Set<DeclarationNode> getAssignedDeclarationNodes() {
+        return new HashSet<>(this.substitution.getAssignedVariables());
     }
 }

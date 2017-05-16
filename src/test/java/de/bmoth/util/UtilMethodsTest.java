@@ -1,20 +1,15 @@
 package de.bmoth.util;
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 import de.bmoth.backend.FormulaToZ3Translator;
 import org.junit.Test;
+
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 
 public class UtilMethodsTest {
 
@@ -30,9 +25,7 @@ public class UtilMethodsTest {
     }
 
     public static void check(Status satisfiable, String formula, Context ctx, Solver s) {
-
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        System.out.println(constraint);
         s.add(constraint);
         Status check = s.check();
         assertEquals(satisfiable, check);

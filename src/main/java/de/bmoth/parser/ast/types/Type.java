@@ -4,12 +4,12 @@ import de.bmoth.exceptions.UnificationException;
 
 public interface Type {
 
-	public Type unify(Type otherType) throws UnificationException;
+    public Type unify(Type otherType) throws UnificationException;
 
-	public boolean unifiable(Type otherType);
+    public boolean unifiable(Type otherType);
 
-	public boolean contains(Type other);
+    public boolean contains(Type other);
 
-	public boolean isUntyped();
+    public boolean isUntyped();
 
 }

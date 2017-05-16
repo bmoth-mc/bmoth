@@ -1,11 +1,11 @@
 package de.bmoth.typechecker;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.HashMap;
 
-import org.junit.Test;
 import static de.bmoth.typechecker.TestTypechecker.getFormulaTypes;
+import static org.junit.Assert.assertEquals;
 
 public class SequenceFormulaTest {
 
@@ -51,7 +51,6 @@ public class SequenceFormulaTest {
     public void testFront() throws Exception {
         String formula = "a = front([1,b])";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
-        System.out.println(formulaTypes.get("a"));
         assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
@@ -112,5 +111,5 @@ public class SequenceFormulaTest {
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("a"));
     }
-    
+
 }

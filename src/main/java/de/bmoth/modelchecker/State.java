@@ -27,10 +27,10 @@ public class State {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof State)){
+        if (!(obj instanceof State)) {
             return false;
         }
-        if (this == obj){
+        if (this == obj) {
             return true;
         }
 
@@ -41,7 +41,7 @@ public class State {
     public BoolExpr getStateConstraint(Context context) {
         BoolExpr result = null;
         for (Map.Entry<String, Expr> entry : values.entrySet()) {
-            Expr singleExpression =  entry.getValue();
+            Expr singleExpression = entry.getValue();
             Sort sort = singleExpression.getSort();
             Expr identifierExpr = context.mkConst(entry.getKey(), sort);
             BoolExpr eq = context.mkEq(identifierExpr, singleExpression);
