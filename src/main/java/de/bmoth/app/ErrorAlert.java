@@ -3,9 +3,9 @@ package de.bmoth.app;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Region;
 
-public class ExceptionReporter extends Alert {
+public class ErrorAlert extends Alert {
 
-    public ExceptionReporter(AlertType alertType, String errorType, String msg) {
+    public ErrorAlert(AlertType alertType, String errorType, String msg) {
         super(alertType);
         this.setTitle(errorType + "!");
         this.setHeaderText(errorType + " occurred.");

@@ -3,7 +3,6 @@ package de.bmoth.app;
 import de.bmoth.checkers.InvariantSatisfiabilityChecker;
 import de.bmoth.checkers.InvariantSatisfiabilityCheckingResult;
 import de.bmoth.exceptions.ErrorEvent;
-import de.bmoth.exceptions.ParseErrorException;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
@@ -99,6 +98,7 @@ public class AppController implements Initializable {
         });
     }
 
+    // <editor-fold desc="Menu handlers">
     @FXML
     public void handleNew() {
         int nextStep = -1;
@@ -267,7 +267,37 @@ public class AppController implements Initializable {
             alert.showAndWait();
         }
     }
+    // </editor-fold>
 
+    /**
+     * Open a confirmation-alert to decide how to proceed with unsaved changes.
+     *
+     * @return UserChoice as Integer: -1 = Ignore, 0 = Cancel, 1 = Save , 2 = SaveAs
+     */
+    private int saveChangedDialog() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("UNSAVED CHANGES!");
+        alert.setHeaderText("Unsaved Changes! What do you want to do?");
+        alert.setContentText(null);
+
+        ButtonType buttonTypeSave = new ButtonType("Save");
+        ButtonType buttonTypeSaveAs = new ButtonType("Save As");
+        ButtonType buttonTypeIgnoreChanges = new ButtonType("Ignore");
+        ButtonType buttonTypeCancel = new ButtonType("Back", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeSaveAs, buttonTypeIgnoreChanges, buttonTypeCancel);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent()) {
+            if (result.get() == buttonTypeSave) return 1;
+            if (result.get() == buttonTypeSaveAs) return 2;
+            if (result.get() == buttonTypeCancel) return 0;
+            if (result.get() == buttonTypeIgnoreChanges) return -1;
+        }
+        return 0;
+    }
+
+    // <editor-fold desc="File operations">
     /**
      * Save codeArea to a file.
      *
@@ -303,34 +333,6 @@ public class AppController implements Initializable {
             }
             return true;
         } else return false;
-    }
-
-    /**
-     * Open a confirmation-alert to decide how to proceed with unsaved changes.
-     *
-     * @return UserChoice as Integer: -1 = Ignore, 0 = Cancel, 1 = Save , 2 = SaveAs
-     */
-    private int saveChangedDialog() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("UNSAVED CHANGES!");
-        alert.setHeaderText("Unsaved Changes! What do you want to do?");
-        alert.setContentText(null);
-
-        ButtonType buttonTypeSave = new ButtonType("Save");
-        ButtonType buttonTypeSaveAs = new ButtonType("Save As");
-        ButtonType buttonTypeIgnoreChanges = new ButtonType("Ignore");
-        ButtonType buttonTypeCancel = new ButtonType("Back", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeSaveAs, buttonTypeIgnoreChanges, buttonTypeCancel);
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent()) {
-            if (result.get() == buttonTypeSave) return 1;
-            if (result.get() == buttonTypeSaveAs) return 2;
-            if (result.get() == buttonTypeCancel) return 0;
-            if (result.get() == buttonTypeIgnoreChanges) return -1;
-        }
-        return 0;
     }
 
     /**
@@ -370,9 +372,12 @@ public class AppController implements Initializable {
         }
         return content;
     }
+    // </editor-fold>
 
+    // <editor-fold desc="Event Bus Subscriptions">
     @Subscribe
     public void showException(ErrorEvent event) {
         ErrorAlert errorAlert = new ErrorAlert(Alert.AlertType.ERROR, event.getErrorType(), event.getMessage());
     }
+    // </editor-fold>
 }
