@@ -1,6 +1,8 @@
 package de.bmoth.backend;
 
 import com.microsoft.z3.*;
+
+import de.bmoth.app.PersonalPreferences;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.AbstractVisitor;
 import de.bmoth.parser.ast.nodes.*;
@@ -480,14 +482,49 @@ public class FormulaToZ3Translator {
                     break;
                 case CARTESIAN_PRODUCT:
                     break;
-                case INT:
-                    break;
+                case INT: {
+                    Type type = node.getType();// POW(INTEGER)
+                    int max_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                    int min_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
+                    // !x.((x >= MIN_INT & x <= MAX_INT) <=> x : INT)
+                    Expr integer = z3Context.mkConst(ExpressionOperator.INT.toString(), bTypeToZ3Sort(type));
+                    Expr x = z3Context.mkConst("x", z3Context.getIntSort());
+                    Expr[] bound = new Expr[]{x};
+                    // x >= MIN_INT
+                    BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(min_int));
+                    //x :INT
+                    BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) integer);
+                    //x <= max_int                   
+                    BoolExpr c = z3Context.mkLe((ArithExpr) x, z3Context.mkInt(max_int));
+                    // a <=> b <=> c
+                    BoolExpr body = z3Context.mkEq(z3Context.mkAnd(a, c), b);
+                    Quantifier q = z3Context.mkForall(bound, body, 1, null, null, null, null);
+                    constraintList.add(q);
+                    return integer;
+                }
                 case MAXINT:
                     break;
                 case MININT:
                     break;
-                case NAT:
-                    break;
+                case NAT: {
+                    Type type = node.getType();// POW(INTEGER)
+                    int max_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                    // !x.((x >= 0 & x <= MAX_INT) <=> x : NAT)
+                    Expr x = z3Context.mkConst("x", z3Context.getIntSort());
+                    Expr nat = z3Context.mkConst(ExpressionOperator.NAT.toString(), bTypeToZ3Sort(type));
+                    Expr[] bound = new Expr[]{x};
+                    // x >= 0
+                    BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(0));
+                    // x : NAT
+                    BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) nat);
+                    //x <= max_int
+                    BoolExpr c = z3Context.mkLe((ArithExpr) x, z3Context.mkInt(max_int));
+                    // a <=> b <=> c
+                    BoolExpr body = z3Context.mkEq(z3Context.mkAnd(a, c), b);
+                    Quantifier q = z3Context.mkForall(bound, body, 1, null, null, null, null);
+                    constraintList.add(q);
+                    return nat;
+                }
                 default:
                     break;
             }
