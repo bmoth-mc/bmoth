@@ -14,7 +14,7 @@
       <TextField editable="false" layoutX="14.0" layoutY="82.0" text="MAX Initial States" />
       <TextField layoutX="177.0" layoutY="82.0" fx:id="maxInitState" />
       <TextField editable="false" layoutX="14.0" layoutY="119.0" text="MAX Transitions" />
-      <TextField layoutX="177.0" layoutY="119.0" fx:id="maxTrans"/>
+      <TextField layoutX="177.0" layoutY="119.0" fx:id="maxTrans" />
       <Button layoutX="449.0" layoutY="350.0" mnemonicParsing="false" text="Apply" onAction="#handleApply" />
       <Button cancelButton="true" layoutX="506.0" layoutY="350.0" mnemonicParsing="false" text="Close" onAction="#handleClose" />
       <Button layoutX="392.0" layoutY="350.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="45.0" text="OK" onAction="#handleOk" />
