@@ -2,6 +2,7 @@ package de.bmoth.app;
 
 import de.bmoth.checkers.InvariantSatisfiabilityChecker;
 import de.bmoth.checkers.InvariantSatisfiabilityCheckingResult;
+import de.bmoth.exceptions.ErrorEvent;
 import de.bmoth.exceptions.ParseErrorException;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
@@ -96,12 +97,6 @@ public class AppController implements Initializable {
             hasChanged = true;
             infoArea.setText("Unsaved changes");
         });
-    }
-
-    @Subscribe
-    public void showException(ParseErrorException exception) {
-        ExceptionReporter exceptionReporter = new ExceptionReporter(Alert.AlertType.ERROR,
-            "A syntax error", exception.toString());
     }
 
     @FXML
@@ -273,7 +268,6 @@ public class AppController implements Initializable {
         }
     }
 
-
     /**
      * Save codeArea to a file.
      *
@@ -377,4 +371,8 @@ public class AppController implements Initializable {
         return content;
     }
 
+    @Subscribe
+    public void showException(ErrorEvent event) {
+        ErrorAlert errorAlert = new ErrorAlert(Alert.AlertType.ERROR, event.getErrorType(), event.getMessage());
+    }
 }

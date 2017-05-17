@@ -12,7 +12,7 @@ public class ParseErrorException extends RuntimeException {
         super(message);
         this.token = token;
         EventBus eventBus = EventBusProvider.getInstance().getEventBus();
-        eventBus.post(this);
+        eventBus.post(new ErrorEvent("Syntax error", toString()));
     }
 
     @Override
