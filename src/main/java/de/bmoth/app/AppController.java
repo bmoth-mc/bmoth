@@ -2,6 +2,7 @@ package de.bmoth.app;
 
 import de.bmoth.checkers.InvariantSatisfiabilityChecker;
 import de.bmoth.checkers.InvariantSatisfiabilityCheckingResult;
+import de.bmoth.exceptions.ParseErrorException;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
@@ -26,6 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import com.google.common.eventbus.Subscribe;
 
 public class AppController implements Initializable {
 
@@ -68,6 +71,9 @@ public class AppController implements Initializable {
                 codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
             });
         codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
+
+        EventBusProvider.getInstance();
+        EventBusProvider.getInstance().getEventBus().register(this);
     }
 
     void setupStage(Stage stage) {
@@ -90,6 +96,12 @@ public class AppController implements Initializable {
             hasChanged = true;
             infoArea.setText("Unsaved changes");
         });
+    }
+
+    @Subscribe
+    public void showException(ParseErrorException exception) {
+        ExceptionReporter exceptionReporter = new ExceptionReporter(Alert.AlertType.ERROR,
+            "A syntax error", exception.toString());
     }
 
     @FXML
@@ -120,7 +132,6 @@ public class AppController implements Initializable {
             infoArea.clear();
         }
     }
-
 
     @FXML
     public void handleOpen() {
@@ -212,6 +223,7 @@ public class AppController implements Initializable {
         }
     }
 
+    @FXML
     public void handleOptions() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
         Parent root = loader.load();
