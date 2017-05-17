@@ -65,6 +65,8 @@ dependencies {
     // Z3 Java Bindings
     compile files('com.microsoft.z3.jar')
 
+    compile 'com.google.guava:guava:21.0'
+
     // JavaFX RichText Editor
     compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
 
