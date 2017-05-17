@@ -237,9 +237,12 @@ public class AppController implements Initializable {
             alert.setHeaderText("The model is...");
             if (result.isCorrect()) {
                 alert.setContentText("...correct!\nNo counter-example found.");
-            } else {
+            } else if (result.getMessage().equals("")) {
                 alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
                     + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
+            } else {
+                alert.setContentText("...Schrödinger's cat.\nSomething went wrong.\n"
+                    + result.getMessage());
             }
             alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
             alert.showAndWait();

@@ -50,7 +50,7 @@ public class ModelChecker {
             solver.pop();
             switch (check) {
                 case UNKNOWN:
-                    throw new RuntimeException("check-sat = unknown, reason: " + solver.getReasonUnknown());
+                    return new ModelCheckingResult("check-sat = unknown, reason: " + solver.getReasonUnknown());
                 case UNSATISFIABLE:
                     return new ModelCheckingResult(current);
                 case SATISFIABLE:
