@@ -1,0 +1,10 @@
+MACHINE ArithmeticLaws
+VARIABLES x
+INVARIANT
+ x:INTEGER &
+ (x>0 => 2**(10*x) = 2*(2**(10*x-1)))
+INITIALISATION
+ x := -3
+OPERATIONS
+ IncX = SELECT x<50 THEN x := x+1 END
+END
