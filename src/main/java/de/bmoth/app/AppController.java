@@ -337,7 +337,6 @@ public class AppController implements Initializable {
         String content = null;
         try {
             content = new String(Files.readAllBytes(Paths.get(file.getPath())));
-            primaryStage.setTitle(APPNAME + " - " + file.getName());
         } catch (IOException e) {
             e.printStackTrace();
         }
