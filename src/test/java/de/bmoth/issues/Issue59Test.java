@@ -23,8 +23,7 @@ public class Issue59Test {
         assertEquals(true, result.isCorrect());
     }
 
-    @Test
-    @Ignore
+    @Test(expected = RuntimeException.class)
     public void testIssue59WithAdditionalInvariant() throws Exception {
         String machine = "MACHINE SimpleMachine\n";
         machine += "VARIABLES x\n";

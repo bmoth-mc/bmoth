@@ -5,16 +5,19 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
+<?import javafx.scene.control.CheckBox?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.bmoth.app.OptionController">
    <children>
-      <TextField editable="false" layoutX="14.0" layoutY="14.0" text="MIN INT" />
-      <TextField layoutX="177.0" layoutY="14.0" fx:id="minInt" />
-      <TextField editable="false" layoutX="14.0" layoutY="48.0" text="MAX INT" />
-      <TextField layoutX="177.0" layoutY="48.0" fx:id="maxInt" />
-      <TextField editable="false" layoutX="14.0" layoutY="82.0" text="MAX Initial States" />
-      <TextField layoutX="177.0" layoutY="82.0" fx:id="maxInitState" />
-      <TextField editable="false" layoutX="14.0" layoutY="119.0" text="MAX Transitions" />
-      <TextField layoutX="177.0" layoutY="119.0" fx:id="maxTrans" />
+      <TextField editable="false" layoutX="14.0" layoutY="15.0" text="MIN INT"  />
+      <TextField layoutX="190.0" layoutY="15.0" fx:id="minInt" />
+      <TextField editable="false" layoutX="14.0" layoutY="45.0" text="MAX INT" />
+      <TextField layoutX="190.0" layoutY="45.0" fx:id="maxInt" />
+      <TextField editable="false" layoutX="14.0" layoutY="75.0" text="MAX Initial States" />
+      <TextField layoutX="190.0" layoutY="75.0" fx:id="maxInitState" />
+      <TextField editable="false" layoutX="14.0" layoutY="105.0" text="MAX Transitions" />
+      <TextField layoutX="190.0" layoutY="105.0" fx:id="maxTrans" />
+       <CheckBox layoutX="14" layoutY="135" text="Always Check Initial State" fx:id="checkInit"/>
+       <CheckBox layoutX="14" layoutY="165" text="Always Check Invariant" fx:id="checkInVar"/>
       <Button layoutX="449.0" layoutY="350.0" mnemonicParsing="false" text="Apply" onAction="#handleApply" />
       <Button cancelButton="true" layoutX="506.0" layoutY="350.0" mnemonicParsing="false" text="Close" onAction="#handleClose" />
       <Button layoutX="392.0" layoutY="350.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="45.0" text="OK" onAction="#handleOk" />

@@ -27,6 +27,15 @@ public class PersonalPreferences {
         }
     }
 
+    public enum BooleanPreference {
+        CHECK_INITIAL(false),CHECK_INVARIANT(false);
+
+        private boolean defaultValue;
+
+        BooleanPreference(boolean defaultValue){this.defaultValue =defaultValue;}
+    }
+
+
     private static Preferences prefs = Preferences.userNodeForPackage(PersonalPreferences.class);
 
     private int minINT;
@@ -46,6 +55,16 @@ public class PersonalPreferences {
 
         prefs.put(p.toString(), val);
     }
+
+    public static boolean getBooleanPreference(BooleanPreference p) {
+        return prefs.getBoolean(p.toString(), p.defaultValue);
+    }
+
+    public static void setBooleanPreference(BooleanPreference p, boolean val) {
+
+        prefs.put(p.toString(), String.valueOf(val));
+    }
+
 
     public static int getIntPreference(IntPreference p) {
         return prefs.getInt(p.toString(), p.defaultValue);
