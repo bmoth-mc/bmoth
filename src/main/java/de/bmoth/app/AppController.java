@@ -1,14 +1,14 @@
 package de.bmoth.app;
 
+import de.bmoth.checkers.InvariantSatisfiabilityChecker;
+import de.bmoth.checkers.InvariantSatisfiabilityCheckingResult;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -58,8 +58,8 @@ public class AppController implements Initializable {
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
-        newFile.setAccelerator(new KeyCodeCombination(KeyCode.N,KeyCombination.CONTROL_ANY));
-        open.setAccelerator(new KeyCodeCombination(KeyCode.O,KeyCombination.CONTROL_ANY));
+        newFile.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_ANY));
+        open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_ANY));
         setupPersonalPreferences();
         codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -114,7 +114,7 @@ public class AppController implements Initializable {
             codeArea.replaceText("");
             codeArea.deletehistory();
             codeArea.selectRange(0, 0);
-            currentFile=null;
+            currentFile = null;
             hasChanged = false;
             primaryStage.setTitle(APPNAME + " - " + "New Machine");
             infoArea.clear();
@@ -234,6 +234,28 @@ public class AppController implements Initializable {
                 alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
                     + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
             }
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
+    public void handleInvariantSatisfiability() {
+        if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
+            InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(codeArea.getText());
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Invariant Satisfiability Checking Result");
+            alert.setHeaderText("The invariant is...");
+            switch (result.getResult()) {
+
+                case UNSATISFIABLE:
+                    alert.setContentText("...unsatisfiable!\nThe model is probably not correct.");
+                case UNKNOWN:
+                    alert.setContentText("...unknown!\nThe invariant is too complex for the backend.");
+                case SATISFIABLE:
+                    alert.setContentText("...satisfiable!");
+            }
+
             alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
             alert.showAndWait();
         }
