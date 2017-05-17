@@ -3,6 +3,7 @@ package de.bmoth.app;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -10,6 +11,7 @@ import javafx.stage.Stage;
  * Created by Julia on 14.05.2017.
  */
 public class OptionController {
+
 
     public TextField minInt;
     public TextField maxInt;
@@ -38,6 +40,22 @@ public class OptionController {
 
 
     }
+
+    private String checkPrefs(){
+        if(!isNumeric(minInt.getText()))
+            new Alert(Alert.AlertType.ERROR,"Needs to be Numeric:" + minInt.getId()).show();
+        if(!isNumeric(maxInt.getText()))
+            new Alert(Alert.AlertType.ERROR,"Needs to be Numeric:" + maxInt.getId()).show();
+        if(!isNumeric(maxInitState.getText()))
+            new Alert(Alert.AlertType.ERROR,"Needs to be Numeric:" + maxInitState.getId()).show();
+        if(!isNumeric(maxTrans.getText()))
+            new Alert(Alert.AlertType.ERROR,"Needs to be Numeric:" + maxTrans.getId()).show();
+
+
+        return null;
+    }
+
+
     private void savePrefs() {
         PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MIN_INT,minInt.getText());
         PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT,maxInt.getText());
@@ -56,7 +74,17 @@ public class OptionController {
     }
 
     public void handleOk(ActionEvent actionEvent) {
+        checkPrefs();
         savePrefs();
         stage.close();
+    }
+
+    public boolean isNumeric(String s){
+        try{
+            int n = Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e){
+            return false;
+        }
     }
 }
