@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class Issue66Test {
     private String dir = "src/test/resources/machines/";
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testMachine() throws Exception {
         MachineNode theMachine = Parser.getMachineFileAsSemanticAst(dir + "LargeExponent.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(theMachine);
