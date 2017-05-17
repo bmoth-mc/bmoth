@@ -225,7 +225,7 @@ public class AppController implements Initializable {
     public void handleCheck() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
             ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText());
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Model Checking Result");
             alert.setHeaderText("The model is...");
             if (result.isCorrect()) {
