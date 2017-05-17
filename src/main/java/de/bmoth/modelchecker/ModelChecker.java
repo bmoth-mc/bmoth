@@ -48,8 +48,14 @@ public class ModelChecker {
             solver.add(invariant);
             Status check = solver.check();
             solver.pop();
-            if (check != Status.SATISFIABLE) {
-                return new ModelCheckingResult(current);
+            switch (check) {
+                case UNKNOWN:
+                    throw new RuntimeException("check-sat = unknown, reason: " + solver.getReasonUnknown());
+                case UNSATISFIABLE:
+                    return new ModelCheckingResult(current);
+                case SATISFIABLE:
+                default:
+                    // continue
             }
             visited.add(current);
 
