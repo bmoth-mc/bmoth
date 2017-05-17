@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModelCheckingResult {
-    private Boolean correct;
+    private Boolean correct = false;
     private String message = "";
     private State lastState;
 
@@ -17,7 +17,6 @@ public class ModelCheckingResult {
     }
 
     ModelCheckingResult(State state) {
-        correct = false;
         lastState = state;
     }
 
