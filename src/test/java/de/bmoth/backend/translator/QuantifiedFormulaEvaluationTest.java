@@ -89,7 +89,7 @@ public class QuantifiedFormulaEvaluationTest {
 
     @Test
     public void testUniversalExistentialFormula() throws Exception {
-        String formula = "#(y).(!(x).(x*y=y))";
+        String formula = "#(y).(y:NATURAL & !(x).(x*y=y))";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
 

@@ -82,9 +82,11 @@ public class AppController implements Initializable {
     void setupPersonalPreferences() {
         if (!PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE).isEmpty()) {
             currentFile = PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE);
-            String fileContent = openFile(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE)));
-            codeArea.replaceText(fileContent);
-            codeArea.deletehistory();
+            if(new File(currentFile).exists()){
+            	String fileContent = openFile(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE)));
+            	codeArea.replaceText(fileContent);
+            }
+           	codeArea.deletehistory();
         }
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
             hasChanged = true;
