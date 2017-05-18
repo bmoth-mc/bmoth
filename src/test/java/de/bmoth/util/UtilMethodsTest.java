@@ -37,8 +37,10 @@ public class UtilMethodsTest {
 
     public static void checkLaw(String law, Context ctx, Solver s) {
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(law, ctx);
+        s.push();
         s.add(ctx.mkNot(constraint));
         Status check = s.check();
+        s.pop();
         assertEquals(Status.UNSATISFIABLE, check);
     }
 
