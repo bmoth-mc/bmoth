@@ -131,4 +131,14 @@ public class BooleanFormulaEvaluationTest {
         UtilMethodsTest.checkTruthTable(map, ctx, s);
     }
 
+    @Test
+    public void testBoolCast() throws Exception {
+        Map<String, Status> map = new HashMap<>();
+        map.put("TRUE = bool(1<5)", SATISFIABLE);
+        map.put("FALSE = bool(5<1)", SATISFIABLE);
+        map.put("FALSE = bool(1<5)", UNSATISFIABLE);
+        map.put("TRUE = bool(5<1)", UNSATISFIABLE);
+        UtilMethodsTest.checkTruthTable(map, ctx, s);
+    }
+
 }
