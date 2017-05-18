@@ -9,20 +9,20 @@ import java.util.Map;
 
 public class QuantifiedPredicateNode extends PredicateNode {
 
-    public static enum QuatifiedPredicateOperator {
+    public static enum QuantifiedPredicateOperator {
         UNIVERSAL_QUANTIFICATION, EXISTENTIAL_QUANTIFICATION
     }
 
-    private static final Map<Integer, QuatifiedPredicateOperator> map = new HashMap<>();
+    private static final Map<Integer, QuantifiedPredicateOperator> map = new HashMap<>();
 
     static {
-        map.put(BMoThParser.FOR_ANY, QuatifiedPredicateOperator.UNIVERSAL_QUANTIFICATION);
-        map.put(BMoThParser.EXITS, QuatifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION);
+        map.put(BMoThParser.FOR_ANY, QuantifiedPredicateOperator.UNIVERSAL_QUANTIFICATION);
+        map.put(BMoThParser.EXITS, QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION);
     }
 
     private final List<DeclarationNode> declarationList;
     private final PredicateNode predicateNode;
-    private QuatifiedPredicateOperator operator;
+    private QuantifiedPredicateOperator operator;
 
     public QuantifiedPredicateNode(QuantifiedPredicateContext ctx, List<DeclarationNode> declarationList,
                                    PredicateNode predNode) {
@@ -31,7 +31,7 @@ public class QuantifiedPredicateNode extends PredicateNode {
         this.operator = loopUpOperator(ctx.operator.getType());
     }
 
-    private QuatifiedPredicateOperator loopUpOperator(int type) {
+    private QuantifiedPredicateOperator loopUpOperator(int type) {
         if (map.containsKey(type)) {
             return map.get(type);
         }
@@ -46,7 +46,7 @@ public class QuantifiedPredicateNode extends PredicateNode {
         return predicateNode;
     }
 
-    public QuatifiedPredicateOperator getOperator() {
+    public QuantifiedPredicateOperator getOperator() {
         return operator;
     }
 
