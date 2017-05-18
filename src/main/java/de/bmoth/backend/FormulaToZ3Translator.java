@@ -382,8 +382,16 @@ public class FormulaToZ3Translator {
                     constraintList.add(z3Context.mkLe(z3Context.mkInt(1), size));
                     return z3Context.mkSelect(array, size);
                 }
-                case FRONT:
-                    break;
+                case FRONT: {
+                    Expr expr = visitExprNode(expressionNodes.get(0), ops);
+                    DatatypeExpr d = (DatatypeExpr) expr;
+                    Expr[] args = d.getArgs();
+                    ArrayExpr array = (ArrayExpr) args[0];
+                    ArithExpr size = (ArithExpr) args[1];
+                    constraintList.add(z3Context.mkLe(z3Context.mkInt(1), size));
+                    TupleSort mkTupleSort = (TupleSort) bTypeToZ3Sort(node.getType());
+                    return mkTupleSort.mkDecl().apply(array, z3Context.mkSub(size, z3Context.mkInt(1)));
+                }
                 case TAIL:
                     break;
                 case CONC:
