@@ -55,4 +55,16 @@ public class Issue59Test {
         Status check = s.check();
         assertEquals(Status.UNKNOWN, check);
     }
+
+    @Test
+    public void testIssue59JustInvariant2() throws Exception {
+        Context ctx = new Context();
+        Solver s = ctx.mkSolver();
+        String formula = "x**2 = x*x";
+        BoolExpr combinedConstraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+
+        s.add(combinedConstraint);
+        Status check = s.check();
+        assertEquals(Status.UNKNOWN, check);
+    }
 }
