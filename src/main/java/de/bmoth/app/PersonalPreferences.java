@@ -28,11 +28,13 @@ public class PersonalPreferences {
     }
 
     public enum BooleanPreference {
-        CHECK_INITIAL(false),CHECK_INVARIANT(false);
+        ;
 
         private boolean defaultValue;
 
-        BooleanPreference(boolean defaultValue){this.defaultValue =defaultValue;}
+        BooleanPreference(boolean defaultValue) {
+            this.defaultValue = defaultValue;
+        }
     }
 
 
@@ -52,7 +54,6 @@ public class PersonalPreferences {
     }
 
     public static void setStringPreference(StringPreference p, String val) {
-
         prefs.put(p.toString(), val);
     }
 
@@ -61,7 +62,6 @@ public class PersonalPreferences {
     }
 
     public static void setBooleanPreference(BooleanPreference p, boolean val) {
-
         prefs.put(p.toString(), String.valueOf(val));
     }
 
@@ -71,7 +71,6 @@ public class PersonalPreferences {
     }
 
     public static void setIntPreference(IntPreference p, String val) {
-
         prefs.put(p.toString(), val);
     }
 }
