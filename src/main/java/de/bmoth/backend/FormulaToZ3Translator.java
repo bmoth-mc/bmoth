@@ -507,10 +507,14 @@ public class FormulaToZ3Translator {
                     constraintList.add(q);
                     return integer;
                 }
-                case MAXINT:
-                    break;
-                case MININT:
-                    break;
+                case MAXINT: {
+                    int max_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                    return z3Context.mkInt(max_int);
+                }
+                case MININT: {
+                    int min_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
+                    return z3Context.mkInt(min_int);
+                }
                 case NAT: {
                     Type type = node.getType();// POW(INTEGER)
                     int max_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
