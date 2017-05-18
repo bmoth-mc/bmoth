@@ -6,6 +6,7 @@ import de.bmoth.antlr.BMoThParser.QuantifiedPredicateContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class QuantifiedPredicateNode extends PredicateNode {
 
@@ -50,4 +51,21 @@ public class QuantifiedPredicateNode extends PredicateNode {
         return operator;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        switch (operator) {
+            case EXISTENTIAL_QUANTIFICATION:
+                sb.append("EXISTS(");
+                break;
+            case UNIVERSAL_QUANTIFICATION:
+                sb.append("FORALL(");
+                break;
+        }
+        sb.append(declarationList.stream().map(Object::toString).collect(Collectors.joining(",")));
+        sb.append(",");
+        sb.append(predicateNode);
+        sb.append(")");
+        return sb.toString();
+    }
 }
