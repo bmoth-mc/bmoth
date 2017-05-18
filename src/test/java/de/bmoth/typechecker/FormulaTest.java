@@ -65,7 +65,7 @@ public class FormulaTest {
         assertEquals("a", node1.getName());
         assertEquals("INTEGER", node1.getType().toString());
     }
-    
+
     @Test
     public void testMult2() throws Exception {
         String formula = "4 + 3 * 2 * 2";
@@ -282,7 +282,7 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         QuantifiedPredicateNode quantification = (QuantifiedPredicateNode) formulaNode.getFormula();
 
-        assertEquals(QuantifiedPredicateNode.QuatifiedPredicateOperator.UNIVERSAL_QUANTIFICATION,
+        assertEquals(QuantifiedPredicateNode.QuantifiedPredicateOperator.UNIVERSAL_QUANTIFICATION,
             quantification.getOperator());
         List<DeclarationNode> declarationList = quantification.getDeclarationList();
         DeclarationNode x = declarationList.get(0);
@@ -300,7 +300,7 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         QuantifiedPredicateNode quantification = (QuantifiedPredicateNode) formulaNode.getFormula();
 
-        assertEquals(QuantifiedPredicateNode.QuatifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION,
+        assertEquals(QuantifiedPredicateNode.QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION,
             quantification.getOperator());
         List<DeclarationNode> declarationList = quantification.getDeclarationList();
         DeclarationNode x = declarationList.get(0);
