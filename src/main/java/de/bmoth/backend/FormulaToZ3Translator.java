@@ -382,7 +382,7 @@ public class FormulaToZ3Translator {
                     break;
                 case CONC:
                     break;
-                case EMPTY_SET:
+                case EMPTY_SET: // this is not missing! it is equal to an empty set enumeration below
                 case SET_ENUMERATION: {
                     SetType type = (SetType) node.getType();
                     Type subType = type.getSubtype();
