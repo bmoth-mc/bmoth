@@ -7,7 +7,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ArithmeticLaws {
+public class ArithmeticLawsTest {
     private Context ctx;
     private Solver s;
 
