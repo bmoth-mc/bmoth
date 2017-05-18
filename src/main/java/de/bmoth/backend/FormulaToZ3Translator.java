@@ -1,7 +1,6 @@
 package de.bmoth.backend;
 
 import com.microsoft.z3.*;
-
 import de.bmoth.app.PersonalPreferences;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.AbstractVisitor;
@@ -248,7 +247,6 @@ public class FormulaToZ3Translator {
                         z3Context.mkSetSubset(arg0, arg1)));
                 }
             }
-            // TODO
             throw new AssertionError("Not implemented: " + node.getOperator());
         }
 
@@ -374,8 +372,16 @@ public class FormulaToZ3Translator {
                 }
                 case RANGE:
                     break;
-                case LAST:
-                    break;
+                case LAST: {
+                    Expr expr = visitExprNode(expressionNodes.get(0), ops);
+                    DatatypeExpr d = (DatatypeExpr) expr;
+                    Expr[] args = d.getArgs();
+                    ArrayExpr array = (ArrayExpr) args[0];
+                    ArithExpr size = (ArithExpr) args[1];
+                    // add WD constraint
+                    constraintList.add(z3Context.mkLe(z3Context.mkInt(1), size));
+                    return z3Context.mkSelect(array, size);
+                }
                 case FRONT:
                     break;
                 case TAIL:
@@ -499,7 +505,7 @@ public class FormulaToZ3Translator {
                     BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(min_int));
                     //x :INT
                     BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) integer);
-                    //x <= max_int                   
+                    //x <= max_int
                     BoolExpr c = z3Context.mkLe((ArithExpr) x, z3Context.mkInt(max_int));
                     // a <=> b <=> c
                     BoolExpr body = z3Context.mkEq(z3Context.mkAnd(a, c), b);
