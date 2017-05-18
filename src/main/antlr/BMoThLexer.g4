@@ -71,7 +71,7 @@ STRUCT: 'struct';
 
 //predicate prefix operators
 NOT: 'not' | '\u00ac';
-BOOl_CAST: 'bool';
+BOOL_CAST: 'bool';
 
 // predicate infix operators
 AND: '&';

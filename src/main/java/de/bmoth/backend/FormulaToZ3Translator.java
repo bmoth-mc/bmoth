@@ -172,6 +172,11 @@ public class FormulaToZ3Translator {
         }
 
         @Override
+        public Expr visitCastPredicateExpressionNode(CastPredicateExpressionNode node, TranslationOptions expected) {
+            return visitPredicateNode(node.getPredicate(), expected);
+        }
+
+        @Override
         public Expr visitIdentifierPredicateNode(IdentifierPredicateNode node, TranslationOptions ops) {
             return z3Context.mkBoolConst(node.getName());
         }

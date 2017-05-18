@@ -18,6 +18,8 @@
         </Menu>
         <Menu text="Checks">
             <MenuItem text="Start Model Checking" fx:id="modelCheck" onAction="#handleCheck"/>
+            <MenuItem text="Check Invariant Satisfiability" fx:id="invariantSatisfiability"
+                      onAction="#handleInvariantSatisfiability"/>
         </Menu>
     </MenuBar>
     <CodeArea fx:id="codeArea" prefWidth="800" prefHeight="600"/>

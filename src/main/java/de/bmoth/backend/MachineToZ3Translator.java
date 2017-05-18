@@ -121,7 +121,14 @@ public class MachineToZ3Translator {
     }
 
     private BoolExpr visitAnySubstitution(AnySubstitutionNode node) {
-        throw new AssertionError("Not implemented: " + node.getClass());// TODO
+        Expr[] parameters = new Expr[node.getParameters().size()];
+        for (int i = 0; i < parameters.length; i++) {
+            parameters[i] = getVariableAsZ3Expression(node.getParameters().get(i));
+        }
+        BoolExpr parameterConstraints = (BoolExpr) FormulaToZ3Translator.translatePredicate(node.getWherePredicate(), z3Context);
+        BoolExpr transition = visitSubstitution(node.getThenSubstitution());
+        BoolExpr existsBody = z3Context.mkAnd(parameterConstraints, transition);
+        return z3Context.mkExists(parameters, existsBody, parameters.length, null, null, null, null);
     }
 
     private BoolExpr visitParallelSubstitution(ParallelSubstitutionNode node) {

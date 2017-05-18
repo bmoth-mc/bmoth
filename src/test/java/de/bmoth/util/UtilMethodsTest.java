@@ -31,6 +31,13 @@ public class UtilMethodsTest {
         assertEquals(satisfiable, check);
     }
 
+    public static void checkLaw(String law, Context ctx, Solver s) {
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(law, ctx);
+        s.add(ctx.mkNot(constraint));
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
+    }
+
     public static void checkTruthTable(Map<String, Status> map, Context ctx, Solver s) {
         for (Map.Entry<String, Status> entry : map.entrySet()) {
             check(entry.getValue(), entry.getKey(), ctx, s);

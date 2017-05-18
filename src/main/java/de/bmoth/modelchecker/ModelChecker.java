@@ -38,17 +38,24 @@ public class ModelChecker {
             solver.push();
             State current = queue.poll();
 
-            // apply current state - remains stored in server for loop iteration
+            // apply current state - remains stored in solver for loop iteration
             BoolExpr stateConstraint = current.getStateConstraint(ctx);
             solver.add(stateConstraint);
 
             // check invariant
+            // TODO add invariant before entering while loop
             solver.push();
             solver.add(invariant);
             Status check = solver.check();
             solver.pop();
-            if (check != Status.SATISFIABLE) {
-                return new ModelCheckingResult(current);
+            switch (check) {
+                case UNKNOWN:
+                    return new ModelCheckingResult("check-sat = unknown, reason: " + solver.getReasonUnknown());
+                case UNSATISFIABLE:
+                    return new ModelCheckingResult(current);
+                case SATISFIABLE:
+                default:
+                    // continue
             }
             visited.add(current);
 

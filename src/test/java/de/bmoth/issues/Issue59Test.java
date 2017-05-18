@@ -6,6 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class Issue59Test {
     @Test
@@ -24,7 +25,6 @@ public class Issue59Test {
     }
 
     @Test
-    @Ignore
     public void testIssue59WithAdditionalInvariant() throws Exception {
         String machine = "MACHINE SimpleMachine\n";
         machine += "VARIABLES x\n";
@@ -37,6 +37,7 @@ public class Issue59Test {
         machine += "END";
 
         ModelCheckingResult result = ModelChecker.doModelCheck(machine);
-        assertEquals(true, result.isCorrect());
+        assertEquals(false, result.isCorrect());
+        assertEquals(true, result.getMessage().startsWith("check-sat"));
     }
 }

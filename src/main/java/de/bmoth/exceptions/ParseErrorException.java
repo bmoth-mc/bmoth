@@ -1,7 +1,7 @@
 package de.bmoth.exceptions;
 
-import de.bmoth.app.ExceptionReporter;
-import javafx.scene.control.Alert;
+import com.google.common.eventbus.EventBus;
+import de.bmoth.app.EventBusProvider;
 import org.antlr.v4.runtime.CommonToken;
 
 public class ParseErrorException extends RuntimeException {
@@ -11,6 +11,8 @@ public class ParseErrorException extends RuntimeException {
     public ParseErrorException(CommonToken token, String message) {
         super(message);
         this.token = token;
+        EventBus eventBus = EventBusProvider.getInstance().getEventBus();
+        eventBus.post(new ErrorEvent("Syntax error", toString()));
     }
 
     @Override

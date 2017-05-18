@@ -1,14 +1,15 @@
 package de.bmoth.app;
 
+import de.bmoth.checkers.InvariantSatisfiabilityChecker;
+import de.bmoth.checkers.InvariantSatisfiabilityCheckingResult;
+import de.bmoth.exceptions.ErrorEvent;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -26,6 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import com.google.common.eventbus.Subscribe;
 
 public class AppController implements Initializable {
 
@@ -58,8 +61,8 @@ public class AppController implements Initializable {
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
-        newFile.setAccelerator(new KeyCodeCombination(KeyCode.N,KeyCombination.CONTROL_ANY));
-        open.setAccelerator(new KeyCodeCombination(KeyCode.O,KeyCombination.CONTROL_ANY));
+        newFile.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_ANY));
+        open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_ANY));
         setupPersonalPreferences();
         codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -68,6 +71,9 @@ public class AppController implements Initializable {
                 codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
             });
         codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
+
+        EventBusProvider.getInstance();
+        EventBusProvider.getInstance().getEventBus().register(this);
     }
 
     void setupStage(Stage stage) {
@@ -92,6 +98,7 @@ public class AppController implements Initializable {
         });
     }
 
+    // <editor-fold desc="Menu handlers">
     @FXML
     public void handleNew() {
         int nextStep = -1;
@@ -114,13 +121,12 @@ public class AppController implements Initializable {
             codeArea.replaceText("");
             codeArea.deletehistory();
             codeArea.selectRange(0, 0);
-            currentFile=null;
+            currentFile = null;
             hasChanged = false;
             primaryStage.setTitle(APPNAME + " - " + "New Machine");
             infoArea.clear();
         }
     }
-
 
     @FXML
     public void handleOpen() {
@@ -212,6 +218,7 @@ public class AppController implements Initializable {
         }
     }
 
+    @FXML
     public void handleOptions() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
         Parent root = loader.load();
@@ -225,21 +232,75 @@ public class AppController implements Initializable {
     public void handleCheck() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
             ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText());
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Model Checking Result");
             alert.setHeaderText("The model is...");
             if (result.isCorrect()) {
                 alert.setContentText("...correct!\nNo counter-example found.");
-            } else {
+            } else if (result.getMessage().equals("")) {
                 alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
                     + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
+            } else {
+                alert.setContentText("...Schrödinger's cat.\nSomething went wrong.\n"
+                    + result.getMessage());
             }
             alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
             alert.showAndWait();
         }
     }
 
+    @FXML
+    public void handleInvariantSatisfiability() {
+        if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
+            InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(codeArea.getText());
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Invariant Satisfiability Checking Result");
+            alert.setHeaderText("The invariant is...");
+            switch (result.getResult()) {
 
+                case UNSATISFIABLE:
+                    alert.setContentText("...unsatisfiable!\nThe model is probably not correct.");
+                case UNKNOWN:
+                    alert.setContentText("...unknown!\nThe invariant is too complex for the backend.");
+                case SATISFIABLE:
+                    alert.setContentText("...satisfiable!");
+            }
+
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.showAndWait();
+        }
+    }
+    // </editor-fold>
+
+    /**
+     * Open a confirmation-alert to decide how to proceed with unsaved changes.
+     *
+     * @return UserChoice as Integer: -1 = Ignore, 0 = Cancel, 1 = Save , 2 = SaveAs
+     */
+    private int saveChangedDialog() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("UNSAVED CHANGES!");
+        alert.setHeaderText("Unsaved Changes! What do you want to do?");
+        alert.setContentText(null);
+
+        ButtonType buttonTypeSave = new ButtonType("Save");
+        ButtonType buttonTypeSaveAs = new ButtonType("Save As");
+        ButtonType buttonTypeIgnoreChanges = new ButtonType("Ignore");
+        ButtonType buttonTypeCancel = new ButtonType("Back", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeSaveAs, buttonTypeIgnoreChanges, buttonTypeCancel);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent()) {
+            if (result.get() == buttonTypeSave) return 1;
+            if (result.get() == buttonTypeSaveAs) return 2;
+            if (result.get() == buttonTypeCancel) return 0;
+            if (result.get() == buttonTypeIgnoreChanges) return -1;
+        }
+        return 0;
+    }
+
+    // <editor-fold desc="File operations">
     /**
      * Save codeArea to a file.
      *
@@ -278,34 +339,6 @@ public class AppController implements Initializable {
     }
 
     /**
-     * Open a confirmation-alert to decide how to proceed with unsaved changes.
-     *
-     * @return UserChoice as Integer: -1 = Ignore, 0 = Cancel, 1 = Save , 2 = SaveAs
-     */
-    private int saveChangedDialog() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("UNSAVED CHANGES!");
-        alert.setHeaderText("Unsaved Changes! What do you want to do?");
-        alert.setContentText(null);
-
-        ButtonType buttonTypeSave = new ButtonType("Save");
-        ButtonType buttonTypeSaveAs = new ButtonType("Save As");
-        ButtonType buttonTypeIgnoreChanges = new ButtonType("Ignore");
-        ButtonType buttonTypeCancel = new ButtonType("Back", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeSaveAs, buttonTypeIgnoreChanges, buttonTypeCancel);
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent()) {
-            if (result.get() == buttonTypeSave) return 1;
-            if (result.get() == buttonTypeSaveAs) return 2;
-            if (result.get() == buttonTypeCancel) return 0;
-            if (result.get() == buttonTypeIgnoreChanges) return -1;
-        }
-        return 0;
-    }
-
-    /**
      * Ask the user which file to open into the textarea. If the file is found, openFile is called.
      *
      * @return Returns the filepath as string or null if cancelled
@@ -337,11 +370,17 @@ public class AppController implements Initializable {
         String content = null;
         try {
             content = new String(Files.readAllBytes(Paths.get(file.getPath())));
-            primaryStage.setTitle(APPNAME + " - " + file.getName());
         } catch (IOException e) {
             e.printStackTrace();
         }
         return content;
     }
+    // </editor-fold>
 
+    // <editor-fold desc="Event Bus Subscriptions">
+    @Subscribe
+    public void showException(ErrorEvent event) {
+        ErrorAlert errorAlert = new ErrorAlert(Alert.AlertType.ERROR, event.getErrorType(), event.getMessage());
+    }
+    // </editor-fold>
 }
