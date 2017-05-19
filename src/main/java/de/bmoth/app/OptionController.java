@@ -6,10 +6,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 
 public class OptionController {
 
-    private static final String NONNUMERICWARNING="Not Numeric or out of Integer-Range: ";
+    private static final String NONNUMERICWARNING = "Not Numeric or out of Integer-Range: ";
     @FXML
     TextField minInt;
     @FXML
@@ -45,29 +46,29 @@ public class OptionController {
     }
 
     private boolean checkPrefs() {
-        if (!isNumeric(maxInt.getText())) {
+        if (!StringUtils.isNumeric(maxInt.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + minInt.getId()).show();
             return false;
         }
-        if (!isNumeric(maxInt.getText())) {
+        if (!StringUtils.isNumeric(maxInt.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxInt.getId()).show();
             return false;
         }
-        if (!isNumeric(maxInitState.getText())) {
+        if (!StringUtils.isNumeric(maxInitState.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxInitState.getId()).show();
             return false;
         }
 
-        if (!isNumeric(maxTrans.getText())) {
-            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING+ maxTrans.getId()).show();
+        if (!StringUtils.isNumeric(maxTrans.getText())) {
+            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxTrans.getId()).show();
             return false;
         }
-        if (!isNumeric(z3Timeout.getText())) {
-            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING+ z3Timeout.getId()).show();
+        if (!StringUtils.isNumeric(z3Timeout.getText())) {
+            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + z3Timeout.getId()).show();
             return false;
         }
 
-        if(Integer.parseInt(z3Timeout.getText())<0){
+        if (Integer.parseInt(z3Timeout.getText()) < 0) {
             new Alert(Alert.AlertType.ERROR, "Timout needs to be a positive Value").show();
             return false;
         }
@@ -77,11 +78,11 @@ public class OptionController {
             new Alert(Alert.AlertType.ERROR, "MIN_INT bigger than MAX_INT").show();
             return false;
         }
-        if(Integer.parseInt(maxInitState.getText())<1) {
+        if (Integer.parseInt(maxInitState.getText()) < 1) {
             new Alert(Alert.AlertType.ERROR, "InitialStates needs to be bigger than 0").show();
             return false;
         }
-        if(Integer.parseInt(maxTrans.getText())<1){
+        if (Integer.parseInt(maxTrans.getText()) < 1) {
             new Alert(Alert.AlertType.ERROR, "Maximum transitions needs to be bigger than 0").show();
             return false;
         }
@@ -112,18 +113,6 @@ public class OptionController {
         if (checkPrefs()) {
             savePrefs();
             stage.close();
-        }
-    }
-
-    private boolean isNumeric(String s) {
-        try {
-
-            int x =Integer.parseInt(s);
-            if(x==0)
-                return true; //tricking SonaqQube
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
         }
     }
 }

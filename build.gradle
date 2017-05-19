@@ -6,9 +6,9 @@
  * user guide available at https://docs.gradle.org/3.3/userguide/tutorial_java_projects.html
  */
 
- plugins {
-     id "de.undercouch.download" version "3.2.0"
- }
+plugins {
+    id "de.undercouch.download" version "3.2.0"
+}
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
@@ -39,7 +39,7 @@ repositories {
 sourceSets {
     main {
         java {
-          	srcDirs = ['src/main/java', 'build/generated-src']
+            srcDirs = ['src/main/java', 'build/generated-src']
         }
         resources {
             srcDirs = ["src/main/resources"]
@@ -49,13 +49,13 @@ sourceSets {
 }
 
 test {
-	exclude('de/bmoth/performance')
+    exclude('de/bmoth/performance')
 }
 
-task performanceTests(type: Test){
-	doFirst{ println("Running performance tests") }
-	scanForTestClasses = true
-	include('de/bmoth/performance/**')
+task performanceTests(type: Test) {
+    doFirst { println("Running performance tests") }
+    scanForTestClasses = true
+    include('de/bmoth/performance/**')
 }
 
 dependencies {
@@ -66,6 +66,7 @@ dependencies {
     compile files('com.microsoft.z3.jar')
 
     compile 'com.google.guava:guava:21.0'
+    compile 'org.apache.commons:commons-lang3:3.4'
 
     // JavaFX RichText Editor
     compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
@@ -76,7 +77,6 @@ dependencies {
 
 // Define the main class for the application
 mainClassName = 'de.bmoth.app.App'
-
 
 // gradle generateGrammarSource
 generateGrammarSource {
@@ -97,10 +97,10 @@ task downloadZ3 {
             filename += 'ubuntu-14.04.zip'
         }
         download {
-                src url + filename
-                dest filename
-                onlyIfNewer true
-                overwrite false
+            src url + filename
+            dest filename
+            onlyIfNewer true
+            overwrite false
         }
         copy {
             from zipTree(filename)
@@ -123,18 +123,18 @@ compileJava {
 }
 
 tasks.withType(Test) {
-    def env_vars =  ['LD_LIBRARY_PATH': ("$System.env.LD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
-                     'DYLD_LIBRARY_PATH': ("$System.env.DYLD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
-                     'PATH': ("$System.env.PATH" + System.getProperty("path.separator") + "$projectDir/")]
+    def env_vars = ['LD_LIBRARY_PATH'  : ("$System.env.LD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                    'DYLD_LIBRARY_PATH': ("$System.env.DYLD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                    'PATH'             : ("$System.env.PATH" + System.getProperty("path.separator") + "$projectDir/")]
     environment env_vars
 
     systemProperty "java.library.path", "./"
 }
 
 tasks.withType(JavaExec) {
-    def env_vars =  ['LD_LIBRARY_PATH': ("$System.env.LD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
-                     'DYLD_LIBRARY_PATH': ("$System.env.DYLD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
-                     'PATH': ("$System.env.PATH" + System.getProperty("path.separator") + "$projectDir/")]
+    def env_vars = ['LD_LIBRARY_PATH'  : ("$System.env.LD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                    'DYLD_LIBRARY_PATH': ("$System.env.DYLD_LIBRARY_PATH" + System.getProperty("path.separator") + "$projectDir/"),
+                    'PATH'             : ("$System.env.PATH" + System.getProperty("path.separator") + "$projectDir/")]
     environment env_vars
 
     systemProperty "java.library.path", "./"
@@ -151,7 +151,7 @@ eclipse.classpath.file.whenMerged { classpath ->
         if (entry.kind == 'lib' && entry.path.contains('com.microsoft.z3')) {
             entry.setNativeLibraryLocation('bmoth/')
         }
-        if(entry.kind == 'con' && entry.path.contains('org.eclipse.jdt.launching.JRE_CONTAINER')) {
+        if (entry.kind == 'con' && entry.path.contains('org.eclipse.jdt.launching.JRE_CONTAINER')) {
             entry.accessRules.add(new AccessRule('accessible', 'javafx/**'))
         }
     }
@@ -169,20 +169,20 @@ clean {
 
 // type 'gradle test jacocoTestReport' in order to run the jacoco code coverage analysis
 jacocoTestReport {
-  reports {
-      xml.enabled false
-      csv.enabled false
-      html.destination "${buildDir}/jacocoHtml"
-  }
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
+    }
 
-  afterEvaluate {
-      classDirectories = files(classDirectories.files.collect {
-          fileTree(dir: it,
-                  exclude: [
-                      '**/antlr/**'
-                  ])
-      })
-  }
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [
+                            '**/antlr/**'
+                    ])
+        })
+    }
 }
 build.dependsOn jacocoTestReport
 
@@ -194,10 +194,10 @@ applicationDistribution.from("./") {
 }
 
 startScripts {
-	doLast {
-		unixScript.text = unixScript.text.replace('APP_HOME="`pwd -P`"', 'APP_HOME="`pwd -P`"\nexport LD_LIBRARY_PATH="$APP_HOME/lib"\nexport DYLD_LIBRARY_PATH="$APP_HOME/lib"')
-		windowsScript.text = windowsScript.text.replace('set APP_HOME=%DIRNAME%..', 'set APP_HOME=%DIRNAME%..\r\nset PATH=%PATH%;%APP_HOME%/lib')
-	}
+    doLast {
+        unixScript.text = unixScript.text.replace('APP_HOME="`pwd -P`"', 'APP_HOME="`pwd -P`"\nexport LD_LIBRARY_PATH="$APP_HOME/lib"\nexport DYLD_LIBRARY_PATH="$APP_HOME/lib"')
+        windowsScript.text = windowsScript.text.replace('set APP_HOME=%DIRNAME%..', 'set APP_HOME=%DIRNAME%..\r\nset PATH=%PATH%;%APP_HOME%/lib')
+    }
 }
 
 distZip {
