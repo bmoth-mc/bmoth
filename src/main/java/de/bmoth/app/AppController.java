@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -137,25 +138,6 @@ public class AppController implements Initializable {
         }
     }
 
-    private int handleUnsavedChanges() {
-        int nextStep = saveChangedDialog();
-        switch (nextStep) {
-            case 0:
-                break;
-            case 1:
-                handleSave();
-                break;
-            case 2:
-                handleSaveAs();
-                break;
-            case -1:
-                break;
-            default:
-                break;
-        }
-        return nextStep;
-    }
-
     @FXML
     public void handleSave() {
         if (currentFile != null) {
@@ -266,6 +248,7 @@ public class AppController implements Initializable {
             alert.setTitle("Invariant Satisfiability Checking Result");
             alert.setHeaderText("The invariant is...");
             switch (result.getResult()) {
+
                 case UNSATISFIABLE:
                     alert.setContentText("...unsatisfiable!\nThe model is probably not correct.");
                     break;
@@ -283,7 +266,38 @@ public class AppController implements Initializable {
             alert.showAndWait();
         }
     }
+
+    @FXML
+    public void handleREPL() throws IOException {
+        Stage replStage = new Stage();
+        replStage.setTitle("REPL");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("repl.fxml"));
+        Parent root = loader.load();
+        Scene scene = new Scene(root, 500, 300);
+        replStage.setScene(scene);
+        replStage.show();
+
+    }
     // </editor-fold>
+
+    private int handleUnsavedChanges() {
+        int nextStep = saveChangedDialog();
+        switch (nextStep) {
+            case 0:
+                break;
+            case 1:
+                handleSave();
+                break;
+            case 2:
+                handleSaveAs();
+                break;
+            case -1:
+                break;
+            default:
+                break;
+        }
+        return nextStep;
+    }
 
     /**
      * Open a confirmation-alert to decide how to proceed with unsaved changes.
@@ -392,6 +406,8 @@ public class AppController implements Initializable {
     public void showException(ErrorEvent event) {
         new ErrorAlert(Alert.AlertType.ERROR, event.getErrorType(), event.getMessage());
     }
+    // </editor-fold>
+
 
     public void handleInitialStateExists(ActionEvent actionEvent) {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {

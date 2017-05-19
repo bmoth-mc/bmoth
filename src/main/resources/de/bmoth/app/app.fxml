@@ -25,6 +25,9 @@
             <MenuItem text="Check for Initial State" fx:id="initialStateExists"
                       onAction="#handleInitialStateExists"/>
         </Menu>
+        <Menu text="REPL">
+            <MenuItem text="Open REPL" onAction="#handleREPL"/>
+        </Menu>
     </MenuBar>
     <CodeArea fx:id="codeArea" prefWidth="800" prefHeight="600"/>
     <TextArea fx:id="infoArea" editable="false" prefHeight="0" prefWidth="0"/>
