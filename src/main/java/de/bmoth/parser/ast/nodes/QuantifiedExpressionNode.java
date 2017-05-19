@@ -23,13 +23,13 @@ public class QuantifiedExpressionNode extends ExprNode {
 
     }
 
-    private final List<DeclarationNode> declarationList;
-    private final PredicateNode predicateNode;
-    private final ExprNode expressionNode;
+    private List<DeclarationNode> declarationList;
+    private PredicateNode predicateNode;
+    private ExprNode expressionNode;
     private QuatifiedExpressionOperator operator;
 
     public QuantifiedExpressionNode(ExpressionContext ctx, List<DeclarationNode> declarationList,
-                                    PredicateNode predNode, ExprNode expressionNode, Token operator2) {
+            PredicateNode predNode, ExprNode expressionNode, Token operator2) {
         this.declarationList = declarationList;
         this.predicateNode = predNode;
         this.operator = loopUpOperator(operator2.getType());
@@ -44,7 +44,7 @@ public class QuantifiedExpressionNode extends ExprNode {
     }
 
     public QuantifiedExpressionNode(SetComprehensionExpressionContext ctx, List<DeclarationNode> declarationList,
-                                    PredicateNode predNode, ExprNode expressionNode, QuatifiedExpressionOperator setComprehension) {
+            PredicateNode predNode, ExprNode expressionNode, QuatifiedExpressionOperator setComprehension) {
         this.declarationList = declarationList;
         this.predicateNode = predNode;
         this.operator = setComprehension;
@@ -65,6 +65,14 @@ public class QuantifiedExpressionNode extends ExprNode {
 
     public ExprNode getExpressionNode() {
         return expressionNode;
+    }
+
+    public void setExpr(ExprNode expr) {
+        this.expressionNode = expr;
+    }
+
+    public void setPredicate(PredicateNode node) {
+        this.predicateNode = node;
     }
 
 }

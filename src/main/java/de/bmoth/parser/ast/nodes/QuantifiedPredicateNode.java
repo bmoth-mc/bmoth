@@ -21,12 +21,12 @@ public class QuantifiedPredicateNode extends PredicateNode {
         map.put(BMoThParser.EXITS, QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION);
     }
 
-    private final List<DeclarationNode> declarationList;
-    private final PredicateNode predicateNode;
+    private List<DeclarationNode> declarationList;
+    private PredicateNode predicateNode;
     private QuantifiedPredicateOperator operator;
 
     public QuantifiedPredicateNode(QuantifiedPredicateContext ctx, List<DeclarationNode> declarationList,
-                                   PredicateNode predNode) {
+            PredicateNode predNode) {
         this.declarationList = declarationList;
         this.predicateNode = predNode;
         this.operator = loopUpOperator(ctx.operator.getType());
@@ -55,17 +55,21 @@ public class QuantifiedPredicateNode extends PredicateNode {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         switch (operator) {
-            case EXISTENTIAL_QUANTIFICATION:
-                sb.append("EXISTS(");
-                break;
-            case UNIVERSAL_QUANTIFICATION:
-                sb.append("FORALL(");
-                break;
+        case EXISTENTIAL_QUANTIFICATION:
+            sb.append("EXISTS(");
+            break;
+        case UNIVERSAL_QUANTIFICATION:
+            sb.append("FORALL(");
+            break;
         }
         sb.append(declarationList.stream().map(Object::toString).collect(Collectors.joining(",")));
         sb.append(",");
         sb.append(predicateNode);
         sb.append(")");
         return sb.toString();
+    }
+
+    public void setPredicate(PredicateNode pred) {
+        this.predicateNode = pred;
     }
 }
