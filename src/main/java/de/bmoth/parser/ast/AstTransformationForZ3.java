@@ -71,7 +71,7 @@ public class AstTransformationForZ3 extends AbstractVisitor<Node, Void> {
                             PredOperatorExprArgs.ELEMENT_OF, args);
                     predicateArguments.add(predicateOperatorWithExprArgsNode);
                 }
-                PredicateOperatorNode predicateOperatorNode = new PredicateOperatorNode(PredicateOperator.AND,
+                PredicateOperatorNode predicateOperatorNode = new PredicateOperatorNode(PredicateOperator.OR,
                         predicateArguments);
                 return predicateOperatorNode;
             }
