@@ -147,7 +147,6 @@ public class SemanticAstCreator {
         @Override
         public Node visitCastPredicateExpression(BMoThParser.CastPredicateExpressionContext ctx) {
             // internally, we do not distinguish bools and predicates
-            String operator = ctx.BOOL_CAST().getText();
             PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
             return new CastPredicateExpressionNode(predicate);
         }
