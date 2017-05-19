@@ -2,6 +2,7 @@ package de.bmoth.parser.ast.nodes;
 
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.PredicateOperatorWithExprArgsContext;
+import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,14 +34,20 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
         map.put(BMoThParser.STRICT_NON_INCLUSION, PredOperatorExprArgs.STRICT_NON_INCLUSION);
     }
 
-    private final List<ExprNode> expressionNodes;
-    private final String operatorString;
+    private  List<ExprNode> expressionNodes;
+    private String operatorString;
     private PredOperatorExprArgs operator;
 
     public PredicateOperatorWithExprArgsNode(PredicateOperatorWithExprArgsContext ctx, List<ExprNode> expressionNodes) {
         this.expressionNodes = expressionNodes;
         this.operatorString = ctx.operator.getText();
         this.operator = loopUpOperator(ctx.operator.getType());
+
+    }
+
+    public PredicateOperatorWithExprArgsNode(PredOperatorExprArgs operator, List<ExprNode> expressionNodes) {
+        this.expressionNodes = expressionNodes;
+        this.operator = operator;
     }
 
     private PredOperatorExprArgs loopUpOperator(int type) {
@@ -52,6 +59,10 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
 
     public PredOperatorExprArgs getOperator() {
         return operator;
+    }
+
+    public void changeOperator(PredOperatorExprArgs operator) {
+        this.operator = operator;
     }
 
     public List<ExprNode> getExpressionNodes() {
@@ -71,6 +82,10 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
         }
         sb.append(")");
         return sb.toString();
+    }
+
+    public void setArgumentsList(List<ExprNode> argumentList) {
+        this.expressionNodes = argumentList; 
     }
 
 }
