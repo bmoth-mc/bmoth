@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -55,7 +56,7 @@ public class AppController implements Initializable {
     private Stage primaryStage = new Stage();
     private String currentFile;
     private Boolean hasChanged = false;
-    private final static String APPNAME = "Bmoth";
+    private static final String APPNAME = "Bmoth";
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -129,25 +130,6 @@ public class AppController implements Initializable {
                 infoArea.clear();
             }
         }
-    }
-
-    public int handleUnsavedChanges() {
-        int nextStep = saveChangedDialog();
-        switch (nextStep) {
-            case 0:
-                break;
-            case 1:
-                handleSave();
-                break;
-            case 2:
-                handleSaveAs();
-                break;
-            case -1:
-                break;
-            default:
-                break;
-        }
-        return nextStep;
     }
 
     @FXML
@@ -264,7 +246,38 @@ public class AppController implements Initializable {
             alert.showAndWait();
         }
     }
+
+    @FXML
+    public void handleREPL() throws IOException {
+        Stage replStage = new Stage();
+        replStage.setTitle("REPL");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("repl.fxml"));
+        Parent root = loader.load();
+        Scene scene = new Scene(root, 500, 300);
+        replStage.setScene(scene);
+        replStage.show();
+
+    }
     // </editor-fold>
+
+    private int handleUnsavedChanges() {
+        int nextStep = saveChangedDialog();
+        switch (nextStep) {
+            case 0:
+                break;
+            case 1:
+                handleSave();
+                break;
+            case 2:
+                handleSaveAs();
+                break;
+            case -1:
+                break;
+            default:
+                break;
+        }
+        return nextStep;
+    }
 
     /**
      * Open a confirmation-alert to decide how to proceed with unsaved changes.
