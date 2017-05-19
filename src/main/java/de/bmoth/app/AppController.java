@@ -170,7 +170,7 @@ public class AppController implements Initializable {
             }
             return saved;
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE,"While Saving AS",e);
         }
         return false;
     }
@@ -398,7 +398,7 @@ public class AppController implements Initializable {
         try {
             content = new String(Files.readAllBytes(Paths.get(file.getPath())));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE,"While Reading File",e);
         }
         return content;
     }
