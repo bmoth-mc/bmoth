@@ -53,10 +53,9 @@ public class AppController implements Initializable {
     TextArea infoArea;
 
     private Stage primaryStage = new Stage();
-    private PersonalPreferences personalPreference;
     private String currentFile;
     private Boolean hasChanged = false;
-    private final String APPNAME = "Bmoth";
+    private final static String APPNAME = "Bmoth";
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -67,9 +66,7 @@ public class AppController implements Initializable {
         codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
-            .subscribe(change -> {
-                codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
-            });
+            .subscribe(change -> codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText())));
         codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
 
         EventBusProvider.getInstance();
@@ -103,19 +100,7 @@ public class AppController implements Initializable {
     public void handleNew() {
         int nextStep = -1;
         if (hasChanged) {
-            nextStep = saveChangedDialog();
-            switch (nextStep) {
-                case 0:
-                    break;
-                case 1:
-                    handleSave();
-                    break;
-                case 2:
-                    handleSaveAs();
-                    break;
-                case -1:
-                    break;
-            }
+            nextStep = handleUnsavedChanges();
         }
         if (nextStep != 0) {
             codeArea.replaceText("");
@@ -132,19 +117,7 @@ public class AppController implements Initializable {
     public void handleOpen() {
         int nextStep = -1;
         if (hasChanged) {
-            nextStep = saveChangedDialog();
-            switch (nextStep) {
-                case 0:
-                    break;
-                case 1:
-                    handleSave();
-                    break;
-                case 2:
-                    handleSaveAs();
-                    break;
-                case -1:
-                    break;
-            }
+            nextStep = handleUnsavedChanges();
         }
         if (nextStep != 0) {
             String fileContent = openFileChooser();
@@ -156,6 +129,25 @@ public class AppController implements Initializable {
                 infoArea.clear();
             }
         }
+    }
+
+    public int handleUnsavedChanges() {
+        int nextStep = saveChangedDialog();
+        switch (nextStep) {
+            case 0:
+                break;
+            case 1:
+                handleSave();
+                break;
+            case 2:
+                handleSaveAs();
+                break;
+            case -1:
+                break;
+            default:
+                break;
+        }
+        return nextStep;
     }
 
     @FXML
@@ -253,15 +245,17 @@ public class AppController implements Initializable {
     public void handleInvariantSatisfiability() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
             InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(codeArea.getText());
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Invariant Satisfiability Checking Result");
             alert.setHeaderText("The invariant is...");
             switch (result.getResult()) {
 
                 case UNSATISFIABLE:
                     alert.setContentText("...unsatisfiable!\nThe model is probably not correct.");
+                    break;
                 case UNKNOWN:
                     alert.setContentText("...unknown!\nThe invariant is too complex for the backend.");
+                    break;
                 case SATISFIABLE:
                     alert.setContentText("...satisfiable!");
             }
@@ -355,8 +349,7 @@ public class AppController implements Initializable {
             currentFile = file.getPath();
             PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
             PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_DIR, file.getParent());
-            String content = openFile(file);
-            return content;
+            return openFile(file);
         }
         return null;
     }
