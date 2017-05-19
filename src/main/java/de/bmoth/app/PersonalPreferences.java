@@ -44,7 +44,7 @@ public class PersonalPreferences {
     private int maxINT;
     private int maxInitialStates = 5;
     private int maxSolution = 5;
-    private int z3Timeout =
+    private int z3Timeout = 5000;
 
     private PersonalPreferences() {
 
