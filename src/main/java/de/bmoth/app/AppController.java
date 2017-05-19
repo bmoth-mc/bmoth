@@ -266,7 +266,6 @@ public class AppController implements Initializable {
             alert.setTitle("Invariant Satisfiability Checking Result");
             alert.setHeaderText("The invariant is...");
             switch (result.getResult()) {
-
                 case UNSATISFIABLE:
                     alert.setContentText("...unsatisfiable!\nThe model is probably not correct.");
                     break;
@@ -275,6 +274,8 @@ public class AppController implements Initializable {
                     break;
                 case SATISFIABLE:
                     alert.setContentText("...satisfiable!");
+                default:
+                    throw new IllegalArgumentException("Unhandled result: " + result.toString());
             }
 
             alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
@@ -398,7 +399,6 @@ public class AppController implements Initializable {
             alert.setTitle("Invariant Satisfiability Checking Result");
             alert.setHeaderText("Initial state...");
             switch (result.getResult()) {
-
                 case UNSATISFIABLE:
                     alert.setContentText("...does not exists!\nThe model is probably not correct.");
                     break;
@@ -407,6 +407,8 @@ public class AppController implements Initializable {
                     break;
                 case SATISFIABLE:
                     alert.setContentText("...exists!");
+                default:
+                    throw new IllegalArgumentException("Unhandled result: " + result.toString());
             }
 
             alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);

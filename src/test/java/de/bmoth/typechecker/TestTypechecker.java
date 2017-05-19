@@ -11,20 +11,18 @@ import java.util.List;
 
 public class TestTypechecker {
 
-    public Hashtable<String, String> constants;
-    public Hashtable<String, String> variables;
+    public static final Hashtable<String, String> constants = new Hashtable<>();
+    public static final Hashtable<String, String> variables = new Hashtable<>();
 
     public TestTypechecker(String machine) {
         MachineNode semanticAst = Parser.getMachineAsSemanticAst(machine);
 
-        constants = new Hashtable<>();
         List<DeclarationNode> constantsDecls = semanticAst.getConstants();
         for (DeclarationNode declarationNode : constantsDecls) {
             constants.put(declarationNode.getName(), declarationNode.getType().toString());
 
         }
 
-        variables = new Hashtable<>();
         List<DeclarationNode> variablesDecls = semanticAst.getVariables();
         for (DeclarationNode declarationNode : variablesDecls) {
             variables.put(declarationNode.getName(), declarationNode.getType().toString());

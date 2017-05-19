@@ -23,7 +23,7 @@ public class ArithmeticLawsTest {
     }
 
     @Test
-    public void testArithmeticLaws() throws Exception {
+    public void testArithmeticLaws() {
         //need :INTEGER here because * could be the cartesian product
         UtilMethodsTest.checkLaw("x:INTEGER & y:INTEGER & x*y = y*x", ctx, s);
         UtilMethodsTest.checkLaw("x*(y+z) = x*y + x*z", ctx, s);
