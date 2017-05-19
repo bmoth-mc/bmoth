@@ -177,8 +177,8 @@ public class AppController implements Initializable {
     @FXML
     public void handleExit() {
         if (hasChanged) {
-            int exit = handleUnsavedChanges();
-            if(exit==-1 || !hasChanged){
+            int nextStep = handleUnsavedChanges();
+            if(nextStep==-1 || !hasChanged){
                 Platform.exit();
             }
 
