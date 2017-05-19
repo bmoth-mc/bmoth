@@ -36,8 +36,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AppController implements Initializable {
+    private final Logger LOGGER = Logger.getLogger(getClass().getName());
 
-    Logger LOGGER = Logger.getLogger(getClass().getName());
     @FXML
     MenuItem customCheck;
     @FXML
@@ -149,13 +149,13 @@ public class AppController implements Initializable {
                 hasChanged = false;
                 infoArea.clear();
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE,"While Saving",e);
+                LOGGER.log(Level.SEVERE, "While Saving", e);
             }
         } else {
             try {
                 saveFileAs();
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE,"While Saving AS",e);
+                LOGGER.log(Level.SEVERE, "While Saving AS", e);
             }
         }
     }
@@ -170,7 +170,7 @@ public class AppController implements Initializable {
             }
             return saved;
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE,"While Saving AS",e);
+            LOGGER.log(Level.SEVERE, "While Saving AS", e);
         }
         return false;
     }
@@ -398,7 +398,7 @@ public class AppController implements Initializable {
         try {
             content = new String(Files.readAllBytes(Paths.get(file.getPath())));
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE,"While Reading File",e);
+            LOGGER.log(Level.SEVERE, "While Reading File", e);
         }
         return content;
     }
