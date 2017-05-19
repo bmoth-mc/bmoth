@@ -32,6 +32,7 @@ import com.google.common.eventbus.Subscribe;
 
 public class AppController implements Initializable {
 
+    public MenuItem customCheck;
     @FXML
     MenuItem newFile;
     @FXML

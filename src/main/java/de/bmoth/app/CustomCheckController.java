@@ -23,7 +23,7 @@ public class CustomCheckController {
     }
 
     private void setupStage() {
-        stage.setTitle("Options");
+        stage.setTitle("CustomCheck");
         invariantCheck.setSelected(true);
         modelCheck.setSelected(true);
     }
