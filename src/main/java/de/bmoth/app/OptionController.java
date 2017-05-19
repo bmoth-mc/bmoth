@@ -1,13 +1,10 @@
 package de.bmoth.app;
 
-import com.sun.xml.internal.ws.util.StringUtils;
-import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.abego.treelayout.internal.util.java.lang.string.StringUtil;
 
 /**
  * Created by Julia on 14.05.2017.
@@ -103,7 +100,7 @@ public class OptionController {
         }
     }
 
-    public boolean isNumeric(String s) {
+    private boolean isNumeric(String s) {
         try {
 
             int x =Integer.parseInt(s);
