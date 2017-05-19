@@ -199,3 +199,31 @@ startScripts {
 		windowsScript.text = windowsScript.text.replace('set APP_HOME=%DIRNAME%..', 'set APP_HOME=%DIRNAME%..\r\nset PATH=%PATH%;%APP_HOME%/lib')
 	}
 }
+
+distZip {
+    doLast {
+        def targetname = "bmoth-nightly-"
+        if (Os.isFamily(Os.FAMILY_MAC)) {
+            targetname += 'osx.zip'
+        } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            targetname += 'win.zip'
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            targetname += 'linux.zip'
+        }
+        file("$destinationDir/$archiveName").renameTo("$destinationDir/$targetname")
+    }
+}
+
+distTar {
+    doLast {
+        def targetname = "bmoth-nightly-"
+        if (Os.isFamily(Os.FAMILY_MAC)) {
+            targetname += 'osx.zip'
+        } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            targetname += 'win.zip'
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            targetname += 'linux.zip'
+        }
+        file("$destinationDir/$archiveName").renameTo("$destinationDir/$targetname")
+    }
+}
