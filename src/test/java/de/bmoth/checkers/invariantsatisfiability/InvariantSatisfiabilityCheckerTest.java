@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 
 public class InvariantSatisfiabilityCheckerTest {
     @Test
-    public void testInvariantSat() throws Exception {
+    public void testInvariantSat() {
         String machine = "MACHINE test \n";
         machine += "VARIABLES x \n";
         machine += "INVARIANT x=1 \n";
@@ -19,7 +19,7 @@ public class InvariantSatisfiabilityCheckerTest {
     }
 
     @Test
-    public void testInvariantContradictory() throws Exception {
+    public void testInvariantContradictory() {
         String machine = "MACHINE test \n";
         machine += "VARIABLES x \n";
         machine += "INVARIANT x=1 & x > 2 \n";

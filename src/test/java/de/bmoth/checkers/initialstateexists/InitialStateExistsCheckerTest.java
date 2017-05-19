@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 
 public class InitialStateExistsCheckerTest {
     @Test
-    public void testWithInitialState() throws Exception {
+    public void testWithInitialState() {
         String machine = "MACHINE test \n";
         machine += "VARIABLES x \n";
         machine += "INVARIANT x=1 \n";
