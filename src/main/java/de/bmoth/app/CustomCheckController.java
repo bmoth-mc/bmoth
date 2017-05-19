@@ -1,5 +1,6 @@
 package de.bmoth.app;
 
+import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
@@ -7,9 +8,10 @@ import javafx.stage.Stage;
 
 public class CustomCheckController {
 
-
-    public CheckBox invariantCheck;
-    public CheckBox modelCheck;
+    @FXML
+    CheckBox invariantCheck;
+    @FXML
+    CheckBox modelCheck;
 
     Stage stage;
 
@@ -29,8 +31,8 @@ public class CustomCheckController {
     }
 
     private void savePrefs() {
-        PersonalPreferences.setBooleanPreference(PersonalPreferences.BooleanPreference.invariantCheck, invariantCheck.isSelected());
-        PersonalPreferences.setBooleanPreference(PersonalPreferences.BooleanPreference.modelCheck, modelCheck.isSelected());
+        PersonalPreferences.setBooleanPreference(PersonalPreferences.BooleanPreference.INVARIANT_CHECK, invariantCheck.isSelected());
+        PersonalPreferences.setBooleanPreference(PersonalPreferences.BooleanPreference.MODEL_CHECK, modelCheck.isSelected());
     }
 
 

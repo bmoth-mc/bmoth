@@ -57,7 +57,7 @@ public class AppController implements Initializable {
     private Stage primaryStage = new Stage();
     private String currentFile;
     private Boolean hasChanged = false;
-    private final static String APPNAME = "Bmoth";
+    private static final String APPNAME = "Bmoth";
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -84,7 +84,7 @@ public class AppController implements Initializable {
         });
     }
 
-    void setupPersonalPreferences() {
+    private void setupPersonalPreferences() {
         if (!PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE).isEmpty()) {
             currentFile = PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE);
             String fileContent = openFile(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE)));
@@ -133,7 +133,7 @@ public class AppController implements Initializable {
         }
     }
 
-    public int handleUnsavedChanges() {
+    private int handleUnsavedChanges() {
         int nextStep = saveChangedDialog();
         switch (nextStep) {
             case 0:
@@ -205,6 +205,8 @@ public class AppController implements Initializable {
                     break;
                 case -1:
                     Platform.exit();
+                    break;
+                default:
                     break;
             }
         } else {
@@ -314,9 +316,6 @@ public class AppController implements Initializable {
      */
     private void saveFile(String path) throws IOException {
         File file = new File(path);
-        if (!file.exists()) {
-            file.createNewFile();
-        }
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.write(codeArea.getText());
         fileWriter.close();
