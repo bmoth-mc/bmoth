@@ -250,6 +250,15 @@ public class AppController implements Initializable {
     }
 
     @FXML
+    public void handleCustomCheck() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("customCheck.fxml"));
+        Parent root = loader.load();
+        CustomCheckController customCheckController = loader.getController();
+        Stage customCheckStage = customCheckController.getStage(root);
+        customCheckStage.show();
+    }
+
+    @FXML
     public void handleInvariantSatisfiability() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
             InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(codeArea.getText());

@@ -28,7 +28,7 @@ public class PersonalPreferences {
     }
 
     public enum BooleanPreference {
-        ;
+        invariantCheck(true),modelCheck(true);
 
         private boolean defaultValue;
 
@@ -44,6 +44,8 @@ public class PersonalPreferences {
     private int maxINT;
     private int maxInitialStates = 5;
     private int maxSolution = 5;
+    private boolean invariantCheck;
+    private boolean modelCheck;
 
     private PersonalPreferences() {
 
