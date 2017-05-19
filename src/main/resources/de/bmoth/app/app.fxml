@@ -19,8 +19,11 @@
         <Menu text="Checks">
             <MenuItem text="Custom Model Checking" fx:id="customCheck" onAction="#handleCustomCheck"/>
             <MenuItem text="Start Model Checking" fx:id="modelCheck" onAction="#handleCheck"/>
+            <SeparatorMenuItem/>
             <MenuItem text="Check Invariant Satisfiability" fx:id="invariantSatisfiability"
                       onAction="#handleInvariantSatisfiability"/>
+            <MenuItem text="Check for Initial State" fx:id="initialStateExists"
+                      onAction="#handleInitialStateExists"/>
         </Menu>
     </MenuBar>
     <CodeArea fx:id="codeArea" prefWidth="800" prefHeight="600"/>

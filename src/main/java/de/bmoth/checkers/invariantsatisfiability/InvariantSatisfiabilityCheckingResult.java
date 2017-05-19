@@ -1,4 +1,4 @@
-package de.bmoth.checkers;
+package de.bmoth.checkers.invariantsatisfiability;
 
 import com.microsoft.z3.Status;
 

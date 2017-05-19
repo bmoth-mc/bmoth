@@ -1,11 +1,15 @@
 package de.bmoth.app;
 
-import de.bmoth.checkers.InvariantSatisfiabilityChecker;
-import de.bmoth.checkers.InvariantSatisfiabilityCheckingResult;
+import com.google.common.eventbus.Subscribe;
+import de.bmoth.checkers.initialstateexists.InitialStateExistsChecker;
+import de.bmoth.checkers.initialstateexists.InitialStateExistsCheckingResult;
+import de.bmoth.checkers.invariantsatisfiability.InvariantSatisfiabilityChecker;
+import de.bmoth.checkers.invariantsatisfiability.InvariantSatisfiabilityCheckingResult;
 import de.bmoth.exceptions.ErrorEvent;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -27,8 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.ResourceBundle;
-
-import com.google.common.eventbus.Subscribe;
 
 public class AppController implements Initializable {
 
@@ -310,6 +312,7 @@ public class AppController implements Initializable {
     }
 
     // <editor-fold desc="File operations">
+
     /**
      * Save codeArea to a file.
      *
@@ -387,5 +390,27 @@ public class AppController implements Initializable {
     public void showException(ErrorEvent event) {
         new ErrorAlert(Alert.AlertType.ERROR, event.getErrorType(), event.getMessage());
     }
-    // </editor-fold>
+
+    public void handleInitialStateExists(ActionEvent actionEvent) {
+        if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
+            InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(codeArea.getText());
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Invariant Satisfiability Checking Result");
+            alert.setHeaderText("Initial state...");
+            switch (result.getResult()) {
+
+                case UNSATISFIABLE:
+                    alert.setContentText("...does not exists!\nThe model is probably not correct.");
+                    break;
+                case UNKNOWN:
+                    alert.setContentText("...is unknown!\nThe initialization is too complex for the backend.");
+                    break;
+                case SATISFIABLE:
+                    alert.setContentText("...exists!");
+            }
+
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.showAndWait();
+        }
+    }
 }
