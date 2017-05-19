@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 public class FormulaTest {
 
     @Test
-    public void testExpressionFormula() throws Exception {
+    public void testExpressionFormula() {
         String formula = "x + 2 + 3";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(EXPRESSION_FORMULA, formulaNode.getFormulaType());
@@ -27,7 +27,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testPredicateFormula() throws Exception {
+    public void testPredicateFormula() {
         String formula = "a = b & b = 1";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -40,7 +40,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testArithmeticMinus() throws Exception {
+    public void testArithmeticMinus() {
         String formula = "a - 1";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
@@ -49,7 +49,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testSetMinus() throws Exception {
+    public void testSetMinus() {
         String formula = "a - {1}";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
@@ -58,7 +58,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testMult() throws Exception {
+    public void testMult() {
         String formula = "a * 1";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
@@ -67,13 +67,13 @@ public class FormulaTest {
     }
 
     @Test
-    public void testMult2() throws Exception {
+    public void testMult2() {
         String formula = "4 + 3 * 2 * 2";
         Parser.getFormulaAsSemanticAst(formula);
     }
 
     @Test
-    public void testCartesianProduct() throws Exception {
+    public void testCartesianProduct() {
         String formula = "a * {1} = {TRUE |-> b}";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
@@ -85,13 +85,13 @@ public class FormulaTest {
     }
 
     @Test(expected = TypeErrorException.class)
-    public void testEmptySetError() throws Exception {
+    public void testEmptySetError() {
         String formula = "{} = {}";
         Parser.getFormulaAsSemanticAst(formula);
     }
 
     @Test
-    public void testSetMinus2() throws Exception {
+    public void testSetMinus2() {
         String formula = "a - b = c & c = {TRUE}";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
@@ -100,7 +100,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testSetEnumerationFormula() throws Exception {
+    public void testSetEnumerationFormula() {
         String formula = "a = {1,2,3} ";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -110,7 +110,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testUnionIntersectionFormula() throws Exception {
+    public void testUnionIntersectionFormula() {
         String formula = "a = {1} \\/ b  /\\ {c} ";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -128,7 +128,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testCouple() throws Exception {
+    public void testCouple() {
         String formula = "a = 1 |-> 2 ";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -138,7 +138,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testCouple2() throws Exception {
+    public void testCouple2() {
         String formula = "1|->x = y |-> 2 ";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -151,7 +151,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testRelation() throws Exception {
+    public void testRelation() {
         String formula = "{1|->x} = {y |-> 2} ";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -164,7 +164,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testDomOperator() throws Exception {
+    public void testDomOperator() {
         String formula = "a = dom({1 |-> 2}) ";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -174,7 +174,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testRanOperator() throws Exception {
+    public void testRanOperator() {
         String formula = "a = ran({1 |-> 2}) ";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -184,7 +184,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testMinintMaxint() throws Exception {
+    public void testMinintMaxint() {
         String formula = "a = MININT & b = MAXINT ";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -198,7 +198,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testNatInt() throws Exception {
+    public void testNatInt() {
         String formula = "a : NAT & b : INT ";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -212,7 +212,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testTuple() throws Exception {
+    public void testTuple() {
         String formula = "a = (1,2,3) ";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -222,7 +222,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testTuple2() throws Exception {
+    public void testTuple2() {
         String formula = "a = (1,(2,3)) ";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -232,7 +232,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testElementOf() throws Exception {
+    public void testElementOf() {
         String formula = "a : INTEGER";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -242,7 +242,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testSetComprehension() throws Exception {
+    public void testSetComprehension() {
         String formula = "a = {x | x : INTEGER & 1=1}";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -252,7 +252,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testSetComprehension2() throws Exception {
+    public void testSetComprehension2() {
         String formula = "{a,b,c | a = b & b = c & c = 1 }";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(EXPRESSION_FORMULA, formulaNode.getFormulaType());
@@ -276,7 +276,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testUniversalQuantification() throws Exception {
+    public void testUniversalQuantification() {
         String formula = "!x,y.(x : NATURAL => x : y)";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -294,7 +294,7 @@ public class FormulaTest {
     }
 
     @Test
-    public void testExistentialQuantification() throws Exception {
+    public void testExistentialQuantification() {
         String formula = "#x,y.(x : NATURAL & x : y)";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
