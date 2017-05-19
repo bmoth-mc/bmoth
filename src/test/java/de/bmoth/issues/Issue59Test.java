@@ -7,6 +7,8 @@ import com.microsoft.z3.Status;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.parser.Parser;
+import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -65,5 +67,12 @@ public class Issue59Test {
         s.add(combinedConstraint);
         Status check = s.check();
         assertEquals(Status.SATISFIABLE, check);
+    }
+
+    @Test
+    public void testArithmeticLawsMachine() throws Exception {
+        MachineNode simpleMachineWithoutViolation = Parser.getMachineFileAsSemanticAst("src/test/resources/machines/OnlyInitNoViolation.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
+        assertEquals(true, result.isCorrect());
     }
 }
