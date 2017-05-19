@@ -18,7 +18,6 @@ public class OptionController {
     public TextField maxInitState;
     public TextField maxTrans;
 
-
     Stage stage;
 
     public Stage getStage(Parent root) {
