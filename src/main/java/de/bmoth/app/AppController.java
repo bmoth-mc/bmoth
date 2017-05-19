@@ -31,9 +31,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AppController implements Initializable {
 
+    Logger LOGGER = Logger.getLogger(getClass().getName());
     @FXML
     MenuItem customCheck;
     @FXML
@@ -164,13 +167,13 @@ public class AppController implements Initializable {
                 hasChanged = false;
                 infoArea.clear();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE,"While Saving",e);
             }
         } else {
             try {
                 saveFileAs();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE,"While Saving AS",e);
             }
         }
     }
