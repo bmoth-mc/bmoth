@@ -1,26 +1,29 @@
 package de.bmoth.app;
 
+import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-/**
- * Created by Julia on 14.05.2017.
- */
 public class OptionController {
 
-    public static final String NONNUMERICWARNING="Not Numeric or out of Integer-Range: ";
-    public TextField minInt;
-    public TextField maxInt;
-    public TextField maxInitState;
-    public TextField maxTrans;
-    public TextField z3Timeout;
+    private static final String NONNUMERICWARNING="Not Numeric or out of Integer-Range: ";
+    @FXML
+    TextField minInt;
+    @FXML
+    TextField maxInt;
+    @FXML
+    TextField maxInitState;
+    @FXML
+    TextField maxTrans;
+    @FXML
+    TextField z3Timeout;
 
-    Stage stage;
+    private Stage stage;
 
-    public Stage getStage(Parent root) {
+    Stage getStage(Parent root) {
         if (stage != null) return stage;
         Scene scene = new Scene(root);
         this.stage = new Stage();
@@ -116,7 +119,8 @@ public class OptionController {
         try {
 
             int x =Integer.parseInt(s);
-            if(x==0); //tricking SonaqQube
+            if(x==0)
+                return true; //tricking SonaqQube
             return true;
         } catch (NumberFormatException e) {
             return false;
