@@ -27,14 +27,12 @@ public class AstTransformationForZ3 extends AbstractVisitor<Node, Void> {
 
     public static PredicateNode transformSemanticNode(PredicateNode node) {
         AstTransformationForZ3 astTransformerForZ3 = new AstTransformationForZ3();
-        PredicateNode predNode = (PredicateNode) astTransformerForZ3.visitPredicateNode(node, null);
-        return predNode;
+        return (PredicateNode) astTransformerForZ3.visitPredicateNode(node, null);
     }
 
     public static ExprNode transformExprNode(ExprNode value) {
         AstTransformationForZ3 astTransformerForZ3 = new AstTransformationForZ3();
-        ExprNode node = (ExprNode) astTransformerForZ3.visitExprNode(value, null);
-        return node;
+        return (ExprNode) astTransformerForZ3.visitExprNode(value, null);
     }
 
     @Override
@@ -71,9 +69,7 @@ public class AstTransformationForZ3 extends AbstractVisitor<Node, Void> {
                             PredOperatorExprArgs.ELEMENT_OF, args);
                     predicateArguments.add(predicateOperatorWithExprArgsNode);
                 }
-                PredicateOperatorNode predicateOperatorNode = new PredicateOperatorNode(PredicateOperator.OR,
-                        predicateArguments);
-                return predicateOperatorNode;
+                return new PredicateOperatorNode(PredicateOperator.OR, predicateArguments);
             }
         }
         default:
