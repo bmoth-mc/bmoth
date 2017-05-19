@@ -35,6 +35,8 @@ public class FormulaToZ3Translator {
     List<DeclarationNode> implicitDeclarations;
     FormulaNode formulaNode;
 
+    private FuncDecl pow = null;
+
     private String createFreshTemporaryVariable() {
         this.tempVariablesCounter++;
         return "$t_" + this.tempVariablesCounter;
@@ -292,7 +294,7 @@ public class FormulaToZ3Translator {
                 case POWER_OF: {
                     ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
                     ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkPower(left, right);
+                    return applyCustomPowerFunction(left, right);
                 }
                 case INTERVAL: {
                     ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
@@ -728,4 +730,40 @@ public class FormulaToZ3Translator {
         }
     }
 
+    private Expr applyCustomPowerFunction(ArithExpr left, ArithExpr right) {
+        // init custom power function
+        if (pow == null){
+            // create function declaration
+            pow = z3Context.mkFuncDecl("pow", new Sort[]{z3Context.mkIntSort(), z3Context.mkIntSort()}, z3Context.mkIntSort());
+
+            // create arguments & bounds
+            Expr a = z3Context.mkConst("a", z3Context.getIntSort());
+            Expr b = z3Context.mkConst("b", z3Context.getIntSort());
+            Expr[] bound = new Expr[]{a, b};
+
+            // pow( a, b / 2 ) * pow( a, b / 2 )
+            Expr expEven = z3Context.mkMul((ArithExpr) pow.apply(a, z3Context.mkDiv((ArithExpr) b, z3Context.mkInt(2))), (ArithExpr) pow.apply(a, z3Context.mkDiv((ArithExpr) b, z3Context.mkInt(2))));
+            // a * pow( a, b - 1 )
+            Expr expOdd = z3Context.mkMul((ArithExpr) a, (ArithExpr) pow.apply(a, z3Context.mkSub((ArithExpr) b, z3Context.mkInt(1))));
+
+            // b % 2 == 0 ? expEven : expOdd
+            Expr expEvenOdd = z3Context.mkITE(z3Context.mkEq(z3Context.mkInt(0), z3Context.mkMod((IntExpr) b, z3Context.mkInt(2))), expEven, expOdd);
+
+            // b == 1 ? 1 : expEvenOdd
+            Expr expZero = z3Context.mkITE(z3Context.mkEq(z3Context.mkInt(0), b), z3Context.mkInt(1), expEvenOdd);
+
+            // pow( a, b ) = expZero
+            Expr body = z3Context.mkEq(pow.apply(a, b), expZero);
+
+            // prepare pattern
+            Pattern[] patterns = new Pattern[]{z3Context.mkPattern(pow.apply(a,b))};
+
+            // annotate recursive function
+            Symbol recFun = z3Context.mkSymbol(":rec-fun");
+
+            BoolExpr powConstraint = z3Context.mkForall(bound, body, bound.length, patterns, null, recFun, null);
+            constraintList.add(powConstraint);
+        }
+        return pow.apply(left, right);
+    }
 }
