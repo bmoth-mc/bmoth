@@ -63,8 +63,7 @@ public class FormulaToZ3Translator {
     }
 
     public static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context) {
-        ExprNode  exprNode = AstTransformationForZ3
-                .transformExprNode(value);
+        ExprNode exprNode = AstTransformationForZ3.transformExprNode(value);
         return translateVariableEqualToExpr(name, exprNode, z3Context, new TranslationOptions());
     }
 
@@ -356,9 +355,11 @@ public class FormulaToZ3Translator {
                 return z3Context.mkFullSet(z3Context.mkBoolSort());
             }
             case UNION: {
-                ArrayExpr left = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
-                ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
-                return z3Context.mkSetUnion(left, right);
+                ArrayExpr[] array = new ArrayExpr[expressionNodes.size()];
+                for (int i = 0; i < array.length; i++) {
+                    array[i] = (ArrayExpr) visitExprNode(expressionNodes.get(i), ops);
+                }
+                return z3Context.mkSetUnion(array);
             }
             case COUPLE: {
                 CoupleType type = (CoupleType) node.getType();
