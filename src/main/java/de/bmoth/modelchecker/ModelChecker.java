@@ -2,8 +2,9 @@ package de.bmoth.modelchecker;
 
 import com.microsoft.z3.*;
 import de.bmoth.app.PersonalPreferences;
-import de.bmoth.backend.MachineToZ3Translator;
-import de.bmoth.backend.SolutionFinder;
+import de.bmoth.backend.z3.MachineToZ3Translator;
+import de.bmoth.backend.z3.SolutionFinder;
+import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
@@ -18,7 +19,7 @@ public class ModelChecker {
 
     public static ModelCheckingResult doModelCheck(MachineNode machine) {
         Context ctx = new Context();
-        Solver solver = ctx.mkSolver();
+        Solver solver = Z3SolverFactory.getZ3Solver(ctx);
         MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);
 
         Set<State> visited = new HashSet<>();
