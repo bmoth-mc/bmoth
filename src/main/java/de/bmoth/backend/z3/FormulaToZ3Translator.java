@@ -510,8 +510,36 @@ public class FormulaToZ3Translator {
                     break;
                 case ISEQ1:
                     break;
-                case CARTESIAN_PRODUCT:
-                    break;
+                case CARTESIAN_PRODUCT: {
+                    ArrayExpr left = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
+                    ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
+
+                    SetType t = (SetType) node.getType();
+                    CoupleType subType = (CoupleType) t.getSubtype();
+
+
+                    CoupleType type = (CoupleType) subType;
+                    TupleSort bTypeToZ3Sort = (TupleSort) bTypeToZ3Sort(type);
+
+                    ArithExpr x = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(subType.getLeft()));
+                    ArithExpr y = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(subType.getRight()));
+
+                    ArrayExpr T = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
+                    Expr C = bTypeToZ3Sort.mkDecl().apply(x, y);
+
+                    BoolExpr xInLeft = z3Context.mkSetMembership(x, left);
+                    BoolExpr yInRight = z3Context.mkSetMembership(y, right);
+                    BoolExpr cInT = z3Context.mkSetMembership(C, T);
+
+                    BoolExpr cartesian = z3Context.mkAnd(xInLeft, yInRight);
+                    BoolExpr equality = z3Context.mkEq(cartesian, cInT);
+
+                    Expr[] bound = new Expr[]{x, y};
+
+                    Quantifier q = z3Context.mkForall(bound, equality, 2, null, null, null, null);
+                    constraintList.add(q);
+                    return T;
+                }
                 case INT: {
                     Type type = node.getType();// POW(INTEGER)
                     int max_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);

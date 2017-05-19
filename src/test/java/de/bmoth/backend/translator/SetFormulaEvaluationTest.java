@@ -363,8 +363,8 @@ public class SetFormulaEvaluationTest {
 
         assertEquals(Status.UNSATISFIABLE, check);
     }
-    
-    
+
+
     @Test
     public void testCartesianProduct() throws Exception {
         String formula = "{1}*{2}={(1,2)}";
@@ -372,8 +372,16 @@ public class SetFormulaEvaluationTest {
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
         s.add(constraint);
         Status check = s.check();
-
         assertEquals(Status.SATISFIABLE, check);
+    }
+
+    @Test
+    public void testCartesianProductUnsat() throws Exception {
+        String formula = "{1}*{2}={(1,3)}";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        s.add(constraint);
+        Status check = s.check();
+        assertEquals(Status.UNSATISFIABLE, check);
     }
 
     @Ignore
