@@ -1,7 +1,7 @@
 package de.bmoth.parser.ast.nodes;
 
 public class CastPredicateExpressionNode extends ExprNode {
-    private final PredicateNode predicate;
+    private PredicateNode predicate;
 
     public CastPredicateExpressionNode(PredicateNode predicate) {
         this.predicate = predicate;
@@ -18,5 +18,9 @@ public class CastPredicateExpressionNode extends ExprNode {
         sb.append(predicate.toString());
         sb.append(")");
         return sb.toString();
+    }
+
+    public void setArg(PredicateNode arg) {
+        this.predicate = arg;
     }
 }
