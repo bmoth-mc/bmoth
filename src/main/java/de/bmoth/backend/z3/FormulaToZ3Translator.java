@@ -749,7 +749,7 @@ public class FormulaToZ3Translator {
             // b % 2 == 0 ? expEven : expOdd
             Expr expEvenOdd = z3Context.mkITE(z3Context.mkEq(z3Context.mkInt(0), z3Context.mkMod((IntExpr) b, z3Context.mkInt(2))), expEven, expOdd);
 
-            // b == 1 ? 1 : expEvenOdd
+            // b == 0 ? 1 : expEvenOdd
             Expr expZero = z3Context.mkITE(z3Context.mkEq(z3Context.mkInt(0), b), z3Context.mkInt(1), expEvenOdd);
 
             // pow( a, b ) = expZero
