@@ -23,7 +23,6 @@ import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.fxmisc.richtext.LineNumberFactory;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -36,7 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AppController implements Initializable {
-    private final Logger LOGGER = Logger.getLogger(getClass().getName());
+    private final Logger logger = Logger.getLogger(getClass().getName());
 
     @FXML
     MenuItem customCheck;
@@ -149,13 +148,13 @@ public class AppController implements Initializable {
                 hasChanged = false;
                 infoArea.clear();
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "While Saving", e);
+                logger.log(Level.SEVERE, "While Saving", e);
             }
         } else {
             try {
                 saveFileAs();
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "While Saving AS", e);
+                logger.log(Level.SEVERE, "While Saving AS", e);
             }
         }
     }
@@ -170,7 +169,7 @@ public class AppController implements Initializable {
             }
             return saved;
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "While Saving AS", e);
+            logger.log(Level.SEVERE, "While Saving AS", e);
         }
         return false;
     }
@@ -398,7 +397,7 @@ public class AppController implements Initializable {
         try {
             content = new String(Files.readAllBytes(Paths.get(file.getPath())));
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "While Reading File", e);
+            logger.log(Level.SEVERE, "While Reading File", e);
         }
         return content;
     }

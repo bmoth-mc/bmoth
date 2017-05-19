@@ -50,14 +50,14 @@ public class ReplController implements Initializable {
             for (com.microsoft.z3.FuncDecl functionDeclaration : functionDeclarations) {
                 try {
                     com.microsoft.z3.Expr constantInterpretations = solution.getConstInterp(functionDeclaration);
-                    output = output + functionDeclaration.getName() + "=" + constantInterpretations + ", ";
+                    output = new StringBuilder().append(output).append(functionDeclaration.getName()).append("=").append(constantInterpretations).append(", ").toString();
                 } catch (com.microsoft.z3.Z3Exception e) {
                     e.printStackTrace();
                 }
             }
 
         }
-        if (solutions.size() == 0) {
+        if (solutions.isEmpty()) {
             return "\nUNSATISFIABLE";
         } else {
             return "\n{" + output.substring(0, output.length()-2) + "}";
