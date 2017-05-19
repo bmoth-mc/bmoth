@@ -1,25 +1,47 @@
 package de.bmoth.modelchecker;
 
-import de.bmoth.parser.Parser;
-import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ModelCheckerTest {
     private String dir = "src/test/resources/machines/";
 
     @Test
-    public void testSubstitution() throws Exception {
+    public void testAnySubstitution() throws Exception {
         String machine = "MACHINE test \n";
         machine += "VARIABLES x,y \n";
         machine += "INVARIANT x:NATURAL & y : NATURAL \n";
         machine += "INITIALISATION x,y:= 1,2 \n";
+        machine += "OPERATIONS\n";
+        machine += "\treplaceBoth =\n";
+        machine += "\t\tANY nVal \n";
+        machine += "\t\tWHERE nVal:1..3\n";
+        machine += "\t\tTHEN x,y := nVal,nVal\n";
+        machine += "\tEND\n";
         machine += "END";
-        MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machine);
-        ModelChecker.doModelCheck(machineAsSemanticAst);
 
-        //TODO finish test
+        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        assertTrue(result.isCorrect());
+    }
+
+    @Test
+    public void testAnySubstitutionWithInvariantViolation() throws Exception {
+        String machine = "MACHINE test \n";
+        machine += "VARIABLES x \n";
+        machine += "INVARIANT x < 4 \n";
+        machine += "INITIALISATION x := 1 \n";
+        machine += "OPERATIONS\n";
+        machine += "\treplaceX =\n";
+        machine += "\t\tANY nVal \n";
+        machine += "\t\tWHERE nVal > 0 & nVal < 5\n"; // should be < 4 to avoid violation
+        machine += "\t\tTHEN x := nVal\n";
+        machine += "\tEND\n";
+        machine += "END";
+
+        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        assertFalse(result.isCorrect());
     }
 
     @Test
@@ -34,7 +56,7 @@ public class ModelCheckerTest {
         machine += "END";
 
         ModelCheckingResult result = ModelChecker.doModelCheck(machine);
-        assertEquals(true, result.isCorrect());
+        assertTrue(result.isCorrect());
     }
 
     @Test
@@ -49,7 +71,6 @@ public class ModelCheckerTest {
 
         ModelCheckingResult result = ModelChecker.doModelCheck(machine);
         // the operation BlockSubstitution will finally violate the invariant x<=2
-        assertEquals(false, result.isCorrect());
+        assertFalse(result.isCorrect());
     }
-
 }

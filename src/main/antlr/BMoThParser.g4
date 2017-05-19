@@ -37,7 +37,8 @@ identifier_list
 substitution
   : BEGIN substitution END                                                  # BlockSubstitution
   | SKIP_SUB                                                                # SkipSubstitution
-  | SELECT condition=predicate THEN sub=substitution END                    # SelectSubstitution
+  | SELECT predicate THEN substitution END                                  # SelectSubstitution // WHEN is missing
+  | PRE predicate THEN substitution END                                     # PreSubstitution
   | ANY identifier_list WHERE predicate THEN substitution END               # AnySubstitution
   | identifier_list ':=' expression_list                                    # AssignSubstitution
   | substitution DOUBLE_VERTICAL_BAR substitution                           # ParallelSubstitution
@@ -70,13 +71,13 @@ predicate
 expression
   : Number                                                                  # NumberExpression
   | LEFT_PAR expression RIGHT_PAR                                           # ParenthesesExpression
+  | BOOL_CAST '(' predicate ')'                                             # CastPredicateExpression
   | IDENTIFIER                                                              # IdentifierExpression
   | '{' '}'                                                                 # EmptySetExpression
   | '{' expression_list '}'                                                 # SetEnumerationExpression
   | '{' identifier_list '|' predicate '}'                                   # SetComprehensionExpression
   | '(' exprs+=expression COMMA exprs+=expression
       (COMMA exprs+=expression)* ')'                                        # NestedCoupleAsTupleExpression
-  | BOOl_CAST '(' predicate ')'                                             # CastPredicateExpression
   | '[' expression_list? ']'                                                # SequenceEnumerationExpression
   | operator=(NATURAL|NATURAL1|INTEGER|INT|NAT
       |MININT|MAXINT|BOOL|TRUE|FALSE)                                        # ExpressionOperator

@@ -22,7 +22,7 @@ public class ExpressionOperatorNode extends ExprNode {
         , SET_ENUMERATION, EMPTY_SET, SET_SUBTRACTION, UNION, INTERSECTION//
         , GENERALIZED_UNION, GENERALIZED_INTER//
         // relations
-        , DOMAIN, RANGE//
+        , DOMAIN, RANGE, CARTESIAN_PRODUCT//
         , CARD, DOMAIN_RESTRICTION, OVERWRITE_RELATION, DIRECT_PRODUCT//
         , DOMAIN_SUBTRACTION, RANGE_RESTRICTION, RANGE_SUBTRATION//
         // function
@@ -92,13 +92,13 @@ public class ExpressionOperatorNode extends ExprNode {
 
     }
 
-    private final List<ExprNode> expressionNodes;
-    private final String operatorString;
+    private List<ExprNode> expressionNodes;
+    private String operatorString;
     private final int arity;
     private ExpressionOperator operator;
 
     public ExpressionOperatorNode(ExpressionOperatorContext ctx, List<ExprNode> expressionNodes,
-                                  String operatorString) {
+            String operatorString) {
         this.arity = expressionNodes.size();
         this.expressionNodes = expressionNodes;
         this.operatorString = operatorString;
@@ -160,4 +160,9 @@ public class ExpressionOperatorNode extends ExprNode {
         }
         return sb.toString();
     }
+
+    public void setExpressionList(List<ExprNode> list) {
+        this.expressionNodes = list;
+    }
+    
 }

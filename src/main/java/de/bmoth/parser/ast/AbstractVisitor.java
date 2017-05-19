@@ -26,6 +26,8 @@ public abstract class AbstractVisitor<R, P> {
             return visitNumberNode((NumberNode) node, expected);
         } else if (node instanceof QuantifiedExpressionNode) {
             return visitQuantifiedExpressionNode((QuantifiedExpressionNode) node, expected);
+        } else if (node instanceof CastPredicateExpressionNode) {
+            return visitCastPredicateExpressionNode((CastPredicateExpressionNode) node, expected);
         }
         throw new AssertionError();
     }
@@ -50,6 +52,8 @@ public abstract class AbstractVisitor<R, P> {
     public abstract R visitExprOperatorNode(ExpressionOperatorNode node, P expected);
 
     public abstract R visitIdentifierExprNode(IdentifierExprNode node, P expected);
+
+    public abstract R visitCastPredicateExpressionNode(CastPredicateExpressionNode node, P expected);
 
     public abstract R visitNumberNode(NumberNode node, P expected);
 

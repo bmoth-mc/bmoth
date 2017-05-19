@@ -12,6 +12,7 @@ import java.util.Set;
 public class TypeChecker extends AbstractVisitor<Type, Type> {
 
     Set<ExpressionOperatorNode> minusNodes = new HashSet<>();
+    Set<ExpressionOperatorNode> multOrCartNodes = new HashSet<>();
     Set<TypedNode> typedNodes = new HashSet<>();
 
     public TypeChecker(MachineNode machineNode) {
@@ -27,7 +28,8 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         // check that all constants have a type, otherwise throw an exception
         for (DeclarationNode con : machineNode.getConstants()) {
             if (con.getType().isUntyped()) {
-                throw new TypeErrorException(con, "Can not infer the type of constant " + con.getName());
+                throw new TypeErrorException(con,
+                    "Can not infer the type of constant " + con.getName() + ". Type variable: " + con.getType());
             }
         }
 
@@ -43,7 +45,8 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         // check that all variables have type, otherwise throw an exception
         for (DeclarationNode var : machineNode.getVariables()) {
             if (var.getType().isUntyped()) {
-                throw new TypeErrorException(var, "Can not infer the type of variable " + var.getName());
+                throw new TypeErrorException(var,
+                    "Can not infer the type of variable " + var.getName() + ". Type variable: " + var.getType());
             }
         }
 
@@ -71,7 +74,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             // expression formula
             Type type = super.visitExprNode((ExprNode) formula, new UntypedType());
             if (type.isUntyped()) {
-                throw new TypeErrorException(formula, "Can not infer type of formula");
+                throw new TypeErrorException(formula, "Can not infer type of formula: " + type);
             }
         }
 
@@ -79,7 +82,8 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         // throw an exception
         for (DeclarationNode node : formulaNode.getImplicitDeclarations()) {
             if (node.getType().isUntyped()) {
-                throw new TypeErrorException(node, "Can not infer the type of local variable: " + node.getName());
+                throw new TypeErrorException(node, "Can not infer the type of local variable '" + node.getName()
+                    + "' Current type: " + node.getType());
             }
         }
         performPostActions();
@@ -105,6 +109,14 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             Type type = minusNode.getType();
             if (type instanceof SetType) {
                 minusNode.changeOperator(ExpressionOperatorNode.ExpressionOperator.SET_SUBTRACTION);
+            }
+        }
+
+        // post actions
+        for (ExpressionOperatorNode node : multOrCartNodes) {
+            Type type = node.getType();
+            if (type instanceof SetType) {
+                node.changeOperator(ExpressionOperatorNode.ExpressionOperator.CARTESIAN_PRODUCT);
             }
         }
     }
@@ -176,7 +188,6 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             case PLUS:
             case UNARY_MINUS:
             case MOD:
-            case MULT:
             case DIVIDE:
             case POWER_OF: {
                 try {
@@ -190,8 +201,50 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
                 returnType = IntegerType.getInstance();
                 break;
             }
+            case MULT: {
+                UntypedType dd = new UntypedType();
+                Type found = new IntegerOrSetOfPairs(new UntypedType(), dd);
+                // System.out.println(dd);
+                try {
+                    found = found.unify(expected);
+                } catch (UnificationException e) {
+                    throw new TypeErrorException(node, expected, found);
+                }
+                node.setType(found);
+                ExprNode left = expressionNodes.get(0);
+                ExprNode right = expressionNodes.get(1);
+                if (found instanceof IntegerType) {
+                    visitExprNode(left, IntegerType.getInstance());
+                    visitExprNode(right, IntegerType.getInstance());
+                } else if (found instanceof SetType) {
+                    SetType setType = (SetType) found;
+                    CoupleType coupleType = (CoupleType) setType.getSubtype();
+                    visitExprNode(left, new SetType(coupleType.getLeft()));
+                    visitExprNode(right, new SetType(coupleType.getRight()));
+                } else if (found instanceof IntegerOrSetOfPairs) {
+                    IntegerOrSetOfPairs integerOrSetOfPairs = (IntegerOrSetOfPairs) found;
+                    Type leftType = visitExprNode(expressionNodes.get(0), integerOrSetOfPairs.getLeft());
+                    if (leftType instanceof IntegerType) {
+                        visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
+                    } else if (leftType instanceof SetType) {
+                        SetType s = (SetType) node.getType();
+                        CoupleType c = (CoupleType) s.getSubtype();
+                        visitExprNode(expressionNodes.get(1), new SetType(c.getRight()));
+                    } else {
+                        IntegerOrSetOfPairs s = (IntegerOrSetOfPairs) node.getType();
+                        visitExprNode(expressionNodes.get(1), s.getRight());
+                    }
+                } else {
+                    throw new RuntimeException();
+                }
+                this.multOrCartNodes.add(node);
+                this.typedNodes.add(node);
+                // System.out.println(node.getType());
+                returnType = node.getType();
+                break;
+            }
             case MINUS: {
-                Type found = new SetOrIntegerType(new UntypedType(), new UntypedType());
+                Type found = new SetOrIntegerType(new UntypedType());
                 try {
                     found = found.unify(expected);
                 } catch (UnificationException e) {
@@ -576,6 +629,18 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             return result;
         } catch (UnificationException e) {
             throw new TypeErrorException(node, expected, node.getDeclarationNode().getType());
+        }
+    }
+
+    @Override
+    public Type visitCastPredicateExpressionNode(CastPredicateExpressionNode node, Type expected) {
+        try {
+            Type boolType = BoolType.getInstance();
+            node.setType(boolType);
+            super.visitPredicateNode(node.getPredicate(), BoolType.getInstance());
+            return boolType.unify(expected);
+        } catch (UnificationException e) {
+            throw new TypeErrorException(node, expected, BoolType.getInstance());
         }
     }
 

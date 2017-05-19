@@ -31,7 +31,7 @@ SETS: 'SETS';
 BEGIN: 'BEGIN';
 SKIP_SUB: 'skip';
 
-
+PRE: 'PRE';
 SELECT: 'SELECT';
 THEN: 'THEN';
 ANY: 'ANY';
@@ -71,7 +71,7 @@ STRUCT: 'struct';
 
 //predicate prefix operators
 NOT: 'not' | '\u00ac';
-BOOl_CAST: 'bool';
+BOOL_CAST: 'bool';
 
 // predicate infix operators
 AND: '&';

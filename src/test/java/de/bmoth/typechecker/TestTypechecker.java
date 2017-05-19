@@ -6,25 +6,23 @@ import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 public class TestTypechecker {
 
-    public Hashtable<String, String> constants;
-    public Hashtable<String, String> variables;
+    private final Map<String, String> constants = new HashMap<>();
+    private final Map<String, String> variables = new HashMap<>();
 
     public TestTypechecker(String machine) {
         MachineNode semanticAst = Parser.getMachineAsSemanticAst(machine);
 
-        constants = new Hashtable<>();
         List<DeclarationNode> constantsDecls = semanticAst.getConstants();
         for (DeclarationNode declarationNode : constantsDecls) {
             constants.put(declarationNode.getName(), declarationNode.getType().toString());
 
         }
 
-        variables = new Hashtable<>();
         List<DeclarationNode> variablesDecls = semanticAst.getVariables();
         for (DeclarationNode declarationNode : variablesDecls) {
             variables.put(declarationNode.getName(), declarationNode.getType().toString());
@@ -41,4 +39,11 @@ public class TestTypechecker {
         return map;
     }
 
+    public Map<String, String> getConstants() {
+        return constants;
+    }
+
+    public Map<String, String> getVariables() {
+        return variables;
+    }
 }

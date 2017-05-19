@@ -51,7 +51,6 @@ public class SequenceFormulaTest {
     public void testFront() throws Exception {
         String formula = "a = front([1,b])";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
-        System.out.println(formulaTypes.get("a"));
         assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }

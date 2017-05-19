@@ -145,6 +145,14 @@ public class SemanticAstCreator {
         }
 
         @Override
+        public Node visitCastPredicateExpression(BMoThParser.CastPredicateExpressionContext ctx) {
+            // internally, we do not distinguish bools and predicates
+            PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
+            return new CastPredicateExpressionNode(predicate);
+        }
+
+
+        @Override
         public Node visitQuantifiedExpression(BMoThParser.QuantifiedExpressionContext ctx) {
             List<Token> identifiers = ctx.quantified_variables_list().identifier_list().identifiers;
             List<DeclarationNode> declarationList = new ArrayList<>();
@@ -216,6 +224,7 @@ public class SemanticAstCreator {
             return createIdentifierExprNode(ctx.IDENTIFIER().getSymbol());
         }
 
+        @Override
         public IdentifierPredicateNode visitPredicateIdentifier(BMoThParser.PredicateIdentifierContext ctx) {
             return createIdentifierPredicateNode(ctx.IDENTIFIER().getSymbol());
         }
@@ -298,6 +307,13 @@ public class SemanticAstCreator {
 
         @Override
         public SelectSubstitutionNode visitSelectSubstitution(BMoThParser.SelectSubstitutionContext ctx) {
+            PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
+            SubstitutionNode sub = (SubstitutionNode) ctx.substitution().accept(this);
+            return new SelectSubstitutionNode(predicate, sub);
+        }
+
+        @Override
+        public SelectSubstitutionNode visitPreSubstitution(BMoThParser.PreSubstitutionContext ctx) {
             PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
             SubstitutionNode sub = (SubstitutionNode) ctx.substitution().accept(this);
             return new SelectSubstitutionNode(predicate, sub);
