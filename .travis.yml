@@ -5,6 +5,7 @@ jdk:
 - oraclejdk8
 addons:
   sonarqube:
+    organization: "hhu-stups"
     branches:
     - master
     - develop
