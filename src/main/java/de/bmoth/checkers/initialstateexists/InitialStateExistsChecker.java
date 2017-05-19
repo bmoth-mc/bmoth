@@ -9,17 +9,13 @@ import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
-public class InitialStateExistsChecker {
-    private InitialStateExistsChecker() {
-
-    }
-
-    public static InitialStateExistsCheckingResult doInitialStateExistsCheck(String machineAsString) {
+public interface InitialStateExistsChecker {
+    static InitialStateExistsCheckingResult doInitialStateExistsCheck(String machineAsString) {
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doInitialStateExistsCheck(machineAsSemanticAst);
     }
 
-    public static InitialStateExistsCheckingResult doInitialStateExistsCheck(MachineNode machine) {
+    static InitialStateExistsCheckingResult doInitialStateExistsCheck(MachineNode machine) {
         Context ctx = new Context();
         Solver solver = Z3SolverFactory.getZ3Solver(ctx);
         MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);

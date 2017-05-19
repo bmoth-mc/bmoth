@@ -5,11 +5,8 @@ import com.microsoft.z3.Params;
 import com.microsoft.z3.Solver;
 import de.bmoth.app.PersonalPreferences;
 
-public class Z3SolverFactory {
-    private Z3SolverFactory() {
-    }
-
-    public static Solver getZ3Solver(Context ctx) {
+public interface Z3SolverFactory {
+    static Solver getZ3Solver(Context ctx) {
         Solver solver = ctx.mkSolver();
 
         Params params = ctx.mkParams();

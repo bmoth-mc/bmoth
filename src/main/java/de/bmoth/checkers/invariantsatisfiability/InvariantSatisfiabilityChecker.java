@@ -9,16 +9,13 @@ import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
-public class InvariantSatisfiabilityChecker {
-    private InvariantSatisfiabilityChecker() {
-    }
-
-    public static InvariantSatisfiabilityCheckingResult doInvariantSatisfiabilityCheck(String machineAsString) {
+public interface InvariantSatisfiabilityChecker {
+    static InvariantSatisfiabilityCheckingResult doInvariantSatisfiabilityCheck(String machineAsString) {
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doInvariantSatisfiabilityCheck(machineAsSemanticAst);
     }
 
-    public static InvariantSatisfiabilityCheckingResult doInvariantSatisfiabilityCheck(MachineNode machine) {
+    static InvariantSatisfiabilityCheckingResult doInvariantSatisfiabilityCheck(MachineNode machine) {
         Context ctx = new Context();
         Solver solver = Z3SolverFactory.getZ3Solver(ctx);
         MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);
