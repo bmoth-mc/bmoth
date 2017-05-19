@@ -17,7 +17,7 @@
             <MenuItem text="Exit" fx:id="exit" onAction="#handleExit"/>
         </Menu>
         <Menu text="Checks">
-            <MenuItem text="Costum Model Checking" fx:id="customCheck" onAction="#handleCustomCheck"/>
+            <MenuItem text="Custom Model Checking" fx:id="customCheck" onAction="#handleCustomCheck"/>
             <MenuItem text="Start Model Checking" fx:id="modelCheck" onAction="#handleCheck"/>
             <MenuItem text="Check Invariant Satisfiability" fx:id="invariantSatisfiability"
                       onAction="#handleInvariantSatisfiability"/>
