@@ -223,6 +223,12 @@ public class AppController implements Initializable {
         CustomCheckController customCheckController = loader.getController();
         Stage customCheckStage = customCheckController.getStage(root);
         customCheckStage.show();
+        if (customCheckController.invariantCheck.isSelected()==true) {
+            handleInvariantSatisfiability();
+        }
+        if (customCheckController.modelCheck.isSelected()==true) {
+            handleInvariantSatisfiability();
+        }
     }
 
     @FXML
