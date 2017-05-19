@@ -38,7 +38,7 @@ public class SolutionFinderTest {
         assertEquals(1, solutions.size());
     }
     @Test
-    public void testSolutionFinderNat1UpperFail() throws Exception {
+    public void testSolutionFinderNATUpperFail() throws Exception {
         String maxInt = String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT));
         String formula = new StringBuilder().append("a : NAT & a > ").append(maxInt).toString();
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
@@ -47,7 +47,7 @@ public class SolutionFinderTest {
         assertEquals(0, solutions.size());
     }
     @Test
-    public void testSolutionFinderNat1Upper() throws Exception {
+    public void testSolutionFinderNATUpper() throws Exception {
         String oneBelowMaxInt = String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT)-1);
         String formula = new StringBuilder().append("a : NAT & a > ").append(oneBelowMaxInt).toString();
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
@@ -55,6 +55,23 @@ public class SolutionFinderTest {
         Set<Model> solutions = finder.findSolutions(20);
         assertEquals(1, solutions.size());
     }
+    @Test
+    public void testSolutionFinderNAT1UpperFail() throws Exception {
+        String formula = "a : NATURAL1 & a < 1";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<Model> solutions = finder.findSolutions(20);
+        assertEquals(0, solutions.size());
+    }
+    @Test
+    public void testSolutionFinderNAT1Upper() throws Exception {
+        String formula = "a : NATURAL1 & a < 2";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        Set<Model> solutions = finder.findSolutions(20);
+        assertEquals(1, solutions.size());
+    }
+
 
     @Test
     public void testExistsSolutionFinder() throws Exception {
