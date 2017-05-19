@@ -8,11 +8,6 @@ import java.util.prefs.Preferences;
 
 public class PersonalPreferences {
     private static Preferences prefs = Preferences.userNodeForPackage(PersonalPreferences.class);
-    private int minINT;
-    private int maxINT;
-    private int maxInitialStates = 5;
-    private int maxSolution = 5;
-    private int z3Timeout = 5000;
     private PersonalPreferences() {
 
     }
@@ -53,7 +48,7 @@ public class PersonalPreferences {
 
 
     public enum IntPreference {
-        MIN_INT(-1), MAX_INT(3), MAX_INITIAL_STATE(5), MAX_TRANSITIONS(5);
+        MIN_INT(-1), MAX_INT(3), MAX_INITIAL_STATE(5), MAX_TRANSITIONS(5),Z3_TIMEOUT(5000);
 
         private int defaultValue;
 
