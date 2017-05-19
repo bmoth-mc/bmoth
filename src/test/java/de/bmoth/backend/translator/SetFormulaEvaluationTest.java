@@ -1,9 +1,8 @@
 package de.bmoth.backend.translator;
 
 import com.microsoft.z3.*;
-
 import de.bmoth.app.PersonalPreferences;
-import de.bmoth.backend.FormulaToZ3Translator;
+import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.util.UtilMethodsTest;
 import org.junit.After;
 import org.junit.Before;
@@ -97,7 +96,7 @@ public class SetFormulaEvaluationTest {
 
     @Test
     public void testNAT() throws Exception {
-    	PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT, "10");
+        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT, "10");
         UtilMethodsTest.check(SATISFIABLE, "0 : NAT", ctx, s);
         UtilMethodsTest.check(SATISFIABLE, "1 : NAT", ctx, s);
         UtilMethodsTest.check(UNSATISFIABLE, "-1 : NAT", ctx, s);
@@ -105,18 +104,18 @@ public class SetFormulaEvaluationTest {
         UtilMethodsTest.check(SATISFIABLE, "10 : INT", ctx, s);
         UtilMethodsTest.check(UNSATISFIABLE, "11 : INT", ctx, s);
     }
-    
+
     @Test
     public void testINTEGER() throws Exception {
         UtilMethodsTest.check(SATISFIABLE, "0 : INTEGER", ctx, s);
         UtilMethodsTest.check(SATISFIABLE, "1 : INTEGER", ctx, s);
         UtilMethodsTest.check(SATISFIABLE, "-1 : INTEGER", ctx, s);
     }
-    
+
     @Test
     public void testINT() throws Exception {
-    	PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT, "10");
-    	PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MIN_INT, "5");
+        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT, "10");
+        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MIN_INT, "5");
         //UtilMethodsTest.check(SATISFIABLE, "0 : INT", ctx, s);
         //UtilMethodsTest.check(SATISFIABLE, "1 : INT", ctx, s);
         //UtilMethodsTest.check(SATISFIABLE, "-1 : INT", ctx, s);
@@ -125,7 +124,7 @@ public class SetFormulaEvaluationTest {
         UtilMethodsTest.check(SATISFIABLE, "6 : INT", ctx, s);
         UtilMethodsTest.check(UNSATISFIABLE, "4 : INT", ctx, s);
     }
-    
+
     @Test
     public void testSetComprehension1() throws Exception {
         String formula = "{x | x : {1} } = {1} ";

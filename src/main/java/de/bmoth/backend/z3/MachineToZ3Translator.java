@@ -1,4 +1,4 @@
-package de.bmoth.backend;
+package de.bmoth.backend.z3;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;

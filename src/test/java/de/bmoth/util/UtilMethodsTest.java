@@ -4,7 +4,7 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
-import de.bmoth.backend.FormulaToZ3Translator;
+import de.bmoth.backend.z3.FormulaToZ3Translator;
 import org.junit.Test;
 
 import java.util.*;

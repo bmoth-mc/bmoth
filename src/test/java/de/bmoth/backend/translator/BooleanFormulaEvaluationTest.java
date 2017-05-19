@@ -1,7 +1,7 @@
 package de.bmoth.backend.translator;
 
 import com.microsoft.z3.*;
-import de.bmoth.backend.FormulaToZ3Translator;
+import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.util.UtilMethodsTest;
 import org.junit.After;
 import org.junit.Before;

@@ -2,12 +2,9 @@ package de.bmoth.app;
 
 import java.util.prefs.Preferences;
 
-/**
- * Created by Julian on 04.05.2017.
- */
-
 public class PersonalPreferences {
     private static Preferences prefs = Preferences.userNodeForPackage(PersonalPreferences.class);
+
     private PersonalPreferences() {
 
     }
@@ -48,7 +45,7 @@ public class PersonalPreferences {
 
 
     public enum IntPreference {
-        MIN_INT(-1), MAX_INT(3), MAX_INITIAL_STATE(5), MAX_TRANSITIONS(5),Z3_TIMEOUT(5000);
+        MIN_INT(-1), MAX_INT(3), MAX_INITIAL_STATE(5), MAX_TRANSITIONS(5), Z3_TIMEOUT(5000);
 
         private int defaultValue;
 
