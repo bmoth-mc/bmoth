@@ -15,6 +15,8 @@
         <TextField layoutX="190.0" layoutY="75.0" fx:id="maxInitState"/>
         <TextField editable="false" layoutX="14.0" layoutY="105.0" text="MAX Transitions"/>
         <TextField layoutX="190.0" layoutY="105.0" fx:id="maxTrans"/>
+        <TextField editable="false" layoutX="14.0" layoutY="135.0" text="Timout in MS"/>
+        <TextField layoutX="190.0" layoutY="135.0" fx:id="z3Timeout"/>
         <Button layoutX="449.0" layoutY="350.0" mnemonicParsing="false" text="Apply" onAction="#handleApply"/>
         <Button cancelButton="true" layoutX="506.0" layoutY="350.0" mnemonicParsing="false" text="Close"
                 onAction="#handleClose"/>

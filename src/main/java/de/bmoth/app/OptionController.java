@@ -11,11 +11,12 @@ import javafx.stage.Stage;
  */
 public class OptionController {
 
-    public static final String NONNUMERICWARNING="Not Numeric or out of Range: ";
+    public static final String NONNUMERICWARNING="Not Numeric or out of Integer-Range: ";
     public TextField minInt;
     public TextField maxInt;
     public TextField maxInitState;
     public TextField maxTrans;
+    public TextField z3Timeout;
 
     Stage stage;
 
@@ -34,6 +35,7 @@ public class OptionController {
         maxInt.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT)));
         maxInitState.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE)));
         maxTrans.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS)));
+        z3Timeout.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT)));
         // selects end of first Textfield for Caret
         minInt.requestFocus();
         minInt.selectRange(99, 99);
@@ -57,6 +59,16 @@ public class OptionController {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING+ maxTrans.getId()).show();
             return false;
         }
+        if (!isNumeric(z3Timeout.getText())) {
+            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING+ z3Timeout.getId()).show();
+            return false;
+        }
+
+        if(Integer.parseInt(z3Timeout.getText())<0){
+            new Alert(Alert.AlertType.ERROR, "Timout needs to be a positive Value").show();
+            return false;
+        }
+
 
         if (Integer.parseInt(minInt.getText()) > Integer.parseInt(maxInt.getText())) {
             new Alert(Alert.AlertType.ERROR, "MIN_INT bigger than MAX_INT").show();

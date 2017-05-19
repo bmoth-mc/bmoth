@@ -574,14 +574,18 @@ public class FormulaToZ3Translator {
             List<PredicateNode> predicateArguments = node.getPredicateArguments();
             switch (node.getOperator()) {
             case AND: {
-                BoolExpr left = (BoolExpr) visitPredicateNode(predicateArguments.get(0), ops);
-                BoolExpr right = (BoolExpr) visitPredicateNode(predicateArguments.get(1), ops);
-                return z3Context.mkAnd(left, right);
+                BoolExpr[] list = new BoolExpr[predicateArguments.size()];
+                for (int i = 0; i < list.length; i++) {
+                    list[i] = (BoolExpr) visitPredicateNode(predicateArguments.get(i), ops);
+                }
+                return z3Context.mkAnd(list);
             }
             case OR: {
-                BoolExpr left = (BoolExpr) visitPredicateNode(predicateArguments.get(0), ops);
-                BoolExpr right = (BoolExpr) visitPredicateNode(predicateArguments.get(1), ops);
-                return z3Context.mkOr(left, right);
+                BoolExpr[] list = new BoolExpr[predicateArguments.size()];
+                for (int i = 0; i < list.length; i++) {
+                    list[i] = (BoolExpr) visitPredicateNode(predicateArguments.get(i), ops);
+                }
+                return z3Context.mkOr(list);
             }
             case IMPLIES: {
                 BoolExpr left = (BoolExpr) visitPredicateNode(predicateArguments.get(0), ops);
