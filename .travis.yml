@@ -3,15 +3,12 @@ sudo: false
 language: java
 jdk:
 - oraclejdk8
-branches:
-  only:
-  - master
-  - develop
 addons:
-  sonarqube: true
+  sonarqube:
+    token:
+      secure: St0H+qsSol6ZTP4lDhRkAVyDeQN6OecxcAq4vbloHQJQTXr8UtDNTWhxJfCo8RF34b53DQ+f76inzS4Wdf6EGo9h0d81crFPGbRuXGE1Lq+wpRr87ClIGdQ1jHB7LB63+naHtCbYCTvghO0sIETUU9MwUJ0HjOPKLCtrnK/aKSE7Vc5FKOktNrwQ/pydZY2zHHdAL0e6r/wher+TMCnMhbGSnY0F8Db0HUB0hLl77pIeGsINKtbxQW4pWzrZUO3FFzH+UhSH6DSHH0LdQT2Z3cyBHJAKOojRK778//qqQFIxuaqBpB0C7wfOuNlY6XQBA6SXCrLGVYlZawoE04K1ZBIvBcSZ1mKEMz4yvOTDQkWv4ZW+/UGMG4wTvgSTO7O2i74jy2IpwMGF6/PlT1CrSe+xOI/kxdMmaAFGoBGeUUYQsB0NaE41onV55IONBInziDeayrEGxVPxP6at2eB+kXjsDJ37eU6qLN7BBKuI34Sgbvw+eEK59ww2GeGlabG1UI6Z4PT/3tDOeGHuD7APEpInezH31gi1N+kHZWjp/JnwsbxTZdveDrmT/ygv8kPZNJA7ZLLOql0pCH2Ecb82BnSHlF117yezPGG6QY4GU1LOmZfjnvLQwtzkOrH0MxQAo+FyS8oVMDQS/zkgOb2HctzeHVEnozLTj3jk5F9j3pk=
+    branches:
+      - master
+      - develop
 script:
-  - TERM=dumb ./gradlew check --stacktrace
-  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
-env:
-  global:
-  - secure: St0H+qsSol6ZTP4lDhRkAVyDeQN6OecxcAq4vbloHQJQTXr8UtDNTWhxJfCo8RF34b53DQ+f76inzS4Wdf6EGo9h0d81crFPGbRuXGE1Lq+wpRr87ClIGdQ1jHB7LB63+naHtCbYCTvghO0sIETUU9MwUJ0HjOPKLCtrnK/aKSE7Vc5FKOktNrwQ/pydZY2zHHdAL0e6r/wher+TMCnMhbGSnY0F8Db0HUB0hLl77pIeGsINKtbxQW4pWzrZUO3FFzH+UhSH6DSHH0LdQT2Z3cyBHJAKOojRK778//qqQFIxuaqBpB0C7wfOuNlY6XQBA6SXCrLGVYlZawoE04K1ZBIvBcSZ1mKEMz4yvOTDQkWv4ZW+/UGMG4wTvgSTO7O2i74jy2IpwMGF6/PlT1CrSe+xOI/kxdMmaAFGoBGeUUYQsB0NaE41onV55IONBInziDeayrEGxVPxP6at2eB+kXjsDJ37eU6qLN7BBKuI34Sgbvw+eEK59ww2GeGlabG1UI6Z4PT/3tDOeGHuD7APEpInezH31gi1N+kHZWjp/JnwsbxTZdveDrmT/ygv8kPZNJA7ZLLOql0pCH2Ecb82BnSHlF117yezPGG6QY4GU1LOmZfjnvLQwtzkOrH0MxQAo+FyS8oVMDQS/zkgOb2HctzeHVEnozLTj3jk5F9j3pk=
+  - sonar-scanner
