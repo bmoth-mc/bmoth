@@ -44,10 +44,23 @@ public class ReplController implements Initializable {
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(predicate, ctx);
         SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
         Set<Model> solutions = finder.findSolutions(1);
+        String output = "";
+        for (Model solution : solutions) {
+            com.microsoft.z3.FuncDecl[] functionDeclarations = solution.getConstDecls();
+            for (com.microsoft.z3.FuncDecl functionDeclaration : functionDeclarations) {
+                try {
+                    com.microsoft.z3.Expr constantInterpretations = solution.getConstInterp(functionDeclaration);
+                    output = output + functionDeclaration.getName() + "=" + constantInterpretations + ", ";
+                } catch (com.microsoft.z3.Z3Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
         if (solutions.size() == 0) {
             return "\nUNSATISFIABLE";
         } else {
-            return "\n" + solutions.toString();
+            return "\n{" + output.substring(0, output.length()-2) + "}";
         }
     }
 }
