@@ -58,7 +58,7 @@ public class PersonalPreferences {
     }
 
     public enum BooleanPreference {
-        ;
+        invariantCheck(true),modelCheck(true);
 
         private boolean defaultValue;
 
