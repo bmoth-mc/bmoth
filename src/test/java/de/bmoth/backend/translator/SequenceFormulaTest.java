@@ -25,20 +25,40 @@ public class SequenceFormulaTest {
     }
 
     @Test
+    public void testEmptySequenceFormula() throws Exception {
+        UtilMethodsTest.check(Status.SATISFIABLE, "x = [] & x /= [1]", ctx, s);
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "[] = [1]", ctx, s);
+    }
+
+    @Test
     public void testSimpleSequenceExtensionFormula() throws Exception {
         UtilMethodsTest.check(Status.SATISFIABLE, "[4,5] = [4,5]", ctx, s);
         UtilMethodsTest.check(Status.SATISFIABLE, "[4,5] = [x,5]", ctx, s);
-
         UtilMethodsTest.check(Status.UNSATISFIABLE, "[4,5] = [5,4]", ctx, s);
         UtilMethodsTest.check(Status.UNSATISFIABLE, "[4,5] = [4,5,x]", ctx, s);
     }
 
     @Test
+    public void testFront() throws Exception {
+        UtilMethodsTest.check(Status.SATISFIABLE, "front([4,5]) = [4]", ctx, s);
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "front([4,5]) = [5]", ctx, s);
+    }
+
+    @Test
     public void testFirst() throws Exception {
         UtilMethodsTest.check(Status.SATISFIABLE, "first([4,5]) = 4", ctx, s);
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "first([4,5]) = 5", ctx, s);
         UtilMethodsTest.check(Status.UNSATISFIABLE, "first([5]) = 4", ctx, s);
         UtilMethodsTest.check(Status.UNSATISFIABLE, "first([]) = x & x = 1", ctx, s);
+    }
 
+    @Test
+    public void testLast() throws Exception {
+        UtilMethodsTest.check(Status.SATISFIABLE, "last([4,5]) = 5", ctx, s);
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "last([4,5]) = 4", ctx, s);
+        UtilMethodsTest.check(Status.SATISFIABLE, "last([5]) = 5", ctx, s);
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "last([5]) = 4", ctx, s);
+        UtilMethodsTest.check(Status.UNSATISFIABLE, "last([]) = x & x = 1", ctx, s);
     }
 
     @Test

@@ -65,6 +65,8 @@ dependencies {
     // Z3 Java Bindings
     compile files('com.microsoft.z3.jar')
 
+    compile 'com.google.guava:guava:21.0'
+
     // JavaFX RichText Editor
     compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
 
@@ -196,4 +198,32 @@ startScripts {
 		unixScript.text = unixScript.text.replace('APP_HOME="`pwd -P`"', 'APP_HOME="`pwd -P`"\nexport LD_LIBRARY_PATH="$APP_HOME/lib"\nexport DYLD_LIBRARY_PATH="$APP_HOME/lib"')
 		windowsScript.text = windowsScript.text.replace('set APP_HOME=%DIRNAME%..', 'set APP_HOME=%DIRNAME%..\r\nset PATH=%PATH%;%APP_HOME%/lib')
 	}
+}
+
+distZip {
+    doLast {
+        def targetname = "bmoth-nightly-"
+        if (Os.isFamily(Os.FAMILY_MAC)) {
+            targetname += 'osx.zip'
+        } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            targetname += 'win.zip'
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            targetname += 'linux.zip'
+        }
+        file("$destinationDir/$archiveName").renameTo("$destinationDir/$targetname")
+    }
+}
+
+distTar {
+    doLast {
+        def targetname = "bmoth-nightly-"
+        if (Os.isFamily(Os.FAMILY_MAC)) {
+            targetname += 'osx.zip'
+        } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            targetname += 'win.zip'
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            targetname += 'linux.zip'
+        }
+        file("$destinationDir/$archiveName").renameTo("$destinationDir/$targetname")
+    }
 }

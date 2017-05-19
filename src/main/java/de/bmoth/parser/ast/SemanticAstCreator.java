@@ -65,7 +65,7 @@ public class SemanticAstCreator {
 
         if (machineAnalyser.initialisation != null) {
             SubstitutionNode substitution = (SubstitutionNode) machineAnalyser.initialisation.substitution()
-                    .accept(formulaVisitor);
+                .accept(formulaVisitor);
             machineNode.setInitialisation(substitution);
         }
 
@@ -74,7 +74,7 @@ public class SemanticAstCreator {
             for (Entry<String, OperationContext> entry : machineAnalyser.operationsDeclarations.entrySet()) {
                 OperationContext operationContext = entry.getValue();
                 SubstitutionNode substitution = (SubstitutionNode) operationContext.substitution()
-                        .accept(formulaVisitor);
+                    .accept(formulaVisitor);
                 OperationNode operationNode = new OperationNode(entry.getValue(), entry.getKey(), substitution);
                 operationsList.add(operationNode);
             }
@@ -123,7 +123,7 @@ public class SemanticAstCreator {
                 return new ExpressionOperatorNode(ctx, new ArrayList<>(), ExpressionOperator.EMPTY_SEQUENCE);
             } else {
                 return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
-                        ExpressionOperator.SEQ_ENUMERATION);
+                    ExpressionOperator.SEQ_ENUMERATION);
             }
 
         }
@@ -131,7 +131,7 @@ public class SemanticAstCreator {
         @Override
         public Node visitFunctionCallExpression(BMoThParser.FunctionCallExpressionContext ctx) {
             return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression()),
-                    ExpressionOperator.FUNCTION_CALL);
+                ExpressionOperator.FUNCTION_CALL);
         }
 
         @Override
@@ -145,6 +145,14 @@ public class SemanticAstCreator {
         }
 
         @Override
+        public Node visitCastPredicateExpression(BMoThParser.CastPredicateExpressionContext ctx) {
+            // internally, we do not distinguish bools and predicates
+            PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
+            return new CastPredicateExpressionNode(predicate);
+        }
+
+
+        @Override
         public Node visitQuantifiedExpression(BMoThParser.QuantifiedExpressionContext ctx) {
             List<Token> identifiers = ctx.quantified_variables_list().identifier_list().identifiers;
             List<DeclarationNode> declarationList = new ArrayList<>();
@@ -156,7 +164,7 @@ public class SemanticAstCreator {
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             ExprNode exprNode = (ExprNode) ctx.expression().accept(this);
             QuantifiedExpressionNode quantifiedExpression = new QuantifiedExpressionNode(ctx, declarationList, predNode,
-                    exprNode, ctx.operator);
+                exprNode, ctx.operator);
             return quantifiedExpression;
         }
 
@@ -171,7 +179,7 @@ public class SemanticAstCreator {
             }
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             QuantifiedExpressionNode quantifiedExpression = new QuantifiedExpressionNode(ctx, declarationList, predNode,
-                    null, QuatifiedExpressionOperator.SET_COMPREHENSION);
+                null, QuatifiedExpressionOperator.SET_COMPREHENSION);
             return quantifiedExpression;
         }
 
@@ -197,7 +205,7 @@ public class SemanticAstCreator {
         @Override
         public ExprNode visitSetEnumerationExpression(BMoThParser.SetEnumerationExpressionContext ctx) {
             return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
-                    ExpressionOperator.SET_ENUMERATION);
+                ExpressionOperator.SET_ENUMERATION);
         }
 
         @Override
@@ -216,6 +224,7 @@ public class SemanticAstCreator {
             return createIdentifierExprNode(ctx.IDENTIFIER().getSymbol());
         }
 
+        @Override
         public IdentifierPredicateNode visitPredicateIdentifier(BMoThParser.PredicateIdentifierContext ctx) {
             return createIdentifierPredicateNode(ctx.IDENTIFIER().getSymbol());
         }
@@ -272,7 +281,7 @@ public class SemanticAstCreator {
             List<SubstitutionNode> sublist = new ArrayList<>();
             for (int i = 0; i < idents.size(); i++) {
                 SingleAssignSubstitutionNode singleAssignSubstitution = new SingleAssignSubstitutionNode(idents.get(i),
-                        expressions.get(i));
+                    expressions.get(i));
                 sublist.add(singleAssignSubstitution);
             }
             if (sublist.size() == 1) {

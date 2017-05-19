@@ -25,14 +25,19 @@ public class PredicateOperatorNode extends PredicateNode {
         map.put(BMoThParser.FALSE, PredicateOperator.FALSE);
     }
 
-    private final List<PredicateNode> predicateArguments;
-    private final String operatorString;
+    private List<PredicateNode> predicateArguments;
+    private String operatorString;
     private PredicateOperator operator;
 
     public PredicateOperatorNode(PredicateOperatorContext ctx, List<PredicateNode> predicateArguments) {
         this.predicateArguments = predicateArguments;
         this.operatorString = ctx.operator.getText();
         this.setOperator(lookUpOperator(ctx.operator.getType()));
+    }
+
+    public PredicateOperatorNode(PredicateOperator operator, List<PredicateNode> predicateArguments) {
+        this.predicateArguments = predicateArguments;
+        this.operator = operator;
     }
 
     private PredicateOperator lookUpOperator(int type) {
@@ -70,5 +75,9 @@ public class PredicateOperatorNode extends PredicateNode {
             sb.append(")");
         }
         return sb.toString();
+    }
+
+    public void setPredicateList(List<PredicateNode> list) {
+        this.predicateArguments = list;
     }
 }
