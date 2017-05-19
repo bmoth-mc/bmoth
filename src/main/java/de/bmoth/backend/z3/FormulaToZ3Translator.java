@@ -514,31 +514,29 @@ public class FormulaToZ3Translator {
                     ArrayExpr left = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
                     ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
 
-                    SetType t = (SetType) node.getType();
-                    CoupleType subType = (CoupleType) t.getSubtype();
+                    SetType setType = (SetType) node.getType();
+                    CoupleType coupleType = (CoupleType) setType.getSubtype();
 
+                    TupleSort bTypeToZ3Sort = (TupleSort) bTypeToZ3Sort(coupleType);
 
-                    CoupleType type = (CoupleType) subType;
-                    TupleSort bTypeToZ3Sort = (TupleSort) bTypeToZ3Sort(type);
+                    ArithExpr leftExpr = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(coupleType.getLeft()));
+                    ArithExpr rightExpr = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(coupleType.getRight()));
 
-                    ArithExpr x = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(subType.getLeft()));
-                    ArithExpr y = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(subType.getRight()));
+                    ArrayExpr tempConstant = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
+                    Expr couple = bTypeToZ3Sort.mkDecl().apply(leftExpr, rightExpr);
 
-                    ArrayExpr T = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
-                    Expr C = bTypeToZ3Sort.mkDecl().apply(x, y);
-
-                    BoolExpr xInLeft = z3Context.mkSetMembership(x, left);
-                    BoolExpr yInRight = z3Context.mkSetMembership(y, right);
-                    BoolExpr cInT = z3Context.mkSetMembership(C, T);
+                    BoolExpr xInLeft = z3Context.mkSetMembership(leftExpr, left);
+                    BoolExpr yInRight = z3Context.mkSetMembership(rightExpr, right);
+                    BoolExpr coupleInCartesian = z3Context.mkSetMembership(couple, tempConstant);
 
                     BoolExpr cartesian = z3Context.mkAnd(xInLeft, yInRight);
-                    BoolExpr equality = z3Context.mkEq(cartesian, cInT);
+                    BoolExpr equality = z3Context.mkEq(cartesian, coupleInCartesian);
 
-                    Expr[] bound = new Expr[]{x, y};
+                    Expr[] bound = new Expr[]{leftExpr, rightExpr};
 
                     Quantifier q = z3Context.mkForall(bound, equality, 2, null, null, null, null);
                     constraintList.add(q);
-                    return T;
+                    return tempConstant;
                 }
                 case INT: {
                     Type type = node.getType();// POW(INTEGER)
