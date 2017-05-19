@@ -2,7 +2,6 @@ package de.bmoth.parser.ast.nodes;
 
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.PredicateOperatorWithExprArgsContext;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 
 import java.util.HashMap;
 import java.util.Iterator;
