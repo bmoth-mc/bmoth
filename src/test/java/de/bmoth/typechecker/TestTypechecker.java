@@ -11,8 +11,8 @@ import java.util.List;
 
 public class TestTypechecker {
 
-    public static final Hashtable<String, String> constants = new Hashtable<>();
-    public static final Hashtable<String, String> variables = new Hashtable<>();
+    private final Hashtable<String, String> constants = new Hashtable<>();
+    private final Hashtable<String, String> variables = new Hashtable<>();
 
     public TestTypechecker(String machine) {
         MachineNode semanticAst = Parser.getMachineAsSemanticAst(machine);
@@ -39,4 +39,11 @@ public class TestTypechecker {
         return map;
     }
 
+    public Hashtable<String, String> getConstants() {
+        return constants;
+    }
+
+    public Hashtable<String, String> getVariables() {
+        return variables;
+    }
 }
