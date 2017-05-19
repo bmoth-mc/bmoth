@@ -89,11 +89,11 @@ public class AppController implements Initializable {
     private void setupPersonalPreferences() {
         if (!PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE).isEmpty()) {
             currentFile = PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE);
-            if(new File(currentFile).exists()){
-            	String fileContent = openFile(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE)));
-            	codeArea.replaceText(fileContent);
+            if (new File(currentFile).exists()) {
+                String fileContent = openFile(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE)));
+                codeArea.replaceText(fileContent);
             }
-           	codeArea.deletehistory();
+            codeArea.deletehistory();
         }
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
             hasChanged = true;
@@ -274,6 +274,7 @@ public class AppController implements Initializable {
                     break;
                 case SATISFIABLE:
                     alert.setContentText("...satisfiable!");
+                    break;
                 default:
                     throw new IllegalArgumentException("Unhandled result: " + result.toString());
             }
@@ -407,6 +408,7 @@ public class AppController implements Initializable {
                     break;
                 case SATISFIABLE:
                     alert.setContentText("...exists!");
+                    break;
                 default:
                     throw new IllegalArgumentException("Unhandled result: " + result.toString());
             }
