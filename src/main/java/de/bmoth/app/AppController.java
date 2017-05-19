@@ -128,7 +128,7 @@ public class AppController implements Initializable {
         if (hasChanged) {
             nextStep = handleUnsavedChanges();
         }
-        if (nextStep != 0) {
+        if (nextStep == -1 || !hasChanged) {
             String fileContent = openFileChooser();
             if (fileContent != null) {
                 codeArea.replaceText(fileContent);
@@ -177,26 +177,11 @@ public class AppController implements Initializable {
     @FXML
     public void handleExit() {
         if (hasChanged) {
-            int nextStep = saveChangedDialog();
-            switch (nextStep) {
-                case 0:
-                    break;
-                case 1:
-                    handleSave();
-                    Platform.exit();
-                    break;
-                case 2:
-                    Boolean saved = handleSaveAs();
-                    if (saved) {
-                        Platform.exit();
-                    }
-                    break;
-                case -1:
-                    Platform.exit();
-                    break;
-                default:
-                    break;
+            int exit = handleUnsavedChanges();
+            if(exit==-1 || !hasChanged){
+                Platform.exit();
             }
+
         } else {
             Platform.exit();
         }
@@ -352,7 +337,7 @@ public class AppController implements Initializable {
      */
     private Boolean saveFileAs() throws IOException {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setInitialDirectory(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_DIR)));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MCH File", "*.mch"));
         File file = fileChooser.showSaveDialog(primaryStage);
         if (file != null) {     //add .mch ending if not added by OS
