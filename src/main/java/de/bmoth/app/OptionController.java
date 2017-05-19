@@ -86,16 +86,16 @@ public class OptionController {
     }
 
 
-    public void handleApply(ActionEvent actionEvent) {
+    public void handleApply() {
         if (checkPrefs())
             savePrefs();
     }
 
-    public void handleClose(ActionEvent actionEvent) {
+    public void handleClose() {
         stage.close();
     }
 
-    public void handleOk(ActionEvent actionEvent) {
+    public void handleOk() {
         if (checkPrefs()) {
             savePrefs();
             stage.close();
@@ -104,7 +104,7 @@ public class OptionController {
 
     public boolean isNumeric(String s) {
         try {
-            int n = Integer.parseInt(s);
+            Integer.parseInt(s);
             return true;
         } catch (NumberFormatException e) {
             return false;
