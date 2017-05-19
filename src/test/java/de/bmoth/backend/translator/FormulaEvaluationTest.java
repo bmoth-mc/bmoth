@@ -1,11 +1,10 @@
 package de.bmoth.backend.translator;
 
 import com.microsoft.z3.*;
+import de.bmoth.TestUsingZ3;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.util.UtilMethodsTest;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -14,104 +13,89 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-public class FormulaEvaluationTest {
-
-    private Context ctx;
-    private Solver s;
-
-    @Before
-    public void setup() {
-        ctx = new Context();
-        s = ctx.mkSolver();
-    }
-
-    @After
-    public void cleanup() {
-        ctx.close();
-    }
-
+public class FormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testAdditionFormula() throws Exception {
         String formula = "x = 2 + 3";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
+        Status check = z3Solver.check();
 
-        Expr x = ctx.mkIntConst("x");
+        Expr x = z3Context.mkIntConst("x");
 
         assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkInt(5), s.getModel().eval(x, true));
+        assertEquals(z3Context.mkInt(5), z3Solver.getModel().eval(x, true));
     }
 
     @Test
     public void testSubtractionFormula() throws Exception {
         String formula = "x = 2 - 3";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
+        Status check = z3Solver.check();
 
-        Expr x = ctx.mkIntConst("x");
+        Expr x = z3Context.mkIntConst("x");
 
         assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkInt(-1), s.getModel().eval(x, true));
+        assertEquals(z3Context.mkInt(-1), z3Solver.getModel().eval(x, true));
     }
 
     @Test
     public void testEqualityFormula() throws Exception {
         String formula = "x = 5";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
+        Status check = z3Solver.check();
 
-        Expr x = ctx.mkIntConst("x");
+        Expr x = z3Context.mkIntConst("x");
 
         assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkInt(5), s.getModel().eval(x, true));
+        assertEquals(z3Context.mkInt(5), z3Solver.getModel().eval(x, true));
     }
 
     @Test
     public void testInequalityFormula() throws Exception {
         String formula = "x /= 0";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
+        Status check = z3Solver.check();
 
-        Expr x = ctx.mkIntConst("x");
+        Expr x = z3Context.mkIntConst("x");
 
         assertEquals(Status.SATISFIABLE, check);
-        assertNotEquals(ctx.mkInt(0), s.getModel().eval(x, true));
+        assertNotEquals(z3Context.mkInt(0), z3Solver.getModel().eval(x, true));
     }
 
     @Test
     public void testModuloFormula() throws Exception {
         String formula = "x = 3 mod 2";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
+        Status check = z3Solver.check();
 
-        Expr x = ctx.mkIntConst("x");
+        Expr x = z3Context.mkIntConst("x");
 
         assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkInt(1), s.getModel().eval(x, true));
+        assertEquals(z3Context.mkInt(1), z3Solver.getModel().eval(x, true));
     }
 
     @Test
     public void testMultiplicationFormula() throws Exception {
         String formula = "x = 3 * 2";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
+        Status check = z3Solver.check();
 
-        Expr x = ctx.mkIntConst("x");
+        Expr x = z3Context.mkIntConst("x");
 
         assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkInt(6), s.getModel().eval(x, true));
+        assertEquals(z3Context.mkInt(6), z3Solver.getModel().eval(x, true));
     }
 
     @Test
@@ -121,37 +105,37 @@ public class FormulaEvaluationTest {
          */
         String formula = "x = 4 + 3 * 2 * 2";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
+        Status check = z3Solver.check();
 
-        Expr x = ctx.mkIntConst("x");
+        Expr x = z3Context.mkIntConst("x");
 
         assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkInt(16), s.getModel().eval(x, true));
+        assertEquals(z3Context.mkInt(16), z3Solver.getModel().eval(x, true));
     }
 
     @Test
     public void testDivisionFormula() throws Exception {
         String formula = "x = 8 / 2";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
+        Status check = z3Solver.check();
 
-        Expr x = ctx.mkIntConst("x");
+        Expr x = z3Context.mkIntConst("x");
 
         assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkInt(4), s.getModel().eval(x, true));
+        assertEquals(z3Context.mkInt(4), z3Solver.getModel().eval(x, true));
     }
 
     @Test
     public void testDivisionFormula2() throws Exception {
         String formula = "x = 1 / 0";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
+        Status check = z3Solver.check();
 
         assertEquals(Status.UNSATISFIABLE, check);
     }
@@ -160,36 +144,36 @@ public class FormulaEvaluationTest {
     public void testPowerFormula() throws Exception {
         String formula = "x = 2 ** 8";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
+        Status check = z3Solver.check();
 
-        Expr x = ctx.mkIntConst("x");
+        Expr x = z3Context.mkIntConst("x");
 
         assertEquals(Status.SATISFIABLE, check);
-        assertEquals(ctx.mkInt(256), s.getModel().eval(x, true));
+        assertEquals(z3Context.mkInt(256), z3Solver.getModel().eval(x, true));
     }
 
     @Test
     public void testLessThanFormula() throws Exception {
         String formula = "1 < 2";
-        UtilMethodsTest.check(Status.SATISFIABLE, formula, ctx, s);
+        UtilMethodsTest.check(Status.SATISFIABLE, formula, z3Context, z3Solver);
     }
 
     @Test
     public void testGreaterThanFormula() throws Exception {
         String formula = "2 > 1";
-        UtilMethodsTest.check(Status.SATISFIABLE, formula, ctx, s);
+        UtilMethodsTest.check(Status.SATISFIABLE, formula, z3Context, z3Solver);
     }
 
     @Test
     public void testLessEqualFormula() throws Exception {
         String formula = "x <= 4 & x > 0";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
 
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
 
         assertEquals(4, solutions.size());
@@ -212,10 +196,10 @@ public class FormulaEvaluationTest {
     public void testGreaterEqualFormula() throws Exception {
         String formula = "x >= 4 & x < 8";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        z3Solver.add(constraint);
 
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
 
         assertEquals(4, solutions.size());
