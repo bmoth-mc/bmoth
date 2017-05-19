@@ -12,4 +12,5 @@ addons:
     - master
     - develop
 script:
+- ./gradlew check
 - sonar-scanner

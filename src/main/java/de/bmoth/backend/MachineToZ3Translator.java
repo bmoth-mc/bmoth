@@ -146,7 +146,6 @@ public class MachineToZ3Translator {
     }
 
     private BoolExpr visitSingleAssignSubstitution(SingleAssignSubstitutionNode node) {
-        Sort bTypeToZ3Sort = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getIdentifier().getType());
         String name = getPrimedName(node.getIdentifier().getName());
         return FormulaToZ3Translator.translateVariableEqualToExpr(name, node.getValue(), z3Context);
     }

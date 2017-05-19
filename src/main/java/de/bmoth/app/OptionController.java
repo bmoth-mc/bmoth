@@ -12,12 +12,11 @@ import javafx.stage.Stage;
  */
 public class OptionController {
 
-
+    public static final String NONNUMERICWARNING="Not Numeric or out of Range: ";
     public TextField minInt;
     public TextField maxInt;
     public TextField maxInitState;
     public TextField maxTrans;
-
 
     Stage stage;
 
@@ -43,20 +42,20 @@ public class OptionController {
 
     private boolean checkPrefs() {
         if (!isNumeric(minInt.getText())) {
-            new Alert(Alert.AlertType.ERROR, "Needs to be Numeric:" + minInt.getId()).show();
+            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + minInt.getId()).show();
             return false;
         }
         if (!isNumeric(maxInt.getText())) {
-            new Alert(Alert.AlertType.ERROR, "Needs to be Numeric:" + maxInt.getId()).show();
+            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxInt.getId()).show();
             return false;
         }
         if (!isNumeric(maxInitState.getText())) {
-            new Alert(Alert.AlertType.ERROR, "Needs to be Numeric:" + maxInitState.getId()).show();
+            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxInitState.getId()).show();
             return false;
         }
 
         if (!isNumeric(maxTrans.getText())) {
-            new Alert(Alert.AlertType.ERROR, "Needs to be Numeric:" + maxTrans.getId()).show();
+            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING+ maxTrans.getId()).show();
             return false;
         }
 
@@ -64,6 +63,15 @@ public class OptionController {
             new Alert(Alert.AlertType.ERROR, "MIN_INT bigger than MAX_INT").show();
             return false;
         }
+        if(Integer.parseInt(maxInitState.getText())<1) {
+            new Alert(Alert.AlertType.ERROR, "InitialStates needs to be bigger than 0").show();
+            return false;
+        }
+        if(Integer.parseInt(maxTrans.getText())<1){
+            new Alert(Alert.AlertType.ERROR, "Maximum transitions needs to be bigger than 0").show();
+            return false;
+        }
+
 
         return true;
     }
@@ -77,16 +85,16 @@ public class OptionController {
     }
 
 
-    public void handleApply(ActionEvent actionEvent) {
+    public void handleApply() {
         if (checkPrefs())
             savePrefs();
     }
 
-    public void handleClose(ActionEvent actionEvent) {
+    public void handleClose() {
         stage.close();
     }
 
-    public void handleOk(ActionEvent actionEvent) {
+    public void handleOk() {
         if (checkPrefs()) {
             savePrefs();
             stage.close();
@@ -95,7 +103,7 @@ public class OptionController {
 
     public boolean isNumeric(String s) {
         try {
-            int n = Integer.parseInt(s);
+            Integer.parseInt(s);
             return true;
         } catch (NumberFormatException e) {
             return false;
