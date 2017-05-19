@@ -40,8 +40,7 @@ public class Issue59Test {
         machine += "END";
 
         ModelCheckingResult result = ModelChecker.doModelCheck(machine);
-        assertEquals(false, result.isCorrect());
-        assertEquals(true, result.getMessage().startsWith("check-sat"));
+        assertEquals(true, result.isCorrect());
     }
 
     @Test
@@ -53,7 +52,7 @@ public class Issue59Test {
 
         s.add(combinedConstraint);
         Status check = s.check();
-        assertEquals(Status.UNKNOWN, check);
+        assertEquals(Status.SATISFIABLE, check);
     }
 
     @Test
@@ -65,6 +64,6 @@ public class Issue59Test {
 
         s.add(combinedConstraint);
         Status check = s.check();
-        assertEquals(Status.UNKNOWN, check);
+        assertEquals(Status.SATISFIABLE, check);
     }
 }
