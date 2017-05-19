@@ -10,6 +10,9 @@ import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
 public class InvariantSatisfiabilityChecker {
+    private InvariantSatisfiabilityChecker() {
+    }
+
     public static InvariantSatisfiabilityCheckingResult doInvariantSatisfiabilityCheck(String machineAsString) {
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doInvariantSatisfiabilityCheck(machineAsSemanticAst);

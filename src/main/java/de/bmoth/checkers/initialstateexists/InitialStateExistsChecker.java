@@ -10,6 +10,10 @@ import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
 public class InitialStateExistsChecker {
+    private InitialStateExistsChecker() {
+
+    }
+
     public static InitialStateExistsCheckingResult doInitialStateExistsCheck(String machineAsString) {
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doInitialStateExistsCheck(machineAsSemanticAst);
