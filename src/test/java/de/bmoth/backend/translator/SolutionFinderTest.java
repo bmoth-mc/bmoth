@@ -38,7 +38,7 @@ public class SolutionFinderTest {
         assertEquals(1, solutions.size());
     }
     @Test
-    public void testSolutionFinderNATUpperFail() throws Exception {
+    public void testSolutionFinderNATUpperFail() {
         String maxInt = String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT));
         String formula = new StringBuilder().append("a : NAT & a > ").append(maxInt).toString();
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
@@ -47,7 +47,7 @@ public class SolutionFinderTest {
         assertEquals(0, solutions.size());
     }
     @Test
-    public void testSolutionFinderNATUpper() throws Exception {
+    public void testSolutionFinderNATUpper() {
         String oneBelowMaxInt = String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT)-1);
         String formula = new StringBuilder().append("a : NAT & a > ").append(oneBelowMaxInt).toString();
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
@@ -56,7 +56,7 @@ public class SolutionFinderTest {
         assertEquals(1, solutions.size());
     }
     @Test
-    public void testSolutionFinderNAT1UpperFail() throws Exception {
+    public void testSolutionFinderNAT1UpperFail()  {
         String formula = "a : NATURAL1 & a < 1";
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
         SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
@@ -64,7 +64,7 @@ public class SolutionFinderTest {
         assertEquals(0, solutions.size());
     }
     @Test
-    public void testSolutionFinderNAT1Upper() throws Exception {
+    public void testSolutionFinderNAT1Upper()  {
         String formula = "a : NATURAL1 & a < 2";
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
         SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
