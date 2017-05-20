@@ -12,6 +12,10 @@ import de.bmoth.parser.ast.nodes.MachineNode;
 import java.util.*;
 
 public class ModelChecker {
+    private ModelChecker() {
+        // prevent instantiation
+    }
+
     public static ModelCheckingResult doModelCheck(String machineAsString) {
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doModelCheck(machineAsSemanticAst);
@@ -35,6 +39,7 @@ public class ModelChecker {
         }
 
         final BoolExpr invariant = machineTranslator.getInvariantConstraint();
+        solver.add(invariant);
         while (!queue.isEmpty()) {
             solver.push();
             State current = queue.poll();
@@ -43,12 +48,8 @@ public class ModelChecker {
             BoolExpr stateConstraint = current.getStateConstraint(ctx);
             solver.add(stateConstraint);
 
-            // check invariant
-            // TODO add invariant before entering while loop
-            solver.push();
-            solver.add(invariant);
+            // check invariant & state
             Status check = solver.check();
-            solver.pop();
             switch (check) {
                 case UNKNOWN:
                     return new ModelCheckingResult("check-sat = unknown, reason: " + solver.getReasonUnknown());
@@ -94,7 +95,6 @@ public class ModelChecker {
             map.put(declarationNode.getName(), value);
         }
 
-        State newState = new State(predecessor, map);
-        return newState;
+        return new State(predecessor, map);
     }
 }
