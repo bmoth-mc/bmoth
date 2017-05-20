@@ -4,7 +4,6 @@ import de.bmoth.app.OptionController;
 import de.bmoth.app.PersonalPreferences;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.stage.Stage;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
 
@@ -15,17 +14,13 @@ import java.util.logging.Logger;
 import static org.loadui.testfx.Assertions.verifyThat;
 import static org.loadui.testfx.controls.Commons.hasText;
 
-/**
- * Created by Julian on 20.05.2017.
- */
 public class OptionControllerTest extends GuiTest {
     private final Logger logger = Logger.getLogger(getClass().getName());
-    OptionController optionController;
-    Parent parent;
-    Stage stage;
+    private OptionController optionController;
 
     @Override
     protected Parent getRootNode() {
+        Parent parent;
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
             parent = loader.load();
