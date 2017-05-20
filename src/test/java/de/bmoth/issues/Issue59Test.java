@@ -10,13 +10,14 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
-import org.junit.Ignore;
+
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
 public class Issue59Test {
     @Test
-    public void testIssue59() throws Exception {
+    public void testIssue59() {
         String machine = "MACHINE SimpleMachine\n";
         machine += "VARIABLES x\n";
         machine += "INVARIANT x : INTEGER &\n";
@@ -31,7 +32,7 @@ public class Issue59Test {
     }
 
     @Test
-    public void testIssue59WithAdditionalInvariant() throws Exception {
+    public void testIssue59WithAdditionalInvariant() {
         String machine = "MACHINE SimpleMachine\n";
         machine += "VARIABLES x\n";
         machine += "INVARIANT x : INTEGER &\n";
@@ -47,7 +48,7 @@ public class Issue59Test {
     }
 
     @Test
-    public void testIssue59JustInvariant() throws Exception {
+    public void testIssue59JustInvariant() {
         Context ctx = new Context();
         Solver s = ctx.mkSolver();
         String formula = "x**2 = x*x & #x.({x} \\/ {1,2} = {1,2})";
@@ -59,7 +60,7 @@ public class Issue59Test {
     }
 
     @Test
-    public void testIssue59JustInvariant2() throws Exception {
+    public void testIssue59JustInvariant2() {
         Context ctx = new Context();
         Solver s = ctx.mkSolver();
         String formula = "x**2 = x*x";
@@ -71,7 +72,7 @@ public class Issue59Test {
     }
 
     @Test
-    public void testArithmeticLawsMachine() throws Exception {
+    public void testArithmeticLawsMachine() throws IOException {
         MachineNode simpleMachineWithoutViolation = Parser.getMachineFileAsSemanticAst("src/test/resources/machines/OnlyInitNoViolation.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
         assertEquals(true, result.isCorrect());
