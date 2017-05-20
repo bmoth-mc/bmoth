@@ -64,21 +64,18 @@ public class MachineToZ3Translator {
 
     public Expr getVariableAsZ3Expression(DeclarationNode node) {
         Sort type = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getType());
-        Expr expr = z3Context.mkConst(node.getName(), type);
-        return expr;
+        return z3Context.mkConst(node.getName(), type);
     }
 
     public Expr getVariable(DeclarationNode node) {
         Sort type = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getType());
-        Expr expr = z3Context.mkConst(node.getName(), type);
-        return expr;
+        return z3Context.mkConst(node.getName(), type);
     }
 
     public Expr getPrimedVariable(DeclarationNode node) {
         String primedName = getPrimedName(node.getName());
         Sort type = FormulaToZ3Translator.bTypeToZ3Sort(z3Context, node.getType());
-        Expr expr = z3Context.mkConst(primedName, type);
-        return expr;
+        return z3Context.mkConst(primedName, type);
     }
 
     public BoolExpr getInitialValueConstraint() {
