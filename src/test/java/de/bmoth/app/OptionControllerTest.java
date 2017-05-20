@@ -2,35 +2,25 @@ package de.bmoth.app;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.stage.Stage;
 import org.junit.Test;
-import org.loadui.testfx.Assertions;
-import org.loadui.testfx.GuiTest;
+import org.testfx.framework.junit.ApplicationTest;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static org.testfx.api.FxAssert.verifyThat;
+import static org.testfx.matcher.base.NodeMatchers.hasText;
 
-import static org.loadui.testfx.Assertions.verifyThat;
-import static org.loadui.testfx.controls.Commons.hasText;
 
-public class OptionControllerTest extends GuiTest {
-    private final Logger logger = Logger.getLogger(getClass().getName());
+public class OptionControllerTest extends ApplicationTest {
     private OptionController optionController;
 
     @Override
-    protected Parent getRootNode() {
-        Parent parent;
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("options.fxml"));
-            parent = fxmlLoader.load();
-            optionController = fxmlLoader.getController();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Couldn't create parent", e);
-            return null;
-        }
-        return parent;
+    public void start(Stage stage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
+        Parent root = loader.load();
+        optionController = loader.getController();
+        Stage optionStage = optionController.getStage(root);
+        optionStage.show();
     }
-
 
     @Test
     public void optionCreateTest() {
@@ -39,6 +29,6 @@ public class OptionControllerTest extends GuiTest {
         verifyThat("#maxInt", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT))));
         verifyThat("#maxInitState", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE))));
         verifyThat("#maxTrans", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS))));
-        Assertions.verifyThat("#z3Timeout", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT))));
+        verifyThat("#z3Timeout", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT))));
     }
 }

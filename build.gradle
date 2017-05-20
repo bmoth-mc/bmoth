@@ -59,6 +59,18 @@ task performanceTests(type: Test) {
     include('de/bmoth/performance/**')
 }
 
+task uiTests(type: Test) {
+    doFirst { println("Running UI tests") }
+    scanForTestClasses = true
+    include('de/bmoth/app/**')
+
+    jvmArgs = ['-Djava.awt.headless=true',
+               '-Dtestfx.robot=glass',
+               '-Dglass.platform=Monocle',
+               '-Dmonocle.platform=Headless',
+               '-Dprism.order=sw']
+}
+
 dependencies {
     // Antlr4 Parser Generator
     antlr "org.antlr:antlr4:4.5.3"
@@ -72,8 +84,10 @@ dependencies {
     // JavaFX RichText Editor
     compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
 
-    //TestFX
-    testCompile group: 'org.loadui', name: 'testFx', version: '3.1.0'
+    // TestFX & monocle for headless testing
+    testCompile "org.testfx:testfx-core:4.0.+"
+    testCompile "org.testfx:testfx-junit:4.0.+"
+    testRuntime 'org.testfx:openjfx-monocle:1.8.0_20'
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
