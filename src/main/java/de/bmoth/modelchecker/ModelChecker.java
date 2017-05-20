@@ -12,8 +12,14 @@ import de.bmoth.parser.ast.nodes.MachineNode;
 import java.util.*;
 
 public class ModelChecker {
-    private ModelChecker() {
-        // prevent instantiation
+    private Context ctx;
+    private Solver solver;
+    private MachineToZ3Translator machineTranslator;
+
+    private ModelChecker(MachineNode machine) {
+        this.ctx = new Context();
+        this.solver = Z3SolverFactory.getZ3Solver(ctx);
+        this.machineTranslator = new MachineToZ3Translator(machine, ctx);
     }
 
     public static ModelCheckingResult doModelCheck(String machineAsString) {
@@ -22,10 +28,11 @@ public class ModelChecker {
     }
 
     public static ModelCheckingResult doModelCheck(MachineNode machine) {
-        Context ctx = new Context();
-        Solver solver = Z3SolverFactory.getZ3Solver(ctx);
-        MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);
+        ModelChecker modelChecker = new ModelChecker(machine);
+        return modelChecker.doModelCheck();
+    }
 
+    private ModelCheckingResult doModelCheck() {
         Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
         // prepare initial states
@@ -34,7 +41,7 @@ public class ModelChecker {
         SolutionFinder finder = new SolutionFinder(initialValueConstraint, solver, ctx);
         Set<Model> models = finder.findSolutions(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE));
         for (Model model : models) {
-            State state = getStateFromModel(null, model, machineTranslator);
+            State state = getStateFromModel(null, model);
             queue.add(state);
         }
 
@@ -67,7 +74,7 @@ public class ModelChecker {
                 finder = new SolutionFinder(currentOperationConstraint, solver, ctx);
                 models = finder.findSolutions(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS));
                 for (Model model : models) {
-                    State state = getStateFromModel(current, model, machineTranslator);
+                    State state = getStateFromModel(current, model);
 
                     // add to queue if not in visited
                     if (!visited.contains(state) && !queue.contains(state)) {
@@ -79,10 +86,9 @@ public class ModelChecker {
         }
 
         return new ModelCheckingResult("correct");
-
     }
 
-    private static State getStateFromModel(State predecessor, Model model, MachineToZ3Translator machineTranslator) {
+    private State getStateFromModel(State predecessor, Model model) {
         HashMap<String, Expr> map = new HashMap<>();
         for (DeclarationNode declNode : machineTranslator.getVariables()) {
             Expr expr = machineTranslator.getPrimedVariable(declNode);
