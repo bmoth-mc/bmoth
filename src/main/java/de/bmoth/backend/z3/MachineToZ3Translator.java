@@ -32,13 +32,10 @@ public class MachineToZ3Translator {
 
         this.operationConstraints = visitOperations(machineNode.getOperations());
 
-        {
-            primedVariablesToVariablesMap = new HashMap<>();
-            for (DeclarationNode node : machineNode.getVariables()) {
-                primedVariablesToVariablesMap.put(getPrimedName(node.getName()), node.getName());
-            }
+        primedVariablesToVariablesMap = new HashMap<>();
+        for (DeclarationNode node : machineNode.getVariables()) {
+            primedVariablesToVariablesMap.put(getPrimedName(node.getName()), node.getName());
         }
-
     }
 
     private List<BoolExpr> visitOperations(List<OperationNode> operations) {
