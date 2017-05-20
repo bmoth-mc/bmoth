@@ -70,7 +70,7 @@ public class ModelChecker {
                     State state = getStateFromModel(current, model, machineTranslator);
 
                     // add to queue if not in visited
-                    if (!visited.contains(state)) {
+                    if (!visited.contains(state) && !queue.contains(state)) {
                         queue.add(state);
                     }
                 }
