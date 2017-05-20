@@ -1,12 +1,12 @@
 package de.bmoth.app;
 
-import org.apache.commons.lang3.StringUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 
 public class OptionController {
 
@@ -35,14 +35,18 @@ public class OptionController {
 
     private void setupStage() {
         stage.setTitle("Options");
+        // selects end of first Textfield for Caret
+        setUpPrefs();
+        minInt.requestFocus();
+        minInt.selectRange(99, 99);
+    }
+
+    public void setUpPrefs() {
         minInt.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT)));
         maxInt.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT)));
         maxInitState.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE)));
         maxTrans.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS)));
         z3Timeout.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT)));
-        // selects end of first Textfield for Caret
-        minInt.requestFocus();
-        minInt.selectRange(99, 99);
     }
 
     private boolean checkPrefs() {

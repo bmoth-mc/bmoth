@@ -70,7 +70,8 @@ dependencies {
 
     // JavaFX RichText Editor
     compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
-
+    //TestFX
+    compile group: 'org.loadui', name: 'testFx', version: '3.1.2'
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
 }

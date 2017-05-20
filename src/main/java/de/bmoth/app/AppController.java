@@ -23,6 +23,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.fxmisc.richtext.LineNumberFactory;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,8 +36,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AppController implements Initializable {
+    private static final String APPNAME = "Bmoth";
     private final Logger logger = Logger.getLogger(getClass().getName());
-
     @FXML
     MenuItem customCheck;
     @FXML
@@ -53,16 +54,13 @@ public class AppController implements Initializable {
     MenuItem exit;
     @FXML
     MenuItem modelCheck;
-
     @FXML
     CodeArea codeArea;
     @FXML
     TextArea infoArea;
-
     private Stage primaryStage = new Stage();
     private String currentFile;
     private Boolean hasChanged = false;
-    private static final String APPNAME = "Bmoth";
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -191,8 +189,8 @@ public class AppController implements Initializable {
     public void handleOptions() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
         Parent root = loader.load();
-        OptionController optionControler = loader.getController();
-        Stage optionStage = optionControler.getStage(root);
+        OptionController optionController = loader.getController();
+        Stage optionStage = optionController.getStage(root);
         optionStage.show();
 
     }
