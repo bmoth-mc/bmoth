@@ -24,7 +24,7 @@ public class MachineToZ3Translator {
             this.initialisationConstraint = visitSubstitution(machineNode.getInitialisation());
         }
         if (machineNode.getInvariant() != null) {
-            this.invariantConstraint = (BoolExpr) FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(),
+            this.invariantConstraint = FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(),
                 z3Context);
         } else {
             this.invariantConstraint = z3Context.mkTrue();
@@ -109,7 +109,7 @@ public class MachineToZ3Translator {
     }
 
     private BoolExpr visitSelectSubstitutionNode(SelectSubstitutionNode node) {
-        BoolExpr condition = (BoolExpr) FormulaToZ3Translator.translatePredicate(node.getCondition(), z3Context);
+        BoolExpr condition = FormulaToZ3Translator.translatePredicate(node.getCondition(), z3Context);
         BoolExpr substitution = visitSubstitution(node.getSubstitution());
         return z3Context.mkAnd(condition, substitution);
     }
@@ -119,7 +119,7 @@ public class MachineToZ3Translator {
         for (int i = 0; i < parameters.length; i++) {
             parameters[i] = getVariableAsZ3Expression(node.getParameters().get(i));
         }
-        BoolExpr parameterConstraints = (BoolExpr) FormulaToZ3Translator.translatePredicate(node.getWherePredicate(), z3Context);
+        BoolExpr parameterConstraints = FormulaToZ3Translator.translatePredicate(node.getWherePredicate(), z3Context);
         BoolExpr transition = visitSubstitution(node.getThenSubstitution());
         BoolExpr existsBody = z3Context.mkAnd(parameterConstraints, transition);
         return z3Context.mkExists(parameters, existsBody, parameters.length, null, null, null, null);
