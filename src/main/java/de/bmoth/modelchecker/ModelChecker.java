@@ -39,6 +39,7 @@ public class ModelChecker {
         }
 
         final BoolExpr invariant = machineTranslator.getInvariantConstraint();
+        solver.add(invariant);
         while (!queue.isEmpty()) {
             solver.push();
             State current = queue.poll();
@@ -47,12 +48,8 @@ public class ModelChecker {
             BoolExpr stateConstraint = current.getStateConstraint(ctx);
             solver.add(stateConstraint);
 
-            // check invariant
-            // TODO add invariant before entering while loop
-            solver.push();
-            solver.add(invariant);
+            // check invariant & state
             Status check = solver.check();
-            solver.pop();
             switch (check) {
                 case UNKNOWN:
                     return new ModelCheckingResult("check-sat = unknown, reason: " + solver.getReasonUnknown());
