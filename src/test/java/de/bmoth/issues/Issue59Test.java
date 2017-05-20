@@ -31,7 +31,6 @@ public class Issue59Test {
     }
 
     @Test
-    @Ignore
     public void testIssue59WithAdditionalInvariant() throws Exception {
         String machine = "MACHINE SimpleMachine\n";
         machine += "VARIABLES x\n";
