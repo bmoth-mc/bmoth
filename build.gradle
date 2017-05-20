@@ -50,6 +50,7 @@ sourceSets {
 
 test {
     exclude('de/bmoth/performance')
+    exclude('de/bmoth/app')
 }
 
 task performanceTests(type: Test) {
@@ -77,7 +78,7 @@ dependencies {
 }
 
 // Define the main class for the application
-mainClassName = 'de.bmoth.app.App'
+mainClassName = 'de.bmoth.app.app'
 
 // gradle generateGrammarSource
 generateGrammarSource {

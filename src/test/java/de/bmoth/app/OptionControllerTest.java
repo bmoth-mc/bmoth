@@ -1,10 +1,9 @@
-package de.bmoth.App;
+package de.bmoth.app;
 
-import de.bmoth.app.OptionController;
-import de.bmoth.app.PersonalPreferences;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import org.junit.Test;
+import org.loadui.testfx.Assertions;
 import org.loadui.testfx.GuiTest;
 
 import java.io.IOException;
@@ -22,15 +21,16 @@ public class OptionControllerTest extends GuiTest {
     protected Parent getRootNode() {
         Parent parent;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
-            parent = loader.load();
-            optionController = loader.getController();
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("options.fxml"));
+            parent = fxmlLoader.load();
+            optionController = fxmlLoader.getController();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Couldn't create parent", e);
             return null;
         }
         return parent;
     }
+
 
     @Test
     public void optionCreateTest() {
@@ -39,6 +39,6 @@ public class OptionControllerTest extends GuiTest {
         verifyThat("#maxInt", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT))));
         verifyThat("#maxInitState", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE))));
         verifyThat("#maxTrans", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS))));
-        verifyThat("#z3Timeout", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT))));
+        Assertions.verifyThat("#z3Timeout", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT))));
     }
 }
