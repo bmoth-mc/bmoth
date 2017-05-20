@@ -10,6 +10,7 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,6 +31,7 @@ public class Issue59Test {
     }
 
     @Test
+    @Ignore
     public void testIssue59WithAdditionalInvariant() throws Exception {
         String machine = "MACHINE SimpleMachine\n";
         machine += "VARIABLES x\n";
