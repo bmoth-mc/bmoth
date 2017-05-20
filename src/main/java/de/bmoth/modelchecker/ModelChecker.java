@@ -98,7 +98,6 @@ public class ModelChecker {
             map.put(declarationNode.getName(), value);
         }
 
-        State newState = new State(predecessor, map);
-        return newState;
+        return new State(predecessor, map);
     }
 }
