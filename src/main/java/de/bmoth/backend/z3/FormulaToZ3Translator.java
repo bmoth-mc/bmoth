@@ -14,6 +14,7 @@ import de.bmoth.parser.ast.types.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class translates a FormulaNode of the parser to a z3 backend node.
@@ -190,72 +191,38 @@ public class FormulaToZ3Translator {
 
         @Override
         public Expr visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, TranslationOptions ops) {
-            final List<ExprNode> expressionNodes = node.getExpressionNodes();
+            final List<Expr> arguments = node.getExpressionNodes().stream().map(it -> visitExprNode(it, ops)).collect(Collectors.toList());
             switch (node.getOperator()) {
-                case EQUAL: {
-                    Expr left = visitExprNode(expressionNodes.get(0), ops);
-                    Expr right = visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkEq(left, right);
-                }
-                case NOT_EQUAL: {
-                    Expr left = visitExprNode(expressionNodes.get(0), ops);
-                    Expr right = visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkNot(z3Context.mkEq(left, right));
-                }
-                case ELEMENT_OF: {
-                    Expr left = visitExprNode(expressionNodes.get(0), ops);
-                    ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkSetMembership(left, right);
-                }
-                case LESS_EQUAL: {
-                    ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkLe(left, right);
-                }
-                case LESS: {
-                    ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkLt(left, right);
-                }
-                case GREATER_EQUAL: {
-                    ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkGe(left, right);
-                }
-                case GREATER: {
-                    ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkGt(left, right);
-                }
+                case EQUAL:
+                    return z3Context.mkEq(arguments.get(0), arguments.get(1));
+                case NOT_EQUAL:
+                    return z3Context.mkNot(z3Context.mkEq(arguments.get(0), arguments.get(1)));
+                case ELEMENT_OF:
+                    return z3Context.mkSetMembership(arguments.get(0), (ArrayExpr) arguments.get(1));
+                case LESS_EQUAL:
+                    return z3Context.mkLe((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case LESS:
+                    return z3Context.mkLt((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case GREATER_EQUAL:
+                    return z3Context.mkGe((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case GREATER:
+                    return z3Context.mkGt((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
                 case NOT_BELONGING:
-                    Expr left = visitExprNode(expressionNodes.get(0), ops);
-                    ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkNot(z3Context.mkSetMembership(left, right));
-                case INCLUSION: {
+                    return z3Context.mkNot(z3Context.mkSetMembership(arguments.get(0), (ArrayExpr) arguments.get(1)));
+                case INCLUSION:
                     // a <: S
-                    ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkSetSubset(arg0, arg1);
-                }
-                case STRICT_INCLUSION: {
+                    return z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1));
+                case STRICT_INCLUSION:
                     // a <<: S
-                    ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arg0, arg1)), z3Context.mkSetSubset(arg0, arg1));
-                }
-                case NON_INCLUSION: {
-                    ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkNot(z3Context.mkSetSubset(arg0, arg1));
-                }
-                case STRICT_NON_INCLUSION: {
-                    ArrayExpr arg0 = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArrayExpr arg1 = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkNot(z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arg0, arg1)),
-                        z3Context.mkSetSubset(arg0, arg1)));
-                }
+                    return z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arguments.get(0), arguments.get(1))), z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1)));
+                case NON_INCLUSION:
+                    return z3Context.mkNot(z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1)));
+                case STRICT_NON_INCLUSION:
+                    return z3Context.mkNot(z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arguments.get(0), arguments.get(1))),
+                        z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1))));
+                default:
+                    throw new AssertionError("Not implemented: " + node.getOperator());
             }
-            throw new AssertionError("Not implemented: " + node.getOperator());
         }
 
         @Override
