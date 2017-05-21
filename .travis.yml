@@ -12,5 +12,6 @@ addons:
     - master
     - develop
 script:
-- ./gradlew check
+- ./gradlew check # regular unit tests
+- ./gradlew -Pheadless=false uiTest # testFX UI tests in headless mode
 - sonar-scanner
