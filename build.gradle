@@ -53,13 +53,13 @@ test {
     exclude('de/bmoth/app')
 }
 
-task performanceTests(type: Test) {
+task performanceTest(type: Test) {
     doFirst { println("Running performance tests") }
     scanForTestClasses = true
     include('de/bmoth/performance/**')
 }
 
-task uiTests(type: Test) {
+task uiTest(type: Test) {
     doFirst { println("Running UI tests") }
     scanForTestClasses = true
     include('de/bmoth/app/**')
@@ -200,6 +200,8 @@ jacocoTestReport {
                     ])
         })
     }
+
+    executionData(test, uiTest)
 }
 build.dependsOn jacocoTestReport
 
