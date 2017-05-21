@@ -3,11 +3,13 @@ package de.bmoth.app;
 import org.junit.BeforeClass;
 import org.testfx.framework.junit.ApplicationTest;
 
+import java.util.concurrent.TimeoutException;
+
 import static org.testfx.api.FxToolkit.registerPrimaryStage;
 
 public abstract class HeadlessUITest extends ApplicationTest {
     @BeforeClass
-    public static void setupHeadlessIfRequested() throws Exception {
+    public static void setupHeadlessIfRequested() throws TimeoutException {
         if (Boolean.getBoolean("headless")) {
             System.setProperty("testfx.robot", "glass");
             System.setProperty("testfx.headless", "true");
