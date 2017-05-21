@@ -65,7 +65,9 @@ task uiTests(type: Test) {
     include('de/bmoth/app/**')
 
     // pass -Pheadless=?? value from gradle call into test VM
-    systemProperty "headless", project.getProperty("headless")
+    if (project.hasProperty("headless")) {
+        systemProperty "headless", project.getProperty("headless")
+    }
 }
 
 dependencies {
