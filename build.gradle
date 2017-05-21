@@ -200,8 +200,6 @@ jacocoTestReport {
                     ])
         })
     }
-
-    executionData(test, uiTest)
 }
 build.dependsOn jacocoTestReport
 
