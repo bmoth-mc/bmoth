@@ -4,13 +4,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import org.junit.Test;
-import org.testfx.framework.junit.ApplicationTest;
 
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.hasText;
 
 
-public class OptionControllerTest extends ApplicationTest {
+public class OptionControllerTest extends HeadlessUITest {
     private OptionController optionController;
 
     @Override
