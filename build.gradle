@@ -68,6 +68,8 @@ task uiTest(type: Test) {
         exceptionFormat = 'full'
     }
 
+    maxParallelForks = 1
+
     // pass -Pheadless=?? value from gradle call into test VM
     if (project.hasProperty("headless")) {
         systemProperty "headless", project.getProperty("headless")
