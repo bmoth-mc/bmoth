@@ -6,16 +6,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.junit.Test;
 
-import static javafx.scene.input.KeyCode.ENTER;
 import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.matcher.base.NodeMatchers.hasText;
+import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
-public class ReplControllerTest extends HeadlessUITest {
-    private String replId = "#replText";
-
+public class AppControllerTest extends HeadlessUITest {
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("repl.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("app.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root, 500, 300);
         stage.setScene(scene);
@@ -23,29 +20,18 @@ public class ReplControllerTest extends HeadlessUITest {
     }
 
     @Test
-    public void replTypeSimplePredicateTest() {
-        clickOn(replId).write("x = 5");
-        verifyThat(replId, hasText("x = 5"));
+    public void clickingOptionsOpensDialog() {
+        clickOn("#fileMenu");
+        clickOn("#options");
 
-        push(ENTER);
-        verifyThat(replId, hasText("x = 5\n{x=5}\n"));
+        verifyThat("#minInt", isVisible());
     }
 
     @Test
-    public void replTypeUnsatisfiablePredicateTest() {
-        clickOn(replId).write("x = 5 & x = 6");
-        verifyThat(replId, hasText("x = 5 & x = 6"));
+    public void clickingReplOpensRepl() {
+        clickOn("#replMenu");
+        clickOn("#openRepl");
 
-        push(ENTER);
-        verifyThat(replId, hasText("x = 5 & x = 6\nUNSATISFIABLE\n"));
-    }
-
-    @Test
-    public void replTypeSetPredicateTest() {
-        clickOn(replId).write("x = {1}");
-        verifyThat(replId, hasText("x = {1}"));
-
-        push(ENTER);
-        verifyThat(replId, hasText("x = {1}\n{x=[1 -> true, else -> false]}\n"));
+        verifyThat("#replText", isVisible());
     }
 }
