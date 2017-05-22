@@ -5,7 +5,7 @@ jdk:
 - oraclejdk8
 cache:
   directories:
-  – $HOME/.sonar/cache
+  - $HOME/.sonar/cache
 addons:
   sonarqube:
     organization: "hhu-stups"
