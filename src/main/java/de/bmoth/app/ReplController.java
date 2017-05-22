@@ -1,9 +1,7 @@
 package de.bmoth.app;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Model;
-import com.microsoft.z3.Solver;
+import com.microsoft.z3.*;
+import com.microsoft.z3.enumerations.Z3_sort_kind;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
 import javafx.fxml.FXML;
@@ -32,7 +30,7 @@ public class ReplController implements Initializable {
         replText.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 String[] predicate = replText.getText().split("\n");
-                String solution = processPredicate(predicate[predicate.length-1]);
+                String solution = processPredicate(predicate[predicate.length - 1]);
                 replText.appendText(solution);
             }
         });
@@ -44,13 +42,20 @@ public class ReplController implements Initializable {
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(predicate, ctx);
         SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
         Set<Model> solutions = finder.findSolutions(1);
-        String output = "";
+        StringBuilder output = new StringBuilder();
         for (Model solution : solutions) {
-            com.microsoft.z3.FuncDecl[] functionDeclarations = solution.getConstDecls();
-            for (com.microsoft.z3.FuncDecl functionDeclaration : functionDeclarations) {
+            FuncDecl[] functionDeclarations = solution.getConstDecls();
+            for (FuncDecl decl : functionDeclarations) {
+                output.append(decl.getName()).append("=");
                 try {
-                    com.microsoft.z3.Expr constantInterpretations = solution.getConstInterp(functionDeclaration);
-                    output = new StringBuilder().append(output).append(functionDeclaration.getName()).append("=").append(constantInterpretations).append(", ").toString();
+                    if (decl.getArity() == 0 && decl.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
+                        // this is a constant
+                        output.append(solution.getConstInterp(decl));
+                    } else {
+                        // not a constant, e.g. some representation of a set
+                        output.append(solution.getFuncInterp(decl));
+                    }
+                    output.append(", ");
                 } catch (com.microsoft.z3.Z3Exception e) {
                     e.printStackTrace();
                 }
@@ -60,7 +65,7 @@ public class ReplController implements Initializable {
         if (solutions.isEmpty()) {
             return "\nUNSATISFIABLE";
         } else {
-            return "\n{" + output.substring(0, output.length()-2) + "}";
+            return "\n{" + output.substring(0, output.length() - 2) + "}";
         }
     }
 }

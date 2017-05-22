@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 public class QuantifiedFormulaEvaluationTest extends TestUsingZ3 {
     @Test
-    public void testExistentialFormula() throws Exception {
+    public void testExistentialFormula() {
         String formula = "#(x).(x=2)";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
@@ -22,7 +22,7 @@ public class QuantifiedFormulaEvaluationTest extends TestUsingZ3 {
     }
 
     @Test
-    public void testUniversalFormula() throws Exception {
+    public void testUniversalFormula() {
         String formula = "!(x).(x=TRUE or x=FALSE)";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
@@ -34,7 +34,7 @@ public class QuantifiedFormulaEvaluationTest extends TestUsingZ3 {
     }
 
     @Test
-    public void testFailExistentialFormula() throws Exception {
+    public void testFailExistentialFormula() {
         String formula = "#(x).(x=2 & x=5)";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
@@ -46,7 +46,7 @@ public class QuantifiedFormulaEvaluationTest extends TestUsingZ3 {
     }
 
     @Test
-    public void testFailUniversalFormula() throws Exception {
+    public void testFailUniversalFormula() {
         String formula = "!(x).(x=5)";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
@@ -58,7 +58,7 @@ public class QuantifiedFormulaEvaluationTest extends TestUsingZ3 {
     }
 
     @Test
-    public void testFailUniversalExistentialFormula() throws Exception {
+    public void testFailUniversalExistentialFormula() {
         String formula = "#(y).(y:NATURAL & !(x).(x=y))";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
@@ -70,7 +70,7 @@ public class QuantifiedFormulaEvaluationTest extends TestUsingZ3 {
     }
 
     @Test
-    public void testUniversalExistentialFormula() throws Exception {
+    public void testUniversalExistentialFormula() {
         String formula = "#(y).(y:NATURAL & !(x).(x*y=y))";
         // getting the translated z3 representation of the formula
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);

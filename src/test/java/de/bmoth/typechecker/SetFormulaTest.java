@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 public class SetFormulaTest {
 
     @Test
-    public void testOverwriteRelation() throws Exception {
+    public void testOverwriteRelation() {
         String formula = "k = {x|->2} <+ {1|->y}";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
@@ -19,7 +19,7 @@ public class SetFormulaTest {
     }
 
     @Test
-    public void testDomainRestriction() throws Exception {
+    public void testDomainRestriction() {
         String formula = "k = x <| {1|->1}";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
@@ -27,7 +27,7 @@ public class SetFormulaTest {
     }
 
     @Test
-    public void testDomainSubstraction() throws Exception {
+    public void testDomainSubstraction() {
         String formula = "k = x <<| {1|->1}";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
@@ -35,7 +35,7 @@ public class SetFormulaTest {
     }
 
     @Test
-    public void testRangeRestriction() throws Exception {
+    public void testRangeRestriction() {
         String formula = "k = {1|->1} |> x";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
@@ -43,7 +43,7 @@ public class SetFormulaTest {
     }
 
     @Test
-    public void testRangeSubstraction() throws Exception {
+    public void testRangeSubstraction() {
         String formula = "k = {1|->1} |>> x";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
@@ -58,42 +58,42 @@ public class SetFormulaTest {
     }
 
     @Test
-    public void testInclusion() throws Exception {
+    public void testInclusion() {
         String formula = "x <: {1}";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("POW(INTEGER)", formulaTypes.get("x"));
     }
 
     @Test
-    public void testNonInclusion() throws Exception {
+    public void testNonInclusion() {
         String formula = "{x} <: {1}";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("x"));
     }
 
     @Test
-    public void testStrictInclusion() throws Exception {
+    public void testStrictInclusion() {
         String formula = "{1} <<: x";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("POW(INTEGER)", formulaTypes.get("x"));
     }
 
     @Test
-    public void testStrictNonInclusion() throws Exception {
+    public void testStrictNonInclusion() {
         String formula = "{1} /<<: {x}";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("x"));
     }
 
     @Test
-    public void testQuantifiedUnion() throws Exception {
+    public void testQuantifiedUnion() {
         String formula = "x = UNION(a).(a : 1..10 | {a|->a}) ";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("x"));
     }
 
     @Test
-    public void testGeneralizedUnion() throws Exception {
+    public void testGeneralizedUnion() {
         String formula = "a = union({{1},{b},c}\\/d)";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("POW(INTEGER)", formulaTypes.get("a"));

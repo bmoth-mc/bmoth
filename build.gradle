@@ -64,6 +64,12 @@ task uiTest(type: Test) {
     scanForTestClasses = true
     include('de/bmoth/app/**')
 
+    testLogging {
+        exceptionFormat = 'full'
+    }
+
+    maxParallelForks = 1
+
     // pass -Pheadless=?? value from gradle call into test VM
     if (project.hasProperty("headless")) {
         systemProperty "headless", project.getProperty("headless")

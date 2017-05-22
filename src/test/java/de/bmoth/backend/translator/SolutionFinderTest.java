@@ -1,11 +1,10 @@
 package de.bmoth.backend.translator;
 
 import com.microsoft.z3.*;
+import de.bmoth.TestUsingZ3;
 import de.bmoth.app.PersonalPreferences;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
@@ -13,80 +12,69 @@ import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class SolutionFinderTest {
-
-    private Context ctx;
-    private Solver s;
-
-    @Before
-    public void setup() {
-        ctx = new Context();
-        s = ctx.mkSolver();
-    }
-
-    @After
-    public void cleanup() {
-        ctx.close();
-    }
-
+public class SolutionFinderTest extends TestUsingZ3 {
     @Test
-    public void testSolutionFinder1() throws Exception {
+    public void testSolutionFinder1() {
         String formula = "a : NATURAL & a < 1";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
         assertEquals(1, solutions.size());
     }
+
     @Test
     public void testSolutionFinderNATUpperFail() {
         String maxInt = String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT));
         String formula = new StringBuilder().append("a : NAT & a > ").append(maxInt).toString();
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
         assertEquals(0, solutions.size());
     }
+
     @Test
     public void testSolutionFinderNATUpper() {
-        String oneBelowMaxInt = String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT)-1);
+        String oneBelowMaxInt = String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT) - 1);
         String formula = new StringBuilder().append("a : NAT & a > ").append(oneBelowMaxInt).toString();
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
         assertEquals(1, solutions.size());
     }
+
     @Test
-    public void testSolutionFinderNAT1UpperFail()  {
+    public void testSolutionFinderNAT1UpperFail() {
         String formula = "a : NATURAL1 & a < 1";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
         assertEquals(0, solutions.size());
     }
+
     @Test
-    public void testSolutionFinderNAT1Upper()  {
+    public void testSolutionFinderNAT1Upper() {
         String formula = "a : NATURAL1 & a < 2";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
         assertEquals(1, solutions.size());
     }
 
 
     @Test
-    public void testExistsSolutionFinder() throws Exception {
+    public void testExistsSolutionFinder() {
         String formula = "#x.(x : {1,2} & a = x)";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
         assertEquals(2, solutions.size());
     }
 
     @Test
-    public void testExistsSolutionFinder2() throws Exception {
+    public void testExistsSolutionFinder2() {
         String formula = "#a,b,c.(c = TRUE & a : {1,2} & b : {1,2} & a /= b & x = a+b)";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
         //all existentially quantified variables are part of the model
         //{c!0=true, a!2=2, b!1=1, x=3}
@@ -95,14 +83,14 @@ public class SolutionFinderTest {
     }
 
     @Test
-    public void testSolutionFinder() throws Exception {
+    public void testSolutionFinder() {
         String formula = "0 < a & a < 6 & 0 < b & b < 6 & ( 2 * b < a or 2 * b = a )";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
 
-        s.add(constraint);
-        assertEquals(Status.SATISFIABLE, s.check());
+        z3Solver.add(constraint);
+        assertEquals(Status.SATISFIABLE, z3Solver.check());
 
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
 
         assertEquals(6, solutions.size());
@@ -125,14 +113,14 @@ public class SolutionFinderTest {
     }
 
     @Test
-    public void testSolutionFinder2() throws Exception {
+    public void testSolutionFinder2() {
         String formula = "1 < x & x < 5";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
 
-        s.add(constraint);
-        assertEquals(Status.SATISFIABLE, s.check());
+        z3Solver.add(constraint);
+        assertEquals(Status.SATISFIABLE, z3Solver.check());
 
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
 
         assertEquals(3, solutions.size());
@@ -151,14 +139,14 @@ public class SolutionFinderTest {
     }
 
     @Test
-    public void testSolutionFinder3() throws Exception {
+    public void testSolutionFinder3() {
         String formula = "0 < x & x < 5 & 1 < y & y < 6 & y < x";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
 
-        s.add(constraint);
-        assertEquals(Status.SATISFIABLE, s.check());
+        z3Solver.add(constraint);
+        assertEquals(Status.SATISFIABLE, z3Solver.check());
 
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
 
         assertEquals(3, solutions.size());
@@ -176,13 +164,13 @@ public class SolutionFinderTest {
     }
 
     @Test
-    public void testAllSolutions() throws Exception {
+    public void testAllSolutions() {
         String formula = "1 < x & x < 5";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
 
-        s.add(constraint);
-        Expr x = ctx.mkIntConst("x");
+        z3Solver.add(constraint);
+        Expr x = z3Context.mkIntConst("x");
 
         // 1st try: brute force over 'all' satisfying solutions
         // credit goes to:
@@ -191,11 +179,11 @@ public class SolutionFinderTest {
         List<Number> solutions = new ArrayList<>();
 
         // as long as formula is satisfiable
-        for (int i = 0; s.check() == Status.SATISFIABLE && i < 10; i++) {
+        for (int i = 0; z3Solver.check() == Status.SATISFIABLE && i < 10; i++) {
             // get current evaluation for x
-            IntNum currentX = (IntNum) s.getModel().eval(x, true);
+            IntNum currentX = (IntNum) z3Solver.getModel().eval(x, true);
             // and exclude it from formula
-            s.add(ctx.mkNot(ctx.mkEq(x, currentX)));
+            z3Solver.add(z3Context.mkNot(z3Context.mkEq(x, currentX)));
             // store result
             solutions.add(currentX.getInt());
         }
@@ -204,11 +192,11 @@ public class SolutionFinderTest {
     }
 
     @Test
-    public void testSolutionFinder4() throws Exception {
+    public void testSolutionFinder4() {
         String formula = "a > 0";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
 
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
+        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
         assertEquals(20, solutions.size());
     }
