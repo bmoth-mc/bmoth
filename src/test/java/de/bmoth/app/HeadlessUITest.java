@@ -8,7 +8,6 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import java.util.concurrent.TimeoutException;
 
-import static org.testfx.api.FxToolkit.registerPrimaryStage;
 import static org.testfx.api.FxToolkit.setupStage;
 
 public abstract class HeadlessUITest extends ApplicationTest {
@@ -21,7 +20,7 @@ public abstract class HeadlessUITest extends ApplicationTest {
             System.setProperty("prism.text", "t2k");
             System.setProperty("java.awt.headless", "true");
         }
-        registerPrimaryStage();
+        //registerPrimaryStage();
     }
 
     @After
