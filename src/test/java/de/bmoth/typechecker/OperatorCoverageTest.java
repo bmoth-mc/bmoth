@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class OperatorCoverageTest {
 
     @Test
-    public void testExpressionFormula() throws Exception {
+    public void testExpressionFormula() {
         String formula = "x - 2 / 3";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(EXPRESSION_FORMULA, formulaNode.getFormulaType());
@@ -23,7 +23,7 @@ public class OperatorCoverageTest {
     }
 
     @Test
-    public void testPredicateFormula() throws Exception {
+    public void testPredicateFormula() {
         String formula = "a * b = x & b = 1";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -36,7 +36,7 @@ public class OperatorCoverageTest {
     }
 
     @Test(expected = TypeErrorException.class)
-    public void testPredicateFormulaError() throws Exception {
+    public void testPredicateFormulaError() {
         String formula = "x = 2 / 3 & b : x ";
         Parser.getFormulaAsSemanticAst(formula);
     }
