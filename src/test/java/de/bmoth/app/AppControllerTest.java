@@ -4,11 +4,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.matcher.base.NodeMatchers.isVisible;
+import static org.testfx.matcher.base.NodeMatchers.isNotNull;
+import static org.testfx.matcher.base.NodeMatchers.isNull;
 
 public class AppControllerTest extends HeadlessUITest {
     @Override
@@ -25,15 +25,17 @@ public class AppControllerTest extends HeadlessUITest {
         clickOn("#fileMenu");
         clickOn("#options");
 
-        verifyThat("#minInt", isVisible());
+        verifyThat("#minInt", isNotNull());
+        clickOn("Close");
+        verifyThat("#minInt", isNull());
     }
 
     @Test
-    @Ignore("not working on travis")
     public void clickingReplOpensRepl() {
-        clickOn("#replMenu");
-        clickOn("#openRepl");
+        verifyThat("#replText", isNull());
 
-        verifyThat("#replText", isVisible());
+        clickOn("#replMenu").clickOn("#openRepl");
+
+        verifyThat("#replText", isNotNull());
     }
 }

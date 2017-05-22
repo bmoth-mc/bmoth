@@ -3,15 +3,15 @@ package de.bmoth.app;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import org.junit.Test;
 
 import static javafx.scene.input.KeyCode.ENTER;
-import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.matcher.base.NodeMatchers.hasText;
+import static org.junit.Assert.assertEquals;
 
 public class ReplControllerTest extends HeadlessUITest {
-    private String replId = "#replText";
+    private TextArea repl;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -20,32 +20,24 @@ public class ReplControllerTest extends HeadlessUITest {
         Scene scene = new Scene(root, 500, 300);
         stage.setScene(scene);
         stage.show();
+        repl = lookup("#replText").query();
     }
 
     @Test
     public void replTypeSimplePredicateTest() {
-        clickOn(replId).write("x = 5");
-        verifyThat(replId, hasText("x = 5"));
-
-        push(ENTER);
-        verifyThat(replId, hasText("x = 5\n{x=5}\n"));
+        clickOn(repl).write("x = 5").push(ENTER).sleep(5000);
+        assertEquals("x = 5\n{x=5}\n", repl.getText());
     }
 
     @Test
     public void replTypeUnsatisfiablePredicateTest() {
-        clickOn(replId).write("x = 5 & x = 6");
-        verifyThat(replId, hasText("x = 5 & x = 6"));
-
-        push(ENTER);
-        verifyThat(replId, hasText("x = 5 & x = 6\nUNSATISFIABLE\n"));
+        clickOn(repl).write("x = 5 & x = 6").push(ENTER).sleep(5000);
+        assertEquals("x = 5 & x = 6\nUNSATISFIABLE\n", repl.getText());
     }
 
     @Test
     public void replTypeSetPredicateTest() {
-        clickOn(replId).write("x = {1}");
-        verifyThat(replId, hasText("x = {1}"));
-
-        push(ENTER);
-        verifyThat(replId, hasText("x = {1}\n{x=[1 -> true, else -> false]}\n"));
+        clickOn(repl).write("x = {1}").push(ENTER).sleep(5000);
+        assertEquals("x = {1}\n{x=[1 -> true, else -> false]}\n", repl.getText());
     }
 }
