@@ -6,6 +6,9 @@ jdk:
 cache:
   directories:
   - $HOME/.sonar/cache
+before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
 addons:
   sonarqube:
     organization: "hhu-stups"
@@ -15,5 +18,5 @@ addons:
     - develop
 script:
 - ./gradlew check # regular unit tests
-- ./gradlew -Pheadless=true uiTest # testFX UI tests in headless mode
+- ./gradlew -Pheadless=false uiTest # testFX UI tests in headless mode
 - sonar-scanner
