@@ -3,6 +3,9 @@ sudo: false
 language: java
 jdk:
 - oraclejdk8
+cache:
+    directories:
+    – $HOME/.sonar/cache
 addons:
   sonarqube:
     organization: "hhu-stups"
