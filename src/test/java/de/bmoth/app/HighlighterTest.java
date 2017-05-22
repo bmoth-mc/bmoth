@@ -24,7 +24,7 @@ public class HighlighterTest {
         assertEquals("[]", styleSpans.getStyleSpan(1).getStyle().toString());
         assertEquals(9, styleSpans.getStyleSpan(2).getLength());
         assertEquals("[keyword]", styleSpans.getStyleSpan(2).getStyle().toString());
-        assertEquals(3, styleSpans.getStyleSpan(3).getLength());    
+        assertEquals(3, styleSpans.getStyleSpan(3).getLength());
         assertEquals("[]", styleSpans.getStyleSpan(3).getStyle().toString());
         assertEquals(9, styleSpans.getStyleSpan(4).getLength());
         assertEquals("[keyword]", styleSpans.getStyleSpan(4).getStyle().toString());

@@ -9,7 +9,7 @@ public class ModelCheckerTest {
     private String dir = "src/test/resources/machines/";
 
     @Test
-    public void testAnySubstitution() throws Exception {
+    public void testAnySubstitution() {
         String machine = "MACHINE test \n";
         machine += "VARIABLES x,y \n";
         machine += "INVARIANT x:NATURAL & y : NATURAL \n";
@@ -27,7 +27,7 @@ public class ModelCheckerTest {
     }
 
     @Test
-    public void testAnySubstitutionWithInvariantViolation() throws Exception {
+    public void testAnySubstitutionWithInvariantViolation() {
         String machine = "MACHINE test \n";
         machine += "VARIABLES x \n";
         machine += "INVARIANT x < 4 \n";
@@ -45,7 +45,7 @@ public class ModelCheckerTest {
     }
 
     @Test
-    public void testSimpleMachineWithOperations() throws Exception {
+    public void testSimpleMachineWithOperations() {
         String machine = "MACHINE SimpleMachine\n";
         machine += "VARIABLES x\n";
         machine += "INVARIANT x : NATURAL & x >= 0 & x <= 2\n";
@@ -60,7 +60,7 @@ public class ModelCheckerTest {
     }
 
     @Test
-    public void testSimpleMachineWithOperations2() throws Exception {
+    public void testSimpleMachineWithOperations2() {
         String machine = "MACHINE SimpleMachine\n";
         machine += "VARIABLES x\n";
         machine += "INVARIANT x : NATURAL & x >= 0 & x <= 2\n";
