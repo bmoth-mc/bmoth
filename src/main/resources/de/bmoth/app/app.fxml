@@ -6,7 +6,7 @@
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="de.bmoth.app.AppController">
     <MenuBar>
-        <Menu text="File">
+        <Menu text="File" fx:id="fileMenu">
             <MenuItem text="New" fx:id="newFile" onAction="#handleNew"/>
             <MenuItem text="Open" fx:id="open" onAction="#handleOpen"/>
             <MenuItem text="Save As" fx:id="saveAs" onAction="#handleSaveAs"/>
@@ -25,8 +25,8 @@
             <MenuItem text="Check for Initial State" fx:id="initialStateExists"
                       onAction="#handleInitialStateExists"/>
         </Menu>
-        <Menu text="REPL">
-            <MenuItem text="Open REPL" onAction="#handleREPL"/>
+        <Menu text="REPL" fx:id="replMenu">
+            <MenuItem text="Open REPL" fx:id="openRepl" onAction="#handleREPL"/>
         </Menu>
     </MenuBar>
     <CodeArea fx:id="codeArea" prefWidth="800" prefHeight="600"/>
