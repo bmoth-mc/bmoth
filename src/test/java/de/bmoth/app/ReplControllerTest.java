@@ -39,4 +39,13 @@ public class ReplControllerTest extends HeadlessUITest {
         push(ENTER);
         verifyThat(replId, hasText("x = 5 & x = 6\nUNSATISFIABLE\n"));
     }
+
+    @Test
+    public void replTypeSetPredicateTest() {
+        clickOn(replId).write("x = {1}");
+        verifyThat(replId, hasText("x = {1}"));
+
+        push(ENTER);
+        verifyThat(replId, hasText("x = {1}\n{x=[1 -> true, else -> false]}\n"));
+    }
 }
