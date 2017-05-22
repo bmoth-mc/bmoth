@@ -469,6 +469,30 @@ public class FormulaToZ3Translator {
                 case INSERT_FRONT:
                 case INSERT_TAIL:
                 case OVERWRITE_RELATION:
+                case INVERSE_RELATION: {
+                    SetType nType = (SetType) node.getType();
+                    CoupleType subType = (CoupleType) nType.getSubtype();
+                    CoupleType revType = new CoupleType(subType.getRight(), subType.getLeft());
+
+                    TupleSort subSort = (TupleSort) bTypeToZ3Sort(subType);
+                    TupleSort revSort = (TupleSort) bTypeToZ3Sort(revType);
+
+                    ArrayExpr expr = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
+
+                    Expr tempLeft = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(subType.getLeft()));
+                    Expr tempRight = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(subType.getRight()));
+                    ArrayExpr tempConstant = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(new SetType(revType)));
+
+                    BoolExpr lrInExpr = z3Context.mkSetMembership(subSort.mkDecl().apply(tempLeft, tempRight), expr);
+                    BoolExpr rlInTempExpr = z3Context.mkSetMembership(revSort.mkDecl().apply(tempRight, tempLeft), tempConstant);
+
+                    BoolExpr equality = z3Context.mkEq(lrInExpr, rlInTempExpr);
+                    Expr[] bound = new Expr[]{tempLeft, tempRight};
+
+                    Quantifier q = z3Context.mkForall(bound, equality, 2, null, null, null, null);
+                    constraintList.add(q);
+                    return tempConstant;
+                }
                 case RANGE_RESTRICTION:
                 case RANGE_SUBTRATION:
                 case RESTRICT_FRONT:
