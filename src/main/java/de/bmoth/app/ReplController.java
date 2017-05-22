@@ -16,7 +16,7 @@ import java.util.Set;
 public class ReplController implements Initializable {
 
     @FXML
-    TextArea replText = new TextArea();
+    TextArea replText;
 
     private Context ctx;
     private Solver s;
