@@ -11,6 +11,7 @@ import static javafx.scene.input.KeyCode.ENTER;
 import static org.junit.Assert.assertEquals;
 
 public class ReplControllerTest extends HeadlessUITest {
+    private int z3WaitTime = 7500;
     private TextArea repl;
 
     @Override
@@ -25,19 +26,19 @@ public class ReplControllerTest extends HeadlessUITest {
 
     @Test
     public void replTypeSimplePredicateTest() {
-        clickOn(repl).write("x = 5").push(ENTER).sleep(5000);
+        clickOn(repl).write("x = 5").push(ENTER).sleep(z3WaitTime);
         assertEquals("x = 5\n{x=5}\n", repl.getText());
     }
 
     @Test
     public void replTypeUnsatisfiablePredicateTest() {
-        clickOn(repl).write("x = 5 & x = 6").push(ENTER).sleep(5000);
+        clickOn(repl).write("x = 5 & x = 6").push(ENTER).sleep(z3WaitTime);
         assertEquals("x = 5 & x = 6\nUNSATISFIABLE\n", repl.getText());
     }
 
     @Test
     public void replTypeSetPredicateTest() {
-        clickOn(repl).write("x = {1}").push(ENTER).sleep(5000);
+        clickOn(repl).write("x = {1}").push(ENTER).sleep(z3WaitTime);
         assertEquals("x = {1}\n{x=[1 -> true, else -> false]}\n", repl.getText());
     }
 }
