@@ -222,13 +222,8 @@ public class AppController implements Initializable {
         Parent root = loader.load();
         CustomCheckController customCheckController = loader.getController();
         Stage customCheckStage = customCheckController.getStage(root);
+        customCheckController.setAppControllerReference(this);
         customCheckStage.show();
-        if (customCheckController.invariantCheck.isSelected()==true) {
-            handleInvariantSatisfiability();
-        }
-        if (customCheckController.modelCheck.isSelected()==true) {
-            handleInvariantSatisfiability();
-        }
     }
 
     @FXML
@@ -400,7 +395,7 @@ public class AppController implements Initializable {
     // </editor-fold>
 
 
-    public void handleInitialStateExists(ActionEvent actionEvent) {
+    public void handleInitialStateExists() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
             InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(codeArea.getText());
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
