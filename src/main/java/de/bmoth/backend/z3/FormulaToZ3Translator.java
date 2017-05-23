@@ -747,9 +747,10 @@ public class FormulaToZ3Translator {
                     }
                     Expr predicate = visitPredicateNode(node.getPredicateNode(), opt);
                     return z3Context.mkForall(identifiers, predicate, identifiers.length, null, null, null, null);
+                default:
+                    throw new AssertionError("Implement: " + node.getClass());
             }
 
-            throw new AssertionError("Implement: " + node.getClass());
         }
 
         @Override
