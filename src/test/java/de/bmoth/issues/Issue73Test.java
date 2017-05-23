@@ -5,7 +5,6 @@ import com.microsoft.z3.Model;
 import de.bmoth.TestUsingZ3;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
