@@ -227,54 +227,32 @@ public class FormulaToZ3Translator {
 
         @Override
         public Expr visitExprOperatorNode(ExpressionOperatorNode node, TranslationOptions ops) {
-            List<ExprNode> expressionNodes = node.getExpressionNodes();
+            final List<Expr> arguments = node.getExpressionNodes().stream().map(it -> visitExprNode(it, ops)).collect(Collectors.toList());
             switch (node.getOperator()) {
-                case PLUS: {
-                    ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkAdd(left, right);
-                }
-                case UNARY_MINUS: {
-                    return z3Context.mkUnaryMinus((ArithExpr) visitExprNode(expressionNodes.get(0), ops));
-                }
-                case MINUS: {
-                    ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkSub(left, right);
-                }
-                case MOD: {
-                    IntExpr left = (IntExpr) visitExprNode(expressionNodes.get(0), ops);
-                    IntExpr right = (IntExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkMod(left, right);
-                }
-                case MULT: {
-                    ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkMul(left, right);
-                }
-                case DIVIDE: {
-                    ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
-                    constraintList.add(z3Context.mkNot(z3Context.mkEq(right, z3Context.mkInt(0))));
-                    return z3Context.mkDiv(left, right);
-                }
-                case POWER_OF: {
-                    ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
+                case PLUS:
+                    return z3Context.mkAdd((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case UNARY_MINUS:
+                    return z3Context.mkUnaryMinus((ArithExpr) arguments.get(0));
+                case MINUS:
+                    return z3Context.mkSub((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case MOD:
+                    return z3Context.mkMod((IntExpr) arguments.get(0), (IntExpr) arguments.get(1));
+                case MULT:
+                    return z3Context.mkMul((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case DIVIDE:
+                    constraintList.add(z3Context.mkNot(z3Context.mkEq(arguments.get(1), z3Context.mkInt(0))));
+                    return z3Context.mkDiv((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case POWER_OF:
                     if (pow == null) {
                         pow = initPowerOf();
                     }
-                    return pow.apply(left, right);
-                }
+                    return pow.apply(arguments.get(0), arguments.get(1));
                 case INTERVAL: {
-                    ArithExpr left = (ArithExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArithExpr right = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
-
                     ArithExpr x = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), z3Context.getIntSort());
                     Expr T = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
 
-                    BoolExpr leftLe = z3Context.mkLe(left, x);
-                    BoolExpr rightGe = z3Context.mkGe(right, x);
+                    BoolExpr leftLe = z3Context.mkLe((ArithExpr) arguments.get(0), x);
+                    BoolExpr rightGe = z3Context.mkGe((ArithExpr) arguments.get(1), x);
                     BoolExpr interval = z3Context.mkAnd(leftLe, rightGe);
                     BoolExpr member = z3Context.mkSetMembership(x, (ArrayExpr) T);
                     BoolExpr equality = z3Context.mkEq(interval, member);
@@ -285,9 +263,8 @@ public class FormulaToZ3Translator {
                     constraintList.add(q);
                     return T;
                 }
-                case INTEGER: {
+                case INTEGER:
                     return z3Context.mkFullSet(z3Context.mkIntSort());
-                }
                 case NATURAL1: {
                     Type type = node.getType();// POW(INTEGER)
                     // !x.(x >= 1 <=> x : NATURAL)
@@ -324,37 +301,24 @@ public class FormulaToZ3Translator {
                     return z3Context.mkFalse();
                 case TRUE:
                     return z3Context.mkTrue();
-                case BOOL: {
+                case BOOL:
                     return z3Context.mkFullSet(z3Context.mkBoolSort());
-                }
-                case UNION: {
-                    ArrayExpr[] array = new ArrayExpr[expressionNodes.size()];
-                    for (int i = 0; i < array.length; i++) {
-                        array[i] = (ArrayExpr) visitExprNode(expressionNodes.get(i), ops);
-                    }
-                    return z3Context.mkSetUnion(array);
-                }
+                case UNION:
+                    return z3Context.mkSetUnion(arguments.stream().map(it -> (ArrayExpr) it).toArray(ArrayExpr[]::new));
                 case COUPLE: {
                     CoupleType type = (CoupleType) node.getType();
                     TupleSort bTypeToZ3Sort = (TupleSort) bTypeToZ3Sort(type);
 
-                    Expr left = visitExprNode(node.getExpressionNodes().get(0), ops);
-                    Expr right = visitExprNode(node.getExpressionNodes().get(1), ops);
-
-                    return bTypeToZ3Sort.mkDecl().apply(left, right);
+                    return bTypeToZ3Sort.mkDecl().apply(arguments.get(0), arguments.get(1));
                 }
                 case DOMAIN:
                     break;
-                case INTERSECTION: {
-                    ArrayExpr left = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkSetIntersection(left, right);
-                }
+                case INTERSECTION:
+                    return z3Context.mkSetIntersection((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1));
                 case RANGE:
                     break;
                 case LAST: {
-                    Expr expr = visitExprNode(expressionNodes.get(0), ops);
-                    DatatypeExpr d = (DatatypeExpr) expr;
+                    DatatypeExpr d = (DatatypeExpr) arguments.get(0);
                     Expr[] args = d.getArgs();
                     ArrayExpr array = (ArrayExpr) args[0];
                     ArithExpr size = (ArithExpr) args[1];
@@ -363,8 +327,7 @@ public class FormulaToZ3Translator {
                     return z3Context.mkSelect(array, size);
                 }
                 case FRONT: {
-                    Expr expr = visitExprNode(expressionNodes.get(0), ops);
-                    DatatypeExpr d = (DatatypeExpr) expr;
+                    DatatypeExpr d = (DatatypeExpr) arguments.get(0);
                     Expr[] args = d.getArgs();
                     ArrayExpr array = (ArrayExpr) args[0];
                     ArithExpr size = (ArithExpr) args[1];
@@ -382,16 +345,13 @@ public class FormulaToZ3Translator {
                     SetType type = (SetType) node.getType();
                     Type subType = type.getSubtype();
                     ArrayExpr z3Set = z3Context.mkEmptySet(bTypeToZ3Sort(subType));
-                    for (ExprNode exprNode : expressionNodes) {
-                        z3Set = z3Context.mkSetAdd(z3Set, visitExprNode(exprNode, ops));
+                    for (Expr expr : arguments) {
+                        z3Set = z3Context.mkSetAdd(z3Set, expr);
                     }
                     return z3Set;
                 }
-                case SET_SUBTRACTION: {
-                    ArrayExpr left = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
-                    return z3Context.mkSetDifference(left, right);
-                }
+                case SET_SUBTRACTION:
+                    return z3Context.mkSetDifference((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1));
                 case CONCAT:
                 case DIRECT_PRODUCT:
                 case DOMAIN_RESTRICTION:
@@ -404,7 +364,7 @@ public class FormulaToZ3Translator {
                     // !(e).(e : Res <=> #(s).(s : S & e : s)
 
                     SetType setType = (SetType) node.getType();
-                    Expr S = visitExprNode(expressionNodes.get(0), ops);
+                    Expr S = arguments.get(0);
                     Expr res = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType));
                     Expr s = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType));
                     Expr e = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType.getSubtype()));
@@ -425,25 +385,22 @@ public class FormulaToZ3Translator {
                     Sort rangeType = bTypeToZ3Sort(type);
                     ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), intType, rangeType);
                     TupleSort mkTupleSort = (TupleSort) bTypeToZ3Sort(node.getType());
-                    return mkTupleSort.mkDecl().apply(a, z3Context.mkInt(expressionNodes.size()));
+                    return mkTupleSort.mkDecl().apply(a, z3Context.mkInt(arguments.size()));
                 }
                 case SEQ_ENUMERATION: {
                     Sort intType = z3Context.getIntSort();
                     Type type = ((SequenceType) node.getType()).getSubtype();
                     Sort rangeType = bTypeToZ3Sort(type);
                     ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), intType, rangeType);
-                    for (int i = 0; i < expressionNodes.size(); i++) {
-                        int j = i + 1;
-                        IntNum index = z3Context.mkInt(j);
-                        Expr value = visitExprNode(expressionNodes.get(i), ops);
-                        a = z3Context.mkStore(a, index, value);
+                    int index = 1;
+                    for (Expr value : arguments) {
+                        a = z3Context.mkStore(a, z3Context.mkInt(index++), value);
                     }
                     TupleSort mkTupleSort = (TupleSort) bTypeToZ3Sort(node.getType());
-                    return mkTupleSort.mkDecl().apply(a, z3Context.mkInt(expressionNodes.size()));
+                    return mkTupleSort.mkDecl().apply(a, z3Context.mkInt(arguments.size()));
                 }
                 case FIRST: {
-                    Expr expr = visitExprNode(expressionNodes.get(0), ops);
-                    DatatypeExpr d = (DatatypeExpr) expr;
+                    DatatypeExpr d = (DatatypeExpr) arguments.get(0);
                     Expr[] args = d.getArgs();
                     ArrayExpr array = (ArrayExpr) args[0];
                     ArithExpr size = (ArithExpr) args[1];
@@ -452,12 +409,11 @@ public class FormulaToZ3Translator {
                     return z3Context.mkSelect(array, z3Context.mkInt(1));
                 }
                 case FUNCTION_CALL: {
-                    Expr expr = visitExprNode(expressionNodes.get(0), ops);
-                    DatatypeExpr d = (DatatypeExpr) expr;
+                    DatatypeExpr d = (DatatypeExpr) arguments.get(0);
                     Expr[] args = d.getArgs();
                     ArrayExpr array = (ArrayExpr) args[0];
                     ArithExpr size = (ArithExpr) args[1];
-                    ArithExpr index = (ArithExpr) visitExprNode(expressionNodes.get(1), ops);
+                    ArithExpr index = (ArithExpr) arguments.get(1);
                     // add WD constraint
                     constraintList
                         .add(z3Context.mkAnd(z3Context.mkGe(index, z3Context.mkInt(1)), z3Context.mkLe(index, size)));
@@ -477,13 +433,11 @@ public class FormulaToZ3Translator {
                     TupleSort subSort = (TupleSort) bTypeToZ3Sort(subType);
                     TupleSort revSort = (TupleSort) bTypeToZ3Sort(revType);
 
-                    ArrayExpr expr = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
-
                     Expr tempLeft = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(subType.getLeft()));
                     Expr tempRight = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(subType.getRight()));
                     ArrayExpr tempConstant = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(new SetType(revType)));
 
-                    BoolExpr lrInExpr = z3Context.mkSetMembership(subSort.mkDecl().apply(tempLeft, tempRight), expr);
+                    BoolExpr lrInExpr = z3Context.mkSetMembership(subSort.mkDecl().apply(tempLeft, tempRight), (ArrayExpr) arguments.get(0));
                     BoolExpr rlInTempExpr = z3Context.mkSetMembership(revSort.mkDecl().apply(tempRight, tempLeft), tempConstant);
 
                     BoolExpr equality = z3Context.mkEq(lrInExpr, rlInTempExpr);
@@ -507,9 +461,6 @@ public class FormulaToZ3Translator {
                 case ISEQ1:
                     break;
                 case CARTESIAN_PRODUCT: {
-                    ArrayExpr left = (ArrayExpr) visitExprNode(expressionNodes.get(0), ops);
-                    ArrayExpr right = (ArrayExpr) visitExprNode(expressionNodes.get(1), ops);
-
                     SetType setType = (SetType) node.getType();
                     CoupleType coupleType = (CoupleType) setType.getSubtype();
 
@@ -521,8 +472,8 @@ public class FormulaToZ3Translator {
                     ArrayExpr tempConstant = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
                     Expr couple = bTypeToZ3Sort.mkDecl().apply(leftExpr, rightExpr);
 
-                    BoolExpr xInLeft = z3Context.mkSetMembership(leftExpr, left);
-                    BoolExpr yInRight = z3Context.mkSetMembership(rightExpr, right);
+                    BoolExpr xInLeft = z3Context.mkSetMembership(leftExpr, (ArrayExpr) arguments.get(0));
+                    BoolExpr yInRight = z3Context.mkSetMembership(rightExpr, (ArrayExpr) arguments.get(1));
                     BoolExpr coupleInCartesian = z3Context.mkSetMembership(couple, tempConstant);
 
                     BoolExpr cartesian = z3Context.mkAnd(xInLeft, yInRight);
