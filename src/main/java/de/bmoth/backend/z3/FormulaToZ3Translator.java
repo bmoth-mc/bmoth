@@ -311,12 +311,50 @@ public class FormulaToZ3Translator {
 
                     return bTypeToZ3Sort.mkDecl().apply(arguments.get(0), arguments.get(1));
                 }
-                case DOMAIN:
-                    break;
                 case INTERSECTION:
                     return z3Context.mkSetIntersection((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1));
-                case RANGE:
-                    break;
+                case DOMAIN: {
+                    ArrayExpr argument = (ArrayExpr) visitExprNode(node.getExpressionNodes().get(0), ops);
+
+                    SetType setOfTuples = (SetType) node.getExpressionNodes().get(0).getType();
+                    CoupleType relationType = (CoupleType) setOfTuples.getSubtype();
+                    TupleSort relationSort = (TupleSort) bTypeToZ3Sort(relationType);
+
+                    Expr dom = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(new SetType(relationType.getRight())));
+                    Expr domMember = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(relationType.getRight()));
+                    Expr ranMember =
+                        z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(relationType.getLeft()));
+
+                    BoolExpr domMemberInDom = z3Context.mkSetMembership(domMember, (ArrayExpr) dom);
+                    BoolExpr ranAndDomInArgument = z3Context.mkSetMembership(relationSort.mkDecl().apply(ranMember, domMember), argument);
+
+                    Quantifier existsRan = z3Context.mkExists(new Expr[]{ranMember}, ranAndDomInArgument, 1, null, null, null, null);
+                    Quantifier q = z3Context.mkForall(new Expr[]{domMember}, z3Context.mkEq(existsRan, domMemberInDom), 1, null, null,
+                        null, null);
+                    constraintList.add(q);
+                    return dom;
+                }
+                case RANGE: {
+                    ArrayExpr argument = (ArrayExpr) visitExprNode(node.getExpressionNodes().get(0), ops);
+
+                    SetType setOfTuples = (SetType) node.getExpressionNodes().get(0).getType();
+                    CoupleType relationType = (CoupleType) setOfTuples.getSubtype();
+                    TupleSort relationSort = (TupleSort) bTypeToZ3Sort(relationType);
+
+                    Expr ran = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(new SetType(relationType.getLeft())));
+                    Expr domMember = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(relationType.getLeft()));
+                    Expr ranMember =
+                        z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(relationType.getRight()));
+
+                    BoolExpr ranMemberInRan = z3Context.mkSetMembership(ranMember, (ArrayExpr) ran);
+                    BoolExpr ranAndDomInArgument = z3Context.mkSetMembership(relationSort.mkDecl().apply(ranMember, domMember), argument);
+
+                    Quantifier existsDom = z3Context.mkExists(new Expr[]{domMember}, ranAndDomInArgument, 1, null, null, null, null);
+                    Quantifier q = z3Context.mkForall(new Expr[]{ranMember}, z3Context.mkEq(existsDom, ranMemberInRan), 1, null, null,
+                        null, null);
+                    constraintList.add(q);
+                    return ran;
+                }
                 case LAST: {
                     DatatypeExpr d = (DatatypeExpr) arguments.get(0);
                     Expr[] args = d.getArgs();
