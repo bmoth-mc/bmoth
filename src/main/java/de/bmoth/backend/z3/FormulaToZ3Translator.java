@@ -228,6 +228,7 @@ public class FormulaToZ3Translator {
         @Override
         public Expr visitExprOperatorNode(ExpressionOperatorNode node, TranslationOptions ops) {
             final List<Expr> arguments = node.getExpressionNodes().stream().map(it -> visitExprNode(it, ops)).collect(Collectors.toList());
+            int minInt, maxInt;
             switch (node.getOperator()) {
                 case PLUS:
                     return z3Context.mkAdd((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
@@ -247,56 +248,35 @@ public class FormulaToZ3Translator {
                         pow = initPowerOf();
                     }
                     return pow.apply(arguments.get(0), arguments.get(1));
-                case INTERVAL: {
-                    ArithExpr x = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), z3Context.getIntSort());
-                    Expr T = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
-
-                    BoolExpr leftLe = z3Context.mkLe((ArithExpr) arguments.get(0), x);
-                    BoolExpr rightGe = z3Context.mkGe((ArithExpr) arguments.get(1), x);
-                    BoolExpr interval = z3Context.mkAnd(leftLe, rightGe);
-                    BoolExpr member = z3Context.mkSetMembership(x, (ArrayExpr) T);
-                    BoolExpr equality = z3Context.mkEq(interval, member);
-
-                    Expr[] bound = new Expr[]{x};
-
-                    Quantifier q = z3Context.mkForall(bound, equality, 1, null, null, null, null);
-                    constraintList.add(q);
-                    return T;
-                }
+                case INTERVAL:
+                    ArrayExpr interval = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
+                    constraintList.add(prepareSetQuantifier(interval, (IntNum) arguments.get(0), (IntNum) arguments.get(1)));
+                    return interval;
                 case INTEGER:
                     return z3Context.mkFullSet(z3Context.mkIntSort());
-                case NATURAL1: {
-                    Type type = node.getType();// POW(INTEGER)
-                    // !x.(x >= 1 <=> x : NATURAL)
-                    Expr x = z3Context.mkConst("x", z3Context.getIntSort());
-                    Expr natural1 = z3Context.mkConst("NATURAL1", bTypeToZ3Sort(type));
-                    Expr[] bound = new Expr[]{x};
-                    // x >= 1
-                    BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(1));
-                    // x : NATURAL
-                    BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) natural1);
-                    // a <=> b
-                    BoolExpr body = z3Context.mkEq(a, b);
-                    Quantifier q = z3Context.mkForall(bound, body, 1, null, null, null, null);
-                    constraintList.add(q);
+                case NATURAL1:
+                    // node.getType() = POW(INTEGER)
+                    ArrayExpr natural1 = (ArrayExpr) z3Context.mkConst("NATURAL1", bTypeToZ3Sort(node.getType()));
+                    constraintList.add(prepareSetQuantifier(natural1, z3Context.mkInt(1), null));
                     return natural1;
-                }
-                case NATURAL: {
-                    Type type = node.getType();// POW(INTEGER)
-                    // !x.(x >= 0 <=> x : NATURAL)
-                    Expr x = z3Context.mkConst("x", z3Context.getIntSort());
-                    Expr natural = z3Context.mkConst(ExpressionOperator.NATURAL.toString(), bTypeToZ3Sort(type));
-                    Expr[] bound = new Expr[]{x};
-                    // x >= 0
-                    BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(0));
-                    // x : NATURAL
-                    BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) natural);
-                    // a <=> b
-                    BoolExpr body = z3Context.mkEq(a, b);
-                    Quantifier q = z3Context.mkForall(bound, body, 1, null, null, null, null);
-                    constraintList.add(q);
+                case NATURAL:
+                    // node.getType() = POW(INTEGER)
+                    ArrayExpr natural = (ArrayExpr) z3Context.mkConst("NATURAL", bTypeToZ3Sort(node.getType()));
+                    constraintList.add(prepareSetQuantifier(natural, z3Context.mkInt(0), null));
                     return natural;
-                }
+                case INT:
+                    maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                    minInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
+                    //node.getType() = POW(INTEGER)
+                    ArrayExpr integer = (ArrayExpr) z3Context.mkConst(ExpressionOperator.INT.toString(), bTypeToZ3Sort(node.getType()));
+                    constraintList.add(prepareSetQuantifier(integer, z3Context.mkInt(minInt), z3Context.mkInt(maxInt)));
+                    return integer;
+                case NAT:
+                    maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                    // node.getType() = POW(INTEGER)
+                    ArrayExpr nat = (ArrayExpr) z3Context.mkConst(ExpressionOperator.NAT.toString(), bTypeToZ3Sort(node.getType()));
+                    constraintList.add(prepareSetQuantifier(nat, z3Context.mkInt(0), z3Context.mkInt(maxInt)));
+                    return nat;
                 case FALSE:
                     return z3Context.mkFalse();
                 case TRUE:
@@ -523,57 +503,39 @@ public class FormulaToZ3Translator {
                     constraintList.add(q);
                     return tempConstant;
                 }
-                case INT: {
-                    Type type = node.getType();// POW(INTEGER)
-                    int maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
-                    int minInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
-                    // !x.((x >= MIN_INT & x <= MAX_INT) <=> x : INT)
-                    Expr integer = z3Context.mkConst(ExpressionOperator.INT.toString(), bTypeToZ3Sort(type));
-                    Expr x = z3Context.mkConst("x", z3Context.getIntSort());
-                    Expr[] bound = new Expr[]{x};
-                    // x >= MIN_INT
-                    BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(minInt));
-                    // x :INT
-                    BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) integer);
-                    // x <= max_int
-                    BoolExpr c = z3Context.mkLe((ArithExpr) x, z3Context.mkInt(maxInt));
-                    // a <=> b <=> c
-                    BoolExpr body = z3Context.mkEq(z3Context.mkAnd(a, c), b);
-                    Quantifier q = z3Context.mkForall(bound, body, 1, null, null, null, null);
-                    constraintList.add(q);
-                    return integer;
-                }
-                case MAXINT: {
-                    int maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                case MAXINT:
+                    maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
                     return z3Context.mkInt(maxInt);
-                }
-                case MININT: {
-                    int minInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
+
+                case MININT:
+                    minInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
                     return z3Context.mkInt(minInt);
-                }
-                case NAT: {
-                    Type type = node.getType();// POW(INTEGER)
-                    int maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
-                    // !x.((x >= 0 & x <= MAX_INT) <=> x : NAT)
-                    Expr x = z3Context.mkConst("x", z3Context.getIntSort());
-                    Expr nat = z3Context.mkConst(ExpressionOperator.NAT.toString(), bTypeToZ3Sort(type));
-                    Expr[] bound = new Expr[]{x};
-                    // x >= 0
-                    BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(0));
-                    // x : NAT
-                    BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) nat);
-                    // x <= max_int
-                    BoolExpr c = z3Context.mkLe((ArithExpr) x, z3Context.mkInt(maxInt));
-                    // a <=> b <=> c
-                    BoolExpr body = z3Context.mkEq(z3Context.mkAnd(a, c), b);
-                    Quantifier q = z3Context.mkForall(bound, body, 1, null, null, null, null);
-                    constraintList.add(q);
-                    return nat;
-                }
                 default:
                     break;
             }
             throw new AssertionError("Not implemented: " + node.getOperator());
+        }
+
+        private Quantifier prepareSetQuantifier(ArrayExpr set, IntNum min, IntNum max) {
+            ArithExpr x = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), z3Context.getIntSort());
+            ArithExpr[] bound = new ArithExpr[]{x};
+
+            // x : set
+            BoolExpr membership = z3Context.mkSetMembership(x, set);
+
+            BoolExpr body;
+            if (min != null && max != null) {
+                body = z3Context.mkEq(z3Context.mkAnd(z3Context.mkGe(x, min), z3Context.mkLe(x, max)), membership);
+            } else if (min != null) {
+                body = z3Context.mkEq(z3Context.mkGe(x, min), membership);
+            } else if (max != null) {
+                body = z3Context.mkEq(z3Context.mkLe(x, max), membership);
+            } else {
+                //TODO handle this properly
+                throw new RuntimeException("no need to prepare a set quantifier if no min & max is given");
+            }
+
+            return z3Context.mkForall(bound, body, bound.length, null, null, null, null);
         }
 
         private FuncDecl initPowerOf() {
