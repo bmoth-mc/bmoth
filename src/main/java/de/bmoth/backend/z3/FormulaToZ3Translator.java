@@ -728,24 +728,12 @@ public class FormulaToZ3Translator {
 
         @Override
         public Expr visitQuantifiedPredicateNode(QuantifiedPredicateNode node, TranslationOptions opt) {
+            final Expr[] identifiers = node.getDeclarationList().stream().map(declaration -> z3Context.mkConst(declaration.getName(), bTypeToZ3Sort(declaration.getType()))).toArray(Expr[]::new);
+            final Expr predicate = visitPredicateNode(node.getPredicateNode(), opt);
             switch (node.getOperator()) {
-                case EXISTENTIAL_QUANTIFICATION: {
-                    Expr[] identifiers = new Expr[node.getDeclarationList().size()];
-                    for (int i = 0; i < node.getDeclarationList().size(); i++) {
-                        DeclarationNode declNode = node.getDeclarationList().get(i);
-                        identifiers[i] = z3Context.mkConst(declNode.getName(), bTypeToZ3Sort(declNode.getType()));
-                    }
-                    Expr predicate = visitPredicateNode(node.getPredicateNode(), opt);
-                    Quantifier q = z3Context.mkExists(identifiers, predicate, identifiers.length, null, null, null, null);
-                    return q;
-                }
+                case EXISTENTIAL_QUANTIFICATION:
+                    return z3Context.mkExists(identifiers, predicate, identifiers.length, null, null, null, null);
                 case UNIVERSAL_QUANTIFICATION:
-                    Expr[] identifiers = new Expr[node.getDeclarationList().size()];
-                    for (int i = 0; i < node.getDeclarationList().size(); i++) {
-                        DeclarationNode declNode = node.getDeclarationList().get(i);
-                        identifiers[i] = z3Context.mkConst(declNode.getName(), bTypeToZ3Sort(declNode.getType()));
-                    }
-                    Expr predicate = visitPredicateNode(node.getPredicateNode(), opt);
                     return z3Context.mkForall(identifiers, predicate, identifiers.length, null, null, null, null);
                 default:
                     throw new AssertionError("Implement: " + node.getClass());
