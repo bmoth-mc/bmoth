@@ -153,9 +153,8 @@ public class FormulaToZ3Translator {
             Sort[] subSorts = new Sort[2];
             subSorts[0] = z3Context.mkArraySort(intType, subSort);
             subSorts[1] = intType;
-            TupleSort mkTupleSort = z3Context.mkTupleSort(z3Context.mkSymbol("sequence"),
+            return z3Context.mkTupleSort(z3Context.mkSymbol("sequence"),
                 new Symbol[]{z3Context.mkSymbol("array"), z3Context.mkSymbol("size")}, subSorts);
-            return mkTupleSort;
         }
 
         throw new AssertionError("Missing Type Conversion: " + t.getClass());
@@ -746,8 +745,7 @@ public class FormulaToZ3Translator {
                         identifiers[i] = z3Context.mkConst(declNode.getName(), bTypeToZ3Sort(declNode.getType()));
                     }
                     Expr predicate = visitPredicateNode(node.getPredicateNode(), opt);
-                    Quantifier q = z3Context.mkForall(identifiers, predicate, identifiers.length, null, null, null, null);
-                    return q;
+                    return z3Context.mkForall(identifiers, predicate, identifiers.length, null, null, null, null);
             }
 
             throw new AssertionError("Implement: " + node.getClass());
