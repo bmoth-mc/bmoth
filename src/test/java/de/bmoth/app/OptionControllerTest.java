@@ -2,6 +2,7 @@ package de.bmoth.app;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.junit.Test;
 
@@ -16,9 +17,10 @@ public class OptionControllerTest extends HeadlessUITest {
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
         Parent root = loader.load();
+        Scene scene = new Scene(root, 500, 300);
+        stage.setScene(scene);
+        stage.show();
         optionController = loader.getController();
-        Stage optionStage = optionController.getStage(root);
-        optionStage.show();
     }
 
     @Test
