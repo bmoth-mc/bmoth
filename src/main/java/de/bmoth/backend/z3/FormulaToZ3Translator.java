@@ -38,6 +38,12 @@ public class FormulaToZ3Translator {
 
     private FuncDecl pow = null;
 
+    private ArrayExpr setNatural = null;
+    private ArrayExpr setNatural1 = null;
+    private ArrayExpr setInt = null;
+    private ArrayExpr setNat = null;
+
+
     private String createFreshTemporaryVariable() {
         this.tempVariablesCounter++;
         return "$t_" + this.tempVariablesCounter;
@@ -228,8 +234,6 @@ public class FormulaToZ3Translator {
         @Override
         public Expr visitExprOperatorNode(ExpressionOperatorNode node, TranslationOptions ops) {
             final List<Expr> arguments = node.getExpressionNodes().stream().map(it -> visitExprNode(it, ops)).collect(Collectors.toList());
-            int minInt;
-            int maxInt;
             switch (node.getOperator()) {
                 case PLUS:
                     return z3Context.mkAdd((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
@@ -256,28 +260,36 @@ public class FormulaToZ3Translator {
                 case INTEGER:
                     return z3Context.mkFullSet(z3Context.mkIntSort());
                 case NATURAL1:
-                    // node.getType() = POW(INTEGER)
-                    ArrayExpr natural1 = (ArrayExpr) z3Context.mkConst("NATURAL1", bTypeToZ3Sort(node.getType()));
-                    constraintList.add(prepareSetQuantifier(natural1, z3Context.mkInt(1), null));
-                    return natural1;
+                    if (setNatural1 == null) {
+                        // node.getType() = POW(INTEGER)
+                        setNatural1 = (ArrayExpr) z3Context.mkConst("NATURAL1", bTypeToZ3Sort(node.getType()));
+                        constraintList.add(prepareSetQuantifier(setNatural1, z3Context.mkInt(1), null));
+                    }
+                    return setNatural1;
                 case NATURAL:
-                    // node.getType() = POW(INTEGER)
-                    ArrayExpr natural = (ArrayExpr) z3Context.mkConst("NATURAL", bTypeToZ3Sort(node.getType()));
-                    constraintList.add(prepareSetQuantifier(natural, z3Context.mkInt(0), null));
-                    return natural;
+                    if (setNatural == null) {
+                        // node.getType() = POW(INTEGER)
+                        setNatural = (ArrayExpr) z3Context.mkConst("NATURAL", bTypeToZ3Sort(node.getType()));
+                        constraintList.add(prepareSetQuantifier(setNatural, z3Context.mkInt(0), null));
+                    }
+                    return setNatural;
                 case INT:
-                    maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
-                    minInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
-                    //node.getType() = POW(INTEGER)
-                    ArrayExpr integer = (ArrayExpr) z3Context.mkConst(ExpressionOperator.INT.toString(), bTypeToZ3Sort(node.getType()));
-                    constraintList.add(prepareSetQuantifier(integer, z3Context.mkInt(minInt), z3Context.mkInt(maxInt)));
-                    return integer;
+                    if (setInt == null) {
+                        int maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                        int minInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
+                        //node.getType() = POW(INTEGER)
+                        setInt = (ArrayExpr) z3Context.mkConst(ExpressionOperator.INT.toString(), bTypeToZ3Sort(node.getType()));
+                        constraintList.add(prepareSetQuantifier(setInt, z3Context.mkInt(minInt), z3Context.mkInt(maxInt)));
+                    }
+                    return setInt;
                 case NAT:
-                    maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
-                    // node.getType() = POW(INTEGER)
-                    ArrayExpr nat = (ArrayExpr) z3Context.mkConst(ExpressionOperator.NAT.toString(), bTypeToZ3Sort(node.getType()));
-                    constraintList.add(prepareSetQuantifier(nat, z3Context.mkInt(0), z3Context.mkInt(maxInt)));
-                    return nat;
+                    if (setNat == null){
+                        int maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                        // node.getType() = POW(INTEGER)
+                        setNat = (ArrayExpr) z3Context.mkConst(ExpressionOperator.NAT.toString(), bTypeToZ3Sort(node.getType()));
+                        constraintList.add(prepareSetQuantifier(setNat, z3Context.mkInt(0), z3Context.mkInt(maxInt)));
+                    }
+                    return setNat;
                 case FALSE:
                     return z3Context.mkFalse();
                 case TRUE:
@@ -504,12 +516,9 @@ public class FormulaToZ3Translator {
                     return tempConstant;
                 }
                 case MAXINT:
-                    maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
-                    return z3Context.mkInt(maxInt);
-
+                    return z3Context.mkInt(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT));
                 case MININT:
-                    minInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
-                    return z3Context.mkInt(minInt);
+                    return z3Context.mkInt(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT));
                 default:
                     break;
             }
