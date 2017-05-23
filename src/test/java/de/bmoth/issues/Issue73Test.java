@@ -15,13 +15,12 @@ import static org.junit.Assert.assertEquals;
 
 public class Issue73Test extends TestUsingZ3 {
     @Test
-    @Ignore
     public void testSatPredicateWithoutModel() throws IOException {
         String formula = "1 < 2";
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
 
         SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
         Set<Model> solutions = finder.findSolutions(20);
-        assertEquals(1, solutions.size());
+        assertEquals(0, solutions.size());
     }
 }

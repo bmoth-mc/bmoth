@@ -75,6 +75,11 @@ public class SolutionFinder {
             // find a solution ...
             BoolExpr solution = findSolution(currentModel);
 
+            // prevent continuing when formula is SAT but model is empty
+            if (solution == null) {
+                break;
+            }
+
             // ... and add it as an exclusion constraint to solver stack
             solver.add(z3Context.mkNot(solution));
 
