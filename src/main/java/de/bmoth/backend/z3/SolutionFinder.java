@@ -90,9 +90,6 @@ public class SolutionFinder {
         // from solver stack
         solver.pop();
 
-        // TODO getModel() invocation fails if solver.check() hasn't been called
-        // in advance. Is here a dummy call necessary?
-
         return result;
     }
 }
