@@ -629,45 +629,25 @@ public class FormulaToZ3Translator {
 
         @Override
         public Expr visitPredicateOperatorNode(PredicateOperatorNode node, TranslationOptions ops) {
-            List<PredicateNode> predicateArguments = node.getPredicateArguments();
+            final List<BoolExpr> arguments = node.getPredicateArguments().stream().map(it -> (BoolExpr) visitPredicateNode(it, ops)).collect(Collectors.toList());
             switch (node.getOperator()) {
-                case AND: {
-                    BoolExpr[] list = new BoolExpr[predicateArguments.size()];
-                    for (int i = 0; i < list.length; i++) {
-                        list[i] = (BoolExpr) visitPredicateNode(predicateArguments.get(i), ops);
-                    }
-                    return z3Context.mkAnd(list);
-                }
-                case OR: {
-                    BoolExpr[] list = new BoolExpr[predicateArguments.size()];
-                    for (int i = 0; i < list.length; i++) {
-                        list[i] = (BoolExpr) visitPredicateNode(predicateArguments.get(i), ops);
-                    }
-                    return z3Context.mkOr(list);
-                }
-                case IMPLIES: {
-                    BoolExpr left = (BoolExpr) visitPredicateNode(predicateArguments.get(0), ops);
-                    BoolExpr right = (BoolExpr) visitPredicateNode(predicateArguments.get(1), ops);
-                    return z3Context.mkImplies(left, right);
-                }
-                case EQUIVALENCE: {
-                    BoolExpr left = (BoolExpr) visitPredicateNode(predicateArguments.get(0), ops);
-                    BoolExpr right = (BoolExpr) visitPredicateNode(predicateArguments.get(1), ops);
-                    return z3Context.mkEq(left, right);
-                }
-                case NOT: {
-                    BoolExpr child = (BoolExpr) visitPredicateNode(predicateArguments.get(0), ops);
-                    return z3Context.mkNot(child);
-                }
+                case AND:
+                    return z3Context.mkAnd(arguments.toArray(new BoolExpr[arguments.size()]));
+                case OR:
+                    return z3Context.mkOr(arguments.toArray(new BoolExpr[arguments.size()]));
+                case IMPLIES:
+                    return z3Context.mkImplies(arguments.get(0), arguments.get(1));
+                case EQUIVALENCE:
+                    return z3Context.mkEq(arguments.get(0), arguments.get(1));
+                case NOT:
+                    return z3Context.mkNot(arguments.get(0));
                 case TRUE:
                     return z3Context.mkTrue();
                 case FALSE:
                     return z3Context.mkFalse();
                 default:
-                    break;
+                    throw new AssertionError("Not implemented: " + node.getOperator());
             }
-            // TODO
-            throw new AssertionError("Not implemented: " + node.getOperator());
         }
 
         @Override
