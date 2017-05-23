@@ -228,7 +228,8 @@ public class FormulaToZ3Translator {
         @Override
         public Expr visitExprOperatorNode(ExpressionOperatorNode node, TranslationOptions ops) {
             final List<Expr> arguments = node.getExpressionNodes().stream().map(it -> visitExprNode(it, ops)).collect(Collectors.toList());
-            int minInt, maxInt;
+            int minInt;
+            int maxInt;
             switch (node.getOperator()) {
                 case PLUS:
                     return z3Context.mkAdd((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
@@ -437,9 +438,8 @@ public class FormulaToZ3Translator {
                         .add(z3Context.mkAnd(z3Context.mkGe(index, z3Context.mkInt(1)), z3Context.mkLe(index, size)));
                     return z3Context.mkSelect(array, index);
                 }
-                case CARD: {
+                case CARD:
                     break;
-                }
                 case INSERT_FRONT:
                 case INSERT_TAIL:
                 case OVERWRITE_RELATION:
@@ -531,8 +531,7 @@ public class FormulaToZ3Translator {
             } else if (max != null) {
                 body = z3Context.mkEq(z3Context.mkLe(x, max), membership);
             } else {
-                //TODO handle this properly
-                throw new RuntimeException("no need to prepare a set quantifier if no min & max is given");
+                body = membership;
             }
 
             return z3Context.mkForall(bound, body, bound.length, null, null, null, null);
