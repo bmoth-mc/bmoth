@@ -30,7 +30,7 @@ public class TestTypechecker {
         }
     }
 
-    public static HashMap<String, String> getFormulaTypes(String formula) {
+    public static Map<String, String> getFormulaTypes(String formula) {
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         HashMap<String, String> map = new HashMap<>();
         for (DeclarationNode decl : formulaNode.getImplicitDeclarations()) {

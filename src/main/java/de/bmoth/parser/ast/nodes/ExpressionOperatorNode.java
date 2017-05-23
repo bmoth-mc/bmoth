@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ExpressionOperatorNode extends ExprNode {
 
-    public static enum ExpressionOperator {
+    public enum ExpressionOperator {
 
         // arithmetic
         NATURAL, NATURAL1, INTEGER, INT, NAT, MININT, MAXINT//
@@ -101,7 +101,7 @@ public class ExpressionOperatorNode extends ExprNode {
     private ExpressionOperator operator;
 
     public ExpressionOperatorNode(ExpressionOperatorContext ctx, List<ExprNode> expressionNodes,
-            String operatorString) {
+                                  String operatorString) {
         this.arity = expressionNodes.size();
         this.expressionNodes = expressionNodes;
         this.operatorString = operatorString;

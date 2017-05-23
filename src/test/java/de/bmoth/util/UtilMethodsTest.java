@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 public class UtilMethodsTest {
 
     @Test
-    public void testSort() throws Exception {
+    public void testSort() {
         Map<String, Set<String>> dependencies = new HashMap<>();
         dependencies.put("a", new HashSet<>());
         dependencies.put("b", new HashSet<>(Arrays.asList("a")));

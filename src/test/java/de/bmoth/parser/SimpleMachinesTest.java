@@ -5,7 +5,7 @@ import org.junit.Test;
 public class SimpleMachinesTest {
 
     @Test
-    public void testMachine() throws Exception {
+    public void testMachine() {
         String machine = "MACHINE test\n";
         machine += "CONSTANTS k\n";
         machine += "PROPERTIES k = INTEGER \n";

@@ -6,7 +6,7 @@ import org.junit.Test;
 public class SemanticChecksTest {
 
     @Test(expected = ScopeException.class)
-    public void testUnknownIdentifier() throws Exception {
+    public void testUnknownIdentifier() {
         String machine = "MACHINE test\n";
         machine += "CONSTANTS k\n";
         machine += "PROPERTIES k2 = INTEGER \n";
@@ -15,7 +15,7 @@ public class SemanticChecksTest {
     }
 
     @Test(expected = ScopeException.class)
-    public void testDuplicateClause() throws Exception {
+    public void testDuplicateClause() {
         String machine = "MACHINE test\n";
         machine += "CONSTANTS k\n";
         machine += "PROPERTIES k = INTEGER \n";
@@ -26,7 +26,7 @@ public class SemanticChecksTest {
 
 
     @Test
-    public void testLocalIdentifier() throws Exception {
+    public void testLocalIdentifier() {
         String machine = "MACHINE test\n";
         machine += "CONSTANTS k\n";
         machine += "PROPERTIES k = {x | x : INTEGER } \n";

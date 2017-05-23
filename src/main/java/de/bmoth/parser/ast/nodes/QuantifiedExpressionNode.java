@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class QuantifiedExpressionNode extends ExprNode {
 
-    public static enum QuatifiedExpressionOperator {
+    public enum QuatifiedExpressionOperator {
         SET_COMPREHENSION, QUANTIFIED_UNION, QUANTIFIED_INTER
     }
 
@@ -29,7 +29,7 @@ public class QuantifiedExpressionNode extends ExprNode {
     private QuatifiedExpressionOperator operator;
 
     public QuantifiedExpressionNode(ExpressionContext ctx, List<DeclarationNode> declarationList,
-            PredicateNode predNode, ExprNode expressionNode, Token operator2) {
+                                    PredicateNode predNode, ExprNode expressionNode, Token operator2) {
         this.declarationList = declarationList;
         this.predicateNode = predNode;
         this.operator = loopUpOperator(operator2.getType());
@@ -44,7 +44,7 @@ public class QuantifiedExpressionNode extends ExprNode {
     }
 
     public QuantifiedExpressionNode(SetComprehensionExpressionContext ctx, List<DeclarationNode> declarationList,
-            PredicateNode predNode, ExprNode expressionNode, QuatifiedExpressionOperator setComprehension) {
+                                    PredicateNode predNode, ExprNode expressionNode, QuatifiedExpressionOperator setComprehension) {
         this.declarationList = declarationList;
         this.predicateNode = predNode;
         this.operator = setComprehension;

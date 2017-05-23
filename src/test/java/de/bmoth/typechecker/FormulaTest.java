@@ -15,7 +15,6 @@ import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMUL
 import static org.junit.Assert.assertEquals;
 
 public class FormulaTest {
-
     @Test
     public void testExpressionFormula() {
         String formula = "x + 2 + 3";

@@ -6,7 +6,7 @@ import org.junit.Test;
 public class ParseErrorTest {
 
     @Test(expected = ParseErrorException.class)
-    public void testParseError() throws Exception {
+    public void testParseError() {
         String formula = " 1  {1} ";
         Parser.getFormulaAsSemanticAst(formula);
     }
