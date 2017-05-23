@@ -149,10 +149,10 @@ public class FormulaToZ3Translator {
         if (t instanceof SequenceType) {
             SequenceType s = (SequenceType) t;
             Sort subSort = bTypeToZ3Sort(s.getSubtype());
-            Sort int_type = z3Context.getIntSort();
+            Sort intType = z3Context.getIntSort();
             Sort[] subSorts = new Sort[2];
-            subSorts[0] = z3Context.mkArraySort(int_type, subSort);
-            subSorts[1] = int_type;
+            subSorts[0] = z3Context.mkArraySort(intType, subSort);
+            subSorts[1] = intType;
             TupleSort mkTupleSort = z3Context.mkTupleSort(z3Context.mkSymbol("sequence"),
                 new Symbol[]{z3Context.mkSymbol("array"), z3Context.mkSymbol("size")}, subSorts);
             return mkTupleSort;
@@ -420,18 +420,18 @@ public class FormulaToZ3Translator {
                     return res;
                 }
                 case EMPTY_SEQUENCE: {
-                    Sort int_type = z3Context.getIntSort();
+                    Sort intType = z3Context.getIntSort();
                     Type type = ((SequenceType) node.getType()).getSubtype();
                     Sort rangeType = bTypeToZ3Sort(type);
-                    ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), int_type, rangeType);
+                    ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), intType, rangeType);
                     TupleSort mkTupleSort = (TupleSort) bTypeToZ3Sort(node.getType());
                     return mkTupleSort.mkDecl().apply(a, z3Context.mkInt(expressionNodes.size()));
                 }
                 case SEQ_ENUMERATION: {
-                    Sort int_type = z3Context.getIntSort();
+                    Sort intType = z3Context.getIntSort();
                     Type type = ((SequenceType) node.getType()).getSubtype();
                     Sort rangeType = bTypeToZ3Sort(type);
-                    ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), int_type, rangeType);
+                    ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), intType, rangeType);
                     for (int i = 0; i < expressionNodes.size(); i++) {
                         int j = i + 1;
                         IntNum index = z3Context.mkInt(j);
@@ -536,18 +536,18 @@ public class FormulaToZ3Translator {
                 }
                 case INT: {
                     Type type = node.getType();// POW(INTEGER)
-                    int max_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
-                    int min_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
+                    int maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                    int minInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
                     // !x.((x >= MIN_INT & x <= MAX_INT) <=> x : INT)
                     Expr integer = z3Context.mkConst(ExpressionOperator.INT.toString(), bTypeToZ3Sort(type));
                     Expr x = z3Context.mkConst("x", z3Context.getIntSort());
                     Expr[] bound = new Expr[]{x};
                     // x >= MIN_INT
-                    BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(min_int));
+                    BoolExpr a = z3Context.mkGe((ArithExpr) x, z3Context.mkInt(minInt));
                     // x :INT
                     BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) integer);
                     // x <= max_int
-                    BoolExpr c = z3Context.mkLe((ArithExpr) x, z3Context.mkInt(max_int));
+                    BoolExpr c = z3Context.mkLe((ArithExpr) x, z3Context.mkInt(maxInt));
                     // a <=> b <=> c
                     BoolExpr body = z3Context.mkEq(z3Context.mkAnd(a, c), b);
                     Quantifier q = z3Context.mkForall(bound, body, 1, null, null, null, null);
@@ -555,16 +555,16 @@ public class FormulaToZ3Translator {
                     return integer;
                 }
                 case MAXINT: {
-                    int max_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
-                    return z3Context.mkInt(max_int);
+                    int maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                    return z3Context.mkInt(maxInt);
                 }
                 case MININT: {
-                    int min_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
-                    return z3Context.mkInt(min_int);
+                    int minInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
+                    return z3Context.mkInt(minInt);
                 }
                 case NAT: {
                     Type type = node.getType();// POW(INTEGER)
-                    int max_int = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                    int maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
                     // !x.((x >= 0 & x <= MAX_INT) <=> x : NAT)
                     Expr x = z3Context.mkConst("x", z3Context.getIntSort());
                     Expr nat = z3Context.mkConst(ExpressionOperator.NAT.toString(), bTypeToZ3Sort(type));
@@ -574,7 +574,7 @@ public class FormulaToZ3Translator {
                     // x : NAT
                     BoolExpr b = z3Context.mkSetMembership(x, (ArrayExpr) nat);
                     // x <= max_int
-                    BoolExpr c = z3Context.mkLe((ArithExpr) x, z3Context.mkInt(max_int));
+                    BoolExpr c = z3Context.mkLe((ArithExpr) x, z3Context.mkInt(maxInt));
                     // a <=> b <=> c
                     BoolExpr body = z3Context.mkEq(z3Context.mkAnd(a, c), b);
                     Quantifier q = z3Context.mkForall(bound, body, 1, null, null, null, null);
