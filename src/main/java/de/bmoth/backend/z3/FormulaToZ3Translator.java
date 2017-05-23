@@ -164,11 +164,12 @@ public class FormulaToZ3Translator {
     class FormulaToZ3TranslatorVisitor extends AbstractVisitor<Expr, TranslationOptions> {
         private String addPrimes(TranslationOptions ops, String name) {
             int numOfPrimes = ops.getPrimeLevel();
+            StringBuilder nameBuilder = new StringBuilder(name);
             while (numOfPrimes > 0) {
-                name += "'";
+                nameBuilder.append("'");
                 numOfPrimes--;
             }
-            return name;
+            return nameBuilder.toString();
         }
 
         @Override
