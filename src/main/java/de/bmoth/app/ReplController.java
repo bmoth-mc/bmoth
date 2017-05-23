@@ -32,6 +32,7 @@ public class ReplController implements Initializable {
                 String[] predicate = replText.getText().split("\n");
                 String solution = processPredicate(predicate[predicate.length - 1]);
                 replText.appendText(solution);
+                replText.commitValue();
             }
         });
     }

@@ -5,13 +5,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
+import org.junit.Before;
 import org.junit.Test;
 
 import static javafx.scene.input.KeyCode.ENTER;
 import static org.junit.Assert.assertEquals;
 
 public class ReplControllerTest extends HeadlessUITest {
-    private int z3WaitTime = 7500;
+    private int z3WaitTime = 750;
     private TextArea repl;
 
     @Override
@@ -21,6 +22,10 @@ public class ReplControllerTest extends HeadlessUITest {
         Scene scene = new Scene(root, 500, 300);
         stage.setScene(scene);
         stage.show();
+    }
+
+    @Before
+    public void setRepl() {
         repl = lookup("#replText").query();
     }
 
