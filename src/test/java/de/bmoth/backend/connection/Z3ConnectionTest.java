@@ -1,4 +1,4 @@
-package de.bmoth.backend.translator;
+package de.bmoth.backend.connection;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Expr;
