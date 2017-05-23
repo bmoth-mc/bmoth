@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.testfx.api.FxAssert.verifyThat;
@@ -21,6 +22,11 @@ public class OptionControllerTest extends HeadlessUITest {
         stage.setScene(scene);
         stage.show();
         optionController = loader.getController();
+    }
+
+    @Before
+    public void setup() {
+        optionController.setUpPrefs();
     }
 
     @Test
