@@ -49,9 +49,9 @@ public class SetFormulaTest {
         assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
         assertEquals("POW(INTEGER)", formulaTypes.get("x"));
     }
-    
+
     @Test
-    public void testInverseRelation() throws Exception {
+    public void testInverseRelation() {
         String formula = "k = {1|->TRUE}~";
         HashMap<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("POW(BOOL*INTEGER)", formulaTypes.get("k"));

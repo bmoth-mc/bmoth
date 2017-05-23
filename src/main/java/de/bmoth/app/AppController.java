@@ -9,7 +9,6 @@ import de.bmoth.exceptions.ErrorEvent;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -176,7 +175,7 @@ public class AppController implements Initializable {
     public void handleExit() {
         if (hasChanged) {
             int nextStep = handleUnsavedChanges();
-            if(nextStep==-1 || !hasChanged){
+            if (nextStep == -1 || !hasChanged) {
                 Platform.exit();
             }
 
