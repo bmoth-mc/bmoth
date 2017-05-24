@@ -30,8 +30,7 @@ public class FormulaToZ3Translator {
     // created because there no corresponding keyword in z3.
     // Additionally, a constraint axiomatizing this identifier will be added to
     // this list.
-    private int tempVariablesCounter = 0;
-    // used to generate unique identifiers
+
 
     List<DeclarationNode> implicitDeclarations;
     FormulaNode formulaNode;
@@ -42,12 +41,6 @@ public class FormulaToZ3Translator {
     private ArrayExpr setNatural1 = null;
     private ArrayExpr setInt = null;
     private ArrayExpr setNat = null;
-
-
-    private String createFreshTemporaryVariable() {
-        this.tempVariablesCounter++;
-        return "$t_" + this.tempVariablesCounter;
-    }
 
     public List<DeclarationNode> getImplicitDeclarations() {
         return this.implicitDeclarations;
@@ -168,6 +161,14 @@ public class FormulaToZ3Translator {
     }
 
     class FormulaToZ3TranslatorVisitor extends AbstractVisitor<Expr, TranslationOptions> {
+        // used to generate unique identifiers
+        private int tempVariablesCounter = 0;
+
+        private String createFreshTemporaryVariable() {
+            this.tempVariablesCounter++;
+            return "$t_" + this.tempVariablesCounter;
+        }
+
         private String addPrimes(TranslationOptions ops, String name) {
             int numOfPrimes = ops.getPrimeLevel();
             StringBuilder nameBuilder = new StringBuilder(name);
@@ -177,7 +178,7 @@ public class FormulaToZ3Translator {
             }
             return nameBuilder.toString();
         }
-
+        
         @Override
         public Expr visitIdentifierExprNode(IdentifierExprNode node, TranslationOptions ops) {
             Type type = node.getDeclarationNode().getType();
