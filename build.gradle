@@ -50,12 +50,30 @@ sourceSets {
 
 test {
     exclude('de/bmoth/performance')
+    exclude('de/bmoth/app')
 }
 
-task performanceTests(type: Test) {
+task performanceTest(type: Test) {
     doFirst { println("Running performance tests") }
     scanForTestClasses = true
     include('de/bmoth/performance/**')
+}
+
+task uiTest(type: Test) {
+    doFirst { println("Running UI tests") }
+    scanForTestClasses = true
+    include('de/bmoth/app/**')
+
+    testLogging {
+        exceptionFormat = 'full'
+    }
+
+    maxParallelForks = 1
+
+    // pass -Pheadless=?? value from gradle call into test VM
+    if (project.hasProperty("headless")) {
+        systemProperty "headless", project.getProperty("headless")
+    }
 }
 
 dependencies {
@@ -70,6 +88,11 @@ dependencies {
 
     // JavaFX RichText Editor
     compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
+
+    // TestFX & monocle for headless testing
+    testCompile "org.testfx:testfx-core:4.0.+"
+    testCompile "org.testfx:testfx-junit:4.0.+"
+    testRuntime 'org.testfx:openjfx-monocle:1.8.0_20'
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'

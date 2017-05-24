@@ -1,10 +1,10 @@
 package de.bmoth.exceptions;
 
 public class ErrorEvent {
-    String errorType;
-    String message;
+    private String errorType;
+    private String message;
 
-    public ErrorEvent(String type, String msg) {
+    ErrorEvent(String type, String msg) {
         errorType = type;
         message = msg;
     }

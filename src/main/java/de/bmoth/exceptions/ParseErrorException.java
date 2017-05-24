@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.CommonToken;
 
 public class ParseErrorException extends RuntimeException {
     private static final long serialVersionUID = 2305560853973886094L;
-    private CommonToken token;
+    private final CommonToken token;
 
     public ParseErrorException(CommonToken token, String message) {
         super(message);
@@ -22,7 +22,6 @@ public class ParseErrorException extends RuntimeException {
         sb.append("in line ").append(token.getLine());
         sb.append(" column " + token.getCharPositionInLine()).append(".\n");
         sb.append("Additional information: ").append(super.getMessage());
-        System.out.println(sb.toString());
         return sb.toString();
     }
 }

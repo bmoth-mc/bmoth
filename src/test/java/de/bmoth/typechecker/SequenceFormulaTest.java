@@ -2,7 +2,7 @@ package de.bmoth.typechecker;
 
 import org.junit.Test;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import static de.bmoth.typechecker.TestTypechecker.getFormulaTypes;
 import static org.junit.Assert.assertEquals;
@@ -10,105 +10,105 @@ import static org.junit.Assert.assertEquals;
 public class SequenceFormulaTest {
 
     @Test
-    public void testSequenceEnumeration() throws Exception {
+    public void testSequenceEnumeration() {
         String formula = "a = [1,b]";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
 
     @Test
-    public void testInsertTail() throws Exception {
+    public void testInsertTail() {
         String formula = "a = [b] <- 1";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
 
     @Test
-    public void testInsertFront() throws Exception {
+    public void testInsertFront() {
         String formula = "a = 1 -> [b]";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
 
     @Test
-    public void testFirst() throws Exception {
+    public void testFirst() {
         String formula = "1 = first([a])";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("a"));
     }
 
     @Test
-    public void testLast() throws Exception {
+    public void testLast() {
         String formula = "a = last([1])";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("a"));
     }
 
     @Test
-    public void testFront() throws Exception {
+    public void testFront() {
         String formula = "a = front([1,b])";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
 
     @Test
-    public void testTail() throws Exception {
+    public void testTail() {
         String formula = "a = tail([1,b])";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
 
     @Test
-    public void testEmptySet() throws Exception {
+    public void testEmptySet() {
         String formula = "[1] /=[]";
         getFormulaTypes(formula);
     }
 
     @Test
-    public void testConc() throws Exception {
+    public void testConc() {
         String formula = "[1,2] = [a] ^ b";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("a"));
         assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("b"));
     }
 
     @Test
-    public void testSeq() throws Exception {
+    public void testSeq() {
         String formula = "[1] : seq(a)";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("POW(INTEGER)", formulaTypes.get("a"));
     }
 
     @Test
-    public void testSeq1() throws Exception {
+    public void testSeq1() {
         String formula = "[a] : seq(INTEGER)";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("a"));
     }
 
     @Test
-    public void testiSeq() throws Exception {
+    public void testiSeq() {
         String formula = "a : seq(INTEGER)";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
     }
 
     @Test
-    public void testiSeq1() throws Exception {
+    public void testiSeq1() {
         String formula = "[1] : seq({a})";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("a"));
     }
 
     @Test
-    public void testFunctionCall() throws Exception {
+    public void testFunctionCall() {
         String formula = "[4,5,6](2) = a";
-        HashMap<String, String> formulaTypes = getFormulaTypes(formula);
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("a"));
     }
 

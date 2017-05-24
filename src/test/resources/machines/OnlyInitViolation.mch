@@ -5,4 +5,4 @@ INVARIANT
   x = 0
 INITIALISATION
   x := 1
-END
+END 

@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ExpressionOperatorNode extends ExprNode {
 
-    public static enum ExpressionOperator {
+    public enum ExpressionOperator {
 
         // arithmetic
         NATURAL, NATURAL1, INTEGER, INT, NAT, MININT, MAXINT//
@@ -25,6 +25,7 @@ public class ExpressionOperatorNode extends ExprNode {
         , DOMAIN, RANGE, CARTESIAN_PRODUCT//
         , CARD, DOMAIN_RESTRICTION, OVERWRITE_RELATION, DIRECT_PRODUCT//
         , DOMAIN_SUBTRACTION, RANGE_RESTRICTION, RANGE_SUBTRATION//
+        , INVERSE_RELATION
         // function
         , FUNCTION_CALL
         // sequence operators
@@ -61,6 +62,8 @@ public class ExpressionOperatorNode extends ExprNode {
         map.put(BMoThParser.MAPLET, ExpressionOperator.COUPLE);
         map.put(BMoThParser.DOM, ExpressionOperator.DOMAIN);
         map.put(BMoThParser.RAN, ExpressionOperator.RANGE);
+
+        // relations
         map.put(BMoThParser.OVERWRITE_RELATION, ExpressionOperator.OVERWRITE_RELATION);
         map.put(BMoThParser.DIRECT_PRODUCT, ExpressionOperator.DIRECT_PRODUCT);
         map.put(BMoThParser.CONCAT, ExpressionOperator.CONCAT);
@@ -68,11 +71,11 @@ public class ExpressionOperatorNode extends ExprNode {
         map.put(BMoThParser.DOMAIN_SUBTRACTION, ExpressionOperator.DOMAIN_SUBTRACTION);
         map.put(BMoThParser.RANGE_RESTRICTION, ExpressionOperator.RANGE_RESTRICTION);
         map.put(BMoThParser.RANGE_SUBTRACTION, ExpressionOperator.RANGE_SUBTRATION);
+        map.put(BMoThParser.TILDE, ExpressionOperator.INVERSE_RELATION);
 
+        // sets
         map.put(BMoThParser.GENERALIZED_UNION, ExpressionOperator.GENERALIZED_UNION);
         map.put(BMoThParser.GENERALIZED_INTER, ExpressionOperator.GENERALIZED_INTER);
-
-        // relations
         map.put(BMoThParser.CARD, ExpressionOperator.CARD);
 
         // sequence operators
@@ -98,7 +101,7 @@ public class ExpressionOperatorNode extends ExprNode {
     private ExpressionOperator operator;
 
     public ExpressionOperatorNode(ExpressionOperatorContext ctx, List<ExprNode> expressionNodes,
-            String operatorString) {
+                                  String operatorString) {
         this.arity = expressionNodes.size();
         this.expressionNodes = expressionNodes;
         this.operatorString = operatorString;
@@ -164,5 +167,5 @@ public class ExpressionOperatorNode extends ExprNode {
     public void setExpressionList(List<ExprNode> list) {
         this.expressionNodes = list;
     }
-    
+
 }

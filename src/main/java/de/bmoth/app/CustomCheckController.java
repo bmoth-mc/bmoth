@@ -9,11 +9,14 @@ import javafx.stage.Stage;
 public class CustomCheckController {
 
     @FXML
+    CheckBox initialCheck;
+    @FXML
     CheckBox invariantCheck;
     @FXML
     CheckBox modelCheck;
 
     Stage stage;
+    AppController appController;
 
     public Stage getStage(Parent root) {
         if (stage != null) return stage;
@@ -26,26 +29,37 @@ public class CustomCheckController {
 
     private void setupStage() {
         stage.setTitle("CustomCheck");
+        initialCheck.setSelected(true);
         invariantCheck.setSelected(true);
         modelCheck.setSelected(true);
     }
 
     private void savePrefs() {
+        PersonalPreferences.setBooleanPreference(PersonalPreferences.BooleanPreference.INITIAL_CHECK, initialCheck.isSelected());
         PersonalPreferences.setBooleanPreference(PersonalPreferences.BooleanPreference.INVARIANT_CHECK, invariantCheck.isSelected());
         PersonalPreferences.setBooleanPreference(PersonalPreferences.BooleanPreference.MODEL_CHECK, modelCheck.isSelected());
     }
 
-
-    public void handleApply() {
-            savePrefs();
-    }
 
     public void handleClose() {
         stage.close();
     }
 
     public void handleOk() {
-            savePrefs();
-            stage.close();
+        savePrefs();
+        stage.close();
+        if (this.initialCheck.isSelected()) {
+            appController.handleInitialStateExists();
+        }
+        if (this.invariantCheck.isSelected()) {
+            appController.handleInvariantSatisfiability();
+        }
+        if (this.modelCheck.isSelected()) {
+            appController.handleCheck();
+        }
+    }
+
+    public void setAppControllerReference(AppController appCtrl) {
+        this.appController = appCtrl;
     }
 }

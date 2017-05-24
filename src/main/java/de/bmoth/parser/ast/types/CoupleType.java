@@ -67,7 +67,7 @@ public class CoupleType extends Observable implements Type, Observer {
 
     public void replaceBy(Type otherType) {
         /*
-		 * unregister this instance from the sub type, i.e. it will be no longer
+         * unregister this instance from the sub type, i.e. it will be no longer
 		 * updated
 		 */
         if (left instanceof Observable) {
@@ -96,11 +96,7 @@ public class CoupleType extends Observable implements Type, Observer {
 
     @Override
     public boolean contains(Type other) {
-        if (this.left == other || this.right == other || this.left.contains(other) || this.right.contains(other)) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.left == other || this.right == other || this.left.contains(other) || this.right.contains(other);
     }
 
     @Override

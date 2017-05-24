@@ -12,16 +12,27 @@ import de.bmoth.parser.ast.nodes.MachineNode;
 import java.util.*;
 
 public class ModelChecker {
+    private Context ctx;
+    private Solver solver;
+    private MachineToZ3Translator machineTranslator;
+
+    private ModelChecker(MachineNode machine) {
+        this.ctx = new Context();
+        this.solver = Z3SolverFactory.getZ3Solver(ctx);
+        this.machineTranslator = new MachineToZ3Translator(machine, ctx);
+    }
+
     public static ModelCheckingResult doModelCheck(String machineAsString) {
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doModelCheck(machineAsSemanticAst);
     }
 
     public static ModelCheckingResult doModelCheck(MachineNode machine) {
-        Context ctx = new Context();
-        Solver solver = Z3SolverFactory.getZ3Solver(ctx);
-        MachineToZ3Translator machineTranslator = new MachineToZ3Translator(machine, ctx);
+        ModelChecker modelChecker = new ModelChecker(machine);
+        return modelChecker.doModelCheck();
+    }
 
+    private ModelCheckingResult doModelCheck() {
         Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
         // prepare initial states
@@ -30,11 +41,12 @@ public class ModelChecker {
         SolutionFinder finder = new SolutionFinder(initialValueConstraint, solver, ctx);
         Set<Model> models = finder.findSolutions(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE));
         for (Model model : models) {
-            State state = getStateFromModel(null, model, machineTranslator);
+            State state = getStateFromModel(null, model);
             queue.add(state);
         }
 
         final BoolExpr invariant = machineTranslator.getInvariantConstraint();
+        solver.add(invariant);
         while (!queue.isEmpty()) {
             solver.push();
             State current = queue.poll();
@@ -43,12 +55,8 @@ public class ModelChecker {
             BoolExpr stateConstraint = current.getStateConstraint(ctx);
             solver.add(stateConstraint);
 
-            // check invariant
-            // TODO add invariant before entering while loop
-            solver.push();
-            solver.add(invariant);
+            // check invariant & state
             Status check = solver.check();
-            solver.pop();
             switch (check) {
                 case UNKNOWN:
                     return new ModelCheckingResult("check-sat = unknown, reason: " + solver.getReasonUnknown());
@@ -66,10 +74,10 @@ public class ModelChecker {
                 finder = new SolutionFinder(currentOperationConstraint, solver, ctx);
                 models = finder.findSolutions(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS));
                 for (Model model : models) {
-                    State state = getStateFromModel(current, model, machineTranslator);
+                    State state = getStateFromModel(current, model);
 
                     // add to queue if not in visited
-                    if (!visited.contains(state)) {
+                    if (!visited.contains(state) && !queue.contains(state)) {
                         queue.add(state);
                     }
                 }
@@ -78,10 +86,9 @@ public class ModelChecker {
         }
 
         return new ModelCheckingResult("correct");
-
     }
 
-    private static State getStateFromModel(State predecessor, Model model, MachineToZ3Translator machineTranslator) {
+    private State getStateFromModel(State predecessor, Model model) {
         HashMap<String, Expr> map = new HashMap<>();
         for (DeclarationNode declNode : machineTranslator.getVariables()) {
             Expr expr = machineTranslator.getPrimedVariable(declNode);
@@ -94,7 +101,6 @@ public class ModelChecker {
             map.put(declarationNode.getName(), value);
         }
 
-        State newState = new State(predecessor, map);
-        return newState;
+        return new State(predecessor, map);
     }
 }

@@ -47,23 +47,23 @@ public class Highlighter {
             + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
     );
 
-    public static StyleSpans<Collection<String>> computeHighlighting(String text) {
+    protected static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder
             = new StyleSpansBuilder<>();
         while (matcher.find()) {
-            String styleClass =
-                matcher.group("START") != null ? "start" :
-                    matcher.group("KEYWORD") != null ? "keyword" :
-                        matcher.group("KEYWORD2") != null ? "keyword2" :
-                            matcher.group("PAREN") != null ? "paren" :
-                                matcher.group("BRACE") != null ? "brace" :
-                                    matcher.group("BRACKET") != null ? "bracket" :
-                                        matcher.group("SEMICOLON") != null ? "semicolon" :
-                                            matcher.group("STRING") != null ? "string" :
-                                                matcher.group("COMMENT") != null ? "comment" :
-                                                    null; /* never happens */
+            String styleClass; /* never happens */
+            if (matcher.group("START") != null) styleClass = "start";
+            else if (matcher.group("KEYWORD") != null) styleClass = "keyword";
+            else if (matcher.group("KEYWORD2") != null) styleClass = "keyword2";
+            else if (matcher.group("PAREN") != null) styleClass = "paren";
+            else if (matcher.group("BRACE") != null) styleClass = "brace";
+            else if (matcher.group("BRACKET") != null) styleClass = "bracket";
+            else if (matcher.group("SEMICOLON") != null) styleClass = "semicolon";
+            else if (matcher.group("STRING") != null) styleClass = "string";
+            else if (matcher.group("COMMENT") != null) styleClass = "comment";
+            else styleClass = null;
             assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());

@@ -3,18 +3,20 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity"
+            prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111"
             fx:controller="de.bmoth.app.CustomCheckController">
     <children>
-        <TextField editable="false" layoutX="14.0" layoutY="15.0" text="Perform Invariant Check"/>
-        <CheckBox layoutX="165.0" layoutY="15.0" fx:id="invariantCheck"/>
-        <TextField editable="false" layoutX="14.0" layoutY="45.0" text="Perform Model Check"/>
-        <CheckBox layoutX="165.0" layoutY="45.0" fx:id="modelCheck"/>
-        <Button layoutX="449.0" layoutY="350.0" mnemonicParsing="false" text="Apply" onAction="#handleApply"/>
-        <Button cancelButton="true" layoutX="506.0" layoutY="350.0" mnemonicParsing="false" text="Close"
+        <TextField editable="false" layoutX="14.0" layoutY="15.0" text="Check Initial State"/>
+        <CheckBox layoutX="165.0" layoutY="15.0" fx:id="initialCheck"/>
+        <TextField editable="false" layoutX="14.0" layoutY="45.0" text="Check Invariant"/>
+        <CheckBox layoutX="165.0" layoutY="45.0" fx:id="invariantCheck"/>
+        <TextField editable="false" layoutX="14.0" layoutY="75.0" text="Model Check"/>
+        <CheckBox layoutX="165.0" layoutY="75.0" fx:id="modelCheck"/>
+        <Button cancelButton="true" layoutX="456.0" layoutY="350.0" mnemonicParsing="false" text="Close"
                 onAction="#handleClose"/>
-        <Button layoutX="392.0" layoutY="350.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="45.0" text="OK"
+        <Button layoutX="392.0" layoutY="350.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="45.0" text="Start"
                 onAction="#handleOk"/>
     </children>
 </AnchorPane>

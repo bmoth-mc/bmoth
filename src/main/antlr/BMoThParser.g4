@@ -92,6 +92,7 @@ expression
         DOT LEFT_PAR predicate VERTICAL_BAR expression RIGHT_PAR            # QuantifiedExpression
 
   // operators with precedences
+  | expression operator=TILDE                                               # ExpressionOperator //p230
   | operator=MINUS expression                                               # ExpressionOperator //P210
   | <assoc=right> expression operator=POWER_OF expression                   # ExpressionOperator //p200
   | expression operator=(MULT|DIVIDE|MOD) expression                        # ExpressionOperator //p190

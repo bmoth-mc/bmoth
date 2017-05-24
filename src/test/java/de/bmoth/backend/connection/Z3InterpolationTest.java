@@ -1,23 +1,26 @@
-package de.bmoth.backend.translator;
+package de.bmoth.backend.connection;
 
 import com.microsoft.z3.*;
 import com.microsoft.z3.InterpolationContext.ComputeInterpolantResult;
+import de.bmoth.TestUsingZ3;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class Z3InterpolationTest {
+public class Z3InterpolationTest extends TestUsingZ3 {
     private InterpolationContext ctx;
     private Solver s;
 
+    @Override
     @Before
     public void setup() {
         ctx = InterpolationContext.mkContext();
         s = ctx.mkSolver();
     }
 
+    @Override
     @After
     public void cleanup() {
         ctx.close();

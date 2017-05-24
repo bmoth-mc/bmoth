@@ -12,12 +12,8 @@ public class IntegerType implements Type {
 
     @Override
     public boolean unifiable(Type otherType) {
-        if (otherType == this || otherType instanceof UntypedType || otherType instanceof SetOrIntegerType
-                || otherType instanceof IntegerOrSetOfPairs) {
-            return true;
-        } else {
-            return false;
-        }
+        return otherType == this || otherType instanceof UntypedType || otherType instanceof SetOrIntegerType
+            || otherType instanceof IntegerOrSetOfPairs;
     }
 
     @Override

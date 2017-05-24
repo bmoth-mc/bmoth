@@ -9,7 +9,6 @@ import de.bmoth.exceptions.ErrorEvent;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -36,8 +35,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AppController implements Initializable {
-    private final Logger LOGGER = Logger.getLogger(getClass().getName());
-
+    private static final String APPNAME = "Bmoth";
+    private final Logger logger = Logger.getLogger(getClass().getName());
     @FXML
     MenuItem customCheck;
     @FXML
@@ -54,16 +53,13 @@ public class AppController implements Initializable {
     MenuItem exit;
     @FXML
     MenuItem modelCheck;
-
     @FXML
     CodeArea codeArea;
     @FXML
     TextArea infoArea;
-
     private Stage primaryStage = new Stage();
     private String currentFile;
     private Boolean hasChanged = false;
-    private static final String APPNAME = "Bmoth";
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -129,7 +125,7 @@ public class AppController implements Initializable {
         if (hasChanged) {
             nextStep = handleUnsavedChanges();
         }
-        if (nextStep != 0) {
+        if (nextStep == -1 || !hasChanged) {
             String fileContent = openFileChooser();
             if (fileContent != null) {
                 codeArea.replaceText(fileContent);
@@ -149,13 +145,13 @@ public class AppController implements Initializable {
                 hasChanged = false;
                 infoArea.clear();
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "While Saving", e);
+                logger.log(Level.SEVERE, "While Saving", e);
             }
         } else {
             try {
                 saveFileAs();
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "While Saving AS", e);
+                logger.log(Level.SEVERE, "While Saving AS", e);
             }
         }
     }
@@ -170,7 +166,7 @@ public class AppController implements Initializable {
             }
             return saved;
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "While Saving AS", e);
+            logger.log(Level.SEVERE, "While Saving AS", e);
         }
         return false;
     }
@@ -178,26 +174,11 @@ public class AppController implements Initializable {
     @FXML
     public void handleExit() {
         if (hasChanged) {
-            int nextStep = saveChangedDialog();
-            switch (nextStep) {
-                case 0:
-                    break;
-                case 1:
-                    handleSave();
-                    Platform.exit();
-                    break;
-                case 2:
-                    Boolean saved = handleSaveAs();
-                    if (saved) {
-                        Platform.exit();
-                    }
-                    break;
-                case -1:
-                    Platform.exit();
-                    break;
-                default:
-                    break;
+            int nextStep = handleUnsavedChanges();
+            if (nextStep == -1 || !hasChanged) {
+                Platform.exit();
             }
+
         } else {
             Platform.exit();
         }
@@ -207,8 +188,8 @@ public class AppController implements Initializable {
     public void handleOptions() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
         Parent root = loader.load();
-        OptionController optionControler = loader.getController();
-        Stage optionStage = optionControler.getStage(root);
+        OptionController optionController = loader.getController();
+        Stage optionStage = optionController.getStage(root);
         optionStage.show();
 
     }
@@ -240,6 +221,7 @@ public class AppController implements Initializable {
         Parent root = loader.load();
         CustomCheckController customCheckController = loader.getController();
         Stage customCheckStage = customCheckController.getStage(root);
+        customCheckController.setAppControllerReference(this);
         customCheckStage.show();
     }
 
@@ -353,7 +335,7 @@ public class AppController implements Initializable {
      */
     private Boolean saveFileAs() throws IOException {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setInitialDirectory(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_DIR)));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MCH File", "*.mch"));
         File file = fileChooser.showSaveDialog(primaryStage);
         if (file != null) {     //add .mch ending if not added by OS
@@ -398,7 +380,7 @@ public class AppController implements Initializable {
         try {
             content = new String(Files.readAllBytes(Paths.get(file.getPath())));
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "While Reading File", e);
+            logger.log(Level.SEVERE, "While Reading File", e);
         }
         return content;
     }
@@ -412,7 +394,7 @@ public class AppController implements Initializable {
     // </editor-fold>
 
 
-    public void handleInitialStateExists(ActionEvent actionEvent) {
+    public void handleInitialStateExists() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
             InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(codeArea.getText());
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
