@@ -320,6 +320,7 @@ public class AppController implements Initializable {
         File file = new File(path);
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.write(codeArea.getText());
+        primaryStage.setTitle(APPNAME + " - " + file.getName().substring(0, file.getName().length() - 4));
         fileWriter.close();
     }
 
@@ -363,6 +364,7 @@ public class AppController implements Initializable {
             currentFile = file.getPath();
             PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
             PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_DIR, file.getParent());
+            primaryStage.setTitle(APPNAME + " - " + file.getName().substring(0, file.getName().length() - 4));
             return openFile(file);
         }
         return null;
