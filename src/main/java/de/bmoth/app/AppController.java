@@ -21,6 +21,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
 import java.io.File;
@@ -93,7 +94,8 @@ public class AppController implements Initializable {
                 String fileContent = openFile(new File(BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_FILE)));
                 codeArea.replaceText(fileContent);
             }
-            codeArea.deletehistory();
+            codeArea.getUndoManager().forgetHistory();
+
         }
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
             hasChanged = true;
@@ -110,7 +112,7 @@ public class AppController implements Initializable {
         }
         if (nextStep != 0) {
             codeArea.replaceText("");
-            codeArea.deletehistory();
+            codeArea.getUndoManager().forgetHistory();
             codeArea.selectRange(0, 0);
             currentFile = null;
             hasChanged = false;
@@ -129,7 +131,7 @@ public class AppController implements Initializable {
             String fileContent = openFileChooser();
             if (fileContent != null) {
                 codeArea.replaceText(fileContent);
-                codeArea.deletehistory();
+                codeArea.getUndoManager().forgetHistory();
                 codeArea.selectRange(0, 0);
                 hasChanged = false;
                 infoArea.clear();
