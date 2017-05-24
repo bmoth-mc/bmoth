@@ -4,8 +4,8 @@ VARIABLES
 INVARIANT
   x : NATURAL 
 INITIALISATION
-  x := 1
+  x := 9
 OPERATIONS
-  Inc = SELECT x < 10 THEN x := x + 1 END;
+  Inc = SELECT 9 < 10 THEN x := x + 1 END;
   Dec = SELECT x > 1 THEN x := x -1 END
 END
