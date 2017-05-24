@@ -31,7 +31,6 @@ public class OptionControllerTest extends HeadlessUITest {
 
     @Test
     public void optionCreateTest() {
-        optionController.setUpPrefs();
         verifyThat("#minInt", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT))));
         verifyThat("#maxInt", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT))));
         verifyThat("#maxInitState", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE))));
@@ -46,8 +45,21 @@ public class OptionControllerTest extends HeadlessUITest {
         doubleClickOn("#maxInitState").write("20");
         doubleClickOn("#maxTrans").write("5");
         doubleClickOn("#z3Timeout").write("5000");
-        assertEquals(optionController.checkPrefs(), true);
+        assertEquals(true, optionController.checkPrefs());
     }
+
+    @Test
+    public void checkMinBiggerMax() {
+        doubleClickOn("#minInt").eraseText(2).write("3");
+        doubleClickOn("#maxInt").write("1");
+        doubleClickOn("#maxInitState").write("20");
+        doubleClickOn("#maxTrans").write("5");
+        doubleClickOn("#z3Timeout").write("5000");
+        clickOn("#applyButton");
+
+
+    }
+
 
     @Test
     public void closeOnSuccess() {
@@ -63,7 +75,7 @@ public class OptionControllerTest extends HeadlessUITest {
         verifyThat("#maxTrans", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS))));
         verifyThat("#z3Timeout", hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT))));
         //Note: DoubleClick doesn't select the -, so it has to be removed.
-        doubleClickOn("#minInt").eraseText(10).write("-3");
+        doubleClickOn("#minInt").eraseText(2).write("-3");
         doubleClickOn("#maxInt").write("44");
         doubleClickOn("#maxInitState").write("11");
         doubleClickOn("#maxTrans").write("13");
