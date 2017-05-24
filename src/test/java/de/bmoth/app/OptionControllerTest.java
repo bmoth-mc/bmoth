@@ -2,7 +2,6 @@ package de.bmoth.app;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,10 +18,10 @@ public class OptionControllerTest extends HeadlessUITest {
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
         Parent root = loader.load();
-        Scene scene = new Scene(root, 500, 300);
-        stage.setScene(scene);
-        stage.show();
         optionController = loader.getController();
+        stage = optionController.getStage(root);
+        stage.show();
+
     }
 
     @Before
@@ -69,7 +68,7 @@ public class OptionControllerTest extends HeadlessUITest {
         doubleClickOn("#maxInitState").write("11");
         doubleClickOn("#maxTrans").write("13");
         doubleClickOn("#z3Timeout").write("5003");
-        optionController.handleApply();
+        clickOn("#applyButton");
         assertEquals(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT), -3);
         assertEquals(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT), 44);
         assertEquals(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE), 11);

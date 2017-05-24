@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,12 @@ import org.apache.commons.lang3.StringUtils;
 public class OptionController {
 
     private static final String NONNUMERICWARNING = "Not Numeric or out of Integer-Range: ";
+    @FXML
+    Button cancelButton;
+    @FXML
+    Button okButton;
+    @FXML
+    Button applyButton;
     @FXML
     TextField minInt;
     @FXML
