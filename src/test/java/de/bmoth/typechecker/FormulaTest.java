@@ -310,4 +310,16 @@ public class FormulaTest {
         assertEquals("POW(INTEGER)", y.getType().toString());
     }
 
+    @Test(expected = TypeErrorException.class)
+    public void cannotInferFormulaType() {
+        String formula = "x - y";
+        Parser.getFormulaAsSemanticAst(formula);
+    }
+
+    @Test(expected = TypeErrorException.class)
+    public void cannotInferTypeOfLocalVariable() {
+        String formula = "x = y";
+        Parser.getFormulaAsSemanticAst(formula);
+    }
+
 }
