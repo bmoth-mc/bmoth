@@ -3,7 +3,6 @@ package de.bmoth.app;
 import com.microsoft.z3.*;
 import com.microsoft.z3.enumerations.Z3_sort_kind;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
-import de.bmoth.backend.z3.SolutionFinder;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -11,7 +10,6 @@ import javafx.scene.input.KeyCode;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 public class ReplController implements Initializable {
 
