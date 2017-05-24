@@ -12,11 +12,7 @@ public class BoolType implements Type {
 
     @Override
     public boolean unifiable(Type otherType) {
-        if (otherType == this || otherType instanceof UntypedType) {
-            return true;
-        } else {
-            return false;
-        }
+        return otherType == this || otherType instanceof UntypedType;
     }
 
     @Override

@@ -76,12 +76,8 @@ public class SetOrIntegerType extends Observable implements Type, Observer {
 
     @Override
     public boolean unifiable(Type otherType) {
-        if (otherType instanceof SetOrIntegerType || otherType instanceof IntegerType || otherType instanceof SetType
-                || otherType instanceof UntypedType || otherType instanceof IntegerOrSetOfPairs) {
-            return true;
-        } else {
-            return false;
-        }
+        return otherType instanceof SetOrIntegerType || otherType instanceof IntegerType || otherType instanceof SetType
+            || otherType instanceof UntypedType || otherType instanceof IntegerOrSetOfPairs;
     }
 
     @Override

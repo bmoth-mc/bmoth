@@ -2,6 +2,7 @@ package de.bmoth.parser.ast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.CastPredicateExpressionNode;
@@ -48,17 +49,12 @@ public class AstTransformationForZ3 extends AbstractVisitor<Node, Void> {
 
     @Override
     public Node visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, Void expected) {
-        List<ExprNode> argumentList = new ArrayList<>();
-        for (ExprNode expr : node.getExpressionNodes()) {
-            Node e = visitExprNode(expr, expected);
-            argumentList.add((ExprNode) e);
-        }
-        switch (node.getOperator()) {
-        case ELEMENT_OF: {
+        final List<ExprNode> argumentList = node.getExpressionNodes().stream().map(exprNode -> (ExprNode) visitExprNode(exprNode, expected)).collect(Collectors.toList());
+        if (node.getOperator() == PredOperatorExprArgs.ELEMENT_OF) {
             ExprNode left = argumentList.get(0);
             ExprNode right = argumentList.get(1);
             if (right instanceof ExpressionOperatorNode
-                    && ((ExpressionOperatorNode) right).getOperator() == ExpressionOperator.UNION) {
+                && ((ExpressionOperatorNode) right).getOperator() == ExpressionOperator.UNION) {
                 List<PredicateNode> predicateArguments = new ArrayList<>();
                 ExpressionOperatorNode union = (ExpressionOperatorNode) right;
                 for (ExprNode set : union.getExpressionNodes()) {
@@ -66,14 +62,11 @@ public class AstTransformationForZ3 extends AbstractVisitor<Node, Void> {
                     args.add(left);
                     args.add(set);
                     PredicateOperatorWithExprArgsNode predicateOperatorWithExprArgsNode = new PredicateOperatorWithExprArgsNode(
-                            PredOperatorExprArgs.ELEMENT_OF, args);
+                        PredOperatorExprArgs.ELEMENT_OF, args);
                     predicateArguments.add(predicateOperatorWithExprArgsNode);
                 }
                 return new PredicateOperatorNode(PredicateOperator.OR, predicateArguments);
             }
-        }
-        default:
-            break;
         }
         node.setArgumentsList(argumentList);
         return node;
@@ -81,17 +74,12 @@ public class AstTransformationForZ3 extends AbstractVisitor<Node, Void> {
 
     @Override
     public Node visitExprOperatorNode(ExpressionOperatorNode node, Void expected) {
-        List<ExprNode> arguments = new ArrayList<>();
-        for (ExprNode expr : node.getExpressionNodes()) {
-            ExprNode e = (ExprNode) visitExprNode(expr, expected);
-            arguments.add(e);
-        }
-        switch (node.getOperator()) {
-        case UNION: {
+        final List<ExprNode> arguments = node.getExpressionNodes().stream().map(exprNode -> (ExprNode) visitExprNode(exprNode, expected)).collect(Collectors.toList());
+        if (node.getOperator() == ExpressionOperator.UNION) {
             List<ExprNode> list = new ArrayList<>();
             for (ExprNode expr : node.getExpressionNodes()) {
                 if (expr instanceof ExpressionOperatorNode
-                        && ((ExpressionOperatorNode) expr).getOperator() == ExpressionOperator.UNION) {
+                    && ((ExpressionOperatorNode) expr).getOperator() == ExpressionOperator.UNION) {
                     list.addAll(((ExpressionOperatorNode) expr).getExpressionNodes());
                 } else {
                     list.add(expr);
@@ -99,9 +87,6 @@ public class AstTransformationForZ3 extends AbstractVisitor<Node, Void> {
                 node.setExpressionList(list);
             }
             return node;
-        }
-        default:
-            break;
         }
         node.setExpressionList(arguments);
         return node;

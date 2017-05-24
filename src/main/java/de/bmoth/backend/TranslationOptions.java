@@ -4,7 +4,7 @@ public class TranslationOptions {
     private int primeLevel;
 
     public TranslationOptions() {
-        primeLevel = 0;
+        this(0);
     }
 
     public TranslationOptions(int primeLevel) {

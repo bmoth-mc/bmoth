@@ -40,18 +40,6 @@ public class CustomCheckController {
         PersonalPreferences.setBooleanPreference(PersonalPreferences.BooleanPreference.MODEL_CHECK, modelCheck.isSelected());
     }
 
-    public void handleApply() {
-        savePrefs();
-        if (this.initialCheck.isSelected()) {
-            appController.handleInitialStateExists();
-        }
-        if (this.invariantCheck.isSelected()) {
-            appController.handleInvariantSatisfiability();
-        }
-        if (this.modelCheck.isSelected()) {
-            appController.handleInvariantSatisfiability();
-        }
-    }
 
     public void handleClose() {
         stage.close();
@@ -67,7 +55,7 @@ public class CustomCheckController {
             appController.handleInvariantSatisfiability();
         }
         if (this.modelCheck.isSelected()) {
-            appController.handleInvariantSatisfiability();
+            appController.handleCheck();
         }
     }
 

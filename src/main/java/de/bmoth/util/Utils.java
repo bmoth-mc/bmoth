@@ -26,38 +26,6 @@ public class Utils {
         return sortedList;
     }
 
-    public static <T> List<T> determineCycle(final Set<T> remaining, final Map<T, Set<T>> dependencies) {
-        ArrayList<T> cycle = new ArrayList<T>();
-        Set<T> set = new HashSet<T>(remaining);
-        boolean newRun = true;
-        while (newRun) {
-            for (T next : set) {
-                if (cycle.contains(next)) {
-                    newRun = false;
-                    cycle.add(next);
-                    break;
-                } else if (remaining.contains(next)) {
-                    cycle.add(next);
-                    set = new HashSet<>(dependencies.get(next));
-                    break;
-                }
-            }
-        }
-        return cycle;
-    }
-
-    public static String getFileWithoutExtension(String f) {
-        String res = null;
-        int i = f.lastIndexOf('.');
-        if (i > 0 && i < f.length() - 1) {
-            res = f.substring(0, i);
-        } else {
-            // there is no file name extension
-            res = f;
-        }
-        return res;
-    }
-
     public static final String readFile(final File file) throws FileNotFoundException, IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file),
             Charset.forName("UTF-8"))) {

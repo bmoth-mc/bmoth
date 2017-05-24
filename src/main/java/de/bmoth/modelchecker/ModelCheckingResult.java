@@ -34,9 +34,8 @@ public class ModelCheckingResult {
 
     public static List<String> getPath(State state) {
         List<String> path = new ArrayList<>();
-        while (state.predecessor != null) {
-            path.add(state.predecessor.toString());
-            state = state.predecessor;
+        for (State current = state.predecessor; current != null; current = current.predecessor) {
+            path.add(current.toString());
         }
         return path;
     }

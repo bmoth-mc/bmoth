@@ -4,7 +4,7 @@ import java.util.List;
 
 public class FormulaNode implements Node {
 
-    public static enum FormulaType {
+    public enum FormulaType {
         EXPRESSION_FORMULA, PREDICATE_FORMULA
     }
 

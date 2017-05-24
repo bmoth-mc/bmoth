@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class QuantifiedPredicateNode extends PredicateNode {
 
-    public static enum QuantifiedPredicateOperator {
+    public enum QuantifiedPredicateOperator {
         UNIVERSAL_QUANTIFICATION, EXISTENTIAL_QUANTIFICATION
     }
 
@@ -26,7 +26,7 @@ public class QuantifiedPredicateNode extends PredicateNode {
     private QuantifiedPredicateOperator operator;
 
     public QuantifiedPredicateNode(QuantifiedPredicateContext ctx, List<DeclarationNode> declarationList,
-            PredicateNode predNode) {
+                                   PredicateNode predNode) {
         this.declarationList = declarationList;
         this.predicateNode = predNode;
         this.operator = loopUpOperator(ctx.operator.getType());
@@ -55,12 +55,12 @@ public class QuantifiedPredicateNode extends PredicateNode {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         switch (operator) {
-        case EXISTENTIAL_QUANTIFICATION:
-            sb.append("EXISTS(");
-            break;
-        case UNIVERSAL_QUANTIFICATION:
-            sb.append("FORALL(");
-            break;
+            case EXISTENTIAL_QUANTIFICATION:
+                sb.append("EXISTS(");
+                break;
+            case UNIVERSAL_QUANTIFICATION:
+                sb.append("FORALL(");
+                break;
         }
         sb.append(declarationList.stream().map(Object::toString).collect(Collectors.joining(",")));
         sb.append(",");

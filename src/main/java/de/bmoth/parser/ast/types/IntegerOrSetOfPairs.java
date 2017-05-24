@@ -145,11 +145,7 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
             return true;
         } else if (otherType instanceof SetType) {
             SetType setType = (SetType) otherType;
-            if (setType.getSubtype() instanceof CoupleType) {
-                return true;
-            } else {
-                return false;
-            }
+            return setType.getSubtype() instanceof CoupleType;
         } else {
             return false;
         }
@@ -157,10 +153,7 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
 
     @Override
     public boolean contains(Type other) {
-        if (other == getLeft() || other == getRight()) {
-            return true;
-        }
-        return false;
+        return other == getLeft() || other == getRight();
     }
 
     @Override

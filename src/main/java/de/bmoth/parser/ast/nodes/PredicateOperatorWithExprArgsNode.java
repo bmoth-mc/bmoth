@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class PredicateOperatorWithExprArgsNode extends PredicateNode {
 
-    public static enum PredOperatorExprArgs {
+    public enum PredOperatorExprArgs {
         EQUAL, NOT_EQUAL, ELEMENT_OF, LESS_EQUAL, LESS, GREATER_EQUAL, GREATER//
         , NOT_BELONGING, INCLUSION, STRICT_INCLUSION, NON_INCLUSION, STRICT_NON_INCLUSION//
     }
@@ -33,7 +33,7 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
         map.put(BMoThParser.STRICT_NON_INCLUSION, PredOperatorExprArgs.STRICT_NON_INCLUSION);
     }
 
-    private  List<ExprNode> expressionNodes;
+    private List<ExprNode> expressionNodes;
     private String operatorString;
     private PredOperatorExprArgs operator;
 
@@ -84,7 +84,7 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
     }
 
     public void setArgumentsList(List<ExprNode> argumentList) {
-        this.expressionNodes = argumentList; 
+        this.expressionNodes = argumentList;
     }
 
 }

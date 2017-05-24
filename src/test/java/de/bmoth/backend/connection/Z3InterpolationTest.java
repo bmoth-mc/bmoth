@@ -1,4 +1,4 @@
-package de.bmoth.backend.translator;
+package de.bmoth.backend.connection;
 
 import com.microsoft.z3.*;
 import com.microsoft.z3.InterpolationContext.ComputeInterpolantResult;

@@ -75,6 +75,11 @@ public class SolutionFinder {
             // find a solution ...
             BoolExpr solution = findSolution(currentModel);
 
+            // prevent continuing when formula is SAT but model is empty
+            if (solution == null) {
+                break;
+            }
+
             // ... and add it as an exclusion constraint to solver stack
             solver.add(z3Context.mkNot(solution));
 
@@ -84,9 +89,6 @@ public class SolutionFinder {
         // delete solution finding scope to remove all exclusion constraints
         // from solver stack
         solver.pop();
-
-        // TODO getModel() invocation fails if solver.check() hasn't been called
-        // in advance. Is here a dummy call necessary?
 
         return result;
     }
