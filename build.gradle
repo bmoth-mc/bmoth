@@ -250,10 +250,9 @@ distTar {
 }
 
 // copy all dependencies to a single directory for sonar analysis
-task copyToLib(type: Copy) {
+task copyDependenciesForSonarAnalysis(type: Copy) {
     into "$buildDir/dependency-jars"
     from configurations.runtime
     from configurations.compile
     from configurations.testCompile
 }
-build.dependsOn(copyToLib)
