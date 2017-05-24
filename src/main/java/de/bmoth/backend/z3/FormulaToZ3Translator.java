@@ -370,8 +370,7 @@ public class FormulaToZ3Translator {
                     break;
                 case CONC:
                     break;
-                case EMPTY_SET: // this is not missing! it is equal to an empty set
-                    // enumeration below
+                case EMPTY_SET: // not missing! it is equal to an empty enumeration below
                 case SET_ENUMERATION: {
                     SetType type = (SetType) node.getType();
                     Type subType = type.getSubtype();
@@ -631,30 +630,29 @@ public class FormulaToZ3Translator {
                     // {e| P}
                     // return T
                     // !(e).(e : T <=> P )
-                    Expr P = visitPredicateNode(node.getPredicateNode(), opt);
-                    Expr T = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
+                    Expr comprehensionPredicate = visitPredicateNode(node.getPredicateNode(), opt);
+                    Expr elementInComprehension = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
 
-                    Expr[] array = new Expr[node.getDeclarationList().size()];
-                    for (int i = 0; i < array.length; i++) {
+                    Expr[] boundVariables = new Expr[node.getDeclarationList().size()];
+                    for (int i = 0; i < boundVariables.length; i++) {
                         DeclarationNode decl = node.getDeclarationList().get(i);
                         Expr e = z3Context.mkConst(decl.getName(), bTypeToZ3Sort(decl.getType()));
-                        array[i] = e;
+                        boundVariables[i] = e;
                     }
                     Expr tuple = null;
-                    if (array.length > 1) {
+                    if (boundVariables.length > 1) {
                         TupleSort tupleSort = (TupleSort) bTypeToZ3Sort(((SetType) node.getType()).getSubtype());
-                        tuple = tupleSort.mkDecl().apply(array);
+                        tuple = tupleSort.mkDecl().apply(boundVariables);
                     } else {
-                        tuple = array[0];
+                        tuple = boundVariables[0];
                     }
 
-                    Expr[] bound = array;
-                    BoolExpr a = z3Context.mkSetMembership(tuple, (ArrayExpr) T);
+                    BoolExpr a = z3Context.mkSetMembership(tuple, (ArrayExpr) elementInComprehension);
                     // a <=> P
-                    BoolExpr body = z3Context.mkEq(a, P);
-                    Quantifier q = z3Context.mkForall(bound, body, array.length, null, null, null, null);
+                    BoolExpr body = z3Context.mkEq(a, comprehensionPredicate);
+                    Quantifier q = z3Context.mkForall(boundVariables, body, boundVariables.length, null, null, null, null);
                     constraintList.add(q);
-                    return T;
+                    return elementInComprehension;
                 }
                 case QUANTIFIED_INTER:
                 case QUANTIFIED_UNION:
