@@ -68,7 +68,7 @@ public class MachineAnalyser extends AbstractAnalyser {
             if (MachineAnalyser.this.constantsDeclarations.containsKey(name)
                 || MachineAnalyser.this.variablesDeclarations.containsKey(name)
                 || MachineAnalyser.this.operationsDeclarations.containsKey(name)) {
-                throw new ScopeException(token, "Duplicate declaration of identifier: " + name);
+                throw new ScopeException("Duplicate declaration of identifier: " + name);
             }
         }
 
@@ -92,14 +92,14 @@ public class MachineAnalyser extends AbstractAnalyser {
                     if (MachineAnalyser.this.invariant == null) {
                         MachineAnalyser.this.invariant = ctx;
                     } else {
-                        throw new ScopeException(ctx, "Duplicate INVARIANT clause.");
+                        throw new ScopeException("Duplicate INVARIANT clause.");
                     }
                     break;
                 case PROPERTIES:
                     if (MachineAnalyser.this.properties == null) {
                         MachineAnalyser.this.properties = ctx;
                     } else {
-                        throw new ScopeException(ctx, "Duplicate PROPERTIES clause.");
+                        throw new ScopeException("Duplicate PROPERTIES clause.");
                     }
                     break;
                 default:
@@ -113,7 +113,7 @@ public class MachineAnalyser extends AbstractAnalyser {
             if (MachineAnalyser.this.initialisation == null) {
                 MachineAnalyser.this.initialisation = ctx;
             } else {
-                throw new ScopeException(ctx, "Duplicate PROPERTIES clause.");
+                throw new ScopeException("Duplicate PROPERTIES clause.");
             }
             return null;
         }
@@ -157,7 +157,7 @@ public class MachineAnalyser extends AbstractAnalyser {
 
     @Override
     public void identifierNodeFound(Token identifierToken) {
-        throw new ScopeException(identifierToken, "Unknown identifier: " + identifierToken.getText());
+        throw new ScopeException("Unknown identifier: " + identifierToken.getText());
     }
 
 }
