@@ -10,8 +10,12 @@ import javafx.scene.input.KeyCode;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ReplController implements Initializable {
+    private final Logger logger = Logger.getLogger(getClass().getName());
+
 
     @FXML
     TextArea replText;
@@ -59,7 +63,7 @@ public class ReplController implements Initializable {
                     }
                     output.append(", ");
                 } catch (com.microsoft.z3.Z3Exception e) {
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, "Z3 exception while solving", e);
                 }
             }
             if (model.toString().equals("")) {
