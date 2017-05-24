@@ -12,6 +12,7 @@ import static org.testfx.matcher.base.NodeMatchers.isNotNull;
 import static org.testfx.matcher.base.NodeMatchers.isNull;
 
 public class AppControllerTest extends HeadlessUITest {
+
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("app.fxml"));

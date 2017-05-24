@@ -41,7 +41,7 @@ public class OptionController {
         minInt.selectRange(99, 99);
     }
 
-    public void setUpPrefs() {
+    void setUpPrefs() {
         minInt.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT)));
         maxInt.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT)));
         maxInitState.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE)));
@@ -49,7 +49,7 @@ public class OptionController {
         z3Timeout.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT)));
     }
 
-    private boolean checkPrefs() {
+    boolean checkPrefs() {
         if (!StringUtils.isNumeric(maxInt.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + minInt.getId()).show();
             return false;
@@ -96,11 +96,12 @@ public class OptionController {
     }
 
 
-    private void savePrefs() {
+    void savePrefs() {
         PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MIN_INT, minInt.getText());
         PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT, maxInt.getText());
         PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE, maxInitState.getText());
         PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS, maxTrans.getText());
+        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT, z3Timeout.getText());
     }
 
 
