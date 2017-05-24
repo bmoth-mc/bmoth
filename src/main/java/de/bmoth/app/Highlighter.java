@@ -50,7 +50,7 @@ public class Highlighter {
     );
 
     protected static StyleSpans<Collection<String>> computeHighlighting(String text) {
-        String[] groups = new String[]{"KEYWORD", "KEYWORD2", "PAREN", "BRACE", "BRACKET", "SEMICOLON", "STRING", "COMMENT"};
+        String[] groups = new String[]{"START", "KEYWORD", "KEYWORD2", "PAREN", "BRACE", "BRACKET", "SEMICOLON", "STRING", "COMMENT"};
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder
