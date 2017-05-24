@@ -12,31 +12,32 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public interface Highlighter {
+public class Highlighter {
+    private Highlighter() {
+    }
 
-    String[] START = new String[]{
+    private static final String[] START = new String[]{
         "MACHINE"
     };
 
-    String[] KEYWORDS = new String[]{
+    private static final String[] KEYWORDS = new String[]{
         "VARIABLES", "INVARIANT", "INITIALISATION", "OPERATIONS", "CONSTANTS", "PROPERTIES"
     };
-
-    String[] KEYWORDS2 = new String[]{
+    private static final String[] KEYWORDS2 = new String[]{
         "END", "SELECT", "THEN", "BEGIN", "WHERE", "ANY"
     };
 
-    String START_PATTERN = "\\b(" + String.join("|", START) + ")\\b";
-    String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
-    String KEYWORD2_PATTERN = "\\b(" + String.join("|", KEYWORDS2) + ")\\b";
-    String PAREN_PATTERN = "\\(|\\)";
-    String BRACE_PATTERN = "\\{|\\}";
-    String BRACKET_PATTERN = "\\[|\\]";
-    String SEMICOLON_PATTERN = "\\;";
-    String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
+    private static final String START_PATTERN = "\\b(" + String.join("|", START) + ")\\b";
+    private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
+    private static final String KEYWORD2_PATTERN = "\\b(" + String.join("|", KEYWORDS2) + ")\\b";
+    private static final String PAREN_PATTERN = "\\(|\\)";
+    private static final String BRACE_PATTERN = "\\{|\\}";
+    private static final String BRACKET_PATTERN = "\\[|\\]";
+    private static final String SEMICOLON_PATTERN = "\\;";
+    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
+    private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
 
-    Pattern PATTERN = Pattern.compile(
+    private static final Pattern PATTERN = Pattern.compile(
         "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
             + "|(?<START>" + START_PATTERN + ")"
             + "|(?<KEYWORD2>" + KEYWORD2_PATTERN + ")"
@@ -48,7 +49,7 @@ public interface Highlighter {
             + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
     );
 
-    static StyleSpans<Collection<String>> computeHighlighting(String text) {
+    protected static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder
