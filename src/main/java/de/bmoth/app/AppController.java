@@ -320,10 +320,10 @@ public class AppController implements Initializable {
      */
     private void saveFile(String path) throws IOException {
         File file = new File(path);
-        FileWriter fileWriter = new FileWriter(file);
-        fileWriter.write(codeArea.getText());
-        primaryStage.setTitle(APPNAME + " - " + file.getName().substring(0, file.getName().length() - 4));
-        fileWriter.close();
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write(codeArea.getText());
+            primaryStage.setTitle(APPNAME + " - " + file.getName().substring(0, file.getName().length() - 4));
+        }
     }
 
     /**
