@@ -2,38 +2,35 @@ package de.bmoth.app;
 
 import java.util.prefs.Preferences;
 
-public class PersonalPreferences {
-    private static Preferences prefs = Preferences.userNodeForPackage(PersonalPreferences.class);
+public interface PersonalPreferences {
+    Preferences prefs = Preferences.userNodeForPackage(PersonalPreferences.class);
 
-    private PersonalPreferences() {
 
-    }
-
-    public static String getStringPreference(StringPreference p) {
+    static String getStringPreference(StringPreference p) {
         return prefs.get(p.toString(), p.defaultValue);
     }
 
-    public static void setStringPreference(StringPreference p, String val) {
+    static void setStringPreference(StringPreference p, String val) {
         prefs.put(p.toString(), val);
     }
 
-    public static boolean getBooleanPreference(BooleanPreference p) {
+    static boolean getBooleanPreference(BooleanPreference p) {
         return prefs.getBoolean(p.toString(), p.defaultValue);
     }
 
-    public static void setBooleanPreference(BooleanPreference p, boolean val) {
+    static void setBooleanPreference(BooleanPreference p, boolean val) {
         prefs.put(p.toString(), String.valueOf(val));
     }
 
-    public static int getIntPreference(IntPreference p) {
+    static int getIntPreference(IntPreference p) {
         return prefs.getInt(p.toString(), p.defaultValue);
     }
 
-    public static void setIntPreference(IntPreference p, String val) {
+    static void setIntPreference(IntPreference p, String val) {
         prefs.put(p.toString(), val);
     }
 
-    public enum StringPreference {
+    enum StringPreference {
         LAST_FILE(""), LAST_DIR(System.getProperty("user.dir"));
 
         private String defaultValue;
@@ -44,7 +41,7 @@ public class PersonalPreferences {
     }
 
 
-    public enum IntPreference {
+    enum IntPreference {
         MIN_INT(-1), MAX_INT(3), MAX_INITIAL_STATE(5), MAX_TRANSITIONS(5), Z3_TIMEOUT(5000);
 
         private int defaultValue;
@@ -54,7 +51,7 @@ public class PersonalPreferences {
         }
     }
 
-    public enum BooleanPreference {
+    enum BooleanPreference {
         INVARIANT_CHECK(true), MODEL_CHECK(true), INITIAL_CHECK(true);
 
         private boolean defaultValue;
