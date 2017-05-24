@@ -56,10 +56,7 @@ public class OptionControllerTest extends HeadlessUITest {
         doubleClickOn("#maxTrans").write("5");
         doubleClickOn("#z3Timeout").write("5000");
         clickOn("#applyButton");
-
-
     }
-
 
     @Test
     public void closeOnSuccess() {
@@ -86,7 +83,6 @@ public class OptionControllerTest extends HeadlessUITest {
         assertEquals(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE), 11);
         assertEquals(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS), 13);
         assertEquals(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT), 5003);
-
     }
 
 

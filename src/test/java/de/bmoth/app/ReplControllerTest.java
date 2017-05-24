@@ -49,9 +49,8 @@ public class ReplControllerTest extends HeadlessUITest {
     }
 
     @Test
-    @Ignore
     public void replIssue71Test() {
         clickOn(repl).write("3 > 2").push(ENTER).sleep(z3WaitTime);
-        assertEquals("3 > 2\nSATISFIABLE\n{}\n", repl.getText());
+        assertEquals("3 > 2\nSATISFIABLE\n", repl.getText());
     }
 }
