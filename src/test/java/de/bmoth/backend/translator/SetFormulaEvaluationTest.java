@@ -101,14 +101,15 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testINT() {
         PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT, "10");
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MIN_INT, "5");
-        //UtilMethodsTest.check(SATISFIABLE, "0 : INT", z3Context, z3Solver);
-        //UtilMethodsTest.check(SATISFIABLE, "1 : INT", z3Context, z3Solver);
-        //UtilMethodsTest.check(SATISFIABLE, "-1 : INT", z3Context, z3Solver);
+        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MIN_INT, "-1");
+        UtilMethodsTest.check(SATISFIABLE, "0 : INT", z3Context, z3Solver);
+        UtilMethodsTest.check(SATISFIABLE, "1 : INT", z3Context, z3Solver);
+        UtilMethodsTest.check(SATISFIABLE, "-1 : INT", z3Context, z3Solver);
         UtilMethodsTest.check(SATISFIABLE, "10 : INT", z3Context, z3Solver);
         UtilMethodsTest.check(UNSATISFIABLE, "11 : INT", z3Context, z3Solver);
+        UtilMethodsTest.check(UNSATISFIABLE, "-3 : INT", z3Context, z3Solver);
         UtilMethodsTest.check(SATISFIABLE, "6 : INT", z3Context, z3Solver);
-        UtilMethodsTest.check(UNSATISFIABLE, "4 : INT", z3Context, z3Solver);
+        UtilMethodsTest.check(SATISFIABLE, "4 : INT", z3Context, z3Solver);
     }
 
     @Test
