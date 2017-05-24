@@ -41,32 +41,36 @@ public class ReplController implements Initializable {
         ctx = new Context();
         s = ctx.mkSolver();
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(predicate, ctx);
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
-        Set<Model> solutions = finder.findSolutions(1);
-        StringBuilder output = new StringBuilder();
-        for (Model solution : solutions) {
-            FuncDecl[] functionDeclarations = solution.getConstDecls();
+
+        s.add(constraint);
+        Status check = s.check();
+
+        if (check == Status.SATISFIABLE) {
+            Model model = s.getModel();
+            StringBuilder output = new StringBuilder();
+            FuncDecl[] functionDeclarations = model.getConstDecls();
             for (FuncDecl decl : functionDeclarations) {
                 output.append(decl.getName()).append("=");
                 try {
                     if (decl.getArity() == 0 && decl.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
                         // this is a constant
-                        output.append(solution.getConstInterp(decl));
+                        output.append(model.getConstInterp(decl));
                     } else {
                         // not a constant, e.g. some representation of a set
-                        output.append(solution.getFuncInterp(decl));
+                        output.append(model.getFuncInterp(decl));
                     }
                     output.append(", ");
                 } catch (com.microsoft.z3.Z3Exception e) {
                     e.printStackTrace();
                 }
             }
-
-        }
-        if (solutions.isEmpty()) {
-            return "\nUNSATISFIABLE";
+            if (model.toString().equals("")) {
+                return "\n" + check;
+            } else {
+                return "\n{" + output.substring(0, output.length() - 2) + "}";
+            }
         } else {
-            return "\n{" + output.substring(0, output.length() - 2) + "}";
+            return "\n" + Status.UNSATISFIABLE;
         }
     }
 }
