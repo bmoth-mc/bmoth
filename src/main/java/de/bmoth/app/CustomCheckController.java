@@ -35,9 +35,9 @@ public class CustomCheckController {
     }
 
     private void savePrefs() {
-        Preferences.setBooleanPreference(Preferences.BooleanPreference.INITIAL_CHECK, initialCheck.isSelected());
-        Preferences.setBooleanPreference(Preferences.BooleanPreference.INVARIANT_CHECK, invariantCheck.isSelected());
-        Preferences.setBooleanPreference(Preferences.BooleanPreference.MODEL_CHECK, modelCheck.isSelected());
+        BMothPreferences.setBooleanPreference(BMothPreferences.BooleanPreference.INITIAL_CHECK, initialCheck.isSelected());
+        BMothPreferences.setBooleanPreference(BMothPreferences.BooleanPreference.INVARIANT_CHECK, invariantCheck.isSelected());
+        BMothPreferences.setBooleanPreference(BMothPreferences.BooleanPreference.MODEL_CHECK, modelCheck.isSelected());
     }
 
 

@@ -4,7 +4,7 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Status;
 import de.bmoth.TestUsingZ3;
-import de.bmoth.app.Preferences;
+import de.bmoth.app.BMothPreferences;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.util.UtilMethodsTest;
 import org.junit.Ignore;
@@ -82,7 +82,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
 
     @Test
     public void testNAT() {
-        Preferences.setIntPreference(Preferences.IntPreference.MAX_INT, "10");
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, "10");
         UtilMethodsTest.check(SATISFIABLE, "0 : NAT", z3Context, z3Solver);
         UtilMethodsTest.check(SATISFIABLE, "1 : NAT", z3Context, z3Solver);
         UtilMethodsTest.check(UNSATISFIABLE, "-1 : NAT", z3Context, z3Solver);
@@ -100,8 +100,8 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
 
     @Test
     public void testINT() {
-        Preferences.setIntPreference(Preferences.IntPreference.MAX_INT, "10");
-        Preferences.setIntPreference(Preferences.IntPreference.MIN_INT, "-1");
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, "10");
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MIN_INT, "-1");
         UtilMethodsTest.check(SATISFIABLE, "0 : INT", z3Context, z3Solver);
         UtilMethodsTest.check(SATISFIABLE, "1 : INT", z3Context, z3Solver);
         UtilMethodsTest.check(SATISFIABLE, "-1 : INT", z3Context, z3Solver);

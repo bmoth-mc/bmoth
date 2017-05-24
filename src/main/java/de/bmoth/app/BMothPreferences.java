@@ -1,10 +1,7 @@
 package de.bmoth.app;
 
-import java.util.prefs.Preferences;
-
-public interface PersonalPreferences {
-    Preferences prefs = Preferences.userNodeForPackage(PersonalPreferences.class);
-
+public class BMothPreferences {
+    private static java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(BMothPreferences.class);
 
     static String getStringPreference(StringPreference p) {
         return prefs.get(p.toString(), p.defaultValue);
