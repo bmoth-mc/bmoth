@@ -92,7 +92,7 @@ public class FormulaToZ3Translator {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context, formula);
 
         if (formulaToZ3Translator.formulaNode.getFormulaType() != FormulaType.PREDICATE_FORMULA) {
-            throw new RuntimeException("Expected predicate.");
+            throw new IllegalArgumentException("Expected predicate.");
         }
         PredicateNode predNode = AstTransformationForZ3
             .transformSemanticNode((PredicateNode) formulaToZ3Translator.formulaNode.getFormula());
