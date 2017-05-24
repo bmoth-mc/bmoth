@@ -12,11 +12,11 @@ import static org.testfx.matcher.base.NodeMatchers.hasText;
 
 
 public class OptionControllerTest extends HeadlessUITest {
-    private String minIntID = "#minInt";
-    private String maxIntID = "#maxInt";
-    private String maxInitStateID = "#maxInitState";
-    private final String maxTransitionsID = "#maxTrans";
-    private final String z3TimeoutID = "#z3Timeout";
+    private static final String minIntID = "#minInt";
+    private static final String maxIntID = "#maxInt";
+    private static final String maxInitStateID = "#maxInitState";
+    private static final String maxTransitionsID = "#maxTrans";
+    private static final String z3TimeoutID = "#z3Timeout";
 
     private OptionController optionController;
 
