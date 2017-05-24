@@ -49,11 +49,11 @@ public class OptionController {
     }
 
     void setUpPrefs() {
-        minInt.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT)));
-        maxInt.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT)));
-        maxInitState.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE)));
-        maxTrans.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS)));
-        z3Timeout.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT)));
+        minInt.setText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MIN_INT)));
+        maxInt.setText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MAX_INT)));
+        maxInitState.setText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MAX_INITIAL_STATE)));
+        maxTrans.setText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MAX_TRANSITIONS)));
+        z3Timeout.setText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.Z3_TIMEOUT)));
     }
 
     boolean checkPrefs() {
@@ -104,11 +104,11 @@ public class OptionController {
 
 
     void savePrefs() {
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MIN_INT, minInt.getText());
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT, maxInt.getText());
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE, maxInitState.getText());
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS, maxTrans.getText());
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT, z3Timeout.getText());
+        Preferences.setIntPreference(Preferences.IntPreference.MIN_INT, minInt.getText());
+        Preferences.setIntPreference(Preferences.IntPreference.MAX_INT, maxInt.getText());
+        Preferences.setIntPreference(Preferences.IntPreference.MAX_INITIAL_STATE, maxInitState.getText());
+        Preferences.setIntPreference(Preferences.IntPreference.MAX_TRANSITIONS, maxTrans.getText());
+        Preferences.setIntPreference(Preferences.IntPreference.Z3_TIMEOUT, z3Timeout.getText());
     }
 
 

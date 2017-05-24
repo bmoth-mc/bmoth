@@ -1,7 +1,7 @@
 package de.bmoth.backend.z3;
 
 import com.microsoft.z3.*;
-import de.bmoth.app.PersonalPreferences;
+import de.bmoth.app.Preferences;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.AbstractVisitor;
@@ -275,8 +275,8 @@ public class FormulaToZ3Translator {
                     return setNatural;
                 case INT:
                     if (setInt == null) {
-                        int maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
-                        int minInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT);
+                        int maxInt = Preferences.getIntPreference(Preferences.IntPreference.MAX_INT);
+                        int minInt = Preferences.getIntPreference(Preferences.IntPreference.MIN_INT);
                         //node.getType() = POW(INTEGER)
                         setInt = (ArrayExpr) z3Context.mkConst(ExpressionOperator.INT.toString(), bTypeToZ3Sort(node.getType()));
                         constraintList.add(prepareSetQuantifier(setInt, z3Context.mkInt(minInt), z3Context.mkInt(maxInt)));
@@ -284,7 +284,7 @@ public class FormulaToZ3Translator {
                     return setInt;
                 case NAT:
                     if (setNat == null) {
-                        int maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
+                        int maxInt = Preferences.getIntPreference(Preferences.IntPreference.MAX_INT);
                         // node.getType() = POW(INTEGER)
                         setNat = (ArrayExpr) z3Context.mkConst(ExpressionOperator.NAT.toString(), bTypeToZ3Sort(node.getType()));
                         constraintList.add(prepareSetQuantifier(setNat, z3Context.mkInt(0), z3Context.mkInt(maxInt)));
@@ -515,9 +515,9 @@ public class FormulaToZ3Translator {
                     return tempConstant;
                 }
                 case MAXINT:
-                    return z3Context.mkInt(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT));
+                    return z3Context.mkInt(Preferences.getIntPreference(Preferences.IntPreference.MAX_INT));
                 case MININT:
-                    return z3Context.mkInt(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT));
+                    return z3Context.mkInt(Preferences.getIntPreference(Preferences.IntPreference.MIN_INT));
                 default:
                     break;
             }

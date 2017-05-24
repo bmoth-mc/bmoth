@@ -36,11 +36,11 @@ public class OptionControllerTest extends HeadlessUITest {
 
     @Test
     public void optionCreateTest() {
-        verifyThat(minIntID, hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT))));
-        verifyThat(maxIntID, hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT))));
-        verifyThat(maxInitStateID, hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE))));
-        verifyThat(maxTransitionsID, hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS))));
-        verifyThat(z3TimeoutID, hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT))));
+        verifyThat(minIntID, hasText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MIN_INT))));
+        verifyThat(maxIntID, hasText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MAX_INT))));
+        verifyThat(maxInitStateID, hasText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MAX_INITIAL_STATE))));
+        verifyThat(maxTransitionsID, hasText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MAX_TRANSITIONS))));
+        verifyThat(z3TimeoutID, hasText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.Z3_TIMEOUT))));
     }
 
     @Test
@@ -65,17 +65,17 @@ public class OptionControllerTest extends HeadlessUITest {
 
     @Test
     public void closeOnSuccess() {
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MIN_INT, "-1");
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT, "3");
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE, "5");
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS, "5");
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT, "5000");
+        Preferences.setIntPreference(Preferences.IntPreference.MIN_INT, "-1");
+        Preferences.setIntPreference(Preferences.IntPreference.MAX_INT, "3");
+        Preferences.setIntPreference(Preferences.IntPreference.MAX_INITIAL_STATE, "5");
+        Preferences.setIntPreference(Preferences.IntPreference.MAX_TRANSITIONS, "5");
+        Preferences.setIntPreference(Preferences.IntPreference.Z3_TIMEOUT, "5000");
         optionController.setUpPrefs();
-        verifyThat(minIntID, hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT))));
-        verifyThat(maxIntID, hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT))));
-        verifyThat(maxInitStateID, hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE))));
-        verifyThat(maxTransitionsID, hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS))));
-        verifyThat(z3TimeoutID, hasText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT))));
+        verifyThat(minIntID, hasText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MIN_INT))));
+        verifyThat(maxIntID, hasText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MAX_INT))));
+        verifyThat(maxInitStateID, hasText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MAX_INITIAL_STATE))));
+        verifyThat(maxTransitionsID, hasText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.MAX_TRANSITIONS))));
+        verifyThat(z3TimeoutID, hasText(String.valueOf(Preferences.getIntPreference(Preferences.IntPreference.Z3_TIMEOUT))));
         //Note: DoubleClick doesn't select the -, so it has to be removed.
         doubleClickOn(minIntID).eraseText(2).write("-3");
         doubleClickOn(maxIntID).write("44");
@@ -83,11 +83,11 @@ public class OptionControllerTest extends HeadlessUITest {
         doubleClickOn(maxTransitionsID).write("13");
         doubleClickOn(z3TimeoutID).write("5003");
         clickOn("#applyButton");
-        assertEquals(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT), -3);
-        assertEquals(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT), 44);
-        assertEquals(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE), 11);
-        assertEquals(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS), 13);
-        assertEquals(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT), 5003);
+        assertEquals(Preferences.getIntPreference(Preferences.IntPreference.MIN_INT), -3);
+        assertEquals(Preferences.getIntPreference(Preferences.IntPreference.MAX_INT), 44);
+        assertEquals(Preferences.getIntPreference(Preferences.IntPreference.MAX_INITIAL_STATE), 11);
+        assertEquals(Preferences.getIntPreference(Preferences.IntPreference.MAX_TRANSITIONS), 13);
+        assertEquals(Preferences.getIntPreference(Preferences.IntPreference.Z3_TIMEOUT), 5003);
     }
 
 
