@@ -12,11 +12,11 @@ import static org.testfx.matcher.base.NodeMatchers.hasText;
 
 
 public class OptionControllerTest extends HeadlessUITest {
-    private static final String minIntId = "#minInt";
-    private static final String maxIntId = "#maxInt";
-    private static final String maxInitStateId = "#maxInitState";
-    private static final String maxTransitionsId = "#maxTrans";
-    private static final String z3TimeoutId = "#z3Timeout";
+    private static final String MIN_INT_ID = "#minInt";
+    private static final String MAX_INT_ID = "#maxInt";
+    private static final String MAX_INIT_STATE_ID = "#maxInitState";
+    private static final String MAX_TRANSITIONS_ID = "#maxTrans";
+    private static final String Z3_TIMEOUT_ID = "#z3Timeout";
 
     private OptionController optionController;
 
@@ -36,30 +36,30 @@ public class OptionControllerTest extends HeadlessUITest {
 
     @Test
     public void optionCreateTest() {
-        verifyThat(minIntId, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT))));
-        verifyThat(maxIntId, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT))));
-        verifyThat(maxInitStateId, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE))));
-        verifyThat(maxTransitionsId, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS))));
-        verifyThat(z3TimeoutId, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT))));
+        verifyThat(MIN_INT_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT))));
+        verifyThat(MAX_INT_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT))));
+        verifyThat(MAX_INIT_STATE_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE))));
+        verifyThat(MAX_TRANSITIONS_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS))));
+        verifyThat(Z3_TIMEOUT_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT))));
     }
 
     @Test
     public void checkSucces() {
-        doubleClickOn(minIntId).write("1");
-        doubleClickOn(maxIntId).write("100");
-        doubleClickOn(maxInitStateId).write("20");
-        doubleClickOn(maxTransitionsId).write("5");
-        doubleClickOn(z3TimeoutId).write("5000");
+        doubleClickOn(MIN_INT_ID).write("1");
+        doubleClickOn(MAX_INT_ID).write("100");
+        doubleClickOn(MAX_INIT_STATE_ID).write("20");
+        doubleClickOn(MAX_TRANSITIONS_ID).write("5");
+        doubleClickOn(Z3_TIMEOUT_ID).write("5000");
         assertEquals(true, optionController.checkPrefs());
     }
 
     @Test
     public void checkMinBiggerMax() {
-        doubleClickOn(minIntId).eraseText(2).write("3");
-        doubleClickOn(maxIntId).write("1");
-        doubleClickOn(maxInitStateId).write("20");
-        doubleClickOn(maxTransitionsId).write("5");
-        doubleClickOn(z3TimeoutId).write("5000");
+        doubleClickOn(MIN_INT_ID).eraseText(2).write("3");
+        doubleClickOn(MAX_INT_ID).write("1");
+        doubleClickOn(MAX_INIT_STATE_ID).write("20");
+        doubleClickOn(MAX_TRANSITIONS_ID).write("5");
+        doubleClickOn(Z3_TIMEOUT_ID).write("5000");
         clickOn("#applyButton");
     }
 
@@ -71,17 +71,17 @@ public class OptionControllerTest extends HeadlessUITest {
         BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS, "5");
         BMothPreferences.setIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT, "5000");
         optionController.setUpPrefs();
-        verifyThat(minIntId, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT))));
-        verifyThat(maxIntId, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT))));
-        verifyThat(maxInitStateId, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE))));
-        verifyThat(maxTransitionsId, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS))));
-        verifyThat(z3TimeoutId, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT))));
+        verifyThat(MIN_INT_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT))));
+        verifyThat(MAX_INT_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT))));
+        verifyThat(MAX_INIT_STATE_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE))));
+        verifyThat(MAX_TRANSITIONS_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS))));
+        verifyThat(Z3_TIMEOUT_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT))));
         //Note: DoubleClick doesn't select the -, so it has to be removed.
-        doubleClickOn(minIntId).eraseText(2).write("-3");
-        doubleClickOn(maxIntId).write("44");
-        doubleClickOn(maxInitStateId).write("11");
-        doubleClickOn(maxTransitionsId).write("13");
-        doubleClickOn(z3TimeoutId).write("5003");
+        doubleClickOn(MIN_INT_ID).eraseText(2).write("-3");
+        doubleClickOn(MAX_INT_ID).write("44");
+        doubleClickOn(MAX_INIT_STATE_ID).write("11");
+        doubleClickOn(MAX_TRANSITIONS_ID).write("13");
+        doubleClickOn(Z3_TIMEOUT_ID).write("5003");
         clickOn("#applyButton");
         assertEquals(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT), -3);
         assertEquals(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT), 44);
