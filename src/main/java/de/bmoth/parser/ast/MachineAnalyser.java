@@ -68,7 +68,7 @@ public class MachineAnalyser extends AbstractAnalyser {
             if (MachineAnalyser.this.constantsDeclarations.containsKey(name)
                 || MachineAnalyser.this.variablesDeclarations.containsKey(name)
                 || MachineAnalyser.this.operationsDeclarations.containsKey(name)) {
-                throw new ScopeException(token, "Duplicate declaration of identifier: ");
+                throw new ScopeException(token, "Duplicate declaration of identifier: " + name);
             }
         }
 
