@@ -204,7 +204,6 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             case MULT: {
                 UntypedType dd = new UntypedType();
                 Type found = new IntegerOrSetOfPairs(new UntypedType(), dd);
-                // System.out.println(dd);
                 try {
                     found = found.unify(expected);
                 } catch (UnificationException e) {
@@ -239,7 +238,6 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
                 }
                 this.multOrCartNodes.add(node);
                 this.typedNodes.add(node);
-                // System.out.println(node.getType());
                 returnType = node.getType();
                 break;
             }
