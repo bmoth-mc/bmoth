@@ -148,11 +148,7 @@ public class AppController implements Initializable {
                 logger.log(Level.SEVERE, "While Saving", e);
             }
         } else {
-            try {
-                saveFileAs();
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "While Saving AS", e);
-            }
+            handleSaveAs();
         }
     }
 
@@ -344,6 +340,8 @@ public class AppController implements Initializable {
             } else {
                 saveFile(file.getAbsolutePath());
             }
+            PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
+            PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_DIR, file.getParent());
             return true;
         } else return false;
     }
