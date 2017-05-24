@@ -255,7 +255,7 @@ public class FormulaToZ3Translator {
                     return pow.apply(arguments.get(0), arguments.get(1));
                 case INTERVAL:
                     ArrayExpr interval = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(node.getType()));
-                    constraintList.add(prepareSetQuantifier(interval, (IntNum) arguments.get(0), (IntNum) arguments.get(1)));
+                    constraintList.add(prepareSetQuantifier(interval, (IntExpr) arguments.get(0), (IntExpr) arguments.get(1)));
                     return interval;
                 case INTEGER:
                     return z3Context.mkFullSet(z3Context.mkIntSort());
@@ -283,7 +283,7 @@ public class FormulaToZ3Translator {
                     }
                     return setInt;
                 case NAT:
-                    if (setNat == null){
+                    if (setNat == null) {
                         int maxInt = PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT);
                         // node.getType() = POW(INTEGER)
                         setNat = (ArrayExpr) z3Context.mkConst(ExpressionOperator.NAT.toString(), bTypeToZ3Sort(node.getType()));
@@ -525,7 +525,7 @@ public class FormulaToZ3Translator {
             throw new AssertionError("Not implemented: " + node.getOperator());
         }
 
-        private Quantifier prepareSetQuantifier(ArrayExpr set, IntNum min, IntNum max) {
+        private Quantifier prepareSetQuantifier(ArrayExpr set, IntExpr min, IntExpr max) {
             ArithExpr x = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), z3Context.getIntSort());
             ArithExpr[] bound = new ArithExpr[]{x};
 
