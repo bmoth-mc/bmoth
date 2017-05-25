@@ -7,7 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 public class OptionController {
 
@@ -57,23 +57,23 @@ public class OptionController {
     }
 
     boolean checkPrefs() {
-        if (!StringUtils.isNumeric(minInt.getText())) {
+        if (!NumberUtils.isParsable(minInt.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + minInt.getId()).show();
             return false;
         }
-        if (!StringUtils.isNumeric(maxInt.getText())) {
+        if (!NumberUtils.isParsable(maxInt.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxInt.getId()).show();
             return false;
         }
-        if (!StringUtils.isNumeric(maxInitState.getText())) {
+        if (!NumberUtils.isParsable(maxInitState.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxInitState.getId()).show();
             return false;
         }
-        if (!StringUtils.isNumeric(maxTrans.getText())) {
+        if (!NumberUtils.isParsable(maxTrans.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxTrans.getId()).show();
             return false;
         }
-        if (!StringUtils.isNumeric(z3Timeout.getText())) {
+        if (!NumberUtils.isParsable(z3Timeout.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + z3Timeout.getId()).show();
             return false;
         }
