@@ -1,4 +1,4 @@
-MACHINE LiftHigherViolation
+MACHINE LiftLowerHigherViolation
 VARIABLES
   current_floor, moving, doors_open
 INVARIANT

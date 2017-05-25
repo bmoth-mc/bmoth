@@ -1,4 +1,4 @@
-MACHINE HhuMachine
+MACHINE TargetAndCurrentCorrespond
 CONSTANTS
   MAX_FLOOR, MIN_FLOOR
 PROPERTIES
