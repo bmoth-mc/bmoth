@@ -57,7 +57,7 @@ public class OptionController {
     }
 
     boolean checkPrefs() {
-        if (!StringUtils.isNumeric(maxInt.getText())) {
+        if (!StringUtils.isNumeric(minInt.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + minInt.getId()).show();
             return false;
         }
@@ -69,7 +69,6 @@ public class OptionController {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxInitState.getId()).show();
             return false;
         }
-
         if (!StringUtils.isNumeric(maxTrans.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxTrans.getId()).show();
             return false;
@@ -83,8 +82,6 @@ public class OptionController {
             new Alert(Alert.AlertType.ERROR, "Timout needs to be a positive Value").show();
             return false;
         }
-
-
         if (Integer.parseInt(minInt.getText()) > Integer.parseInt(maxInt.getText())) {
             new Alert(Alert.AlertType.ERROR, "MIN_INT bigger than MAX_INT").show();
             return false;
@@ -97,7 +94,6 @@ public class OptionController {
             new Alert(Alert.AlertType.ERROR, "Maximum transitions needs to be bigger than 0").show();
             return false;
         }
-
 
         return true;
     }

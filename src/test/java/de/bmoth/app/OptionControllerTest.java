@@ -1,10 +1,17 @@
 package de.bmoth.app;
 
+import com.sun.javafx.robot.FXRobot;
+import com.sun.javafx.robot.FXRobotFactory;
+import com.sun.javafx.robot.FXRobotImage;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.Test;
+import org.testfx.util.WaitForAsyncUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.testfx.api.FxAssert.verifyThat;
@@ -90,5 +97,63 @@ public class OptionControllerTest extends HeadlessUITest {
         assertEquals(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT), 5003);
     }
 
+    private void noNumericInputTest(String input) {
+        doubleClickOn(input).write("a");
+        Platform.runLater(() -> assertEquals(false, optionController.checkPrefs()));
+        WaitForAsyncUtils.waitForFxEvents();
+    }
 
+    @Test
+    public void minIntNotNumeric() {
+        noNumericInputTest(MIN_INT_ID);
+    }
+
+    @Test
+    public void maxIntNotNumeric() {
+       noNumericInputTest(MAX_INT_ID);
+    }
+
+    @Test
+    public void maxInitStateNotNumeric() {
+        noNumericInputTest(MAX_INIT_STATE_ID);
+    }
+
+    @Test
+    public void maxTransNotNumeric() {
+        noNumericInputTest(MAX_TRANSITIONS_ID);
+    }
+
+    @Test
+    public void z3TimeOutNotNumeric() {
+        noNumericInputTest(Z3_TIMEOUT_ID);
+    }
+
+    @Test
+    public void z3TimeOutTooSmall() {
+        doubleClickOn(Z3_TIMEOUT_ID).write("-1");
+        Platform.runLater(() -> assertEquals(false, optionController.checkPrefs()));
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    @Test
+    public void maxInitStateTooSmall() {
+        doubleClickOn(MAX_INIT_STATE_ID).write("-1");
+        Platform.runLater(() -> assertEquals(false, optionController.checkPrefs()));
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    @Test
+    public void maxTransTooSmall() {
+        doubleClickOn(MAX_TRANSITIONS_ID).write("-1");
+        Platform.runLater(() -> assertEquals(false, optionController.checkPrefs()));
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    @Test
+    public void minIntBiggerThenMaxInt() {
+        doubleClickOn(MAX_INT_ID).write("1");
+        doubleClickOn(MIN_INT_ID).write("2");
+        Platform.runLater(() -> assertEquals(false, optionController.checkPrefs()));
+        WaitForAsyncUtils.waitForFxEvents();
+    }
 }
