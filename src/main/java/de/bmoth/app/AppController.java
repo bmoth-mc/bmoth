@@ -184,12 +184,13 @@ public class AppController implements Initializable {
 
     @FXML
     public void handleOptions() throws IOException {
+        Stage optionStage = new Stage();
+        optionStage.setTitle("Options");
         FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
         Parent root = loader.load();
-        OptionController optionController = loader.getController();
-        Stage optionStage = optionController.getStage(root);
+        Scene scene = new Scene(root);
+        optionStage.setScene(scene);
         optionStage.show();
-
     }
 
     @FXML

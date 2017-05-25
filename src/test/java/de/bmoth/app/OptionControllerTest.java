@@ -1,13 +1,9 @@
 package de.bmoth.app;
 
-import com.sun.javafx.robot.FXRobot;
-import com.sun.javafx.robot.FXRobotFactory;
-import com.sun.javafx.robot.FXRobotImage;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +29,9 @@ public class OptionControllerTest extends HeadlessUITest {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
         Parent root = loader.load();
         optionController = loader.getController();
-        optionController.getStage(root).show();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 
     @Before
@@ -62,7 +60,7 @@ public class OptionControllerTest extends HeadlessUITest {
 
     @Test
     public void checkMinBiggerMax() {
-        doubleClickOn(MIN_INT_ID).eraseText(2).write("3");
+        doubleClickOn(MIN_INT_ID).eraseText(3).write("3");
         doubleClickOn(MAX_INT_ID).write("1");
         doubleClickOn(MAX_INIT_STATE_ID).write("20");
         doubleClickOn(MAX_TRANSITIONS_ID).write("5");
@@ -84,7 +82,7 @@ public class OptionControllerTest extends HeadlessUITest {
         verifyThat(MAX_TRANSITIONS_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS))));
         verifyThat(Z3_TIMEOUT_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT))));
         //Note: DoubleClick doesn't select the -, so it has to be removed.
-        doubleClickOn(MIN_INT_ID).eraseText(2).write("-3");
+        doubleClickOn(MIN_INT_ID).eraseText(3).write("-3");
         doubleClickOn(MAX_INT_ID).write("44");
         doubleClickOn(MAX_INIT_STATE_ID).write("11");
         doubleClickOn(MAX_TRANSITIONS_ID).write("13");
@@ -98,7 +96,7 @@ public class OptionControllerTest extends HeadlessUITest {
     }
 
     private void noNumericInputTest(String input) {
-        doubleClickOn(input).write("a");
+        doubleClickOn(input).eraseText(10).write("a");
         Platform.runLater(() -> assertEquals(false, optionController.checkPrefs()));
         WaitForAsyncUtils.waitForFxEvents();
     }
@@ -130,30 +128,31 @@ public class OptionControllerTest extends HeadlessUITest {
 
     @Test
     public void z3TimeOutTooSmall() {
-        doubleClickOn(Z3_TIMEOUT_ID).write("-1");
+        doubleClickOn(Z3_TIMEOUT_ID).eraseText(3).write("-1");
         Platform.runLater(() -> assertEquals(false, optionController.checkPrefs()));
         WaitForAsyncUtils.waitForFxEvents();
     }
 
     @Test
     public void maxInitStateTooSmall() {
-        doubleClickOn(MAX_INIT_STATE_ID).write("-1");
+        doubleClickOn(MAX_INIT_STATE_ID).eraseText(3).write("-1");
         Platform.runLater(() -> assertEquals(false, optionController.checkPrefs()));
         WaitForAsyncUtils.waitForFxEvents();
     }
 
     @Test
     public void maxTransTooSmall() {
-        doubleClickOn(MAX_TRANSITIONS_ID).write("-1");
+        doubleClickOn(MAX_TRANSITIONS_ID).eraseText(3).write("-1");
         Platform.runLater(() -> assertEquals(false, optionController.checkPrefs()));
         WaitForAsyncUtils.waitForFxEvents();
     }
 
     @Test
     public void minIntBiggerThenMaxInt() {
-        doubleClickOn(MAX_INT_ID).write("1");
-        doubleClickOn(MIN_INT_ID).write("2");
+        doubleClickOn(MAX_INT_ID).eraseText(3).write("1");
+        doubleClickOn(MIN_INT_ID).eraseText(3).write("2");
         Platform.runLater(() -> assertEquals(false, optionController.checkPrefs()));
         WaitForAsyncUtils.waitForFxEvents();
     }
+
 }

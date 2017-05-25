@@ -1,15 +1,17 @@
 package de.bmoth.app;
 
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.math.NumberUtils;
 
-public class OptionController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class OptionController implements Initializable {
 
     private static final String NONNUMERICWARNING = "Not Numeric or out of Integer-Range: ";
     @FXML
@@ -28,25 +30,6 @@ public class OptionController {
     TextField maxTrans;
     @FXML
     TextField z3Timeout;
-
-    private Stage stage;
-
-    Stage getStage(Parent root) {
-        if (stage != null) return stage;
-        Scene scene = new Scene(root);
-        this.stage = new Stage();
-        stage.setScene(scene);
-        setupStage();
-        return stage;
-    }
-
-    private void setupStage() {
-        stage.setTitle("Options");
-        // selects end of first Textfield for Caret
-        setUpPrefs();
-        minInt.requestFocus();
-        minInt.selectRange(99, 99);
-    }
 
     void setUpPrefs() {
         minInt.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT)));
@@ -114,13 +97,19 @@ public class OptionController {
     }
 
     public void handleClose() {
+        Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
     }
 
     public void handleOk() {
         if (checkPrefs()) {
             savePrefs();
-            stage.close();
+            handleClose();
         }
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        setUpPrefs();
     }
 }
