@@ -8,11 +8,13 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.IOException;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 
 public class AppTest {
-
+    private final Logger logger = Logger.getLogger(getClass().getName());
     private Stage stage;
 
     @Test
@@ -24,7 +26,7 @@ public class AppTest {
                 stage = new Stage();
                 new App().start(stage);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "exception during test", e);
             }
 
         });

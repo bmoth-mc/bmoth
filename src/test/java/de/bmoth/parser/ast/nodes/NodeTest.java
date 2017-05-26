@@ -61,7 +61,7 @@ public class NodeTest {
         node.setExpressionList(new ArrayList<>());
         assertEquals("TRUE", node.toString());
 
-        assertEquals(DOMAIN,ExpressionOperatorNode.ExpressionOperator.valueOf("DOMAIN"));
+        assertEquals(DOMAIN, ExpressionOperatorNode.ExpressionOperator.valueOf("DOMAIN"));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class NodeTest {
     }
 
     @Test
-    public void QuantifiedExpressionNode() {
+    public void testQuantifiedExpressionNode() {
         assertEquals(SET_COMPREHENSION, QuantifiedExpressionNode.QuatifiedExpressionOperator.valueOf("SET_COMPREHENSION"));
     }
 }
