@@ -12,6 +12,7 @@ public class MachineNode implements Node {
     private PredicateNode invariant;
     private SubstitutionNode initialisation;
     private List<OperationNode> operations;
+    private List<String> warnings;
 
     public List<DeclarationNode> getVariables() {
         return variables;
@@ -65,5 +66,12 @@ public class MachineNode implements Node {
         this.properties = properties;
     }
 
+    public void setWarnings(List<String> warnings) {
+        this.warnings = warnings;
+    }
+
+    public List<String> getWarnings() {
+        return this.warnings;
+    }
 
 }

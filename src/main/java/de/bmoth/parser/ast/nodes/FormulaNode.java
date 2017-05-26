@@ -11,6 +11,7 @@ public class FormulaNode implements Node {
     private final FormulaType type;
     private List<DeclarationNode> implicitDeclarations;
     private Node formula;
+    private List<String> warnings;
 
     public FormulaNode(FormulaType type) {
         this.type = type;
@@ -34,6 +35,14 @@ public class FormulaNode implements Node {
 
     public FormulaType getFormulaType() {
         return type;
+    }
+
+    public void setWarnings(List<String> warnings) {
+        this.warnings = warnings;
+    }
+    
+    public List<String> getWarnings(){
+        return this.warnings;
     }
 
 }

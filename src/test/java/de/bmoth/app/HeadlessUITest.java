@@ -6,6 +6,8 @@ import org.junit.BeforeClass;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
+import java.util.concurrent.TimeoutException;
+
 import static org.testfx.api.FxToolkit.setupStage;
 
 public abstract class HeadlessUITest extends ApplicationTest {
@@ -21,7 +23,7 @@ public abstract class HeadlessUITest extends ApplicationTest {
     }
 
     @After
-    public void cleanup() throws Exception {
+    public void cleanup() throws TimeoutException {
         WaitForAsyncUtils.waitForFxEvents();
         setupStage(Stage::close);
     }

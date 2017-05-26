@@ -4,7 +4,7 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Status;
 import de.bmoth.TestUsingZ3;
-import de.bmoth.app.PersonalPreferences;
+import de.bmoth.app.BMothPreferences;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.util.UtilMethodsTest;
 import org.junit.Ignore;
@@ -82,7 +82,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
 
     @Test
     public void testNAT() {
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT, "10");
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, "10");
         UtilMethodsTest.check(SATISFIABLE, "0 : NAT", z3Context, z3Solver);
         UtilMethodsTest.check(SATISFIABLE, "1 : NAT", z3Context, z3Solver);
         UtilMethodsTest.check(UNSATISFIABLE, "-1 : NAT", z3Context, z3Solver);
@@ -100,15 +100,16 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
 
     @Test
     public void testINT() {
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT, "10");
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MIN_INT, "5");
-        //UtilMethodsTest.check(SATISFIABLE, "0 : INT", z3Context, z3Solver);
-        //UtilMethodsTest.check(SATISFIABLE, "1 : INT", z3Context, z3Solver);
-        //UtilMethodsTest.check(SATISFIABLE, "-1 : INT", z3Context, z3Solver);
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, "10");
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MIN_INT, "-1");
+        UtilMethodsTest.check(SATISFIABLE, "0 : INT", z3Context, z3Solver);
+        UtilMethodsTest.check(SATISFIABLE, "1 : INT", z3Context, z3Solver);
+        UtilMethodsTest.check(SATISFIABLE, "-1 : INT", z3Context, z3Solver);
         UtilMethodsTest.check(SATISFIABLE, "10 : INT", z3Context, z3Solver);
         UtilMethodsTest.check(UNSATISFIABLE, "11 : INT", z3Context, z3Solver);
+        UtilMethodsTest.check(UNSATISFIABLE, "-3 : INT", z3Context, z3Solver);
         UtilMethodsTest.check(SATISFIABLE, "6 : INT", z3Context, z3Solver);
-        UtilMethodsTest.check(UNSATISFIABLE, "4 : INT", z3Context, z3Solver);
+        UtilMethodsTest.check(SATISFIABLE, "4 : INT", z3Context, z3Solver);
     }
 
     @Test

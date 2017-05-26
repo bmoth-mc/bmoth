@@ -24,4 +24,5 @@ addons:
 script:
 - ./gradlew check # regular unit tests
 - ./gradlew -Pheadless=true uiTest # testFX UI tests in headless mode
+- ./gradlew copyDependenciesForSonarAnalysis
 - sonar-scanner

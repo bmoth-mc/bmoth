@@ -3,7 +3,6 @@ package de.bmoth.app;
 import com.microsoft.z3.*;
 import com.microsoft.z3.enumerations.Z3_sort_kind;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
-import de.bmoth.backend.z3.SolutionFinder;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -11,9 +10,12 @@ import javafx.scene.input.KeyCode;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ReplController implements Initializable {
+    private final Logger logger = Logger.getLogger(getClass().getName());
+
 
     @FXML
     TextArea replText;
@@ -41,32 +43,36 @@ public class ReplController implements Initializable {
         ctx = new Context();
         s = ctx.mkSolver();
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(predicate, ctx);
-        SolutionFinder finder = new SolutionFinder(constraint, s, ctx);
-        Set<Model> solutions = finder.findSolutions(1);
-        StringBuilder output = new StringBuilder();
-        for (Model solution : solutions) {
-            FuncDecl[] functionDeclarations = solution.getConstDecls();
+
+        s.add(constraint);
+        Status check = s.check();
+
+        if (check == Status.SATISFIABLE) {
+            Model model = s.getModel();
+            StringBuilder output = new StringBuilder();
+            FuncDecl[] functionDeclarations = model.getConstDecls();
             for (FuncDecl decl : functionDeclarations) {
                 output.append(decl.getName()).append("=");
                 try {
                     if (decl.getArity() == 0 && decl.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
                         // this is a constant
-                        output.append(solution.getConstInterp(decl));
+                        output.append(model.getConstInterp(decl));
                     } else {
                         // not a constant, e.g. some representation of a set
-                        output.append(solution.getFuncInterp(decl));
+                        output.append(model.getFuncInterp(decl));
                     }
                     output.append(", ");
                 } catch (com.microsoft.z3.Z3Exception e) {
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, "Z3 exception while solving", e);
                 }
             }
-
-        }
-        if (solutions.isEmpty()) {
-            return "\nUNSATISFIABLE";
+            if (model.toString().equals("")) {
+                return "\n" + check;
+            } else {
+                return "\n{" + output.substring(0, output.length() - 2) + "}";
+            }
         } else {
-            return "\n{" + output.substring(0, output.length() - 2) + "}";
+            return "\n" + Status.UNSATISFIABLE;
         }
     }
 }

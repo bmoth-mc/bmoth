@@ -3,14 +3,11 @@ package de.bmoth.modelchecker;
 import com.microsoft.z3.Expr;
 import de.bmoth.TestUsingZ3;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ModelCheckerResultTest extends TestUsingZ3 {
     State firstState;

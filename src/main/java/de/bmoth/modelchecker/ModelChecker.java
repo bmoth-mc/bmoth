@@ -1,7 +1,7 @@
 package de.bmoth.modelchecker;
 
 import com.microsoft.z3.*;
-import de.bmoth.app.PersonalPreferences;
+import de.bmoth.app.BMothPreferences;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
@@ -39,7 +39,7 @@ public class ModelChecker {
         BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
 
         SolutionFinder finder = new SolutionFinder(initialValueConstraint, solver, ctx);
-        Set<Model> models = finder.findSolutions(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE));
+        Set<Model> models = finder.findSolutions(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
         for (Model model : models) {
             State state = getStateFromModel(null, model);
             queue.add(state);
@@ -72,7 +72,7 @@ public class ModelChecker {
             for (BoolExpr currentOperationConstraint : operationConstraints) {
                 // compute successors
                 finder = new SolutionFinder(currentOperationConstraint, solver, ctx);
-                models = finder.findSolutions(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS));
+                models = finder.findSolutions(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
                 for (Model model : models) {
                     State state = getStateFromModel(current, model);
 

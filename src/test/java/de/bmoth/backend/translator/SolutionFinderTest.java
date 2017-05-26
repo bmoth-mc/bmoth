@@ -2,7 +2,7 @@ package de.bmoth.backend.translator;
 
 import com.microsoft.z3.*;
 import de.bmoth.TestUsingZ3;
-import de.bmoth.app.PersonalPreferences;
+import de.bmoth.app.BMothPreferences;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class SolutionFinderTest extends TestUsingZ3 {
 
     @Test
     public void testSolutionFinderNATUpperFail() {
-        String maxInt = String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT));
+        String maxInt = String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT));
         String formula = new StringBuilder().append("a : NAT & a > ").append(maxInt).toString();
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
         SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
@@ -34,7 +34,7 @@ public class SolutionFinderTest extends TestUsingZ3 {
 
     @Test
     public void testSolutionFinderNATUpper() {
-        String oneBelowMaxInt = String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT) - 1);
+        String oneBelowMaxInt = String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT) - 1);
         String formula = new StringBuilder().append("a : NAT & a > ").append(oneBelowMaxInt).toString();
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
         SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);

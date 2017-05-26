@@ -21,6 +21,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
 import java.io.File;
@@ -87,13 +88,14 @@ public class AppController implements Initializable {
     }
 
     private void setupPersonalPreferences() {
-        if (!PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE).isEmpty()) {
-            currentFile = PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE);
+        if (!BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_FILE).isEmpty()) {
+            currentFile = BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_FILE);
             if (new File(currentFile).exists()) {
-                String fileContent = openFile(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_FILE)));
+                String fileContent = openFile(new File(BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_FILE)));
                 codeArea.replaceText(fileContent);
             }
-            codeArea.deletehistory();
+            codeArea.getUndoManager().forgetHistory();
+
         }
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
             hasChanged = true;
@@ -110,7 +112,7 @@ public class AppController implements Initializable {
         }
         if (nextStep != 0) {
             codeArea.replaceText("");
-            codeArea.deletehistory();
+            codeArea.getUndoManager().forgetHistory();
             codeArea.selectRange(0, 0);
             currentFile = null;
             hasChanged = false;
@@ -129,7 +131,7 @@ public class AppController implements Initializable {
             String fileContent = openFileChooser();
             if (fileContent != null) {
                 codeArea.replaceText(fileContent);
-                codeArea.deletehistory();
+                codeArea.getUndoManager().forgetHistory();
                 codeArea.selectRange(0, 0);
                 hasChanged = false;
                 infoArea.clear();
@@ -148,11 +150,7 @@ public class AppController implements Initializable {
                 logger.log(Level.SEVERE, "While Saving", e);
             }
         } else {
-            try {
-                saveFileAs();
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "While Saving AS", e);
-            }
+            handleSaveAs();
         }
     }
 
@@ -186,12 +184,13 @@ public class AppController implements Initializable {
 
     @FXML
     public void handleOptions() throws IOException {
+        Stage optionStage = new Stage();
+        optionStage.setTitle("Options");
         FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
         Parent root = loader.load();
-        OptionController optionController = loader.getController();
-        Stage optionStage = optionController.getStage(root);
+        Scene scene = new Scene(root);
+        optionStage.setScene(scene);
         optionStage.show();
-
     }
 
     @FXML
@@ -322,9 +321,10 @@ public class AppController implements Initializable {
      */
     private void saveFile(String path) throws IOException {
         File file = new File(path);
-        FileWriter fileWriter = new FileWriter(file);
-        fileWriter.write(codeArea.getText());
-        fileWriter.close();
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write(codeArea.getText());
+            primaryStage.setTitle(APPNAME + " - " + file.getName().substring(0, file.getName().length() - 4));
+        }
     }
 
     /**
@@ -335,7 +335,7 @@ public class AppController implements Initializable {
      */
     private Boolean saveFileAs() throws IOException {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_DIR)));
+        fileChooser.setInitialDirectory(new File(BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_DIR)));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MCH File", "*.mch"));
         File file = fileChooser.showSaveDialog(primaryStage);
         if (file != null) {     //add .mch ending if not added by OS
@@ -344,6 +344,8 @@ public class AppController implements Initializable {
             } else {
                 saveFile(file.getAbsolutePath());
             }
+            BMothPreferences.setStringPreference(BMothPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
+            BMothPreferences.setStringPreference(BMothPreferences.StringPreference.LAST_DIR, file.getParent());
             return true;
         } else return false;
     }
@@ -358,13 +360,14 @@ public class AppController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Open MCH File", "*.mch"));
         fileChooser.setTitle("Choose File");
-        fileChooser.setInitialDirectory(new File(PersonalPreferences.getStringPreference(PersonalPreferences.StringPreference.LAST_DIR)));
+        fileChooser.setInitialDirectory(new File(BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_DIR)));
         File file = fileChooser.showOpenDialog(primaryStage);
 
         if (file != null) {
             currentFile = file.getPath();
-            PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
-            PersonalPreferences.setStringPreference(PersonalPreferences.StringPreference.LAST_DIR, file.getParent());
+            BMothPreferences.setStringPreference(BMothPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
+            BMothPreferences.setStringPreference(BMothPreferences.StringPreference.LAST_DIR, file.getParent());
+            primaryStage.setTitle(APPNAME + " - " + file.getName().substring(0, file.getName().length() - 4));
             return openFile(file);
         }
         return null;

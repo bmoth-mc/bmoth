@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static javafx.scene.input.KeyCode.ENTER;
@@ -49,9 +48,8 @@ public class ReplControllerTest extends HeadlessUITest {
     }
 
     @Test
-    @Ignore
     public void replIssue71Test() {
         clickOn(repl).write("3 > 2").push(ENTER).sleep(z3WaitTime);
-        assertEquals("3 > 2\nSATISFIABLE\n{}\n", repl.getText());
+        assertEquals("3 > 2\nSATISFIABLE\n", repl.getText());
     }
 }
