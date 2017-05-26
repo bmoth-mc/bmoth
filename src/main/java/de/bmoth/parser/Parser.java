@@ -16,8 +16,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.DiagnosticErrorListener;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 public class Parser {
 
@@ -34,51 +34,51 @@ public class Parser {
         return bMoThParser;
     }
 
-    public StartContext parseMachine(String inputString) {
+    private StartContext parseMachine(String inputString) {
         BMoThParser parser = getParser(inputString);
-        StartContext start = parser.start();
-        return start;
+        return parser.start();
     }
 
-    public FormulaContext parseFormula(String inputString) {
+    private FormulaContext parseFormula(String inputString) {
         BMoThParser parser = getParser(inputString);
         return parser.formula();
     }
 
-    public MachineNode getMachineAst(StartContext start) {
+    private MachineNode getMachineAst(StartContext start) {
         MachineAnalyser machineAnalyser = new MachineAnalyser(start);
         SemanticAstCreator astCreator = new SemanticAstCreator(machineAnalyser);
         return (MachineNode) astCreator.getAstNode();
     }
 
-    public FormulaNode getFormulaAst(FormulaContext formula) {
+    private FormulaNode getFormulaAst(FormulaContext formula) {
         FormulaAnalyser formulaAnalyser = new FormulaAnalyser(formula);
         SemanticAstCreator astCreator = new SemanticAstCreator(formulaAnalyser);
         return (FormulaNode) astCreator.getAstNode();
     }
 
-    public static MachineNode getMachineFileAsSemanticAst(String file) throws FileNotFoundException, IOException {
-        Parser parser = new Parser();
+    public static MachineNode getMachineFileAsSemanticAst(String file) throws IOException {
         String fileContent = Utils.readFile(new File(file));
-        StartContext start = parser.parseMachine(fileContent);
-        MachineNode ast = parser.getMachineAst(start);
-        new TypeChecker(ast);
-        return ast;
+        return getMachineAsSemanticAst(fileContent);
     }
 
     public static MachineNode getMachineAsSemanticAst(String inputString) {
         Parser parser = new Parser();
         StartContext start = parser.parseMachine(inputString);
-        MachineNode ast = parser.getMachineAst(start);
-        new TypeChecker(ast);
-        return ast;
+        List<String> warnings = CSTAnalyser.analyseConcreteSyntaxTree(start);
+        MachineNode machineNode = parser.getMachineAst(start);
+        machineNode.setWarnings(warnings);
+        TypeChecker.typecheckMachineNode(machineNode);
+
+        return machineNode;
     }
 
     public static FormulaNode getFormulaAsSemanticAst(String inputString) {
         Parser parser = new Parser();
         FormulaContext formulaContext = parser.parseFormula(inputString);
+        List<String> warnings = CSTAnalyser.analyseConcreteSyntaxTree(formulaContext);
         FormulaNode formulaNode = parser.getFormulaAst(formulaContext);
-        new TypeChecker(formulaNode);
+        formulaNode.setWarnings(warnings);
+        TypeChecker.typecheckFormulaNode(formulaNode);
         return formulaNode;
     }
 
