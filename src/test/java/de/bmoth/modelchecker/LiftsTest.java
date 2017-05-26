@@ -24,7 +24,7 @@ public class LiftsTest {
 
     @Test
     public void testLowerHigher() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "LiftLowerHigherViolation.mch");
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "LiftLowerHigher.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
         assertEquals("{doors_open=false, moving=true, current_floor=-1}", result.getLastState().toString());
