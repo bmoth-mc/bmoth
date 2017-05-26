@@ -96,6 +96,7 @@ public class OptionControllerTest extends HeadlessUITest {
         verifyThat(MIN_INT_ID, isNotNull());
         clickOn("#okButton");
         verifyThat(MIN_INT_ID, isNull());
+
     }
 
     private void noNumericInputTest(String input) {
