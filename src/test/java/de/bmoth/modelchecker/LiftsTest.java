@@ -55,4 +55,11 @@ public class LiftsTest {
         Expr current_floor = result.getLastState().values.get("current_floor");
         assertNotEquals(target_floor.toString(), current_floor.toString());
     }
+
+    @Test
+    public void testSlowDoors() throws IOException {
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "SlowDoors.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result.isCorrect());
+    }
 }
