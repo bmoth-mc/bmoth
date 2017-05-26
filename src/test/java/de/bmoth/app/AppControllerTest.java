@@ -17,6 +17,8 @@ public class AppControllerTest extends HeadlessUITest {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("app.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root, 500, 300);
+        AppController appController = loader.getController();
+        appController.setupStage(stage);
         stage.setScene(scene);
         stage.show();
     }
