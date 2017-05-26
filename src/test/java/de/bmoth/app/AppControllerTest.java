@@ -8,8 +8,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.matcher.base.NodeMatchers.isNotNull;
-import static org.testfx.matcher.base.NodeMatchers.isNull;
+import static org.testfx.matcher.base.NodeMatchers.*;
 
 public class AppControllerTest extends HeadlessUITest {
 
@@ -30,6 +29,12 @@ public class AppControllerTest extends HeadlessUITest {
         verifyThat("#minInt", isNotNull());
         clickOn("Close");
         verifyThat("#minInt", isNull());
+    }
+
+    @Test
+    public void checkChangesDetected() {
+        clickOn("#codeArea").write(" ");
+        verifyThat("#infoArea", hasText("Unsaved changes"));
     }
 
     @Test

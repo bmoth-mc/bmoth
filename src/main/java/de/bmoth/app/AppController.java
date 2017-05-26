@@ -67,7 +67,7 @@ public class AppController implements Initializable {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
         newFile.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_ANY));
         open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_ANY));
-        setupPersonalPreferences();
+        primaryStage.setTitle(APPNAME);
         codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
@@ -80,7 +80,7 @@ public class AppController implements Initializable {
 
     void setupStage(Stage stage) {
         primaryStage = stage;
-        primaryStage.setTitle(APPNAME);
+        setupPersonalPreferences();
         primaryStage.setOnCloseRequest(event -> {
             event.consume();
             handleExit();
@@ -91,8 +91,10 @@ public class AppController implements Initializable {
         if (!BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_FILE).isEmpty()) {
             currentFile = BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_FILE);
             if (new File(currentFile).exists()) {
-                String fileContent = openFile(new File(BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_FILE)));
+                File file = new File(currentFile);
+                String fileContent = openFile(file);
                 codeArea.replaceText(fileContent);
+                primaryStage.setTitle(APPNAME + " - " + file.getName().substring(0, file.getName().length() - 4));
             }
             codeArea.getUndoManager().forgetHistory();
 
