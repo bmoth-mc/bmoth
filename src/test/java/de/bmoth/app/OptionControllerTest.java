@@ -11,7 +11,7 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.matcher.base.NodeMatchers.hasText;
+import static org.testfx.matcher.base.NodeMatchers.*;
 
 
 public class OptionControllerTest extends HeadlessUITest {
@@ -93,6 +93,9 @@ public class OptionControllerTest extends HeadlessUITest {
         assertEquals(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE), 11);
         assertEquals(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS), 13);
         assertEquals(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT), 5003);
+        verifyThat(MIN_INT_ID, isNotNull());
+        clickOn("#okButton");
+        verifyThat(MIN_INT_ID, isNull());
     }
 
     private void noNumericInputTest(String input) {
