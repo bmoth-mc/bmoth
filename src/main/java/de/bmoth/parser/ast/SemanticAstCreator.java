@@ -113,8 +113,7 @@ public class SemanticAstCreator {
                 declarationMap.put(token, declNode);
             }
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
-            QuantifiedPredicateNode quantifiedPredicate = new QuantifiedPredicateNode(ctx, declarationList, predNode);
-            return quantifiedPredicate;
+            return new QuantifiedPredicateNode(ctx, declarationList, predNode);
         }
 
         @Override
@@ -161,9 +160,7 @@ public class SemanticAstCreator {
             }
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             ExprNode exprNode = (ExprNode) ctx.expression().accept(this);
-            QuantifiedExpressionNode quantifiedExpression = new QuantifiedExpressionNode(ctx, declarationList, predNode,
-                    exprNode, ctx.operator);
-            return quantifiedExpression;
+            return new QuantifiedExpressionNode(ctx, declarationList, predNode, exprNode, ctx.operator);
         }
 
         @Override
@@ -176,9 +173,8 @@ public class SemanticAstCreator {
                 declarationMap.put(token, declNode);
             }
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
-            QuantifiedExpressionNode quantifiedExpression = new QuantifiedExpressionNode(ctx, declarationList, predNode,
-                    null, QuatifiedExpressionOperator.SET_COMPREHENSION);
-            return quantifiedExpression;
+            return new QuantifiedExpressionNode(ctx, declarationList, predNode, null,
+                    QuatifiedExpressionOperator.SET_COMPREHENSION);
         }
 
         @Override
@@ -343,8 +339,7 @@ public class SemanticAstCreator {
                 SubstitutionNode sub = (SubstitutionNode) substitutionContext.accept(this);
                 result.add(sub);
             }
-            ParallelSubstitutionNode paSub = new ParallelSubstitutionNode(result);
-            return paSub;
+            return new ParallelSubstitutionNode(result);
         }
 
     }
