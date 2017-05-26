@@ -62,4 +62,11 @@ public class LiftsTest {
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
     }
+
+    @Test
+    public void testFastDoors() throws IOException {
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "FastDoors.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result.isCorrect());
+    }
 }
