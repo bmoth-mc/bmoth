@@ -13,6 +13,7 @@ VARIABLES
 , changed_flag
 INVARIANT
   current_speed : INTEGER
+& previous_speed : INTEGER
 & current_speed >= MIN_SPEED
 & current_speed <= MAX_SPEED
 & current_acceleration >= MIN_ACC
@@ -36,7 +37,7 @@ OPERATIONS
     ANY newSpeed
     WHERE
       newSpeed >= current_speed
-      & newSpeed-currentSpeed <= MAX_ACC
+      & newSpeed-current_speed <= MAX_ACC
       & changed_flag = 0
     THEN
       previous_speed := current_speed
@@ -49,7 +50,7 @@ OPERATIONS
     ANY newSpeed
     WHERE
       newSpeed <= current_speed
-      & currentSpeed-newSpeed <= MIN_ACC
+      & current_speed-newSpeed <= MIN_ACC
       & changed_flag = 0
     THEN
       previous_speed := current_speed

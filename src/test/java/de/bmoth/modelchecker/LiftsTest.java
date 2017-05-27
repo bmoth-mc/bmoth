@@ -57,6 +57,27 @@ public class LiftsTest {
     }
 
     @Test
+    public void testMissingEmergencyCall() throws IOException {
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "EmergencyCallFail.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result.isCorrect());
+    }
+
+    @Test
+    public void testNotMoving() throws IOException {
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "NotMoving.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result.isCorrect());
+    }
+
+    @Test
+    public void testAcceleration() throws IOException {
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "AccMachine.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(true, result.isCorrect());
+    }
+
+    @Test
     public void testSlowDoors() throws IOException {
         MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "SlowDoors.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
