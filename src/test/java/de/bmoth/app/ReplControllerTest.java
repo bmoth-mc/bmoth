@@ -44,7 +44,7 @@ public class ReplControllerTest extends HeadlessUITest {
     @Test
     public void replTypeSetPredicateTest() {
         clickOn(repl).write("x = {1}").push(ENTER).sleep(z3WaitTime);
-        assertEquals("x = {1}\n{x=[1 -> true, else -> false]}\n", repl.getText());
+        assertEquals("x = {1}\n{x={1}}\n", repl.getText());
     }
 
     @Test
