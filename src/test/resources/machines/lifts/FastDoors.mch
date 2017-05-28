@@ -8,9 +8,7 @@ PROPERTIES
 VARIABLES
 	doorPos, clock, isOpen, isClosing, isClosed
 INVARIANT
-	doorPos : 0..MAXPOS & clock : NAT & isOpen : BOOL & isClosing : BOOL & isClosed : BOOL
-	// prevent problems for clock > 10
-	& MAXINT = 20
+	doorPos : 0..MAXPOS & clock : NATURAL & isOpen : BOOL & isClosing : BOOL & isClosed : BOOL
 	// ensure we can reach 0 or MAXPOS in integral steps
 	& MAXPOS mod MOVEMENT_STEP = 0
 	// only one phase at a time is allowed
