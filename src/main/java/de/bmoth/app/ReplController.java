@@ -41,16 +41,27 @@ public class ReplController implements Initializable {
     }
 
 
-    private String formatTuples(Expr constantArg) {
-        StringJoiner coupleRepr = new StringJoiner(",", "(", ")");
+    private String formatCouples(Expr constantArg) {
+        StringJoiner coupleJoiner = new StringJoiner(",", "(", ")");
         for (Expr element : constantArg.getArgs()) {
             if (element.isNumeral()) {
-                coupleRepr.add(element.toString());
+                coupleJoiner.add(element.toString());
             } else {
-                coupleRepr.add(formatTuples(element));
+                coupleJoiner.add(formatCouples(element));
             }
         }
-        return coupleRepr.toString();
+        return coupleJoiner.toString();
+    }
+
+
+    private String formatSets(FuncInterp funcInterpretation) {
+        StringJoiner setJoiner = new StringJoiner(",", "{", "}");
+        for (FuncInterp.Entry entry : funcInterpretation.getEntries()) {
+            for (Expr entryArg : entry.getArgs()) {
+                setJoiner.add(entryArg.toString());
+            }
+        }
+        return setJoiner.toString();
     }
 
 
@@ -74,18 +85,11 @@ public class ReplController implements Initializable {
                             output.add(decl.getName().toString() + "=" + model.getConstInterp(decl));
                         } else {
                             // this is a couple
-                            output.add(decl.getName().toString() + "=" + formatTuples(model.getConstInterp(decl)));
+                            output.add(decl.getName().toString() + "=" + formatCouples(model.getConstInterp(decl)));
                         }
-
                     } else {
                         // not a constant, e.g. some representation of a set
-                        StringJoiner setRepr = new StringJoiner(",", "{", "}");
-                        for (FuncInterp.Entry entry : model.getFuncInterp(decl).getEntries()) {
-                            for (Expr entryArg : entry.getArgs()) {
-                                setRepr.add(entryArg.toString());
-                            }
-                        }
-                        output.add(decl.getName().toString() + "=" + setRepr.toString());
+                        output.add(decl.getName().toString() + "=" + formatSets(model.getFuncInterp(decl)));
                     }
 
                 } catch (com.microsoft.z3.Z3Exception e) {
