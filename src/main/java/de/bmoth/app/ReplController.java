@@ -10,6 +10,7 @@ import javafx.scene.input.KeyCode;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,19 +50,25 @@ public class ReplController implements Initializable {
 
         if (check == Status.SATISFIABLE) {
             Model model = s.getModel();
-            StringBuilder output = new StringBuilder();
+            StringJoiner output = new StringJoiner(", ", "{", "}");
             FuncDecl[] functionDeclarations = model.getConstDecls();
             for (FuncDecl decl : functionDeclarations) {
-                output.append(decl.getName()).append("=");
                 try {
                     if (decl.getArity() == 0 && decl.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
                         // this is a constant
-                        output.append(model.getConstInterp(decl));
+                        output.add(decl.getName().toString() + "=" + model.getConstInterp(decl));
                     } else {
                         // not a constant, e.g. some representation of a set
-                        output.append(model.getFuncInterp(decl));
+                        StringJoiner setRepresentation = new StringJoiner(",", "{", "}");
+                        FuncInterp functionInterpretation = model.getFuncInterp(decl);
+                        for (FuncInterp.Entry entry : functionInterpretation.getEntries()) {
+                            for (Expr entryArg : entry.getArgs()) {
+                                setRepresentation.add(entryArg.toString());
+                            }
+                        }
+                        output.add(decl.getName().toString() + "=" + setRepresentation.toString());
                     }
-                    output.append(", ");
+
                 } catch (com.microsoft.z3.Z3Exception e) {
                     logger.log(Level.SEVERE, "Z3 exception while solving", e);
                 }
@@ -69,7 +76,7 @@ public class ReplController implements Initializable {
             if (model.toString().equals("")) {
                 return "\n" + check;
             } else {
-                return "\n{" + output.substring(0, output.length() - 2) + "}";
+                return "\n" + output.toString();
             }
         } else {
             return "\n" + Status.UNSATISFIABLE;
