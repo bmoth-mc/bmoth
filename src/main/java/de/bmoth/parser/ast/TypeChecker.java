@@ -23,6 +23,20 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
     }
 
     private TypeChecker(MachineNode machineNode) {
+        for (EnumeratedSet eSet : machineNode.getEnumaratedSets()) {
+            DeclarationNode setDeclaration = eSet.getSetDeclaration();
+            UserDefinedElementType userDefinedElementType = new UserDefinedElementType(setDeclaration.getName());
+            setDeclaration.setType(new SetType(userDefinedElementType));
+            for (DeclarationNode element : eSet.getElements()) {
+                element.setType(userDefinedElementType);
+            }
+        }
+
+        for (DeclarationNode deferredSet : machineNode.getDeferredSets()) {
+            UserDefinedElementType userDefinedElementType = new UserDefinedElementType(deferredSet.getName());
+            deferredSet.setType(new SetType(userDefinedElementType));
+        }
+
         // set all constants to untyped
         for (DeclarationNode con : machineNode.getConstants()) {
             con.setType(new UntypedType());

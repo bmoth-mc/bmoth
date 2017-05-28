@@ -17,5 +17,52 @@ public class RelationsTest {
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
 
+    @Test
+    public void testOverwriteRelation() {
+        String formula = "k = {x|->2} <+ {1|->y}";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
+        assertEquals("INTEGER", formulaTypes.get("x"));
+        assertEquals("INTEGER", formulaTypes.get("y"));
+    }
+    
+    @Test
+    public void testDomainRestriction() {
+        String formula = "k = x <| {1|->1}";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
+        assertEquals("POW(INTEGER)", formulaTypes.get("x"));
+    }
+
+    @Test
+    public void testDomainSubstraction() {
+        String formula = "k = x <<| {1|->1}";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
+        assertEquals("POW(INTEGER)", formulaTypes.get("x"));
+    }
+    
+    @Test
+    public void testRangeRestriction() {
+        String formula = "k = {1|->1} |> x";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
+        assertEquals("POW(INTEGER)", formulaTypes.get("x"));
+    }
+
+    @Test
+    public void testRangeSubstraction() {
+        String formula = "k = {1|->1} |>> x";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
+        assertEquals("POW(INTEGER)", formulaTypes.get("x"));
+    }
+
+    @Test
+    public void testInverseRelation() {
+        String formula = "k = {1|->TRUE}~";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(BOOL*INTEGER)", formulaTypes.get("k"));
+    }
     
 }
