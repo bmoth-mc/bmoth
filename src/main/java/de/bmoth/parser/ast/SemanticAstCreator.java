@@ -50,6 +50,8 @@ public class SemanticAstCreator {
         MachineNode machineNode = new MachineNode(null, null);
         machineNode.setConstants(createDeclarationList(machineAnalyser.constantsDeclarations));
         machineNode.setVariables(createDeclarationList(machineAnalyser.variablesDeclarations));
+        addEnumeratedSets(machineAnalyser.enumeratedSetContexts, machineNode);
+        addDeferredSets(machineAnalyser.deferredSetContexts, machineNode);
 
         FormulaVisitor formulaVisitor = new FormulaVisitor();
 
@@ -69,20 +71,42 @@ public class SemanticAstCreator {
             machineNode.setInitialisation(substitution);
         }
 
-        {
-            List<OperationNode> operationsList = new ArrayList<>();
-            for (Entry<String, OperationContext> entry : machineAnalyser.operationsDeclarations.entrySet()) {
-                OperationContext operationContext = entry.getValue();
-                SubstitutionNode substitution = (SubstitutionNode) operationContext.substitution()
-                        .accept(formulaVisitor);
-                OperationNode operationNode = new OperationNode(entry.getValue(), entry.getKey(), substitution);
-                operationsList.add(operationNode);
-            }
-            machineNode.setOperations(operationsList);
-
+        List<OperationNode> operationsList = new ArrayList<>();
+        for (Entry<String, OperationContext> entry : machineAnalyser.operationsDeclarations.entrySet()) {
+            OperationContext operationContext = entry.getValue();
+            SubstitutionNode substitution = (SubstitutionNode) operationContext.substitution().accept(formulaVisitor);
+            OperationNode operationNode = new OperationNode(entry.getValue(), entry.getKey(), substitution);
+            operationsList.add(operationNode);
         }
+        machineNode.setOperations(operationsList);
+
         this.semanticNode = machineNode;
 
+    }
+
+    private void addDeferredSets(List<DeferredSetContext> deferredSetContexts, MachineNode machineNode) {
+        for (DeferredSetContext deferredSetContext : deferredSetContexts) {
+            Token token = deferredSetContext.IDENTIFIER().getSymbol();
+            DeclarationNode setDeclNode = new DeclarationNode(token, token.getText());
+            declarationMap.put(token, setDeclNode);
+            machineNode.addDeferredSet(setDeclNode);
+        }
+    }
+
+    private void addEnumeratedSets(List<EnumeratedSetContext> enumerationsContexts, MachineNode machineNode) {
+        for (EnumeratedSetContext enumeratedSetContext : enumerationsContexts) {
+            Token token = enumeratedSetContext.IDENTIFIER().getSymbol();
+            DeclarationNode setDeclNode = new DeclarationNode(token, token.getText());
+            declarationMap.put(token, setDeclNode);
+            List<DeclarationNode> list = new ArrayList<>();
+            for (Token element : enumeratedSetContext.identifier_list().identifiers) {
+                DeclarationNode declNode = new DeclarationNode(element, element.getText());
+                list.add(declNode);
+                declarationMap.put(element, declNode);
+            }
+            EnumeratedSet setEnumeration = new EnumeratedSet(setDeclNode, list);
+            machineNode.addSetEnumeration(setEnumeration);
+        }
     }
 
     private List<DeclarationNode> createDeclarationList(LinkedHashMap<String, Token> constantsDeclarations) {

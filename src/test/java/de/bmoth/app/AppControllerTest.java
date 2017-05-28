@@ -8,8 +8,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.matcher.base.NodeMatchers.isNotNull;
-import static org.testfx.matcher.base.NodeMatchers.isNull;
+import static org.testfx.matcher.base.NodeMatchers.*;
 
 public class AppControllerTest extends HeadlessUITest {
 
@@ -18,6 +17,8 @@ public class AppControllerTest extends HeadlessUITest {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("app.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root, 500, 300);
+        AppController appController = loader.getController();
+        appController.setupStage(stage);
         stage.setScene(scene);
         stage.show();
     }
@@ -30,6 +31,12 @@ public class AppControllerTest extends HeadlessUITest {
         verifyThat("#minInt", isNotNull());
         clickOn("Close");
         verifyThat("#minInt", isNull());
+    }
+
+    @Test
+    public void checkChangesDetected() {
+        clickOn("#codeArea").write(" ");
+        verifyThat("#infoArea", hasText("Unsaved changes"));
     }
 
     @Test

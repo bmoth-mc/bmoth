@@ -1,8 +1,8 @@
 package de.bmoth.parser.ast.types;
 
-import de.bmoth.exceptions.UnificationException;
-
 import java.util.Observable;
+
+import de.bmoth.parser.ast.UnificationException;
 
 public class UntypedType extends Observable implements Type {
 

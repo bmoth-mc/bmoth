@@ -1,7 +1,6 @@
 package de.bmoth.parser.ast;
 
 import de.bmoth.exceptions.TypeErrorException;
-import de.bmoth.exceptions.UnificationException;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.types.*;
 
@@ -24,6 +23,20 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
     }
 
     private TypeChecker(MachineNode machineNode) {
+        for (EnumeratedSet eSet : machineNode.getEnumaratedSets()) {
+            DeclarationNode setDeclaration = eSet.getSetDeclaration();
+            UserDefinedElementType userDefinedElementType = new UserDefinedElementType(setDeclaration.getName());
+            setDeclaration.setType(new SetType(userDefinedElementType));
+            for (DeclarationNode element : eSet.getElements()) {
+                element.setType(userDefinedElementType);
+            }
+        }
+
+        for (DeclarationNode deferredSet : machineNode.getDeferredSets()) {
+            UserDefinedElementType userDefinedElementType = new UserDefinedElementType(deferredSet.getName());
+            deferredSet.setType(new SetType(userDefinedElementType));
+        }
+
         // set all constants to untyped
         for (DeclarationNode con : machineNode.getConstants()) {
             con.setType(new UntypedType());
@@ -405,12 +418,13 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
              *
              */
             SetType found = new SetType(
-                    new CoupleType(new CoupleType(new UntypedType(), new UntypedType()), new UntypedType()));
+                    new CoupleType(new UntypedType(), new CoupleType(new UntypedType(), new UntypedType())));
             try {
                 found = (SetType) found.unify(expected);
             } catch (UnificationException e) {
                 throw new TypeErrorException(expected, found);
             }
+            node.setType(found);
             CoupleType c1 = (CoupleType) found.getSubtype();
             CoupleType c2 = (CoupleType) c1.getRight();
             Type T = c1.getLeft();
@@ -419,7 +433,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             SetType leftArg = (SetType) visitExprNode(expressionNodes.get(0), new SetType(new CoupleType(T, U)));
             T = ((CoupleType) leftArg.getSubtype()).getLeft();
             visitExprNode(expressionNodes.get(1), new SetType(new CoupleType(T, V)));
-            returnType = found;
+            returnType = node.getType();
             break;
         }
         case DOMAIN_RESTRICTION:
