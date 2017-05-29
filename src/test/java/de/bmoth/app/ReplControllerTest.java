@@ -5,8 +5,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.testfx.util.WaitForAsyncUtils;
 
 import static javafx.scene.input.KeyCode.ENTER;
 import static org.junit.Assert.assertEquals;
@@ -51,5 +53,13 @@ public class ReplControllerTest extends HeadlessUITest {
     public void replIssue71Test() {
         clickOn(repl).write("3 > 2").push(ENTER).sleep(z3WaitTime);
         assertEquals("3 > 2\nSATISFIABLE\n", repl.getText());
+    }
+
+    @After
+    public void clickingReplOpensRepl() throws InterruptedException {
+        // close the repl window so that later tests are not confused
+        Stage scene = (Stage) repl.getScene().getWindow();
+        interact(() -> scene.close());
+        WaitForAsyncUtils.waitForFxEvents();
     }
 }

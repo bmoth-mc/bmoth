@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.junit.Test;
+import org.testfx.util.WaitForAsyncUtils;
 
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.*;
@@ -66,5 +67,6 @@ public class AppControllerTest extends HeadlessUITest {
         Node repl = lookup("REPL").query();
         Stage scene = (Stage) repl.getScene().getWindow();
         interact(() -> scene.close());
+        WaitForAsyncUtils.waitForFxEvents();
     }
 }
