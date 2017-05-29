@@ -40,6 +40,21 @@ public class AppControllerTest extends HeadlessUITest {
     }
 
     @Test
+    public void opensUnsavedChangesWarning() {
+        clickOn("#codeArea").write(" ");
+        clickOn("#fileMenu").clickOn("Exit");
+        // the warning dialog opens, codeArea stays open
+        verifyThat("Back", isNotNull());
+        verifyThat("#codeArea", isNotNull());
+
+        // click the back button
+        clickOn("Back");
+        // dialog closes, were back to the code area
+        verifyThat("Back", isNull());
+        verifyThat("#codeArea", isNotNull());
+    }
+
+    @Test
     public void clickingReplOpensRepl() throws InterruptedException {
         verifyThat("#replText", isNull());
 
