@@ -12,7 +12,7 @@ import static javafx.scene.input.KeyCode.ENTER;
 import static org.junit.Assert.assertEquals;
 
 public class ReplControllerTest extends HeadlessUITest {
-    private int z3WaitTime = 750;
+    private int z3WaitTime = 1000;
     private TextArea repl;
 
     @Override
