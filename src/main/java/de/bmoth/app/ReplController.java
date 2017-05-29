@@ -9,11 +9,8 @@ import javafx.scene.input.KeyCode;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 public class ReplController implements Initializable {
-    private final Logger logger = Logger.getLogger(getClass().getName());
-
 
     @FXML
     TextArea replText;
@@ -50,7 +47,7 @@ public class ReplController implements Initializable {
             if (model.toString().equals("")) {
                 return "\n" + check;
             } else {
-                return "\n" + output.toString();
+                return "\n" + output;
             }
         } else {
             return "\n" + Status.UNSATISFIABLE;
