@@ -35,11 +35,9 @@ public class ReplController implements Initializable {
                 String[] predicate = replText.getText().split("\n");
                 String solution = processPredicate(predicate[predicate.length - 1]);
                 replText.appendText(solution);
-                replText.commitValue();
             }
         });
     }
-
 
     private String formatCouples(Expr constantArg) {
         StringJoiner coupleJoiner = new StringJoiner(",", "(", ")");
@@ -53,7 +51,6 @@ public class ReplController implements Initializable {
         return coupleJoiner.toString();
     }
 
-
     private String formatSets(FuncInterp funcInterpretation) {
         StringJoiner setJoiner = new StringJoiner(",", "{", "}");
         for (FuncInterp.Entry entry : funcInterpretation.getEntries()) {
@@ -63,7 +60,6 @@ public class ReplController implements Initializable {
         }
         return setJoiner.toString();
     }
-
 
     private String processPredicate(String predicate) {
         ctx = new Context();
