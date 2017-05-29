@@ -49,12 +49,7 @@ public class AppControllerTest extends HeadlessUITest {
 
         // close the repl window so that later tests are not confused
         Node repl = lookup("REPL").query();
-        interact(new Runnable() {
-            @Override
-            public void run() {
-                Stage scene = (Stage) repl.getScene().getWindow();
-                scene.close();
-            }
-        });
+        Stage scene = (Stage) repl.getScene().getWindow();
+        interact(() -> scene.close());
     }
 }
