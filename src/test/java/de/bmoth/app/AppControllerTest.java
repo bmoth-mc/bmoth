@@ -1,10 +1,10 @@
 package de.bmoth.app;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.testfx.api.FxAssert.verifyThat;
@@ -40,12 +40,21 @@ public class AppControllerTest extends HeadlessUITest {
     }
 
     @Test
-    @Ignore("this test confuses the other repl tests, because it does not close the repl window")
-    public void clickingReplOpensRepl() {
+    public void clickingReplOpensRepl() throws InterruptedException {
         verifyThat("#replText", isNull());
 
         clickOn("#replMenu").clickOn("#openRepl");
 
         verifyThat("#replText", isNotNull());
+
+        // close the repl window so that later tests are not confused
+        Node repl = lookup("REPL").query();
+        interact(new Runnable() {
+            @Override
+            public void run() {
+                Stage scene = (Stage) repl.getScene().getWindow();
+                scene.close();
+            }
+        });
     }
 }
