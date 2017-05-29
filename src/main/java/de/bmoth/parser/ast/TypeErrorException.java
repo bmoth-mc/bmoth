@@ -1,6 +1,7 @@
-package de.bmoth.exceptions;
+package de.bmoth.parser.ast;
 
 import com.google.common.eventbus.EventBus;
+import de.bmoth.eventbus.ErrorEvent;
 import de.bmoth.eventbus.EventBusProvider;
 import de.bmoth.parser.ast.types.Type;
 

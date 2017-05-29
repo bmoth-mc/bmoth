@@ -1,6 +1,7 @@
 package de.bmoth.exceptions;
 
 import com.google.common.eventbus.EventBus;
+import de.bmoth.eventbus.ErrorEvent;
 import de.bmoth.eventbus.EventBusProvider;
 
 public class ScopeException extends RuntimeException {
