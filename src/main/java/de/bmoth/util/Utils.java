@@ -1,14 +1,19 @@
 package de.bmoth.util;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.*;
 
 public class Utils {
+    private Utils() {
+    }
 
     public static <T> List<T> sortByTopologicalOrder(final Map<T, Set<T>> dependencies) {
         final Set<T> allValues = new HashSet<>(dependencies.keySet());
-        ArrayList<T> sortedList = new ArrayList<T>();
+        ArrayList<T> sortedList = new ArrayList<>();
         boolean newRun = true;
         while (newRun) {
             newRun = false;
@@ -26,7 +31,7 @@ public class Utils {
         return sortedList;
     }
 
-    public static final String readFile(final File file) throws FileNotFoundException, IOException {
+    public static final String readFile(final File file) throws IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file),
             Charset.forName("UTF-8"))) {
 

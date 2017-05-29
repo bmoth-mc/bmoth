@@ -67,7 +67,7 @@ public class SemanticAstCreator {
 
         if (machineAnalyser.initialisation != null) {
             SubstitutionNode substitution = (SubstitutionNode) machineAnalyser.initialisation.substitution()
-                    .accept(formulaVisitor);
+                .accept(formulaVisitor);
             machineNode.setInitialisation(substitution);
         }
 
@@ -143,17 +143,17 @@ public class SemanticAstCreator {
         @Override
         public Node visitSequenceEnumerationExpression(BMoThParser.SequenceEnumerationExpressionContext ctx) {
             if (ctx.expression_list() == null) {
-                return new ExpressionOperatorNode(ctx, new ArrayList<>(), ExpressionOperator.EMPTY_SEQUENCE);
+                return new ExpressionOperatorNode(new ArrayList<>(), ExpressionOperator.EMPTY_SEQUENCE);
             } else {
-                return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
-                        ExpressionOperator.SEQ_ENUMERATION);
+                return new ExpressionOperatorNode(createExprNodeList(ctx.expression_list().expression()),
+                    ExpressionOperator.SEQ_ENUMERATION);
             }
         }
 
         @Override
         public Node visitFunctionCallExpression(BMoThParser.FunctionCallExpressionContext ctx) {
-            return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression()),
-                    ExpressionOperator.FUNCTION_CALL);
+            return new ExpressionOperatorNode(createExprNodeList(ctx.expression()),
+                ExpressionOperator.FUNCTION_CALL);
         }
 
         @Override
@@ -198,7 +198,7 @@ public class SemanticAstCreator {
             }
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             return new QuantifiedExpressionNode(ctx, declarationList, predNode, null,
-                    QuatifiedExpressionOperator.SET_COMPREHENSION);
+                QuatifiedExpressionOperator.SET_COMPREHENSION);
         }
 
         @Override
@@ -209,7 +209,7 @@ public class SemanticAstCreator {
                 List<ExprNode> list = new ArrayList<>();
                 list.add(left);
                 list.add((ExprNode) exprs.get(i).accept(this));
-                left = new ExpressionOperatorNode(ctx, list, ExpressionOperator.COUPLE);
+                left = new ExpressionOperatorNode(list, ExpressionOperator.COUPLE);
             }
             return left;
         }
@@ -222,13 +222,13 @@ public class SemanticAstCreator {
 
         @Override
         public ExprNode visitSetEnumerationExpression(BMoThParser.SetEnumerationExpressionContext ctx) {
-            return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
-                    ExpressionOperator.SET_ENUMERATION);
+            return new ExpressionOperatorNode(createExprNodeList(ctx.expression_list().expression()),
+                ExpressionOperator.SET_ENUMERATION);
         }
 
         @Override
         public ExprNode visitEmptySetExpression(BMoThParser.EmptySetExpressionContext ctx) {
-            return new ExpressionOperatorNode(ctx, new ArrayList<>(), ExpressionOperator.EMPTY_SET);
+            return new ExpressionOperatorNode(new ArrayList<>(), ExpressionOperator.EMPTY_SET);
         }
 
         @Override
@@ -299,7 +299,7 @@ public class SemanticAstCreator {
             List<SubstitutionNode> sublist = new ArrayList<>();
             for (int i = 0; i < idents.size(); i++) {
                 SingleAssignSubstitutionNode singleAssignSubstitution = new SingleAssignSubstitutionNode(idents.get(i),
-                        expressions.get(i));
+                    expressions.get(i));
                 sublist.add(singleAssignSubstitution);
             }
             if (sublist.size() == 1) {

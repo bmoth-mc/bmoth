@@ -1,13 +1,12 @@
 package de.bmoth.parser;
 
-import static org.junit.Assert.assertEquals;
+import de.bmoth.parser.ast.nodes.FormulaNode;
+import de.bmoth.parser.ast.nodes.MachineNode;
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import de.bmoth.parser.ast.nodes.FormulaNode;
-import de.bmoth.parser.ast.nodes.MachineNode;
+import static org.junit.Assert.assertEquals;
 
 public class CSTAnalyserTest {
 
@@ -20,7 +19,7 @@ public class CSTAnalyserTest {
         List<String> warnings = machineNode.getWarnings();
         assertEquals(1, warnings.size());
         assertEquals("Ambiguous combination of operators 'or' (line 2, pos 16) and '&' (line 2, pos 25)."
-                + " Use parentheses to avoid this.", warnings.get(0));
+            + " Use parentheses to avoid this.", warnings.get(0));
     }
 
     @Test
@@ -29,9 +28,8 @@ public class CSTAnalyserTest {
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         List<String> warnings = formulaNode.getWarnings();
         assertEquals(1, warnings.size());
-        System.out.println(warnings);
         assertEquals("Ambiguous combination of operators 'or' (line 1, pos 5) and '&' (line 1, pos 14)."
-                + " Use parentheses to avoid this.", warnings.get(0));
+            + " Use parentheses to avoid this.", warnings.get(0));
     }
 
     @Test

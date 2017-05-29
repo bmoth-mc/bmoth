@@ -1,7 +1,6 @@
 package de.bmoth.parser.ast.nodes;
 
 import de.bmoth.antlr.BMoThParser;
-import de.bmoth.antlr.BMoThParser.ExpressionContext;
 import de.bmoth.antlr.BMoThParser.ExpressionOperatorContext;
 
 import java.util.HashMap;
@@ -108,7 +107,7 @@ public class ExpressionOperatorNode extends ExprNode {
         this.operator = loopUpOperator(ctx.operator.getType());
     }
 
-    public ExpressionOperatorNode(ExpressionContext ctx, List<ExprNode> expressionNodes, ExpressionOperator operator) {
+    public ExpressionOperatorNode(List<ExprNode> expressionNodes, ExpressionOperator operator) {
         // used for set enumeration, e.g. {1,2,3}
         this.arity = expressionNodes.size();
         this.expressionNodes = expressionNodes;
