@@ -12,6 +12,7 @@ import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.*;
 
 public class AppControllerTest extends HeadlessUITest {
+    private String codeAreaId = "#codeArea";
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -36,23 +37,23 @@ public class AppControllerTest extends HeadlessUITest {
 
     @Test
     public void checkChangesDetected() {
-        clickOn("#codeArea").write(" ");
+        clickOn(codeAreaId).write(" ");
         verifyThat("#infoArea", hasText("Unsaved changes"));
     }
 
     @Test
     public void opensUnsavedChangesWarning() {
-        clickOn("#codeArea").write(" ");
+        clickOn(codeAreaId).write(" ");
         clickOn("#fileMenu").clickOn("Exit");
         // the warning dialog opens, codeArea stays open
         verifyThat("Back", isNotNull());
-        verifyThat("#codeArea", isNotNull());
+        verifyThat(codeAreaId, isNotNull());
 
         // click the back button
         clickOn("Back");
         // dialog closes, were back to the code area
         verifyThat("Back", isNull());
-        verifyThat("#codeArea", isNotNull());
+        verifyThat(codeAreaId, isNotNull());
     }
 
     @Test
@@ -66,7 +67,7 @@ public class AppControllerTest extends HeadlessUITest {
         // close the repl window so that later tests are not confused
         Node repl = lookup("REPL").query();
         Stage scene = (Stage) repl.getScene().getWindow();
-        interact(() -> scene.close());
+        interact(scene::close);
         WaitForAsyncUtils.waitForFxEvents();
     }
 }
