@@ -19,24 +19,33 @@ public class PrettyPrinter {
         FuncDecl[] functionDeclarations = model.getConstDecls();
         for (FuncDecl decl : functionDeclarations) {
             try {
-                if (decl.getArity() == 0 && decl.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
-                    // this is a constant
-                    if (decl.getRange().getSortKind() != Z3_sort_kind.Z3_DATATYPE_SORT) {
-                        output.add(decl.getName().toString() + "=" + model.getConstInterp(decl));
-                    } else {
-                        // this is a couple
-                        output.add(decl.getName().toString() + "=" + formatCouples(model.getConstInterp(decl)));
-                    }
-                } else {
-                    // not a constant, e.g. some representation of a set
-                    output.add(decl.getName().toString() + "=" + formatSets(model.getFuncInterp(decl)));
-                }
-
+                output.add(decl.getName().toString() + "=" + processDeclaration(decl, model));
             } catch (com.microsoft.z3.Z3Exception e) {
                 logger.log(Level.SEVERE, "Z3 exception while solving", e);
             }
         }
     }
+
+
+    public String processDeclaration(FuncDecl decl, Model model){
+        if (decl.getArity() == 0 && (decl.getRange().getSortKind() == Z3_sort_kind.Z3_ARRAY_SORT
+            || decl.getRange().getSortKind() == Z3_sort_kind.Z3_DATATYPE_SORT)) {
+            // not a constant
+            StringJoiner presentation = new StringJoiner(", ", "", "");
+            if (decl.getRange().getSortKind() == Z3_sort_kind.Z3_DATATYPE_SORT) {
+                // couple
+                presentation.add(formatCouples(model.getConstInterp(decl)));
+            } else {
+                // set
+                presentation.add(formatSets(model.getFuncInterp(decl)));
+            }
+            return presentation.toString();
+        } else {
+            // constant
+            return model.getConstInterp(decl).toString();
+        }
+    }
+
 
     public String formatCouples(Expr constantArg) {
         StringJoiner coupleJoiner = new StringJoiner(",", "(", ")");
