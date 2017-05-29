@@ -1,6 +1,6 @@
 package de.bmoth.typechecker;
 
-import de.bmoth.exceptions.TypeErrorException;
+import de.bmoth.parser.ast.TypeErrorException;
 import org.junit.Test;
 
 public class ErrorMachinesTest {

@@ -1,4 +1,4 @@
-package de.bmoth.app;
+package de.bmoth.eventbus;
 
 import com.google.common.eventbus.EventBus;
 
