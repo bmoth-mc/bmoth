@@ -64,7 +64,7 @@ public class ReplControllerTest extends HeadlessUITest {
 
     private void waitForRepl() {
         WaitForAsyncUtils.waitForFxEvents();
-        sleep(2000);
+        sleep(3000);
         WaitForAsyncUtils.waitForFxEvents();
     }
 }
