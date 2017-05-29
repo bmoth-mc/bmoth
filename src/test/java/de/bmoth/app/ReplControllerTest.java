@@ -9,15 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.testfx.util.WaitForAsyncUtils;
 
-import java.util.logging.Logger;
-
 import static javafx.scene.input.KeyCode.ENTER;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 
 public class ReplControllerTest extends HeadlessUITest {
-    private final Logger logger = Logger.getLogger(getClass().getName());
-
     private TextArea repl;
 
     @Override
@@ -64,7 +60,7 @@ public class ReplControllerTest extends HeadlessUITest {
 
     private void waitForRepl() {
         WaitForAsyncUtils.waitForFxEvents();
-        sleep(3000);
+        sleep(1000);
         WaitForAsyncUtils.waitForFxEvents();
     }
 }
