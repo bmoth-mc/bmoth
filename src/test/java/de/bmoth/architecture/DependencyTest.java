@@ -10,7 +10,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoPackageCycles;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.packagesMatchExactly;
@@ -21,11 +20,11 @@ public class DependencyTest {
     private AnalyzerConfig config;
 
     @Before
-    public void setup() throws IOException {
+    public void setup() {
         // Analyze all sources in src/main/java
         config = new AnalyzerConfig();
-        config = config.withSources(new File("src/main/java/de/bmoth"), "app", "backend", "checkers", "exceptions", "modelchecker", "parser", "util");
-        config = config.withClasses(new File("build/classes/main/de/bmoth"), "app", "backend", "checkers", "exceptions", "modelchecker", "parser", "util");
+        config = config.withSources(new File("src/main/java/de/bmoth"), "app", "backend", "checkers", "eventbus", "exceptions", "modelchecker", "parser", "util");
+        config = config.withClasses(new File("build/classes/main/de/bmoth"), "app", "backend", "checkers", "eventbus", "exceptions", "modelchecker", "parser", "util");
     }
 
     @Test
@@ -39,7 +38,7 @@ public class DependencyTest {
     public void dependency() {
         class DeBmoth extends DependencyRuler {
             // $self is de.bmoth, added _ refers to subpackages of package
-            DependencyRule app, antlr, backend, backend_, checkers_, exceptions, modelchecker, parser, parser_, util;
+            DependencyRule app, antlr, backend, backend_, checkers_, eventbus, exceptions, modelchecker, parser, parser_, util;
 
             @Override
             public void defineRules() {

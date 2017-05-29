@@ -5,6 +5,7 @@ import de.bmoth.checkers.initialstateexists.InitialStateExistsChecker;
 import de.bmoth.checkers.initialstateexists.InitialStateExistsCheckingResult;
 import de.bmoth.checkers.invariantsatisfiability.InvariantSatisfiabilityChecker;
 import de.bmoth.checkers.invariantsatisfiability.InvariantSatisfiabilityCheckingResult;
+import de.bmoth.eventbus.EventBusProvider;
 import de.bmoth.exceptions.ErrorEvent;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;

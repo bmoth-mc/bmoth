@@ -1,7 +1,7 @@
 package de.bmoth.exceptions;
 
 import com.google.common.eventbus.EventBus;
-import de.bmoth.app.EventBusProvider;
+import de.bmoth.eventbus.EventBusProvider;
 import de.bmoth.parser.ast.types.Type;
 
 public class TypeErrorException extends RuntimeException {

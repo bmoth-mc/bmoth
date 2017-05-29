@@ -1,7 +1,7 @@
 package de.bmoth.exceptions;
 
 import com.google.common.eventbus.EventBus;
-import de.bmoth.app.EventBusProvider;
+import de.bmoth.eventbus.EventBusProvider;
 
 public class ScopeException extends RuntimeException {
     private static final long serialVersionUID = 6584928829237049955L;
