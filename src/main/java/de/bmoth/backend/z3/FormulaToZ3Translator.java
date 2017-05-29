@@ -178,7 +178,7 @@ public class FormulaToZ3Translator {
             }
             return nameBuilder.toString();
         }
-        
+
         @Override
         public Expr visitIdentifierExprNode(IdentifierExprNode node, TranslationOptions ops) {
             Type type = node.getDeclarationNode().getType();
@@ -410,26 +410,9 @@ public class FormulaToZ3Translator {
                     constraintList.add(q);
                     return res;
                 }
-                case EMPTY_SEQUENCE: {
-                    Sort intType = z3Context.getIntSort();
-                    Type type = ((SequenceType) node.getType()).getSubtype();
-                    Sort rangeType = bTypeToZ3Sort(type);
-                    ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), intType, rangeType);
-                    TupleSort mkTupleSort = (TupleSort) bTypeToZ3Sort(node.getType());
-                    return mkTupleSort.mkDecl().apply(a, z3Context.mkInt(arguments.size()));
-                }
-                case SEQ_ENUMERATION: {
-                    Sort intType = z3Context.getIntSort();
-                    Type type = ((SequenceType) node.getType()).getSubtype();
-                    Sort rangeType = bTypeToZ3Sort(type);
-                    ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), intType, rangeType);
-                    int index = 1;
-                    for (Expr value : arguments) {
-                        a = z3Context.mkStore(a, z3Context.mkInt(index++), value);
-                    }
-                    TupleSort mkTupleSort = (TupleSort) bTypeToZ3Sort(node.getType());
-                    return mkTupleSort.mkDecl().apply(a, z3Context.mkInt(arguments.size()));
-                }
+                case EMPTY_SEQUENCE: // handled by SEQ_enumeration with empty arguments
+                case SEQ_ENUMERATION:
+                    return translateSeqEnumeration(node, arguments);
                 case FIRST: {
                     DatatypeExpr d = (DatatypeExpr) arguments.get(0);
                     Expr[] args = d.getArgs();
@@ -523,6 +506,19 @@ public class FormulaToZ3Translator {
                     break;
             }
             throw new AssertionError("Not implemented: " + node.getOperator());
+        }
+
+        private Expr translateSeqEnumeration(ExpressionOperatorNode node, List<Expr> arguments) {
+            Sort intType = z3Context.getIntSort();
+            Type type = ((SequenceType) node.getType()).getSubtype();
+            Sort rangeType = bTypeToZ3Sort(type);
+            ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), intType, rangeType);
+            int index = 1;
+            for (Expr value : arguments) {
+                a = z3Context.mkStore(a, z3Context.mkInt(index++), value);
+            }
+            TupleSort mkTupleSort = (TupleSort) bTypeToZ3Sort(node.getType());
+            return mkTupleSort.mkDecl().apply(a, z3Context.mkInt(arguments.size()));
         }
 
         private Quantifier prepareSetQuantifier(ArrayExpr set, IntExpr min, IntExpr max) {
