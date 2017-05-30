@@ -1,10 +1,10 @@
-package de.bmoth.exceptions;
+package de.bmoth.eventbus;
 
 public class ErrorEvent {
     private String errorType;
     private String message;
 
-    ErrorEvent(String type, String msg) {
+    public ErrorEvent(String type, String msg) {
         errorType = type;
         message = msg;
     }

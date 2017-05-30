@@ -1,7 +1,5 @@
 package de.bmoth.parser.ast.types;
 
-import de.bmoth.exceptions.UnificationException;
-
 public class IntegerType implements Type {
 
     private static IntegerType instance = new IntegerType();

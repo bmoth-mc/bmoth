@@ -54,13 +54,10 @@ public class QuantifiedPredicateNode extends PredicateNode {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        switch (operator) {
-            case EXISTENTIAL_QUANTIFICATION:
-                sb.append("EXISTS(");
-                break;
-            case UNIVERSAL_QUANTIFICATION:
-                sb.append("FORALL(");
-                break;
+        if (operator == QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION) {
+            sb.append("EXISTS(");
+        } else if (operator == QuantifiedPredicateOperator.UNIVERSAL_QUANTIFICATION) {
+            sb.append("FORALL(");
         }
         sb.append(declarationList.stream().map(Object::toString).collect(Collectors.joining(",")));
         sb.append(",");

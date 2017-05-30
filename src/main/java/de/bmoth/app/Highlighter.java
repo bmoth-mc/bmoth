@@ -13,6 +13,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Highlighter {
+    private Highlighter() {
+    }
 
     private static final String[] START = new String[]{
         "MACHINE"
@@ -48,22 +50,19 @@ public class Highlighter {
     );
 
     protected static StyleSpans<Collection<String>> computeHighlighting(String text) {
+        String[] groups = new String[]{"START", "KEYWORD", "KEYWORD2", "PAREN", "BRACE", "BRACKET", "SEMICOLON", "STRING", "COMMENT"};
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder
             = new StyleSpansBuilder<>();
         while (matcher.find()) {
-            String styleClass; /* never happens */
-            if (matcher.group("START") != null) styleClass = "start";
-            else if (matcher.group("KEYWORD") != null) styleClass = "keyword";
-            else if (matcher.group("KEYWORD2") != null) styleClass = "keyword2";
-            else if (matcher.group("PAREN") != null) styleClass = "paren";
-            else if (matcher.group("BRACE") != null) styleClass = "brace";
-            else if (matcher.group("BRACKET") != null) styleClass = "bracket";
-            else if (matcher.group("SEMICOLON") != null) styleClass = "semicolon";
-            else if (matcher.group("STRING") != null) styleClass = "string";
-            else if (matcher.group("COMMENT") != null) styleClass = "comment";
-            else styleClass = null;
+            String styleClass = null; /* never happens */
+            for (String group : groups) {
+                if (matcher.group(group) != null) {
+                    styleClass = group.toLowerCase();
+                    break;
+                }
+            }
             assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());

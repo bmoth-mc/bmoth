@@ -1,5 +1,6 @@
 package de.bmoth.app;
 
+import de.bmoth.preferences.BMothPreferences;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -35,9 +36,9 @@ public class CustomCheckController {
     }
 
     private void savePrefs() {
-        PersonalPreferences.setBooleanPreference(PersonalPreferences.BooleanPreference.INITIAL_CHECK, initialCheck.isSelected());
-        PersonalPreferences.setBooleanPreference(PersonalPreferences.BooleanPreference.INVARIANT_CHECK, invariantCheck.isSelected());
-        PersonalPreferences.setBooleanPreference(PersonalPreferences.BooleanPreference.MODEL_CHECK, modelCheck.isSelected());
+        BMothPreferences.setBooleanPreference(BMothPreferences.BooleanPreference.INITIAL_CHECK, initialCheck.isSelected());
+        BMothPreferences.setBooleanPreference(BMothPreferences.BooleanPreference.INVARIANT_CHECK, invariantCheck.isSelected());
+        BMothPreferences.setBooleanPreference(BMothPreferences.BooleanPreference.MODEL_CHECK, modelCheck.isSelected());
     }
 
 

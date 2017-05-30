@@ -19,7 +19,14 @@ machine_clause
   | clauseName=(CONSTANTS|VARIABLES) identifier_list                      # DeclarationClause
   | INITIALISATION substitution                                           # InitialisationClause
   | OPERATIONS  ops+=single_operation (SEMICOLON ops+=single_operation)*  # OperationsClause
+  | SETS set_definition (SEMICOLON set_definition)*                       # SetsClause
   ;
+
+set_definition
+  : IDENTIFIER                                                            # DeferredSet
+  | IDENTIFIER EQUAL LEFT_BRACE identifier_list RIGHT_BRACE               # EnumeratedSet
+  ;
+
 
 single_operation
   : IDENTIFIER EQUAL substitution                                         # Operation

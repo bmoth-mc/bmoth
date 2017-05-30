@@ -1,15 +1,18 @@
 package de.bmoth.app;
 
+import de.bmoth.preferences.BMothPreferences;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
-public class OptionController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class OptionController implements Initializable {
 
     private static final String NONNUMERICWARNING = "Not Numeric or out of Integer-Range: ";
     @FXML
@@ -29,52 +32,32 @@ public class OptionController {
     @FXML
     TextField z3Timeout;
 
-    private Stage stage;
-
-    Stage getStage(Parent root) {
-        if (stage != null) return stage;
-        Scene scene = new Scene(root);
-        this.stage = new Stage();
-        stage.setScene(scene);
-        setupStage();
-        return stage;
-    }
-
-    private void setupStage() {
-        stage.setTitle("Options");
-        // selects end of first Textfield for Caret
-        setUpPrefs();
-        minInt.requestFocus();
-        minInt.selectRange(99, 99);
-    }
-
     void setUpPrefs() {
-        minInt.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MIN_INT)));
-        maxInt.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INT)));
-        maxInitState.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE)));
-        maxTrans.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS)));
-        z3Timeout.setText(String.valueOf(PersonalPreferences.getIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT)));
+        minInt.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT)));
+        maxInt.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT)));
+        maxInitState.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE)));
+        maxTrans.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS)));
+        z3Timeout.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT)));
     }
 
     boolean checkPrefs() {
-        if (!StringUtils.isNumeric(maxInt.getText())) {
+        if (!NumberUtils.isParsable(minInt.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + minInt.getId()).show();
             return false;
         }
-        if (!StringUtils.isNumeric(maxInt.getText())) {
+        if (!NumberUtils.isParsable(maxInt.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxInt.getId()).show();
             return false;
         }
-        if (!StringUtils.isNumeric(maxInitState.getText())) {
+        if (!NumberUtils.isParsable(maxInitState.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxInitState.getId()).show();
             return false;
         }
-
-        if (!StringUtils.isNumeric(maxTrans.getText())) {
+        if (!NumberUtils.isParsable(maxTrans.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxTrans.getId()).show();
             return false;
         }
-        if (!StringUtils.isNumeric(z3Timeout.getText())) {
+        if (!NumberUtils.isParsable(z3Timeout.getText())) {
             new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + z3Timeout.getId()).show();
             return false;
         }
@@ -83,8 +66,6 @@ public class OptionController {
             new Alert(Alert.AlertType.ERROR, "Timout needs to be a positive Value").show();
             return false;
         }
-
-
         if (Integer.parseInt(minInt.getText()) > Integer.parseInt(maxInt.getText())) {
             new Alert(Alert.AlertType.ERROR, "MIN_INT bigger than MAX_INT").show();
             return false;
@@ -98,17 +79,16 @@ public class OptionController {
             return false;
         }
 
-
         return true;
     }
 
 
     void savePrefs() {
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MIN_INT, minInt.getText());
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INT, maxInt.getText());
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_INITIAL_STATE, maxInitState.getText());
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.MAX_TRANSITIONS, maxTrans.getText());
-        PersonalPreferences.setIntPreference(PersonalPreferences.IntPreference.Z3_TIMEOUT, z3Timeout.getText());
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MIN_INT, minInt.getText());
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, maxInt.getText());
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE, maxInitState.getText());
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS, maxTrans.getText());
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT, z3Timeout.getText());
     }
 
 
@@ -118,13 +98,19 @@ public class OptionController {
     }
 
     public void handleClose() {
+        Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
     }
 
     public void handleOk() {
         if (checkPrefs()) {
             savePrefs();
-            stage.close();
+            handleClose();
         }
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        setUpPrefs();
     }
 }

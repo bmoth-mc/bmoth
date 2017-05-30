@@ -51,6 +51,10 @@ sourceSets {
 test {
     exclude('de/bmoth/performance')
     exclude('de/bmoth/app')
+
+    testLogging {
+        exceptionFormat = 'full'
+    }
 }
 
 task performanceTest(type: Test) {
@@ -93,6 +97,9 @@ dependencies {
     testCompile "org.testfx:testfx-core:4.0.+"
     testCompile "org.testfx:testfx-junit:4.0.+"
     testRuntime 'org.testfx:openjfx-monocle:1.8.0_20'
+
+    // code assert (e.g. to check for circular dependencies)
+    testCompile "guru.nidi:code-assert:0.0.+"
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
@@ -161,12 +168,6 @@ tasks.withType(JavaExec) {
     environment env_vars
 
     systemProperty "java.library.path", "./"
-}
-
-test {
-    testLogging {
-        exceptionFormat = 'full'
-    }
 }
 
 eclipse.classpath.file.whenMerged { classpath ->
@@ -249,4 +250,12 @@ distTar {
         }
         file("$destinationDir/$archiveName").renameTo("$destinationDir/$targetname")
     }
+}
+
+// copy all dependencies to a single directory for sonar analysis
+task copyDependenciesForSonarAnalysis(type: Copy) {
+    into "$buildDir/dependency-jars"
+    from configurations.runtime
+    from configurations.compile
+    from configurations.testCompile
 }

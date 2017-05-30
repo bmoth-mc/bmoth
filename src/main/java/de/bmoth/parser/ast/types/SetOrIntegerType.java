@@ -1,7 +1,5 @@
 package de.bmoth.parser.ast.types;
 
-import de.bmoth.exceptions.UnificationException;
-
 import java.util.Observable;
 import java.util.Observer;
 

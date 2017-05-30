@@ -13,6 +13,10 @@ public abstract class TypedNode implements Node, Observer {
         return type;
     }
 
+    public boolean isUntyped() {
+        return type.isUntyped();
+    }
+
     public void setType(Type type) {
         if (type != null && type instanceof Observable) {
             ((Observable) type).deleteObserver(this);

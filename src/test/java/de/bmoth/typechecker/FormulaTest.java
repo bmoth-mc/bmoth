@@ -1,11 +1,8 @@
 package de.bmoth.typechecker;
 
-import de.bmoth.exceptions.TypeErrorException;
 import de.bmoth.parser.Parser;
-import de.bmoth.parser.ast.nodes.DeclarationNode;
-import de.bmoth.parser.ast.nodes.FormulaNode;
-import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
-import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
+import de.bmoth.parser.ast.TypeErrorException;
+import de.bmoth.parser.ast.nodes.*;
 import org.junit.Test;
 
 import java.util.List;
@@ -308,6 +305,28 @@ public class FormulaTest {
         assertEquals("y", y.getName());
         assertEquals("INTEGER", x.getType().toString());
         assertEquals("POW(INTEGER)", y.getType().toString());
+    }
+
+    @Test(expected = TypeErrorException.class)
+    public void cannotInferFormulaType() {
+        String formula = "x - y";
+        Parser.getFormulaAsSemanticAst(formula);
+    }
+
+    @Test(expected = TypeErrorException.class)
+    public void cannotInferTypeOfLocalVariable() {
+        String formula = "x = y";
+        Parser.getFormulaAsSemanticAst(formula);
+    }
+
+    @Test
+    public void testDirectProduct() {
+        String formula = "{1 |-> 2} >< {1 |-> 3}";
+        FormulaNode node = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(EXPRESSION_FORMULA, node.getFormulaType());
+        ExpressionOperatorNode exprNode = (ExpressionOperatorNode) node.getFormula();
+        assertEquals(2, exprNode.getArity());
+        assertEquals(ExpressionOperatorNode.ExpressionOperator.DIRECT_PRODUCT, exprNode.getOperator());
     }
 
 }

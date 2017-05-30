@@ -1,7 +1,5 @@
 package de.bmoth.parser.ast.types;
 
-import de.bmoth.exceptions.UnificationException;
-
 public class BoolType implements Type {
 
     private static BoolType instance = new BoolType();

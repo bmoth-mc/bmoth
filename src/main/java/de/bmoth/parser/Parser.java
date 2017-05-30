@@ -10,14 +10,16 @@ import de.bmoth.parser.ast.SemanticAstCreator;
 import de.bmoth.parser.ast.TypeChecker;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
-import de.bmoth.util.Utils;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.DiagnosticErrorListener;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.List;
 
 public class Parser {
 
@@ -34,52 +36,83 @@ public class Parser {
         return bMoThParser;
     }
 
-    public StartContext parseMachine(String inputString) {
+    private StartContext parseMachine(String inputString) {
         BMoThParser parser = getParser(inputString);
-        StartContext start = parser.start();
-        return start;
+        return parser.start();
     }
 
-    public FormulaContext parseFormula(String inputString) {
+    private FormulaContext parseFormula(String inputString) {
         BMoThParser parser = getParser(inputString);
         return parser.formula();
     }
 
-    public MachineNode getMachineAst(StartContext start) {
+    private MachineNode getMachineAst(StartContext start) {
         MachineAnalyser machineAnalyser = new MachineAnalyser(start);
         SemanticAstCreator astCreator = new SemanticAstCreator(machineAnalyser);
         return (MachineNode) astCreator.getAstNode();
     }
 
-    public FormulaNode getFormulaAst(FormulaContext formula) {
+    private FormulaNode getFormulaAst(FormulaContext formula) {
         FormulaAnalyser formulaAnalyser = new FormulaAnalyser(formula);
         SemanticAstCreator astCreator = new SemanticAstCreator(formulaAnalyser);
         return (FormulaNode) astCreator.getAstNode();
     }
 
-    public static MachineNode getMachineFileAsSemanticAst(String file) throws FileNotFoundException, IOException {
-        Parser parser = new Parser();
-        String fileContent = Utils.readFile(new File(file));
-        StartContext start = parser.parseMachine(fileContent);
-        MachineNode ast = parser.getMachineAst(start);
-        new TypeChecker(ast);
-        return ast;
+    public static MachineNode getMachineFileAsSemanticAst(String file) throws IOException {
+        String fileContent = readFile(new File(file));
+        return getMachineAsSemanticAst(fileContent);
     }
 
     public static MachineNode getMachineAsSemanticAst(String inputString) {
         Parser parser = new Parser();
         StartContext start = parser.parseMachine(inputString);
-        MachineNode ast = parser.getMachineAst(start);
-        new TypeChecker(ast);
-        return ast;
+        List<String> warnings = CSTAnalyser.analyseConcreteSyntaxTree(start);
+        MachineNode machineNode = parser.getMachineAst(start);
+        machineNode.setWarnings(warnings);
+        TypeChecker.typecheckMachineNode(machineNode);
+
+        return machineNode;
     }
 
     public static FormulaNode getFormulaAsSemanticAst(String inputString) {
         Parser parser = new Parser();
         FormulaContext formulaContext = parser.parseFormula(inputString);
+        List<String> warnings = CSTAnalyser.analyseConcreteSyntaxTree(formulaContext);
         FormulaNode formulaNode = parser.getFormulaAst(formulaContext);
-        new TypeChecker(formulaNode);
+        formulaNode.setWarnings(warnings);
+        TypeChecker.typecheckFormulaNode(formulaNode);
         return formulaNode;
+    }
+
+    public static final String readFile(final File file) throws IOException {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file),
+            Charset.forName("UTF-8"))) {
+
+            final StringBuilder builder = new StringBuilder();
+            final char[] buffer = new char[1024];
+            int read;
+            while ((read = inputStreamReader.read(buffer)) >= 0) {
+                builder.append(String.valueOf(buffer, 0, read));
+            }
+            String content = builder.toString();
+
+            inputStreamReader.close();
+
+            // remove utf-8 byte order mark
+            // replaceAll \uFEFF did not work for some reason
+            // apparently, unix like systems report a single character with the code
+            // below
+            if (!content.isEmpty() && Character.codePointAt(content, 0) == 65279) {
+                content = content.substring(1);
+            }
+            // while windows splits it up into three characters with the codes below
+            if (!content.isEmpty() && Character.codePointAt(content, 0) == 239 && Character.codePointAt(content, 1) == 187
+                && Character.codePointAt(content, 2) == 191) {
+                content = content.substring(3);
+            }
+
+            return content.replaceAll("\r\n", "\n");
+        }
     }
 
 }

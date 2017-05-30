@@ -50,6 +50,8 @@ public class SemanticAstCreator {
         MachineNode machineNode = new MachineNode(null, null);
         machineNode.setConstants(createDeclarationList(machineAnalyser.constantsDeclarations));
         machineNode.setVariables(createDeclarationList(machineAnalyser.variablesDeclarations));
+        addEnumeratedSets(machineAnalyser.enumeratedSetContexts, machineNode);
+        addDeferredSets(machineAnalyser.deferredSetContexts, machineNode);
 
         FormulaVisitor formulaVisitor = new FormulaVisitor();
 
@@ -65,24 +67,46 @@ public class SemanticAstCreator {
 
         if (machineAnalyser.initialisation != null) {
             SubstitutionNode substitution = (SubstitutionNode) machineAnalyser.initialisation.substitution()
-                    .accept(formulaVisitor);
+                .accept(formulaVisitor);
             machineNode.setInitialisation(substitution);
         }
 
-        {
-            List<OperationNode> operationsList = new ArrayList<>();
-            for (Entry<String, OperationContext> entry : machineAnalyser.operationsDeclarations.entrySet()) {
-                OperationContext operationContext = entry.getValue();
-                SubstitutionNode substitution = (SubstitutionNode) operationContext.substitution()
-                        .accept(formulaVisitor);
-                OperationNode operationNode = new OperationNode(entry.getValue(), entry.getKey(), substitution);
-                operationsList.add(operationNode);
-            }
-            machineNode.setOperations(operationsList);
-
+        List<OperationNode> operationsList = new ArrayList<>();
+        for (Entry<String, OperationContext> entry : machineAnalyser.operationsDeclarations.entrySet()) {
+            OperationContext operationContext = entry.getValue();
+            SubstitutionNode substitution = (SubstitutionNode) operationContext.substitution().accept(formulaVisitor);
+            OperationNode operationNode = new OperationNode(entry.getKey(), substitution);
+            operationsList.add(operationNode);
         }
+        machineNode.setOperations(operationsList);
+
         this.semanticNode = machineNode;
 
+    }
+
+    private void addDeferredSets(List<DeferredSetContext> deferredSetContexts, MachineNode machineNode) {
+        for (DeferredSetContext deferredSetContext : deferredSetContexts) {
+            Token token = deferredSetContext.IDENTIFIER().getSymbol();
+            DeclarationNode setDeclNode = new DeclarationNode(token, token.getText());
+            declarationMap.put(token, setDeclNode);
+            machineNode.addDeferredSet(setDeclNode);
+        }
+    }
+
+    private void addEnumeratedSets(List<EnumeratedSetContext> enumerationsContexts, MachineNode machineNode) {
+        for (EnumeratedSetContext enumeratedSetContext : enumerationsContexts) {
+            Token token = enumeratedSetContext.IDENTIFIER().getSymbol();
+            DeclarationNode setDeclNode = new DeclarationNode(token, token.getText());
+            declarationMap.put(token, setDeclNode);
+            List<DeclarationNode> list = new ArrayList<>();
+            for (Token element : enumeratedSetContext.identifier_list().identifiers) {
+                DeclarationNode declNode = new DeclarationNode(element, element.getText());
+                list.add(declNode);
+                declarationMap.put(element, declNode);
+            }
+            EnumeratedSet setEnumeration = new EnumeratedSet(setDeclNode, list);
+            machineNode.addSetEnumeration(setEnumeration);
+        }
     }
 
     private List<DeclarationNode> createDeclarationList(LinkedHashMap<String, Token> constantsDeclarations) {
@@ -113,24 +137,23 @@ public class SemanticAstCreator {
                 declarationMap.put(token, declNode);
             }
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
-            QuantifiedPredicateNode quantifiedPredicate = new QuantifiedPredicateNode(ctx, declarationList, predNode);
-            return quantifiedPredicate;
+            return new QuantifiedPredicateNode(ctx, declarationList, predNode);
         }
 
         @Override
         public Node visitSequenceEnumerationExpression(BMoThParser.SequenceEnumerationExpressionContext ctx) {
             if (ctx.expression_list() == null) {
-                return new ExpressionOperatorNode(ctx, new ArrayList<>(), ExpressionOperator.EMPTY_SEQUENCE);
+                return new ExpressionOperatorNode(new ArrayList<>(), ExpressionOperator.EMPTY_SEQUENCE);
             } else {
-                return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
-                        ExpressionOperator.SEQ_ENUMERATION);
+                return new ExpressionOperatorNode(createExprNodeList(ctx.expression_list().expression()),
+                    ExpressionOperator.SEQ_ENUMERATION);
             }
         }
 
         @Override
         public Node visitFunctionCallExpression(BMoThParser.FunctionCallExpressionContext ctx) {
-            return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression()),
-                    ExpressionOperator.FUNCTION_CALL);
+            return new ExpressionOperatorNode(createExprNodeList(ctx.expression()),
+                ExpressionOperator.FUNCTION_CALL);
         }
 
         @Override
@@ -161,9 +184,7 @@ public class SemanticAstCreator {
             }
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             ExprNode exprNode = (ExprNode) ctx.expression().accept(this);
-            QuantifiedExpressionNode quantifiedExpression = new QuantifiedExpressionNode(ctx, declarationList, predNode,
-                    exprNode, ctx.operator);
-            return quantifiedExpression;
+            return new QuantifiedExpressionNode(ctx, declarationList, predNode, exprNode, ctx.operator);
         }
 
         @Override
@@ -176,9 +197,8 @@ public class SemanticAstCreator {
                 declarationMap.put(token, declNode);
             }
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
-            QuantifiedExpressionNode quantifiedExpression = new QuantifiedExpressionNode(ctx, declarationList, predNode,
-                    null, QuatifiedExpressionOperator.SET_COMPREHENSION);
-            return quantifiedExpression;
+            return new QuantifiedExpressionNode(ctx, declarationList, predNode, null,
+                QuatifiedExpressionOperator.SET_COMPREHENSION);
         }
 
         @Override
@@ -189,7 +209,7 @@ public class SemanticAstCreator {
                 List<ExprNode> list = new ArrayList<>();
                 list.add(left);
                 list.add((ExprNode) exprs.get(i).accept(this));
-                left = new ExpressionOperatorNode(ctx, list, ExpressionOperator.COUPLE);
+                left = new ExpressionOperatorNode(list, ExpressionOperator.COUPLE);
             }
             return left;
         }
@@ -202,13 +222,13 @@ public class SemanticAstCreator {
 
         @Override
         public ExprNode visitSetEnumerationExpression(BMoThParser.SetEnumerationExpressionContext ctx) {
-            return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
-                    ExpressionOperator.SET_ENUMERATION);
+            return new ExpressionOperatorNode(createExprNodeList(ctx.expression_list().expression()),
+                ExpressionOperator.SET_ENUMERATION);
         }
 
         @Override
         public ExprNode visitEmptySetExpression(BMoThParser.EmptySetExpressionContext ctx) {
-            return new ExpressionOperatorNode(ctx, new ArrayList<>(), ExpressionOperator.EMPTY_SET);
+            return new ExpressionOperatorNode(new ArrayList<>(), ExpressionOperator.EMPTY_SET);
         }
 
         @Override
@@ -279,7 +299,7 @@ public class SemanticAstCreator {
             List<SubstitutionNode> sublist = new ArrayList<>();
             for (int i = 0; i < idents.size(); i++) {
                 SingleAssignSubstitutionNode singleAssignSubstitution = new SingleAssignSubstitutionNode(idents.get(i),
-                        expressions.get(i));
+                    expressions.get(i));
                 sublist.add(singleAssignSubstitution);
             }
             if (sublist.size() == 1) {
@@ -343,8 +363,7 @@ public class SemanticAstCreator {
                 SubstitutionNode sub = (SubstitutionNode) substitutionContext.accept(this);
                 result.add(sub);
             }
-            ParallelSubstitutionNode paSub = new ParallelSubstitutionNode(result);
-            return paSub;
+            return new ParallelSubstitutionNode(result);
         }
 
     }

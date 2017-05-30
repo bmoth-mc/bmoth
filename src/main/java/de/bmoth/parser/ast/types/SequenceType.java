@@ -1,7 +1,5 @@
 package de.bmoth.parser.ast.types;
 
-import de.bmoth.exceptions.UnificationException;
-
 import java.util.Observable;
 import java.util.Observer;
 
@@ -34,11 +32,7 @@ public class SequenceType extends Observable implements Type, Observer {
 
     @Override
     public boolean contains(Type other) {
-        if (this.subType == other || this.subType.contains(other)) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.subType == other || this.subType.contains(other);
     }
 
     @Override
