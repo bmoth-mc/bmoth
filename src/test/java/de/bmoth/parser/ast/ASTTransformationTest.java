@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import de.bmoth.backend.z3.AstTransformationsForZ3;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
@@ -18,7 +19,7 @@ public class ASTTransformationTest {
         String formula = "({1} \\/ a) \\/ b";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(EXPRESSION_FORMULA, formulaNode.getFormulaType());
-        ExprNode transformExprNode = AstTransformationForZ3
+        ExprNode transformExprNode = AstTransformationsForZ3
                 .transformExprNode((ExpressionOperatorNode) formulaNode.getFormula());
         assertEquals("UNION(SET_ENUMERATION(1),a,b)", transformExprNode.toString());
     }
@@ -27,7 +28,7 @@ public class ASTTransformationTest {
     public void testElementOfCombinedWithUnion() {
         String formula = "a : {1} \\/ b";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        PredicateNode op = AstTransformationForZ3.transformSemanticNode((PredicateNode) formulaNode.getFormula());
+        PredicateNode op = AstTransformationsForZ3.transformPredicate((PredicateNode) formulaNode.getFormula());
         assertEquals("OR(ELEMENT_OF(a,SET_ENUMERATION(1)),ELEMENT_OF(a,b))", op.toString());
     }
 }

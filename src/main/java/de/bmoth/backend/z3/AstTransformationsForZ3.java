@@ -1,4 +1,4 @@
-package de.bmoth.parser.ast;
+package de.bmoth.backend.z3;
 
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator;
@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.bmoth.parser.ast.ASTTransformationVisitor;
+import de.bmoth.parser.ast.AbstractASTTransformation;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
 import de.bmoth.parser.ast.nodes.Node;
@@ -15,60 +17,42 @@ import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
 
-public class AstTransformationForZ3 {
-    private static AstTransformationForZ3 instance;
+public class AstTransformationsForZ3 {
+    private static AstTransformationsForZ3 instance;
 
     private final List<AbstractASTTransformation> transformationList;
 
-    private AstTransformationForZ3() {
+    private AstTransformationsForZ3() {
         this.transformationList = new ArrayList<>();
         transformationList.add(new ConvertNestedUnionsToUnionList());
         transformationList.add(new ConvertElementOfUnionToMultipleElementOfs());
     }
 
-    public static AstTransformationForZ3 getInstance() {
+    public static AstTransformationsForZ3 getInstance() {
         if (null == instance) {
-            instance = new AstTransformationForZ3();
+            instance = new AstTransformationsForZ3();
         }
         return instance;
     }
 
-    private PredicateNode transformPredicate(PredicateNode predNode) {
-        PredicateNode temp = predNode;
-        for (AbstractASTTransformation abstractASTTransformation : transformationList) {
-            temp = (PredicateNode) abstractASTTransformation.visitPredicateNode(temp, null);
-        }
-        return temp;
-    }
-
-    private ExprNode transformExpresssion(ExprNode node) {
-        ExprNode temp = node;
-        for (AbstractASTTransformation abstractASTTransformation : transformationList) {
-            temp = (ExprNode) abstractASTTransformation.visitExprNode(temp, null);
-        }
-        return node;
-    }
-
-    public static PredicateNode transformSemanticNode(PredicateNode node) {
-        AstTransformationForZ3 astTransformerForZ3 = new AstTransformationForZ3();
-        return astTransformerForZ3.transformPredicate(node);
-
+    public static PredicateNode transformPredicate(PredicateNode predNode) {
+        AstTransformationsForZ3 astTransformationForZ3 = AstTransformationsForZ3.getInstance();
+        ASTTransformationVisitor visitor = new ASTTransformationVisitor(astTransformationForZ3.transformationList);
+        return visitor.transformPredicate(predNode);
     }
 
     public static ExprNode transformExprNode(ExprNode value) {
-        AstTransformationForZ3 astTransformerForZ3 = new AstTransformationForZ3();
-        return astTransformerForZ3.transformExpresssion(value);
+        AstTransformationsForZ3 astTransformationForZ3 = AstTransformationsForZ3.getInstance();
+        ASTTransformationVisitor visitor = new ASTTransformationVisitor(astTransformationForZ3.transformationList);
+        return visitor.transformExpr(value);
     }
 
     private class ConvertElementOfUnionToMultipleElementOfs extends AbstractASTTransformation {
-
         @Override
         public Node visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, Void expected) {
-            final List<ExprNode> argumentList = node.getExpressionNodes().stream()
-                    .map(exprNode -> (ExprNode) visitExprNode(exprNode, expected)).collect(Collectors.toList());
             if (node.getOperator() == PredOperatorExprArgs.ELEMENT_OF) {
-                ExprNode left = argumentList.get(0);
-                ExprNode right = argumentList.get(1);
+                ExprNode left = node.getExpressionNodes().get(0);
+                ExprNode right = node.getExpressionNodes().get(1);
                 if (right instanceof ExpressionOperatorNode
                         && ((ExpressionOperatorNode) right).getOperator() == ExpressionOperator.UNION) {
                     List<PredicateNode> predicateArguments = new ArrayList<>();
@@ -81,11 +65,10 @@ public class AstTransformationForZ3 {
                                 PredOperatorExprArgs.ELEMENT_OF, args);
                         predicateArguments.add(predicateOperatorWithExprArgsNode);
                     }
-                    super.setChanged();
+                    setChanged();
                     return new PredicateOperatorNode(PredicateOperator.OR, predicateArguments);
                 }
             }
-            node.setArgumentsList(argumentList);
             return node;
         }
     }
@@ -101,7 +84,7 @@ public class AstTransformationForZ3 {
                     if (expr instanceof ExpressionOperatorNode
                             && ((ExpressionOperatorNode) expr).getOperator() == ExpressionOperator.UNION) {
                         list.addAll(((ExpressionOperatorNode) expr).getExpressionNodes());
-                        super.setChanged();
+                        setChanged();
                     } else {
                         list.add(expr);
                     }
