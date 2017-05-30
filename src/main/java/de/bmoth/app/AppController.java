@@ -9,6 +9,7 @@ import de.bmoth.eventbus.ErrorEvent;
 import de.bmoth.eventbus.EventBusProvider;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.preferences.BMothPreferences;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

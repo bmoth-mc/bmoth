@@ -27,7 +27,6 @@ public class DependencyTest {
     }
 
     @Test
-    @Ignore
     public void noCycles() {
         assertThat(new ModelAnalyzer(config).analyze(), hasNoClassCycles());
         assertThat(new ModelAnalyzer(config).analyze(), hasNoPackageCycles());

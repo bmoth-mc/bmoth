@@ -1,7 +1,6 @@
 package de.bmoth.backend.z3;
 
 import com.microsoft.z3.*;
-import de.bmoth.app.BMothPreferences;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.AbstractVisitor;
@@ -10,6 +9,7 @@ import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
 import de.bmoth.parser.ast.types.*;
+import de.bmoth.preferences.BMothPreferences;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

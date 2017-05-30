@@ -1,5 +1,6 @@
 package de.bmoth.app;
 
+import de.bmoth.preferences.BMothPreferences;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
@@ -11,7 +12,7 @@ import java.util.concurrent.Future;
 import static org.junit.Assert.assertEquals;
 
 //TODO test with AppController
-public class CustomCheckControllerTest extends HeadlessUITest  {
+public class CustomCheckControllerTest extends HeadlessUITest {
 
     private static final String INITIAL_CHECK_ID = "initialCheck";
 

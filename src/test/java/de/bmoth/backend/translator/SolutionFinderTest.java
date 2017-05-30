@@ -2,9 +2,9 @@ package de.bmoth.backend.translator;
 
 import com.microsoft.z3.*;
 import de.bmoth.TestUsingZ3;
-import de.bmoth.app.BMothPreferences;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
+import de.bmoth.preferences.BMothPreferences;
 import org.junit.Test;
 
 import java.util.*;
