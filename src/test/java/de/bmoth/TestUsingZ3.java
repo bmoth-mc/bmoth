@@ -38,7 +38,7 @@ public class TestUsingZ3 {
         assertEquals(satisfiable, check);
     }
 
-    public void checkLaw(String law) {
+    protected void checkLaw(String law) {
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(law, z3Context);
         z3Solver.push();
         z3Solver.add(z3Context.mkNot(constraint));
@@ -47,7 +47,7 @@ public class TestUsingZ3 {
         assertEquals(Status.UNSATISFIABLE, check);
     }
 
-    public void checkTruthTable(Map<String, Status> map) {
+    protected void checkTruthTable(Map<String, Status> map) {
         for (Map.Entry<String, Status> entry : map.entrySet()) {
             check(entry.getValue(), entry.getKey());
             z3Solver.reset();
