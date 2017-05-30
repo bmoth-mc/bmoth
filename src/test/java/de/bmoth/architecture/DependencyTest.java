@@ -36,6 +36,11 @@ public class DependencyTest {
     @Test
     @Ignore
     public void dependency() {
+        class ExternalPackages extends DependencyRuler {
+            DependencyRule comGoogleCommonEventbus,
+                comMicrosoftZ3, comMicrosoftZ3Enumerations;
+        }
+
         class DeBmoth extends DependencyRuler {
             // $self is de.bmoth, added _ refers to subpackages of package
             DependencyRule app,
@@ -48,12 +53,17 @@ public class DependencyTest {
                 modelchecker,
                 parser,
                 parser_,
+                preferences,
                 util;
 
             @Override
             public void defineRules() {
-                parser_.mayUse(parser_);
-                parser_.mayUse(antlr);
+                app.mayUse(eventbus, preferences);
+                exceptions.mustUse(eventbus);
+
+                parser.mayUse(antlr, exceptions, parser_);
+                parser_.mayUse(antlr, parser_);
+
                 //$self.mayUse(util, dependency_);
                 //dependency_.mustUse(model);
                 //model.mayUse(util).mustNotUse($self);
@@ -65,8 +75,9 @@ public class DependencyTest {
         // maybe we should include com.microsoft again and check who is
         // allowed to directly speak to z3
         DependencyRules rules = DependencyRules.denyAll()
+            .withAbsoluteRules(new ExternalPackages())
             .withRelativeRules(new DeBmoth())
-            .withExternals("java.*", "javafx.*", "com.*", "org.*");
+            .withExternals("java.*", "javafx.*", "org.*");
 
         assertThat(new ModelAnalyzer(config).analyze(), packagesMatchExactly(rules));
     }
