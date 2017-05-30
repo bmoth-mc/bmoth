@@ -6,9 +6,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
-    private final Logger logger = Logger.getLogger(getClass().getName());
-
-
     private Type left;
     private Type right;
 
@@ -67,6 +64,7 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
             }
         } catch (UnificationException e) {
             // should not happen
+            final Logger logger = Logger.getLogger(getClass().getName());
             logger.log(Level.SEVERE, "unification failed in update", e);
         }
     }
