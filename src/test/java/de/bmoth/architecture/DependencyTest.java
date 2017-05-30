@@ -39,7 +39,17 @@ public class DependencyTest {
     public void dependency() {
         class DeBmoth extends DependencyRuler {
             // $self is de.bmoth, added _ refers to subpackages of package
-            DependencyRule app, antlr, backend, backend_, checkers_, eventbus, exceptions, modelchecker, parser, parser_, util;
+            DependencyRule app,
+                antlr,
+                backend,
+                backend_,
+                checkers_,
+                eventbus,
+                exceptions,
+                modelchecker,
+                parser,
+                parser_,
+                util;
 
             @Override
             public void defineRules() {
