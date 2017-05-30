@@ -33,7 +33,7 @@ public class RelationsTest {
     public void testDomainRestriction() {
         String formula = "k = x <| {1|->1}";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
+        assertEquals(POW_INTEGER_X_INTEGER, formulaTypes.get("k"));
         assertEquals(POW_INTEGER, formulaTypes.get("x"));
     }
 
@@ -49,7 +49,7 @@ public class RelationsTest {
     public void testRangeRestriction() {
         String formula = "k = {1|->1} |> x";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("k"));
+        assertEquals(POW_INTEGER_X_INTEGER, formulaTypes.get("k"));
         assertEquals(POW_INTEGER, formulaTypes.get("x"));
     }
 
