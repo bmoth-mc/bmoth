@@ -6,7 +6,6 @@ import com.microsoft.z3.Status;
 import de.bmoth.TestUsingZ3;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.preferences.BMothPreferences;
-import de.bmoth.util.UtilMethodsTest;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -18,14 +17,14 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testSimpleSetExtensionFormula() {
         String formula = "{1,2} = {2,3}";
-        UtilMethodsTest.check(UNSATISFIABLE, formula, z3Context, z3Solver);
+        check(UNSATISFIABLE, formula);
     }
 
     @Test
     public void testEmptySet() {
-        UtilMethodsTest.check(Status.SATISFIABLE, "1 /: {}", z3Context, z3Solver);
-        UtilMethodsTest.check(Status.UNSATISFIABLE, "{1} = {}", z3Context, z3Solver);
-        UtilMethodsTest.check(Status.UNSATISFIABLE, "{} = {1}", z3Context, z3Solver);
+        check(Status.SATISFIABLE, "1 /: {}");
+        check(Status.UNSATISFIABLE, "{1} = {}");
+        check(Status.UNSATISFIABLE, "{} = {1}");
     }
 
     @Test
@@ -73,61 +72,61 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
 
     @Test
     public void testNATURAL() {
-        UtilMethodsTest.check(SATISFIABLE, "0 : NATURAL", z3Context, z3Solver);
-        UtilMethodsTest.check(SATISFIABLE, "1 : NATURAL", z3Context, z3Solver);
-        UtilMethodsTest.check(SATISFIABLE, "1000000 : NATURAL", z3Context, z3Solver);
-        UtilMethodsTest.check(UNSATISFIABLE, "-1 : NATURAL", z3Context, z3Solver);
-        UtilMethodsTest.check(UNSATISFIABLE, "-10000 : NATURAL", z3Context, z3Solver);
+        check(SATISFIABLE, "0 : NATURAL");
+        check(SATISFIABLE, "1 : NATURAL");
+        check(SATISFIABLE, "1000000 : NATURAL");
+        check(UNSATISFIABLE, "-1 : NATURAL");
+        check(UNSATISFIABLE, "-10000 : NATURAL");
     }
 
     @Test
     public void testNAT() {
         BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, "10");
-        UtilMethodsTest.check(SATISFIABLE, "0 : NAT", z3Context, z3Solver);
-        UtilMethodsTest.check(SATISFIABLE, "1 : NAT", z3Context, z3Solver);
-        UtilMethodsTest.check(UNSATISFIABLE, "-1 : NAT", z3Context, z3Solver);
-        UtilMethodsTest.check(UNSATISFIABLE, "-10000 : NAT", z3Context, z3Solver);
-        UtilMethodsTest.check(SATISFIABLE, "10 : INT", z3Context, z3Solver);
-        UtilMethodsTest.check(UNSATISFIABLE, "11 : INT", z3Context, z3Solver);
+        check(SATISFIABLE, "0 : NAT");
+        check(SATISFIABLE, "1 : NAT");
+        check(UNSATISFIABLE, "-1 : NAT");
+        check(UNSATISFIABLE, "-10000 : NAT");
+        check(SATISFIABLE, "10 : INT");
+        check(UNSATISFIABLE, "11 : INT");
     }
 
     @Test
     public void testINTEGER() {
-        UtilMethodsTest.check(SATISFIABLE, "0 : INTEGER", z3Context, z3Solver);
-        UtilMethodsTest.check(SATISFIABLE, "1 : INTEGER", z3Context, z3Solver);
-        UtilMethodsTest.check(SATISFIABLE, "-1 : INTEGER", z3Context, z3Solver);
+        check(SATISFIABLE, "0 : INTEGER");
+        check(SATISFIABLE, "1 : INTEGER");
+        check(SATISFIABLE, "-1 : INTEGER");
     }
 
     @Test
     public void testINT() {
         BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, "10");
         BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MIN_INT, "-1");
-        UtilMethodsTest.check(SATISFIABLE, "0 : INT", z3Context, z3Solver);
-        UtilMethodsTest.check(SATISFIABLE, "1 : INT", z3Context, z3Solver);
-        UtilMethodsTest.check(SATISFIABLE, "-1 : INT", z3Context, z3Solver);
-        UtilMethodsTest.check(SATISFIABLE, "10 : INT", z3Context, z3Solver);
-        UtilMethodsTest.check(UNSATISFIABLE, "11 : INT", z3Context, z3Solver);
-        UtilMethodsTest.check(UNSATISFIABLE, "-3 : INT", z3Context, z3Solver);
-        UtilMethodsTest.check(SATISFIABLE, "6 : INT", z3Context, z3Solver);
-        UtilMethodsTest.check(SATISFIABLE, "4 : INT", z3Context, z3Solver);
+        check(SATISFIABLE, "0 : INT");
+        check(SATISFIABLE, "1 : INT");
+        check(SATISFIABLE, "-1 : INT");
+        check(SATISFIABLE, "10 : INT");
+        check(UNSATISFIABLE, "11 : INT");
+        check(UNSATISFIABLE, "-3 : INT");
+        check(SATISFIABLE, "6 : INT");
+        check(SATISFIABLE, "4 : INT");
     }
 
     @Test
     public void testSetComprehension1() {
         String formula = "{x | x : {1} } = {1} ";
-        UtilMethodsTest.check(SATISFIABLE, formula, z3Context, z3Solver);
+        check(SATISFIABLE, formula);
     }
 
     @Test
     public void testSetComprehension2() {
         String formula = "{x,y | x : {1,2,3} & y = 2} = {1|->2, 2|->2, 3|->2} ";
-        UtilMethodsTest.check(SATISFIABLE, formula, z3Context, z3Solver);
+        check(SATISFIABLE, formula);
     }
 
     @Test
     public void testSetComprehension3() {
         String formula = "{x | x : {1} } = {x | x > 0 & x < 2} ";
-        UtilMethodsTest.check(SATISFIABLE, formula, z3Context, z3Solver);
+        check(SATISFIABLE, formula);
     }
 
     @Test
@@ -377,14 +376,14 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
         // TODO z3 is currently not able to handle sets of sets and reports the
         // status UNKNOWN
         String formula = "union({{1},{2},{3}}) = {1,2,3} ";
-        UtilMethodsTest.check(SATISFIABLE, formula, z3Context, z3Solver);
+        check(SATISFIABLE, formula);
     }
 
     @Ignore
     @Test
     public void testCard() {
         String formula = "card({1,2,3,4}) = 3";
-        UtilMethodsTest.check(SATISFIABLE, formula, z3Context, z3Solver);
+        check(SATISFIABLE, formula);
     }
 
 }
