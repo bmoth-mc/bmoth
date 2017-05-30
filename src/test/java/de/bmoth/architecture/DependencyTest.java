@@ -30,7 +30,9 @@ public class DependencyTest {
     @Test
     @Ignore
     public void noCycles() {
-        assertThat(new ModelAnalyzer(config).analyze(), hasNoPackageCycles());
+        assertThat(new ModelAnalyzer(config).analyze(), CodeAssertMatchers.hasNoClassCycles());
+        assertThat(new ModelAnalyzer(config).analyze(), CodeAssertMatchers.hasNoPackageCycles());
+
     }
 
     @Test
