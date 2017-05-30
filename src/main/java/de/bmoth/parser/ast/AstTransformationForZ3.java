@@ -1,30 +1,15 @@
 package de.bmoth.parser.ast;
 
+import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
+import de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator;
+import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode.PredOperatorExprArgs;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
-import de.bmoth.parser.ast.nodes.CastPredicateExpressionNode;
-import de.bmoth.parser.ast.nodes.ExprNode;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
-import de.bmoth.parser.ast.nodes.IdentifierExprNode;
-import de.bmoth.parser.ast.nodes.IdentifierPredicateNode;
-import de.bmoth.parser.ast.nodes.Node;
-import de.bmoth.parser.ast.nodes.NumberNode;
-import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
-import de.bmoth.parser.ast.nodes.PredicateNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator;
-import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode.PredOperatorExprArgs;
-import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
-import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
-import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
-import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
-
-public class AstTransformationForZ3 extends AbstractVisitor<Node, Void> {
+public class AstTransformationForZ3 implements AbstractVisitor<Node, Void> {
 
     public static PredicateNode transformSemanticNode(PredicateNode node) {
         AstTransformationForZ3 astTransformerForZ3 = new AstTransformationForZ3();

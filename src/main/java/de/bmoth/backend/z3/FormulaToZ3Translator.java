@@ -160,7 +160,7 @@ public class FormulaToZ3Translator {
 
     }
 
-    class FormulaToZ3TranslatorVisitor extends AbstractVisitor<Expr, TranslationOptions> {
+    class FormulaToZ3TranslatorVisitor implements AbstractVisitor<Expr, TranslationOptions> {
         // used to generate unique identifiers
         private int tempVariablesCounter = 0;
 

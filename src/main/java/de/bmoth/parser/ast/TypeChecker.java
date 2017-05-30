@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class TypeChecker extends AbstractVisitor<Type, Type> {
+public class TypeChecker implements AbstractVisitor<Type, Type> {
 
     Set<ExpressionOperatorNode> minusNodes = new HashSet<>();
     Set<ExpressionOperatorNode> multOrCartNodes = new HashSet<>();
@@ -41,7 +41,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 
         // visit the properties clause
         if (machineNode.getProperties() != null) {
-            super.visitPredicateNode(machineNode.getProperties(), BoolType.getInstance());
+            visitPredicateNode(machineNode.getProperties(), BoolType.getInstance());
         }
 
         // check that all constants have a type, otherwise throw an exception
@@ -56,7 +56,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 
         // visit the invariant clause
         if (machineNode.getInvariant() != null) {
-            super.visitPredicateNode(machineNode.getInvariant(), BoolType.getInstance());
+            visitPredicateNode(machineNode.getInvariant(), BoolType.getInstance());
         }
 
         // check that all variables have type, otherwise throw an exception
@@ -69,11 +69,11 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 
         // visit the initialisation clause
         if (machineNode.getInitialisation() != null) {
-            super.visitSubstitutionNode(machineNode.getInitialisation(), null);
+            visitSubstitutionNode(machineNode.getInitialisation(), null);
         }
 
         // visit all operations
-        machineNode.getOperations().forEach(op -> super.visitSubstitutionNode(op.getSubstitution(), null));
+        machineNode.getOperations().forEach(op -> visitSubstitutionNode(op.getSubstitution(), null));
 
         performPostActions();
 
@@ -85,10 +85,10 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         }
         Node formula = formulaNode.getFormula();
         if (formula instanceof PredicateNode) {
-            super.visitPredicateNode((PredicateNode) formula, BoolType.getInstance());
+            visitPredicateNode((PredicateNode) formula, BoolType.getInstance());
         } else {
             // expression formula
-            Type type = super.visitExprNode((ExprNode) formula, new UntypedType());
+            Type type = visitExprNode((ExprNode) formula, new UntypedType());
             if (type.isUntyped()) {
                 throw new TypeErrorException("Can not infer type of formula: " + type);
             }
@@ -664,7 +664,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         try {
             Type boolType = BoolType.getInstance();
             node.setType(boolType);
-            super.visitPredicateNode(node.getPredicate(), BoolType.getInstance());
+            visitPredicateNode(node.getPredicate(), BoolType.getInstance());
             return boolType.unify(expected);
         } catch (UnificationException e) {
             throw new TypeErrorException(expected, BoolType.getInstance());
@@ -693,22 +693,22 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
 
     @Override
     public Type visitSelectSubstitutionNode(SelectSubstitutionNode node, Type expected) {
-        super.visitPredicateNode(node.getCondition(), BoolType.getInstance());
-        super.visitSubstitutionNode(node.getSubstitution(), expected);
+        visitPredicateNode(node.getCondition(), BoolType.getInstance());
+        visitSubstitutionNode(node.getSubstitution(), expected);
         return null;
     }
 
     @Override
     public Type visitSingleAssignSubstitution(SingleAssignSubstitutionNode node, Type expected) {
         Type type = visitIdentifierExprNode(node.getIdentifier(), new UntypedType());
-        super.visitExprNode(node.getValue(), type);
+        visitExprNode(node.getValue(), type);
         return null;
     }
 
     @Override
     public Type visitParallelSubstitutionNode(ParallelSubstitutionNode node, Type expected) {
         for (SubstitutionNode sub : node.getSubstitutions()) {
-            super.visitSubstitutionNode(sub, null);
+            visitSubstitutionNode(sub, null);
         }
         return null;
     }
@@ -723,7 +723,7 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
     @Override
     public Type visitQuantifiedExpressionNode(QuantifiedExpressionNode node, Type expected) {
         setTypes(node.getDeclarationList());
-        super.visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
+        visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
         switch (node.getOperator()) {
             case QUANTIFIED_INTER:
             case QUANTIFIED_UNION: {
@@ -768,15 +768,15 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
             throw new TypeErrorException(expected, IntegerType.getInstance());
         }
         setTypes(node.getDeclarationList());
-        super.visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
+        visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
         return BoolType.getInstance();
     }
 
     @Override
     public Type visitAnySubstitution(AnySubstitutionNode node, Type expected) {
         setTypes(node.getParameters());
-        super.visitPredicateNode(node.getWherePredicate(), BoolType.getInstance());
-        super.visitSubstitutionNode(node.getThenSubstitution(), null);
+        visitPredicateNode(node.getWherePredicate(), BoolType.getInstance());
+        visitSubstitutionNode(node.getThenSubstitution(), null);
         return null;
     }
 
