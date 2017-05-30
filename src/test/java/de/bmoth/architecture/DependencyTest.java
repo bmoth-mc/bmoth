@@ -37,8 +37,15 @@ public class DependencyTest {
     @Ignore
     public void dependency() {
         class ExternalPackages extends DependencyRuler {
-            DependencyRule comGoogleCommonEventbus,
-                comMicrosoftZ3, comMicrosoftZ3Enumerations;
+            DependencyRule comMicrosoftZ3,
+                comMicrosoftZ3Enumerations,
+                deBmothApp,
+                deBmothBackendZ3;
+
+            @Override
+            public void defineRules() {
+                deBmothBackendZ3.mustUse(comMicrosoftZ3);
+            }
         }
 
         class DeBmoth extends DependencyRuler {
@@ -58,8 +65,15 @@ public class DependencyTest {
 
             @Override
             public void defineRules() {
-                app.mayUse(eventbus, preferences);
+                app.mayUse(checkers_, eventbus, modelchecker, preferences);
+
+                backend_.mayUse(preferences);
+
+                checkers_.mayUse(backend, backend_);
+
                 exceptions.mustUse(eventbus);
+
+                modelchecker.mayUse(backend_);
 
                 parser.mayUse(antlr, exceptions, parser_);
                 parser_.mayUse(antlr, parser_);
@@ -77,7 +91,7 @@ public class DependencyTest {
         DependencyRules rules = DependencyRules.denyAll()
             .withAbsoluteRules(new ExternalPackages())
             .withRelativeRules(new DeBmoth())
-            .withExternals("java.*", "javafx.*", "org.*");
+            .withExternals("com.google.*", "java.*", "javafx.*", "org.*");
 
         assertThat(new ModelAnalyzer(config).analyze(), packagesMatchExactly(rules));
     }
