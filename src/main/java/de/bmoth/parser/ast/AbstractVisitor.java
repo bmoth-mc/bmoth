@@ -2,9 +2,9 @@ package de.bmoth.parser.ast;
 
 import de.bmoth.parser.ast.nodes.*;
 
-public abstract class AbstractVisitor<R, P> {
+public interface AbstractVisitor<R, P> {
 
-    public R visitPredicateNode(PredicateNode node, P expected) {
+    default R visitPredicateNode(PredicateNode node, P expected) {
         if (node instanceof PredicateOperatorNode) {
             return visitPredicateOperatorNode((PredicateOperatorNode) node, expected);
         } else if (node instanceof PredicateOperatorWithExprArgsNode) {
@@ -17,7 +17,7 @@ public abstract class AbstractVisitor<R, P> {
         throw new AssertionError(node);
     }
 
-    public R visitExprNode(ExprNode node, P expected) {
+    default R visitExprNode(ExprNode node, P expected) {
         if (node instanceof ExpressionOperatorNode) {
             return visitExprOperatorNode((ExpressionOperatorNode) node, expected);
         } else if (node instanceof IdentifierExprNode) {
@@ -32,7 +32,7 @@ public abstract class AbstractVisitor<R, P> {
         throw new AssertionError();
     }
 
-    public R visitSubstitutionNode(SubstitutionNode node, P expected) {
+    default R visitSubstitutionNode(SubstitutionNode node, P expected) {
         if (node instanceof SelectSubstitutionNode) {
             return visitSelectSubstitutionNode((SelectSubstitutionNode) node, expected);
         } else if (node instanceof SingleAssignSubstitutionNode) {
@@ -45,29 +45,29 @@ public abstract class AbstractVisitor<R, P> {
         throw new AssertionError();
     }
 
-    public abstract R visitPredicateOperatorNode(PredicateOperatorNode node, P expected);
+    R visitPredicateOperatorNode(PredicateOperatorNode node, P expected);
 
-    public abstract R visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, P expected);
+    R visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, P expected);
 
-    public abstract R visitExprOperatorNode(ExpressionOperatorNode node, P expected);
+    R visitExprOperatorNode(ExpressionOperatorNode node, P expected);
 
-    public abstract R visitIdentifierExprNode(IdentifierExprNode node, P expected);
+    R visitIdentifierExprNode(IdentifierExprNode node, P expected);
 
-    public abstract R visitCastPredicateExpressionNode(CastPredicateExpressionNode node, P expected);
+    R visitCastPredicateExpressionNode(CastPredicateExpressionNode node, P expected);
 
-    public abstract R visitNumberNode(NumberNode node, P expected);
+    R visitNumberNode(NumberNode node, P expected);
 
-    public abstract R visitSelectSubstitutionNode(SelectSubstitutionNode node, P expected);
+    R visitSelectSubstitutionNode(SelectSubstitutionNode node, P expected);
 
-    public abstract R visitSingleAssignSubstitution(SingleAssignSubstitutionNode node, P expected);
+    R visitSingleAssignSubstitution(SingleAssignSubstitutionNode node, P expected);
 
-    public abstract R visitAnySubstitution(AnySubstitutionNode node, P expected);
+    R visitAnySubstitution(AnySubstitutionNode node, P expected);
 
-    public abstract R visitParallelSubstitutionNode(ParallelSubstitutionNode node, P expected);
+    R visitParallelSubstitutionNode(ParallelSubstitutionNode node, P expected);
 
-    public abstract R visitIdentifierPredicateNode(IdentifierPredicateNode node, P expected);
+    R visitIdentifierPredicateNode(IdentifierPredicateNode node, P expected);
 
-    public abstract R visitQuantifiedExpressionNode(QuantifiedExpressionNode node, P expected);
+    R visitQuantifiedExpressionNode(QuantifiedExpressionNode node, P expected);
 
-    public abstract R visitQuantifiedPredicateNode(QuantifiedPredicateNode node, P expected);
+    R visitQuantifiedPredicateNode(QuantifiedPredicateNode node, P expected);
 }

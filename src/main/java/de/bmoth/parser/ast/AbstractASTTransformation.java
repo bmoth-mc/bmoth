@@ -21,7 +21,7 @@ import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
 
-public class AbstractASTTransformation extends AbstractVisitor<Node, Void> {
+public class AbstractASTTransformation implements AbstractVisitor<Node, Void> {
 
     boolean changed = false;
 

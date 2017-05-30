@@ -1,5 +1,10 @@
 package de.bmoth.parser.ast;
 
+import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
+import de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator;
+import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode.PredOperatorExprArgs;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

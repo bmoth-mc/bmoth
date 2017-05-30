@@ -160,7 +160,7 @@ public class FormulaToZ3Translator {
 
     }
 
-    class FormulaToZ3TranslatorVisitor extends AbstractVisitor<Expr, TranslationOptions> {
+    class FormulaToZ3TranslatorVisitor implements AbstractVisitor<Expr, TranslationOptions> {
         // used to generate unique identifiers
         private int tempVariablesCounter = 0;
 
@@ -389,27 +389,8 @@ public class FormulaToZ3Translator {
                 case DOMAIN_SUBTRACTION:
                 case GENERALIZED_INTER:
                     break;
-                case GENERALIZED_UNION: {
-                    // union(S)
-                    // return Res
-                    // !(e).(e : Res <=> #(s).(s : S & e : s)
-
-                    SetType setType = (SetType) node.getType();
-                    Expr S = arguments.get(0);
-                    Expr res = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType));
-                    Expr s = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType));
-                    Expr e = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType.getSubtype()));
-
-                    BoolExpr eIsInRes = z3Context.mkSetMembership(e, (ArrayExpr) res);
-                    BoolExpr sIsInS = z3Context.mkSetMembership(s, (ArrayExpr) S);
-                    BoolExpr eIsIns = z3Context.mkSetMembership(e, (ArrayExpr) s);
-                    Quantifier exists = z3Context.mkExists(new Expr[]{s}, z3Context.mkAnd(sIsInS, eIsIns), 1, null, null,
-                        null, null);
-                    Quantifier q = z3Context.mkForall(new Expr[]{e}, z3Context.mkEq(eIsInRes, exists), 1, null, null,
-                        null, null);
-                    constraintList.add(q);
-                    return res;
-                }
+                case GENERALIZED_UNION:
+                    return translateGeneralizedUnion(node, arguments);
                 case EMPTY_SEQUENCE: // handled by SEQ_enumeration with empty arguments
                 case SEQ_ENUMERATION:
                     return translateSeqEnumeration(node, arguments);
@@ -438,6 +419,7 @@ public class FormulaToZ3Translator {
                 case INSERT_FRONT:
                 case INSERT_TAIL:
                 case OVERWRITE_RELATION:
+                    break;
                 case INVERSE_RELATION: {
                     SetType nType = (SetType) node.getType();
                     CoupleType subType = (CoupleType) nType.getSubtype();
@@ -506,6 +488,28 @@ public class FormulaToZ3Translator {
                     break;
             }
             throw new AssertionError("Not implemented: " + node.getOperator());
+        }
+
+        private Expr translateGeneralizedUnion(ExpressionOperatorNode node, List<Expr> arguments) {
+            // union(S)
+            // return Res
+            // !(e).(e : Res <=> #(s).(s : S & e : s)
+
+            SetType setType = (SetType) node.getType();
+            Expr SetOfSets = arguments.get(0);
+            Expr res = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType));
+            Expr setVar = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType));
+            Expr elementVar = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType.getSubtype()));
+
+            BoolExpr eIsInRes = z3Context.mkSetMembership(elementVar, (ArrayExpr) res);
+            BoolExpr sIsInS = z3Context.mkSetMembership(setVar, (ArrayExpr) SetOfSets);
+            BoolExpr eIsIns = z3Context.mkSetMembership(elementVar, (ArrayExpr) setVar);
+            Quantifier exists = z3Context.mkExists(new Expr[]{setVar}, z3Context.mkAnd(sIsInS, eIsIns), 1, null, null,
+                null, null);
+            Quantifier q = z3Context.mkForall(new Expr[]{elementVar}, z3Context.mkEq(eIsInRes, exists), 1, null, null,
+                null, null);
+            constraintList.add(q);
+            return res;
         }
 
         private Expr translateSeqEnumeration(ExpressionOperatorNode node, List<Expr> arguments) {

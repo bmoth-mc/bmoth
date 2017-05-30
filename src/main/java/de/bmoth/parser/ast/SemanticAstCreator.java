@@ -75,7 +75,7 @@ public class SemanticAstCreator {
         for (Entry<String, OperationContext> entry : machineAnalyser.operationsDeclarations.entrySet()) {
             OperationContext operationContext = entry.getValue();
             SubstitutionNode substitution = (SubstitutionNode) operationContext.substitution().accept(formulaVisitor);
-            OperationNode operationNode = new OperationNode(entry.getValue(), entry.getKey(), substitution);
+            OperationNode operationNode = new OperationNode(entry.getKey(), substitution);
             operationsList.add(operationNode);
         }
         machineNode.setOperations(operationsList);
