@@ -3,8 +3,6 @@ package de.bmoth.parser.ast.types;
 import java.util.Observable;
 import java.util.Observer;
 
-import de.bmoth.parser.ast.UnificationException;
-
 public class CoupleType extends Observable implements Type, Observer {
 
     private Type left;

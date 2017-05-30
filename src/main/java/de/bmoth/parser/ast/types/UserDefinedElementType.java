@@ -1,7 +1,5 @@
 package de.bmoth.parser.ast.types;
 
-import de.bmoth.parser.ast.UnificationException;
-
 public class UserDefinedElementType implements Type {
 
     private String setName;
