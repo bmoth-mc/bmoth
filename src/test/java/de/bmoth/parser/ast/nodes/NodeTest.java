@@ -1,6 +1,8 @@
 package de.bmoth.parser.ast.nodes;
 
 import de.bmoth.parser.Parser;
+import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -93,7 +95,7 @@ public class NodeTest {
     @Test
     public void testFormulaNode() {
         assertEquals(EXPRESSION_FORMULA, FormulaNode.FormulaType.valueOf("EXPRESSION_FORMULA"));
-        assertArrayEquals(new FormulaNode.FormulaType[]{EXPRESSION_FORMULA, PREDICATE_FORMULA}, FormulaNode.FormulaType.PREDICATE_FORMULA.values());
+        assertArrayEquals(new FormulaNode.FormulaType[]{EXPRESSION_FORMULA, PREDICATE_FORMULA}, FormulaType.values());
     }
 
     @Test

@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class ParallelSubstitutionNode extends SubstitutionNode {
 
-    private final List<SubstitutionNode> substitutions;
+    private List<SubstitutionNode> substitutions;
 
     public ParallelSubstitutionNode(List<SubstitutionNode> substitutions) {
         Set<DeclarationNode> set = new HashSet<>();
@@ -19,6 +19,10 @@ public class ParallelSubstitutionNode extends SubstitutionNode {
 
     public List<SubstitutionNode> getSubstitutions() {
         return substitutions;
+    }
+
+    public void setSubstitutions(List<SubstitutionNode> substitutions) {
+        this.substitutions = substitutions;
     }
 
 }

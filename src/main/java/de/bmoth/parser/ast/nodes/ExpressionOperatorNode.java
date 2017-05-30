@@ -96,12 +96,10 @@ public class ExpressionOperatorNode extends ExprNode {
 
     private List<ExprNode> expressionNodes;
     private String operatorString;
-    private final int arity;
     private ExpressionOperator operator;
 
     public ExpressionOperatorNode(ExpressionOperatorContext ctx, List<ExprNode> expressionNodes,
                                   String operatorString) {
-        this.arity = expressionNodes.size();
         this.expressionNodes = expressionNodes;
         this.operatorString = operatorString;
         this.operator = loopUpOperator(ctx.operator.getType());
@@ -109,7 +107,6 @@ public class ExpressionOperatorNode extends ExprNode {
 
     public ExpressionOperatorNode(List<ExprNode> expressionNodes, ExpressionOperator operator) {
         // used for set enumeration, e.g. {1,2,3}
-        this.arity = expressionNodes.size();
         this.expressionNodes = expressionNodes;
         this.operatorString = null;
         this.operator = operator;
@@ -142,7 +139,7 @@ public class ExpressionOperatorNode extends ExprNode {
     }
 
     public int getArity() {
-        return arity;
+        return expressionNodes.size();
     }
 
     @Override

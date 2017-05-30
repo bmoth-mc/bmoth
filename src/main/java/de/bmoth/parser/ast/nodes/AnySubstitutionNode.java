@@ -4,12 +4,12 @@ import java.util.List;
 
 public class AnySubstitutionNode extends SubstitutionNode {
 
-    private final List<DeclarationNode> parameters;
-    private final PredicateNode wherePredicate;
-    private final SubstitutionNode thenSubstitution;
+    private List<DeclarationNode> parameters;
+    private PredicateNode wherePredicate;
+    private SubstitutionNode thenSubstitution;
 
     public AnySubstitutionNode(List<DeclarationNode> parameters, PredicateNode wherePredicate,
-                               SubstitutionNode thenSubstitution) {
+            SubstitutionNode thenSubstitution) {
         this.parameters = parameters;
         this.wherePredicate = wherePredicate;
         this.thenSubstitution = thenSubstitution;
@@ -26,6 +26,14 @@ public class AnySubstitutionNode extends SubstitutionNode {
 
     public SubstitutionNode getThenSubstitution() {
         return thenSubstitution;
+    }
+
+    public void setPredicate(PredicateNode predNode) {
+        this.wherePredicate = predNode;
+    }
+
+    public void setSubstitution(SubstitutionNode substitutionNode) {
+        this.thenSubstitution = substitutionNode;
     }
 
 }

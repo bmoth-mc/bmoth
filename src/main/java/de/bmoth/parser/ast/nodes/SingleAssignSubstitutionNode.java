@@ -5,8 +5,8 @@ import java.util.Set;
 
 public class SingleAssignSubstitutionNode extends SubstitutionNode {
 
-    private final IdentifierExprNode identifier;
-    private final ExprNode value;
+    private IdentifierExprNode identifier;
+    private ExprNode value;
 
     public SingleAssignSubstitutionNode(IdentifierExprNode identifier, ExprNode expr) {
         this.identifier = identifier;
@@ -27,5 +27,9 @@ public class SingleAssignSubstitutionNode extends SubstitutionNode {
     @Override
     public String toString() {
         return identifier + " := " + value;
+    }
+
+    public void setValue(ExprNode value) {
+        this.value = value;
     }
 }
