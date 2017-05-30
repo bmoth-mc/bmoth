@@ -15,15 +15,15 @@ import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class DependencyTest {
-
+    private String[] packages = new String[]{"app", "backend", "checkers", "eventbus", "exceptions", "modelchecker", "parser"};
     private AnalyzerConfig config;
 
     @Before
     public void setup() {
         // Analyze all sources in src/main/java
         config = new AnalyzerConfig();
-        config = config.withSources(new File("src/main/java/de/bmoth"), "app", "backend", "checkers", "eventbus", "exceptions", "modelchecker", "parser", "util");
-        config = config.withClasses(new File("build/classes/main/de/bmoth"), "app", "backend", "checkers", "eventbus", "exceptions", "modelchecker", "parser", "util");
+        config = config.withSources(new File("src/main/java/de/bmoth"), packages);
+        config = config.withClasses(new File("build/classes/main/de/bmoth"), packages);
     }
 
     @Test
@@ -60,8 +60,7 @@ public class DependencyTest {
                 modelchecker,
                 parser,
                 parser_,
-                preferences,
-                util;
+                preferences;
 
             @Override
             public void defineRules() {
@@ -76,7 +75,7 @@ public class DependencyTest {
                 modelchecker.mayUse(backend_);
 
                 parser.mayUse(antlr, exceptions, parser_);
-                parser_.mayUse(antlr, parser_);
+                parser_.mayUse(antlr, eventbus, parser_);
 
                 //$self.mayUse(util, dependency_);
                 //dependency_.mustUse(model);
