@@ -37,38 +37,35 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         }
 
         // set all constants to untyped
-        for (DeclarationNode con : machineNode.getConstants()) {
-            con.setType(new UntypedType());
-        }
+        machineNode.getConstants().forEach(con -> con.setType(new UntypedType()));
+
         // visit the properties clause
         if (machineNode.getProperties() != null) {
             super.visitPredicateNode(machineNode.getProperties(), BoolType.getInstance());
         }
 
         // check that all constants have a type, otherwise throw an exception
-        for (DeclarationNode con : machineNode.getConstants()) {
-            if (con.getType().isUntyped()) {
+        machineNode.getConstants().stream().filter(DeclarationNode::isUntyped).forEach(
+            con -> {
                 throw new TypeErrorException(
                     "Can not infer the type of constant " + con.getName() + ". Type variable: " + con.getType());
-            }
-        }
+            });
 
         // set all variables to untyped
-        for (DeclarationNode var : machineNode.getVariables()) {
-            var.setType(new UntypedType());
-        }
+        machineNode.getVariables().forEach(var -> var.setType(new UntypedType()));
 
         // visit the invariant clause
         if (machineNode.getInvariant() != null) {
             super.visitPredicateNode(machineNode.getInvariant(), BoolType.getInstance());
         }
+
         // check that all variables have type, otherwise throw an exception
-        for (DeclarationNode var : machineNode.getVariables()) {
-            if (var.getType().isUntyped()) {
+        machineNode.getVariables().stream().filter(DeclarationNode::isUntyped).forEach(
+            var -> {
                 throw new TypeErrorException(
                     "Can not infer the type of variable " + var.getName() + ". Type variable: " + var.getType());
-            }
-        }
+            });
+
 
         // visit the initialisation clause
         if (machineNode.getInitialisation() != null) {
@@ -76,11 +73,10 @@ public class TypeChecker extends AbstractVisitor<Type, Type> {
         }
 
         // visit all operations
-        for (OperationNode op : machineNode.getOperations()) {
-            super.visitSubstitutionNode(op.getSubstitution(), null);
-        }
+        machineNode.getOperations().forEach(op -> super.visitSubstitutionNode(op.getSubstitution(), null));
 
         performPostActions();
+
     }
 
     private TypeChecker(FormulaNode formulaNode) {
