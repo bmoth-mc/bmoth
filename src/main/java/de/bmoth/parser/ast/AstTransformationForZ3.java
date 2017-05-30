@@ -1,6 +1,5 @@
 package de.bmoth.parser.ast;
 
-import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode.PredOperatorExprArgs;
@@ -11,12 +10,9 @@ import java.util.stream.Collectors;
 
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator;
-import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode.PredOperatorExprArgs;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
 
 public class AstTransformationForZ3 {
