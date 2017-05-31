@@ -1,5 +1,6 @@
 package de.bmoth.app;
 
+import de.bmoth.preferences.BMothPreferences;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -111,7 +112,7 @@ public class OptionControllerTest extends HeadlessUITest {
 
     @Test
     public void maxIntNotNumeric() {
-       noNumericInputTest(MAX_INT_ID);
+        noNumericInputTest(MAX_INT_ID);
     }
 
     @Test

@@ -1,7 +1,5 @@
 package de.bmoth.parser.ast.nodes;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,7 +8,7 @@ public class OperationNode {
     private final String name;
     private final SubstitutionNode substitution;
 
-    public OperationNode(ParseTree parseTree, String name, SubstitutionNode substitution) {
+    public OperationNode(String name, SubstitutionNode substitution) {
         this.name = name;
         this.substitution = substitution;
     }

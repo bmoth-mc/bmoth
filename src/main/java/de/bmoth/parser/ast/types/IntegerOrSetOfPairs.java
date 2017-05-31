@@ -2,11 +2,10 @@ package de.bmoth.parser.ast.types;
 
 import java.util.Observable;
 import java.util.Observer;
-
-import de.bmoth.parser.ast.UnificationException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
-
     private Type left;
     private Type right;
 
@@ -33,55 +32,41 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
     public void update(Observable o, Object arg) {
         o.deleteObserver(this);
         Type newType = (Type) arg;
-        if (newType instanceof IntegerType) {
-            this.setChanged();
-            this.notifyObservers(newType);
-            if (o == getLeft()) {
-                try {
+        try {
+            if (newType instanceof IntegerType) {
+                this.setChanged();
+                this.notifyObservers(newType);
+                if (o == getLeft()) {
                     getRight().unify(IntegerType.getInstance());
-                } catch (UnificationException e) {
-                    // should not happen
-                }
-            } else {
-                try {
+                } else {
                     getLeft().unify(IntegerType.getInstance());
-                } catch (UnificationException e) {
-                    // should not happen
                 }
-            }
-        } else if (newType instanceof SetType) {
-            this.setChanged();
-            if (o == getLeft()) {
+            } else if (newType instanceof SetType && o == getLeft()) {
+                this.setChanged();
                 // left is a set
                 if (right instanceof Observable) {
                     ((Observable) right).deleteObserver(this);
                 }
-                SetType r = null;
-                try {
-                    r = (SetType) right.unify(new SetType(new UntypedType()));
-                } catch (UnificationException e) {
-                    // should not happen
-                }
+                SetType r = (SetType) right.unify(new SetType(new UntypedType()));
                 this.notifyObservers(new SetType(new CoupleType(((SetType) newType).getSubtype(), r.getSubtype())));
-            } else {
+            } else if (newType instanceof SetType && o != getLeft()) {
+                this.setChanged();
                 // right is a set
                 if (left instanceof Observable) {
                     ((Observable) left).deleteObserver(this);
                 }
-                SetType l = null;
-                try {
-                    l = (SetType) left.unify(new SetType(new UntypedType()));
-                } catch (UnificationException e) {
-                    // should not happen
-                }
+                SetType l = (SetType) left.unify(new SetType(new UntypedType()));
                 this.notifyObservers(new SetType(new CoupleType(l.getSubtype(), ((SetType) newType).getSubtype())));
+            } else if (o == getLeft()) {
+                setLeftType(newType);
+            } else {
+                setRightType(newType);
             }
-        } else if (o == getLeft()) {
-            setLeftType(newType);
-        } else {
-            setRightType(newType);
+        } catch (UnificationException e) {
+            // should not happen
+            final Logger logger = Logger.getLogger(getClass().getName());
+            logger.log(Level.SEVERE, "unification failed in update", e);
         }
-
     }
 
     @Override

@@ -3,6 +3,8 @@ package de.bmoth.modelchecker;
 import com.microsoft.z3.Expr;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -32,10 +34,22 @@ public class LiftsTest {
 
     @Test
     public void testInvalidPositions() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "LiftStopsAtInvalidPositions.mch");
+        MachineNode simpleMachineWithViolation = Parser
+                .getMachineFileAsSemanticAst(dir + "LiftStopsAtInvalidPositions.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
-        assertEquals("{MAX_FLOOR=5, MIN_FLOOR=0, doors_open=false, moving=false, current_floor=1, betweenFloors=true}", result.getLastState().toString());
+        assertEquals("{MAX_FLOOR=5, MIN_FLOOR=0, doors_open=false, moving=false, current_floor=1, betweenFloors=true}",
+                result.getLastState().toString());
+    }
+
+    @Ignore // TODO Enumerated sets are currently not supported by the z3
+            // translation
+    @Test
+    public void testLiftDoesNotMoveTowardsFirstPressedButton() throws IOException {
+        MachineNode simpleMachineWithViolation = Parser
+                .getMachineFileAsSemanticAst(dir + "LiftDoesNotMoveTowardsFirstPressedButton.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result.isCorrect());
     }
 
     @Test
@@ -48,11 +62,47 @@ public class LiftsTest {
 
     @Test
     public void testTargetAndCurrentCorrespond() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "TargetAndCurrentCorrespond.mch");
+        MachineNode simpleMachineWithViolation = Parser
+                .getMachineFileAsSemanticAst(dir + "TargetAndCurrentCorrespond.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
-        Expr target_floor = result.getLastState().values.get("target_floor");
-        Expr current_floor = result.getLastState().values.get("current_floor");
-        assertNotEquals(target_floor.toString(), current_floor.toString());
+        Expr targetFloor = result.getLastState().values.get("target_floor");
+        Expr currentFloor = result.getLastState().values.get("current_floor");
+        assertNotEquals(targetFloor.toString(), currentFloor.toString());
+    }
+
+    @Test
+    public void testMissingEmergencyCall() throws IOException {
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "EmergencyCallFail.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result.isCorrect());
+    }
+
+    @Test
+    public void testNotMoving() throws IOException {
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "NotMoving.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result.isCorrect());
+    }
+
+    @Test
+    public void testAcceleration() throws IOException {
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "AccMachine.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(true, result.isCorrect());
+    }
+
+    @Test
+    public void testSlowDoors() throws IOException {
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "SlowDoors.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result.isCorrect());
+    }
+
+    @Test
+    public void testFastDoors() throws IOException {
+        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "FastDoors.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        assertEquals(false, result.isCorrect());
     }
 }

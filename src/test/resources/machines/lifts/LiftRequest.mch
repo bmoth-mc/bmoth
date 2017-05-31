@@ -15,7 +15,7 @@ OPERATIONS
   OpenDoors = SELECT moving = FALSE THEN doors_open := TRUE END;
   StartMoving = SELECT doors_open = FALSE THEN moving := TRUE END;
   StopMoving  = BEGIN moving := FALSE END;
-  Request = ANY floor WHERE floor : 0..5 & moving = TRUE
+  Request = ANY floor WHERE floor : 0..5
             THEN requested_floor := floor || requested := TRUE END;
   Move = SELECT moving = TRUE & requested = TRUE 
          THEN current_floor := requested_floor || requested := FALSE || moving := FALSE END

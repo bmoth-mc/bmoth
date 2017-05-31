@@ -1,7 +1,5 @@
 package de.bmoth.parser.ast.types;
 
-import de.bmoth.parser.ast.UnificationException;
-
 public interface Type {
 
     public Type unify(Type otherType) throws UnificationException;

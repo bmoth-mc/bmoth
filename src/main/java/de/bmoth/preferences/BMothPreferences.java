@@ -1,4 +1,4 @@
-package de.bmoth.app;
+package de.bmoth.preferences;
 
 public class BMothPreferences {
     private static java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(BMothPreferences.class);

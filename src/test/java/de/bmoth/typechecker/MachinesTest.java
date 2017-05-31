@@ -1,7 +1,7 @@
 package de.bmoth.typechecker;
 
-import de.bmoth.exceptions.TypeErrorException;
 import de.bmoth.parser.Parser;
+import de.bmoth.parser.ast.TypeErrorException;
 import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;

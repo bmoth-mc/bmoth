@@ -3,8 +3,6 @@ package de.bmoth.parser.ast.types;
 import java.util.Observable;
 import java.util.Observer;
 
-import de.bmoth.parser.ast.UnificationException;
-
 public class SequenceType extends Observable implements Type, Observer {
     private Type subType;
 
@@ -34,11 +32,7 @@ public class SequenceType extends Observable implements Type, Observer {
 
     @Override
     public boolean contains(Type other) {
-        if (this.subType == other || this.subType.contains(other)) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.subType == other || this.subType.contains(other);
     }
 
     @Override

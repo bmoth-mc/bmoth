@@ -1,7 +1,8 @@
 package de.bmoth.exceptions;
 
 import com.google.common.eventbus.EventBus;
-import de.bmoth.app.EventBusProvider;
+import de.bmoth.eventbus.ErrorEvent;
+import de.bmoth.eventbus.EventBusProvider;
 import org.antlr.v4.runtime.CommonToken;
 
 public class ParseErrorException extends RuntimeException {

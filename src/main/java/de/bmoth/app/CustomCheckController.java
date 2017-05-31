@@ -1,5 +1,6 @@
 package de.bmoth.app;
 
+import de.bmoth.preferences.BMothPreferences;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

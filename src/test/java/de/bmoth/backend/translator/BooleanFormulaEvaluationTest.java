@@ -5,7 +5,6 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Status;
 import de.bmoth.TestUsingZ3;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
-import de.bmoth.util.UtilMethodsTest;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -54,7 +53,7 @@ public class BooleanFormulaEvaluationTest extends TestUsingZ3 {
         map.put("FALSE & TRUE", UNSATISFIABLE);
         map.put("FALSE & FALSE", UNSATISFIABLE);
         map.put("FALSE & x", UNSATISFIABLE);
-        UtilMethodsTest.checkTruthTable(map, z3Context, z3Solver);
+        checkTruthTable(map);
     }
 
     @Test
@@ -64,7 +63,7 @@ public class BooleanFormulaEvaluationTest extends TestUsingZ3 {
         map.put("TRUE or FALSE", SATISFIABLE);
         map.put("FALSE or TRUE", SATISFIABLE);
         map.put("FALSE or FALSE", UNSATISFIABLE);
-        UtilMethodsTest.checkTruthTable(map, z3Context, z3Solver);
+        checkTruthTable(map);
 
     }
 
@@ -105,7 +104,7 @@ public class BooleanFormulaEvaluationTest extends TestUsingZ3 {
         map.put("TRUE => FALSE", UNSATISFIABLE);
         map.put("FALSE => TRUE", SATISFIABLE);
         map.put("FALSE => FALSE", SATISFIABLE);
-        UtilMethodsTest.checkTruthTable(map, z3Context, z3Solver);
+        checkTruthTable(map);
     }
 
     @Test
@@ -115,7 +114,7 @@ public class BooleanFormulaEvaluationTest extends TestUsingZ3 {
         map.put("FALSE <=> FALSE", SATISFIABLE);
         map.put("TRUE <=> FALSE", UNSATISFIABLE);
         map.put("FALSE <=> TRUE", UNSATISFIABLE);
-        UtilMethodsTest.checkTruthTable(map, z3Context, z3Solver);
+        checkTruthTable(map);
     }
 
     @Test
@@ -125,7 +124,7 @@ public class BooleanFormulaEvaluationTest extends TestUsingZ3 {
         map.put("FALSE = bool(5<1)", SATISFIABLE);
         map.put("FALSE = bool(1<5)", UNSATISFIABLE);
         map.put("TRUE = bool(5<1)", UNSATISFIABLE);
-        UtilMethodsTest.checkTruthTable(map, z3Context, z3Solver);
+        checkTruthTable(map);
     }
 
 }

@@ -51,7 +51,7 @@ sourceSets {
 test {
     exclude('de/bmoth/performance')
     exclude('de/bmoth/app')
-    
+
     testLogging {
         exceptionFormat = 'full'
     }
@@ -97,6 +97,9 @@ dependencies {
     testCompile "org.testfx:testfx-core:4.0.+"
     testCompile "org.testfx:testfx-junit:4.0.+"
     testRuntime 'org.testfx:openjfx-monocle:1.8.0_20'
+
+    // code assert (e.g. to check for circular dependencies)
+    testCompile "guru.nidi:code-assert:0.0.+"
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'

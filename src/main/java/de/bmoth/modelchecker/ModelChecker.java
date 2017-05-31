@@ -1,13 +1,13 @@
 package de.bmoth.modelchecker;
 
 import com.microsoft.z3.*;
-import de.bmoth.app.BMothPreferences;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.preferences.BMothPreferences;
 
 import java.util.*;
 

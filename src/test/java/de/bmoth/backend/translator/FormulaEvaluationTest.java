@@ -4,7 +4,6 @@ import com.microsoft.z3.*;
 import de.bmoth.TestUsingZ3;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
-import de.bmoth.util.UtilMethodsTest;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -157,13 +156,13 @@ public class FormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testLessThanFormula() throws Exception {
         String formula = "1 < 2";
-        UtilMethodsTest.check(Status.SATISFIABLE, formula, z3Context, z3Solver);
+        check(Status.SATISFIABLE, formula);
     }
 
     @Test
     public void testGreaterThanFormula() throws Exception {
         String formula = "2 > 1";
-        UtilMethodsTest.check(Status.SATISFIABLE, formula, z3Context, z3Solver);
+        check(Status.SATISFIABLE, formula);
     }
 
     @Test

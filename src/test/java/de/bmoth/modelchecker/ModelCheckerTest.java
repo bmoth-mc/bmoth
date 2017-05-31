@@ -6,8 +6,6 @@ import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ModelCheckerTest {
-    private String dir = "src/test/resources/machines/";
-
     @Test
     public void testAnySubstitution() {
         String machine = "MACHINE test \n";

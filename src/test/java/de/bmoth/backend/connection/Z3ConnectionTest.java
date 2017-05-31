@@ -12,7 +12,8 @@ public class Z3ConnectionTest extends TestUsingZ3 {
     @Test
     public void testSimpleCallToZ3() {
         // a = b & a = 5
-        Expr a = z3Context.mkIntConst("a"), b = z3Context.mkIntConst("b");
+        Expr a = z3Context.mkIntConst("a");
+        Expr b = z3Context.mkIntConst("b");
         BoolExpr constraint = z3Context.mkAnd(z3Context.mkEq(a, b), z3Context.mkEq(a, z3Context.mkInt(5)));
         z3Solver.add(constraint);
         Status check = z3Solver.check();
@@ -24,7 +25,8 @@ public class Z3ConnectionTest extends TestUsingZ3 {
 
     @Test
     public void testQuantifiedFormula() {
-        Expr a = z3Context.mkIntConst("a"), b = z3Context.mkIntConst("b");
+        Expr a = z3Context.mkIntConst("a");
+        Expr b = z3Context.mkIntConst("b");
         BoolExpr constraint = z3Context.mkAnd(z3Context.mkEq(a, b), z3Context.mkEq(a, z3Context.mkInt(5)), z3Context.mkEq(b, z3Context.mkInt(7)));
         constraint = z3Context.mkExists(new Expr[]{a, b}, constraint, 1, null, null, null, null);
 
