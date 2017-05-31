@@ -30,6 +30,6 @@
             <MenuItem text="Open REPL" fx:id="openRepl" onAction="#handleREPL"/>
         </Menu>
     </MenuBar>
-    <CodeArea fx:id="codeArea" prefWidth="800" prefHeight="600"/>
+    <CodeArea fx:id="codeArea" prefWidth="2560" prefHeight="1440"/>
     <TextArea fx:id="infoArea" editable="false" prefHeight="0" prefWidth="0"/>
 </VBox>
