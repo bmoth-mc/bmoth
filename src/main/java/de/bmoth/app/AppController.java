@@ -11,6 +11,8 @@ import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.preferences.BMothPreferences;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -63,6 +65,8 @@ public class AppController implements Initializable {
     private Stage primaryStage = new Stage();
     private String currentFile;
     private Boolean hasChanged = false;
+    private Task<ModelCheckingResult> task;
+    private Thread modelCheckingThread;
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -200,22 +204,48 @@ public class AppController implements Initializable {
     @FXML
     public void handleCheck() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
-            ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText());
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Model Checking Result");
-            alert.setHeaderText("The model is...");
-            if (result.isCorrect()) {
-                alert.setContentText("...correct!\nNo counter-example found.");
-            } else if (result.getMessage().equals("")) {
-                alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
-                    + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
-            } else {
-                alert.setContentText("...Schrödinger's cat.\nSomething went wrong.\n"
-                    + result.getMessage());
-            }
-            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-            alert.showAndWait();
+
+            task = new Task<ModelCheckingResult>() {
+                @Override
+                protected ModelCheckingResult call() throws Exception {
+                    ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText());
+                    return result;
+                }
+            };
+
+            task.setOnSucceeded(event -> {
+                ModelCheckingResult result = task.getValue();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Model Checking Result");
+                alert.setHeaderText("The model is...");
+                if (result.isCorrect()) {
+                    alert.setContentText("...correct!\nNo counter-example found.");
+                } else if (result.getMessage().equals("")) {
+                    alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
+                        + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
+                } else {
+                    alert.setContentText("...Schrödinger's cat.\nSomething went wrong.\n"
+                        + result.getMessage());
+                }
+                alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+                alert.showAndWait();
+            });
+            task.setOnCancelled(event -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Model Checking Result");
+                alert.setHeaderText("Modelchecking was canceled!");
+                alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+                alert.showAndWait();
+            });
+            modelCheckingThread = new Thread(task);
+            modelCheckingThread.start();
         }
+    }
+
+    @FXML
+    public void handelCancelModelCheck(ActionEvent actionEvent) {
+        task.cancel();
+        modelCheckingThread.interrupt();
     }
 
     @FXML
@@ -425,4 +455,5 @@ public class AppController implements Initializable {
             alert.showAndWait();
         }
     }
+
 }
