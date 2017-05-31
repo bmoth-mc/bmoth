@@ -23,9 +23,7 @@ public class AppTest {
             try {
                 stage = new Stage();
                 new App().start(stage);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) {}
 
         });
         WaitForAsyncUtils.waitFor(f);
