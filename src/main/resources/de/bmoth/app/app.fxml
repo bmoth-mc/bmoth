@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
 <?import org.fxmisc.richtext.CodeArea?>
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx"
       fx:controller="de.bmoth.app.AppController">
     <MenuBar>
         <Menu text="File" fx:id="fileMenu">
@@ -24,6 +24,7 @@
                       onAction="#handleInvariantSatisfiability"/>
             <MenuItem text="Check for Initial State" fx:id="initialStateExists"
                       onAction="#handleInitialStateExists"/>
+            <MenuItem text="Cancel" fx:id="cancelModelCheck" onAction="#handelCancelModelCheck"/>
         </Menu>
         <Menu text="REPL" fx:id="replMenu">
             <MenuItem text="Open REPL" fx:id="openRepl" onAction="#handleREPL"/>
