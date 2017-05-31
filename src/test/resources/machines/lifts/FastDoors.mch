@@ -30,6 +30,7 @@ closeStart = SELECT isOpen = TRUE THEN
 		// initiate movement
 		|| isClosing := TRUE
 		// reset clock
+		|| clock := 0
 	END;
 close = SELECT isClosing = TRUE & doorPos > 0 THEN
 		// move door
