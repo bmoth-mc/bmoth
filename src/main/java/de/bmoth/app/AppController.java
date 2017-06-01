@@ -68,7 +68,6 @@ public class AppController implements Initializable {
     private String currentFile;
     private Boolean hasChanged = false;
     private Task<ModelCheckingResult> task;
-    private Thread modelCheckingThread;
     private ModelChecker modelChecker;
 
     @Override
@@ -243,7 +242,7 @@ public class AppController implements Initializable {
                 alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
                 alert.showAndWait();
             });
-            modelCheckingThread = new Thread(task);
+            Thread modelCheckingThread = new Thread(task);
             modelCheckingThread.start();
         }
     }
