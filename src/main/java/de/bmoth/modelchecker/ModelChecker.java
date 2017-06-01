@@ -15,15 +15,19 @@ import java.util.*;
 public class ModelChecker implements Abortable {
     private Context ctx;
     private Solver solver;
+    private Solver opSolver;
     private MachineToZ3Translator machineTranslator;
     private SolutionFinder finder;
+    private SolutionFinder opFinder;
     private boolean isAborted;
 
     public ModelChecker(MachineNode machine) {
         this.ctx = new Context();
         this.solver = Z3SolverFactory.getZ3Solver(ctx);
+        this.opSolver = Z3SolverFactory.getZ3Solver(ctx);
         this.machineTranslator = new MachineToZ3Translator(machine, ctx);
         this.finder = new SolutionFinder(solver, ctx);
+        this.opFinder = new SolutionFinder(opSolver, ctx);
     }
 
     @Override
@@ -55,6 +59,11 @@ public class ModelChecker implements Abortable {
 
         final BoolExpr invariant = machineTranslator.getInvariantConstraint();
         solver.add(invariant);
+
+        // create joint operations constraint and permanently add to separate solver
+        final BoolExpr operationsConstraint = ctx.mkOr(machineTranslator.getOperationConstraints().toArray(new BoolExpr[0]));
+        opSolver.add(operationsConstraint);
+
         while (!isAborted && !queue.isEmpty()) {
             solver.push();
             State current = queue.poll();
@@ -76,15 +85,13 @@ public class ModelChecker implements Abortable {
             }
             visited.add(current);
 
-            List<BoolExpr> operationConstraints = machineTranslator.getOperationConstraints();
-            for (BoolExpr currentOperationConstraint : operationConstraints) {
-                // compute successors
-                models = finder.findSolutions(currentOperationConstraint, BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
-                models.stream().map(model -> getStateFromModel(current, model))
-                    .filter(state -> !visited.contains(state))
-                    .filter(state -> !queue.contains(state))
-                    .forEach(queue::add);
-            }
+            // compute successors on separate finder
+            models = opFinder.findSolutions(stateConstraint, BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
+            models.stream().map(model -> getStateFromModel(current, model))
+                .filter(state -> !visited.contains(state))
+                .filter(state -> !queue.contains(state))
+                .forEach(queue::add);
+
             solver.pop();
         }
 
