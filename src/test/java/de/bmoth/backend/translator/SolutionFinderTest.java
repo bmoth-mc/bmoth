@@ -10,13 +10,20 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class SolutionFinderTest extends TestUsingZ3 {
 
     private SolutionFinder finder;
+
+    static String z3ModelToString(Model m) {
+        Map<String, String> values = new HashMap<>();
+        for (FuncDecl constant : m.getConstDecls()) {
+            String value = m.eval(constant.apply(), true).toString();
+            values.put(constant.apply().toString(), value);
+        }
+        return values.toString();
+    }
 
     @Before
     @Override
@@ -25,7 +32,6 @@ public class SolutionFinderTest extends TestUsingZ3 {
         finder = new SolutionFinder(z3Solver, z3Context);
 
     }
-
 
     @Test
     public void testSolutionFinder1() {
@@ -68,7 +74,6 @@ public class SolutionFinderTest extends TestUsingZ3 {
         Set<Model> solutions = finder.findSolutions(constraint, 20);
         assertEquals(1, solutions.size());
     }
-
 
     @Test
     public void testExistsSolutionFinder() {
@@ -214,21 +219,12 @@ public class SolutionFinderTest extends TestUsingZ3 {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                Thread.interrupted();
+                Thread.currentThread().interrupt();
             }
             finder.abort();
         }).start();
 
         Set<Model> solutions = finder.findSolutions(constraint, maxIterations);
         assertTrue(solutions.size() < maxIterations);
-    }
-
-    static String z3ModelToString(Model m) {
-        Map<String, String> values = new HashMap<>();
-        for (FuncDecl constant : m.getConstDecls()) {
-            String value = m.eval(constant.apply(), true).toString();
-            values.put(constant.apply().toString(), value);
-        }
-        return values.toString();
     }
 }

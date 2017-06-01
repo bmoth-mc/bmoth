@@ -92,7 +92,7 @@ public class ModelCheckerTest {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                Thread.interrupted();
+                Thread.currentThread().interrupt();
             }
             modelChecker.abort();
         }).start();
