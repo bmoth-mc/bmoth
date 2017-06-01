@@ -19,7 +19,7 @@ public class ModelChecker implements Abortable {
     private SolutionFinder finder;
     private boolean isAborted;
 
-    private ModelChecker(MachineNode machine) {
+    public ModelChecker(MachineNode machine) {
         this.ctx = new Context();
         this.solver = Z3SolverFactory.getZ3Solver(ctx);
         this.machineTranslator = new MachineToZ3Translator(machine, ctx);
@@ -41,7 +41,7 @@ public class ModelChecker implements Abortable {
         return modelChecker.doModelCheck();
     }
 
-    private ModelCheckingResult doModelCheck() {
+    public ModelCheckingResult doModelCheck() {
         isAborted = false;
         Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
