@@ -3,9 +3,12 @@ package de.bmoth.parser.ast;
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.*;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
+import de.bmoth.parser.ast.BDefinition.KIND;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
+
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.RuleNode;
 
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
@@ -20,8 +24,10 @@ import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMUL
 
 public class SemanticAstCreator {
 
-    private final LinkedHashMap<Token, Token> declarationReferences;
+    private final Map<Token, Token> declarationReferences;
     private final HashMap<Token, DeclarationNode> declarationMap = new HashMap<>();
+    private final Map<ParserRuleContext, BDefinition> definitionCallReplacements;
+    private final Map<Token, ExpressionContext> argumentReplacement = new HashMap<>();
     private final Node semanticNode;
 
     public Node getAstNode() {
@@ -29,7 +35,8 @@ public class SemanticAstCreator {
     }
 
     public SemanticAstCreator(FormulaAnalyser formulaAnalyser) {
-        this.declarationReferences = formulaAnalyser.declarationReferences;
+        this.declarationReferences = formulaAnalyser.getDeclarationReferences();
+        this.definitionCallReplacements = new LinkedHashMap<>();
         FormulaContext formulaContext = formulaAnalyser.formula;
         FormulaNode.FormulaType type = formulaContext.expression() != null ? EXPRESSION_FORMULA : PREDICATE_FORMULA;
         FormulaNode formulaNode = new FormulaNode(type);
@@ -46,7 +53,8 @@ public class SemanticAstCreator {
     }
 
     public SemanticAstCreator(MachineAnalyser machineAnalyser) {
-        this.declarationReferences = machineAnalyser.declarationReferences;
+        this.declarationReferences = machineAnalyser.getDeclarationReferences();
+        this.definitionCallReplacements = machineAnalyser.definitionCallReplacements;
         MachineNode machineNode = new MachineNode(null, null);
         machineNode.setConstants(createDeclarationList(machineAnalyser.constantsDeclarations));
         machineNode.setVariables(createDeclarationList(machineAnalyser.variablesDeclarations));
@@ -67,7 +75,7 @@ public class SemanticAstCreator {
 
         if (machineAnalyser.initialisation != null) {
             SubstitutionNode substitution = (SubstitutionNode) machineAnalyser.initialisation.substitution()
-                .accept(formulaVisitor);
+                    .accept(formulaVisitor);
             machineNode.setInitialisation(substitution);
         }
 
@@ -146,14 +154,122 @@ public class SemanticAstCreator {
                 return new ExpressionOperatorNode(new ArrayList<>(), ExpressionOperator.EMPTY_SEQUENCE);
             } else {
                 return new ExpressionOperatorNode(createExprNodeList(ctx.expression_list().expression()),
-                    ExpressionOperator.SEQ_ENUMERATION);
+                        ExpressionOperator.SEQ_ENUMERATION);
+            }
+        }
+
+        BDefinition.KIND currentKind;
+
+        @Override
+        public Node visitFunctionCallExpression(BMoThParser.FunctionCallExpressionContext ctx) {
+            if (definitionCallReplacements.containsKey(ctx)) {
+                currentKind = KIND.EXPRESSION;
+                return replaceByDefinitionBody(ctx, definitionCallReplacements.get(ctx));
+            } else {
+                return new ExpressionOperatorNode(createExprNodeList(ctx.expression()),
+                        ExpressionOperator.FUNCTION_CALL);
             }
         }
 
         @Override
-        public Node visitFunctionCallExpression(BMoThParser.FunctionCallExpressionContext ctx) {
-            return new ExpressionOperatorNode(createExprNodeList(ctx.expression()),
-                ExpressionOperator.FUNCTION_CALL);
+        public ExprNode visitIdentifierExpression(BMoThParser.IdentifierExpressionContext ctx) {
+            Token declToken = SemanticAstCreator.this.declarationReferences.get(ctx.IDENTIFIER().getSymbol());
+            return handleExpressionIdentifier(ctx, ctx.IDENTIFIER().getSymbol(), declToken);
+        }
+
+        private ExprNode handleExpressionIdentifier(ParserRuleContext ctx, Token token, Token declToken) {
+            if (definitionCallReplacements.containsKey(ctx)) {
+                currentKind = KIND.EXPRESSION;
+                return (ExprNode) definitionCallReplacements.get(ctx).getDefinitionContext().definition_body()
+                        .accept(this);
+            } else if (argumentReplacement.containsKey(declToken)) {
+                ExpressionContext expressionContext = argumentReplacement.get(declToken);
+                return (ExprNode) expressionContext.accept(this);
+            } else {
+                return createIdentifierExprNode(token);
+            }
+        }
+
+        @Override
+        public Node visitDefinitionAmbiguousCall(BMoThParser.DefinitionAmbiguousCallContext ctx) {
+            Token declToken = SemanticAstCreator.this.declarationReferences.get(ctx.IDENTIFIER().getSymbol());
+            if (currentKind == KIND.EXPRESSION) {
+                if (null != ctx.expression_list()) {
+                    List<ExpressionContext> exprs = ctx.expression_list().exprs;
+                    if (definitionCallReplacements.containsKey(ctx)) {
+                        currentKind = KIND.EXPRESSION;
+                        BDefinition bDefinition = definitionCallReplacements.get(ctx);
+                        for (int i = 0; i < exprs.size(); i++) {
+                            ExpressionContext value = exprs.get(i);
+                            Token token = bDefinition.getDefinitionContext().parameters.get(i);
+                            argumentReplacement.put(token, value);
+                        }
+                        return (ExprNode) bDefinition.getDefinitionContext().definition_body().accept(this);
+                    } else {
+                        List<ExprNode> exprNodes = new ArrayList<>();
+                        exprNodes.add(createIdentifierExprNode(ctx.IDENTIFIER().getSymbol()));
+                        return new ExpressionOperatorNode(exprNodes, ExpressionOperator.FUNCTION_CALL);
+                    }
+                } else {
+                    return handleExpressionIdentifier(ctx, ctx.IDENTIFIER().getSymbol(), declToken);
+                }
+
+            } else if (currentKind == KIND.PREDICATE) {
+                return handlePredicateIdentifier(ctx, ctx.IDENTIFIER().getSymbol());
+            }
+            return visitChildren(ctx);
+        }
+
+        @Override
+        public ExprNode visitDefinitionExpression(BMoThParser.DefinitionExpressionContext ctx) {
+            return (ExprNode) ctx.expression().accept(this);
+        }
+
+        @Override
+        public PredicateNode visitDefinitionPredicate(BMoThParser.DefinitionPredicateContext ctx) {
+            return (PredicateNode) ctx.predicate().accept(this);
+        }
+
+        @Override
+        public SubstitutionNode visitDefinitionSubstitution(BMoThParser.DefinitionSubstitutionContext ctx) {
+            return (SubstitutionNode) ctx.substitution().accept(this);
+        }
+
+        @Override
+        public PredicateNode visitPredicateIdentifier(BMoThParser.PredicateIdentifierContext ctx) {
+            currentKind = KIND.PREDICATE;
+            return handlePredicateIdentifier(ctx, ctx.IDENTIFIER().getSymbol());
+        }
+
+        private PredicateNode handlePredicateIdentifier(ParserRuleContext ctx, Token token) {
+            if (definitionCallReplacements.containsKey(ctx)) {
+                BDefinition bDefinition = definitionCallReplacements.get(ctx);
+                return (PredicateNode) bDefinition.getDefinitionContext().definition_body().accept(this);
+            } else {
+                return createIdentifierPredicateNode(token);
+            }
+        }
+
+        private Node replaceByDefinitionBody(FunctionCallExpressionContext ctx, BDefinition bDefinition) {
+            for (int i = 1; i < ctx.exprs.size(); i++) {
+                ExpressionContext value = ctx.exprs.get(i);
+                Token token = bDefinition.getDefinitionContext().parameters.get(i - 1);
+                argumentReplacement.put(token, value);
+            }
+            return (ExprNode) bDefinition.getDefinitionContext().definition_body().accept(this);
+        }
+
+        @Override
+        public PredicateNode visitPredicateDefinitionCall(BMoThParser.PredicateDefinitionCallContext ctx) {
+            BDefinition bDefinition = definitionCallReplacements.get(ctx);
+            for (int i = 0; i < ctx.expression().size(); i++) {
+                ExpressionContext value = ctx.exprs.get(i);
+                Token token = bDefinition.getDefinitionContext().parameters.get(i);
+                argumentReplacement.put(token, value);
+            }
+            DefinitionPredicateContext defContext = (DefinitionPredicateContext) bDefinition.getDefinitionContext()
+                    .definition_body();
+            return (PredicateNode) defContext.predicate().accept(this);
         }
 
         @Override
@@ -198,7 +314,7 @@ public class SemanticAstCreator {
             }
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             return new QuantifiedExpressionNode(ctx, declarationList, predNode, null,
-                QuatifiedExpressionOperator.SET_COMPREHENSION);
+                    QuatifiedExpressionOperator.SET_COMPREHENSION);
         }
 
         @Override
@@ -223,7 +339,7 @@ public class SemanticAstCreator {
         @Override
         public ExprNode visitSetEnumerationExpression(BMoThParser.SetEnumerationExpressionContext ctx) {
             return new ExpressionOperatorNode(createExprNodeList(ctx.expression_list().expression()),
-                ExpressionOperator.SET_ENUMERATION);
+                    ExpressionOperator.SET_ENUMERATION);
         }
 
         @Override
@@ -235,16 +351,6 @@ public class SemanticAstCreator {
         public ExprNode visitNumberExpression(BMoThParser.NumberExpressionContext ctx) {
             int value = Integer.parseInt(ctx.Number().getText());
             return new NumberNode(ctx, value);
-        }
-
-        @Override
-        public IdentifierExprNode visitIdentifierExpression(BMoThParser.IdentifierExpressionContext ctx) {
-            return createIdentifierExprNode(ctx.IDENTIFIER().getSymbol());
-        }
-
-        @Override
-        public IdentifierPredicateNode visitPredicateIdentifier(BMoThParser.PredicateIdentifierContext ctx) {
-            return createIdentifierPredicateNode(ctx.IDENTIFIER().getSymbol());
         }
 
         // Predicates
@@ -299,7 +405,7 @@ public class SemanticAstCreator {
             List<SubstitutionNode> sublist = new ArrayList<>();
             for (int i = 0; i < idents.size(); i++) {
                 SingleAssignSubstitutionNode singleAssignSubstitution = new SingleAssignSubstitutionNode(idents.get(i),
-                    expressions.get(i));
+                        expressions.get(i));
                 sublist.add(singleAssignSubstitution);
             }
             if (sublist.size() == 1) {

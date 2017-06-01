@@ -2,6 +2,8 @@ package de.bmoth.parser.ast;
 
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
+import de.bmoth.exceptions.ScopeException;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
@@ -11,11 +13,7 @@ import java.util.List;
 
 public class ScopeChecker extends BMoThParserBaseVisitor<Void> {
     final LinkedList<LinkedHashMap<String, Token>> scopeTable = new LinkedList<>();
-    final AbstractAnalyser analyser;
-
-    ScopeChecker(AbstractAnalyser analyser) {
-        this.analyser = analyser;
-    }
+    final LinkedHashMap<Token, Token> declarationReferences = new LinkedHashMap<>();
 
     @Override
     public Void visitIdentifierExpression(BMoThParser.IdentifierExpressionContext ctx) {
@@ -76,9 +74,8 @@ public class ScopeChecker extends BMoThParserBaseVisitor<Void> {
 
     @Override
     public Void visitAnySubstitution(BMoThParser.AnySubstitutionContext ctx) {
-        List<Token> identifiers = ctx.identifier_list().identifiers;
         LinkedHashMap<String, Token> localIdentifiers = new LinkedHashMap<>();
-        for (Token token : identifiers) {
+        for (Token token : ctx.identifier_list().identifiers) {
             localIdentifiers.put(token.getText(), token);
         }
         scopeTable.add(localIdentifiers);
@@ -88,17 +85,25 @@ public class ScopeChecker extends BMoThParserBaseVisitor<Void> {
         return null;
     }
 
-    private void lookUpToken(Token identifierToken) {
+    public void addDeclarationReference(Token identifierToken, Token declarationToken) {
+        this.declarationReferences.put(identifierToken, declarationToken);
+    }
+
+    public void lookUpToken(Token identifierToken) {
         String name = identifierToken.getText();
         for (int i = scopeTable.size() - 1; i >= 0; i--) {
             LinkedHashMap<String, Token> map = scopeTable.get(i);
             if (map.containsKey(name)) {
                 Token declarationToken = map.get(name);
-                analyser.addDeclarationReference(identifierToken, declarationToken);
+                addDeclarationReference(identifierToken, declarationToken);
                 return;
             }
         }
-        analyser.identifierNodeFound(identifierToken);
+        identifierNodeNotFound(identifierToken);
+    }
+
+    public void identifierNodeNotFound(Token identifierToken) {
+        throw new ScopeException("Unknown identifier: " + identifierToken.getText());
     }
 
 }
