@@ -26,6 +26,7 @@ public class ModelChecker implements Abortable {
         this.finder = new SolutionFinder(solver, ctx);
     }
 
+    @Override
     public void abort() {
         isAborted = true;
         finder.abort();
@@ -48,11 +49,9 @@ public class ModelChecker implements Abortable {
         // prepare initial states
         BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
 
-        Set<Model> models = finder.findSolutions(initialValueConstraint,BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
-        for (Model model : models) {
-            State state = getStateFromModel(null, model);
-            queue.add(state);
-        }
+        Set<Model> models = finder.findSolutions(initialValueConstraint, BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
+        models.stream().map(this::getStateFromModel)
+            .forEach(queue::add);
 
         final BoolExpr invariant = machineTranslator.getInvariantConstraint();
         solver.add(invariant);
@@ -80,15 +79,11 @@ public class ModelChecker implements Abortable {
             List<BoolExpr> operationConstraints = machineTranslator.getOperationConstraints();
             for (BoolExpr currentOperationConstraint : operationConstraints) {
                 // compute successors
-                models = finder.findSolutions(currentOperationConstraint,BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
-                for (Model model : models) {
-                    State state = getStateFromModel(current, model);
-
-                    // add to queue if not in visited
-                    if (!visited.contains(state) && !queue.contains(state)) {
-                        queue.add(state);
-                    }
-                }
+                models = finder.findSolutions(currentOperationConstraint, BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
+                models.stream().map(model -> getStateFromModel(current, model))
+                    .filter(state -> !visited.contains(state))
+                    .filter(state -> !queue.contains(state))
+                    .forEach(queue::add);
             }
             solver.pop();
         }
@@ -98,6 +93,10 @@ public class ModelChecker implements Abortable {
         } else {
             return new ModelCheckingResult("correct");
         }
+    }
+
+    private State getStateFromModel(Model model) {
+        return getStateFromModel(null, model);
     }
 
     private State getStateFromModel(State predecessor, Model model) {
