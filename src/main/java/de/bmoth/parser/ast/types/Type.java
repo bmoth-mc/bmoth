@@ -2,12 +2,12 @@ package de.bmoth.parser.ast.types;
 
 public interface Type {
 
-    public Type unify(Type otherType) throws UnificationException;
+    Type unify(Type otherType) throws UnificationException;
 
-    public boolean unifiable(Type otherType);
+    boolean unifiable(Type otherType);
 
-    public boolean contains(Type other);
+    boolean contains(Type other);
 
-    public boolean isUntyped();
+    boolean isUntyped();
 
 }
