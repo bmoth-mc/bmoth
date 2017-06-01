@@ -208,8 +208,7 @@ public class AppController implements Initializable {
             task = new Task<ModelCheckingResult>() {
                 @Override
                 protected ModelCheckingResult call() throws Exception {
-                    ModelCheckingResult result = ModelChecker.doModelCheck(codeArea.getText());
-                    return result;
+                    return ModelChecker.doModelCheck(codeArea.getText());
                 }
             };
 
