@@ -19,7 +19,7 @@ public class ModelChecker implements Abortable {
     private MachineToZ3Translator machineTranslator;
     private SolutionFinder finder;
     private SolutionFinder opFinder;
-    private boolean isAborted;
+    private volatile boolean isAborted;
 
     public ModelChecker(MachineNode machine) {
         this.ctx = new Context();
@@ -30,12 +30,6 @@ public class ModelChecker implements Abortable {
         this.opFinder = new SolutionFinder(opSolver, ctx);
     }
 
-    @Override
-    public void abort() {
-        isAborted = true;
-        finder.abort();
-    }
-
     public static ModelCheckingResult doModelCheck(String machineAsString) {
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doModelCheck(machineAsSemanticAst);
@@ -44,6 +38,12 @@ public class ModelChecker implements Abortable {
     public static ModelCheckingResult doModelCheck(MachineNode machine) {
         ModelChecker modelChecker = new ModelChecker(machine);
         return modelChecker.doModelCheck();
+    }
+
+    @Override
+    public void abort() {
+        isAborted = true;
+        finder.abort();
     }
 
     public ModelCheckingResult doModelCheck() {
