@@ -28,6 +28,7 @@ public class ModelChecker implements Abortable {
 
     public void abort() {
         isAborted = true;
+        finder.abort();
     }
 
     public static ModelCheckingResult doModelCheck(String machineAsString) {

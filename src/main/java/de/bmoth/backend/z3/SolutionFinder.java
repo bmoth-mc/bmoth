@@ -1,6 +1,7 @@
 package de.bmoth.backend.z3;
 
 import com.microsoft.z3.*;
+import de.bmoth.backend.Abortable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -8,9 +9,10 @@ import java.util.Set;
 /**
  *
  */
-public class SolutionFinder {
+public class SolutionFinder implements Abortable {
     private final Solver solver;
     private final Context z3Context;
+    private boolean isAborted;
 
     /**
      * Solution finder expects the constraint to be already added to the
@@ -60,6 +62,7 @@ public class SolutionFinder {
      * answer on so.com</a>
      */
     public Set<Model> findSolutions(BoolExpr constraint, int maxIterations) {
+        isAborted = false;
         Set<Model> result = new HashSet<>();
 
         // create a solution finding scope to not pollute original one
@@ -67,7 +70,7 @@ public class SolutionFinder {
         solver.add(constraint);
 
         // as long as formula is satisfiable:
-        for (int i = 0; solver.check() == Status.SATISFIABLE && i < maxIterations; i++) {
+        for (int i = 0; !isAborted && solver.check() == Status.SATISFIABLE && i < maxIterations; i++) {
             Model currentModel = solver.getModel();
 
             // find a solution ...
@@ -89,5 +92,10 @@ public class SolutionFinder {
         solver.pop();
 
         return result;
+    }
+
+    @Override
+    public void abort() {
+        isAborted = true;
     }
 }
