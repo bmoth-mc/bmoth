@@ -1,6 +1,7 @@
 package de.bmoth.modelchecker;
 
 import com.microsoft.z3.*;
+import de.bmoth.backend.Abortable;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
@@ -11,17 +12,22 @@ import de.bmoth.preferences.BMothPreferences;
 
 import java.util.*;
 
-public class ModelChecker {
+public class ModelChecker implements Abortable {
     private Context ctx;
     private Solver solver;
     private MachineToZ3Translator machineTranslator;
     private SolutionFinder finder;
+    private boolean isAborted;
 
     private ModelChecker(MachineNode machine) {
         this.ctx = new Context();
         this.solver = Z3SolverFactory.getZ3Solver(ctx);
         this.machineTranslator = new MachineToZ3Translator(machine, ctx);
         this.finder = new SolutionFinder(solver, ctx);
+    }
+
+    public void abort() {
+        isAborted = true;
     }
 
     public static ModelCheckingResult doModelCheck(String machineAsString) {
@@ -35,6 +41,7 @@ public class ModelChecker {
     }
 
     private ModelCheckingResult doModelCheck() {
+        isAborted = false;
         Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
         // prepare initial states
@@ -48,7 +55,7 @@ public class ModelChecker {
 
         final BoolExpr invariant = machineTranslator.getInvariantConstraint();
         solver.add(invariant);
-        while (!queue.isEmpty()) {
+        while (!isAborted && !queue.isEmpty()) {
             solver.push();
             State current = queue.poll();
 
@@ -85,7 +92,11 @@ public class ModelChecker {
             solver.pop();
         }
 
-        return new ModelCheckingResult("correct");
+        if (isAborted) {
+            return new ModelCheckingResult("aborted");
+        } else {
+            return new ModelCheckingResult("correct");
+        }
     }
 
     private State getStateFromModel(State predecessor, Model model) {
