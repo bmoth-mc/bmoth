@@ -11,6 +11,7 @@ import org.junit.Test;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class SolutionFinderTest extends TestUsingZ3 {
@@ -201,6 +202,25 @@ public class SolutionFinderTest extends TestUsingZ3 {
 
         Set<Model> solutions = finder.findSolutions(constraint, 20);
         assertEquals(20, solutions.size());
+    }
+
+    @Test
+    public void testAbort() {
+        String formula = "a > 0";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        int maxIterations = 20000;
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.interrupted();
+            }
+            finder.abort();
+        }).start();
+
+        Set<Model> solutions = finder.findSolutions(constraint, maxIterations);
+        assertTrue(solutions.size() < maxIterations);
     }
 
     static String z3ModelToString(Model m) {
