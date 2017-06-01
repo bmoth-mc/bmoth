@@ -27,4 +27,10 @@ public class ModelCheckerPerformanceTest {
         assertEquals(false, result.isCorrect());
     }
 
+    @Test
+    public void testLeuschelPerformanceMachines3() throws IOException {
+        MachineNode machine = Parser.getMachineFileAsSemanticAst(dir + "/performance/CounterErr2.mch");
+        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        assertEquals(false, result.isCorrect());
+    }
 }
