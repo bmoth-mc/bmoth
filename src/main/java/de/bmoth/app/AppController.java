@@ -243,10 +243,8 @@ public class AppController implements Initializable {
 
     @FXML
     public void handelCancelModelCheck(ActionEvent actionEvent) {
-        if (task != null && task.isRunning()) {
-            task.cancel();
-            ModelChecker.abort();
-        }
+        task.cancel();
+        modelCheckingThread.interrupt();
     }
 
     @FXML

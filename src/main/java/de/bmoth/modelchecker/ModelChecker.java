@@ -1,6 +1,7 @@
 package de.bmoth.modelchecker;
 
 import com.microsoft.z3.*;
+import de.bmoth.backend.Abortable;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
@@ -11,12 +12,12 @@ import de.bmoth.preferences.BMothPreferences;
 
 import java.util.*;
 
-public class ModelChecker {
-    private static SolutionFinder finder;
-    private static boolean isAborted;
+public class ModelChecker implements Abortable {
     private Context ctx;
     private Solver solver;
     private MachineToZ3Translator machineTranslator;
+    private SolutionFinder finder;
+    private boolean isAborted;
 
     public ModelChecker(MachineNode machine) {
         this.ctx = new Context();
@@ -25,7 +26,8 @@ public class ModelChecker {
         this.finder = new SolutionFinder(solver, ctx);
     }
 
-    public static void abort() {
+    @Override
+    public void abort() {
         isAborted = true;
         finder.abort();
     }
