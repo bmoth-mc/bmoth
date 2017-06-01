@@ -9,7 +9,6 @@ import java.util.Set;
  *
  */
 public class SolutionFinder {
-    private final BoolExpr constraint;
     private final Solver solver;
     private final Context z3Context;
 
@@ -17,14 +16,12 @@ public class SolutionFinder {
      * Solution finder expects the constraint to be already added to the
      * corresponding solver
      *
-     * @param constraint the constraint to find solutions for
-     * @param solver     corresponding z3 solver
-     * @param z3Context  corresponding z3 context
+     * @param solver    corresponding z3 solver
+     * @param z3Context corresponding z3 context
      */
-    public SolutionFinder(BoolExpr constraint, Solver solver, Context z3Context) {
+    public SolutionFinder(Solver solver, Context z3Context) {
         this.solver = solver;
         this.z3Context = z3Context;
-        this.constraint = constraint;
     }
 
     /**
@@ -55,13 +52,14 @@ public class SolutionFinder {
      * <p>
      * credit goes to Taylor
      *
+     * @param constraint    the constraint to find solutions for
      * @param maxIterations the maximum nr of iterations
      * @return list of found solution
      * @see <a href=
      * "http://stackoverflow.com/questions/13395391/z3-finding-all-satisfying-models#answer-13398853">Taylor's
      * answer on so.com</a>
      */
-    public Set<Model> findSolutions(int maxIterations) {
+    public Set<Model> findSolutions(BoolExpr constraint, int maxIterations) {
         Set<Model> result = new HashSet<>();
 
         // create a solution finding scope to not pollute original one

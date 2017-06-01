@@ -15,11 +15,13 @@ public class ModelChecker {
     private Context ctx;
     private Solver solver;
     private MachineToZ3Translator machineTranslator;
+    private SolutionFinder finder;
 
     private ModelChecker(MachineNode machine) {
         this.ctx = new Context();
         this.solver = Z3SolverFactory.getZ3Solver(ctx);
         this.machineTranslator = new MachineToZ3Translator(machine, ctx);
+        this.finder = new SolutionFinder(solver, ctx);
     }
 
     public static ModelCheckingResult doModelCheck(String machineAsString) {
@@ -38,8 +40,7 @@ public class ModelChecker {
         // prepare initial states
         BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
 
-        SolutionFinder finder = new SolutionFinder(initialValueConstraint, solver, ctx);
-        Set<Model> models = finder.findSolutions(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
+        Set<Model> models = finder.findSolutions(initialValueConstraint,BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
         for (Model model : models) {
             State state = getStateFromModel(null, model);
             queue.add(state);
@@ -71,8 +72,7 @@ public class ModelChecker {
             List<BoolExpr> operationConstraints = machineTranslator.getOperationConstraints();
             for (BoolExpr currentOperationConstraint : operationConstraints) {
                 // compute successors
-                finder = new SolutionFinder(currentOperationConstraint, solver, ctx);
-                models = finder.findSolutions(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
+                models = finder.findSolutions(currentOperationConstraint,BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
                 for (Model model : models) {
                     State state = getStateFromModel(current, model);
 

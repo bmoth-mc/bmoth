@@ -18,8 +18,8 @@ public class Issue73Test extends TestUsingZ3 {
         String formula = "1 < 2";
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
 
-        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
-        Set<Model> solutions = finder.findSolutions(20);
+        SolutionFinder finder = new SolutionFinder(z3Solver, z3Context);
+        Set<Model> solutions = finder.findSolutions(constraint, 20);
         assertEquals(0, solutions.size());
     }
 }
