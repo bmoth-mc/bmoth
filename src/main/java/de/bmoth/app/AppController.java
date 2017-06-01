@@ -9,6 +9,8 @@ import de.bmoth.eventbus.ErrorEvent;
 import de.bmoth.eventbus.EventBusProvider;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.parser.Parser;
+import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -67,6 +69,7 @@ public class AppController implements Initializable {
     private Boolean hasChanged = false;
     private Task<ModelCheckingResult> task;
     private Thread modelCheckingThread;
+    private ModelChecker modelChecker;
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -205,11 +208,15 @@ public class AppController implements Initializable {
     public void handleCheck() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
 
+            MachineNode machine = Parser.getMachineAsSemanticAst(codeArea.getText());
+            modelChecker = new ModelChecker(machine);
+
             task = new Task<ModelCheckingResult>() {
                 @Override
                 protected ModelCheckingResult call() throws Exception {
-                    return ModelChecker.doModelCheck(codeArea.getText());
+                    return modelChecker.doModelCheck();
                 }
+
             };
 
             task.setOnSucceeded(event -> {
@@ -243,8 +250,10 @@ public class AppController implements Initializable {
 
     @FXML
     public void handelCancelModelCheck(ActionEvent actionEvent) {
-        task.cancel();
-        modelCheckingThread.interrupt();
+        if (task != null && task.isRunning()) {
+            task.cancel();
+            modelChecker.abort();
+        }
     }
 
     @FXML
