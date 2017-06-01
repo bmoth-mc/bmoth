@@ -86,6 +86,7 @@ public class LiftsTest {
     }
 
     @Test
+    @Ignore
     public void testAcceleration() throws IOException {
         MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "AccMachine.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
