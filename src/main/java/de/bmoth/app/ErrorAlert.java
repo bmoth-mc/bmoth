@@ -11,6 +11,5 @@ public class ErrorAlert extends Alert {
         this.setHeaderText(errorType + " occurred.");
         this.setContentText(msg);
         this.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        this.showAndWait();
     }
 }

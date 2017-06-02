@@ -16,7 +16,6 @@ public class TestTypechecker {
 
     public TestTypechecker(String machine) {
         MachineNode semanticAst = Parser.getMachineAsSemanticAst(machine);
-
         List<DeclarationNode> constantsDecls = semanticAst.getConstants();
         for (DeclarationNode declarationNode : constantsDecls) {
             constants.put(declarationNode.getName(), declarationNode.getType().toString());

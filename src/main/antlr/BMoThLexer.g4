@@ -25,8 +25,9 @@ VARIABLES: 'VARIABLES';
 INVARIANT: 'INVARIANT';
 OPERATIONS: 'OPERATIONS';
 INITIALISATION: 'INITIALISATION';
-
 SETS: 'SETS';
+DEFINITIONS: 'DEFINITIONS';
+
 
 BEGIN: 'BEGIN';
 SKIP_SUB: 'skip';
@@ -45,6 +46,7 @@ EXITS: '#' | '\u2203';
 LAMBDA: '%' | '\u03bb';
 
 ASSIGN: ':=';
+DOUBLE_COLON: '::' | ':' '\u2208' ;  /* becomes_element_of */
 
 EQUIVALENCE: '<=>' | '\u21d4';
 IMPLIES: EQUAL GREATER | '\u21d2';
@@ -106,6 +108,7 @@ INTERVAL: '..' | '\u2025';
 
 // predicate infix opertors
 EQUAL: '=' | '\u003d';
+DOUBLE_EQUAL: EQUAL EQUAL;
 NOT_EQUAL: '/=' | '\u2260';
 COLON: ':' ;
 ELEMENT_OF: '\u2208';

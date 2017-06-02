@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
+import de.bmoth.parser.ast.nodes.BecomesElementOfSubstitutionNode;
+import de.bmoth.parser.ast.nodes.BecomesSuchThatSubstitutionNode;
 import de.bmoth.parser.ast.nodes.CastPredicateExpressionNode;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
@@ -41,45 +43,13 @@ public class ASTTransformationVisitor {
 
     private class ASTVisitor implements AbstractVisitor<Node, Void> {
 
-        private PredicateNode modifyPredicateNode(PredicateNode node, Void expected) {
-            PredicateNode temp = node;
+        private Node modifyNode(Node node, Void expected) {
+            Node temp = node;
             boolean run = true;
             while (run) {
                 run = false;
                 for (AbstractASTTransformation astModifier : modifierList) {
-                    temp = (PredicateNode) astModifier.visitPredicateNode(temp, expected);
-                    if (astModifier.hasChanged()) {
-                        run = true;
-                        astModifier.resetChanged();
-                    }
-                }
-            }
-            return temp;
-        }
-
-        private ExprNode modifyExprNode(ExprNode node, Void expected) {
-            ExprNode temp = node;
-            boolean run = true;
-            while (run) {
-                run = false;
-                for (AbstractASTTransformation astModifier : modifierList) {
-                    temp = (ExprNode) astModifier.visitExprNode(temp, expected);
-                    if (astModifier.hasChanged()) {
-                        run = true;
-                        astModifier.resetChanged();
-                    }
-                }
-            }
-            return temp;
-        }
-
-        private SubstitutionNode modifySubstitutionNode(SubstitutionNode node, Void expected) {
-            SubstitutionNode temp = node;
-            boolean run = true;
-            while (run) {
-                run = false;
-                for (AbstractASTTransformation astModifier : modifierList) {
-                    temp = (SubstitutionNode) astModifier.visitSubstitutionNode(temp, expected);
+                    temp = astModifier.visitNode(temp, expected);
                     if (astModifier.hasChanged()) {
                         run = true;
                         astModifier.resetChanged();
@@ -95,7 +65,7 @@ public class ASTTransformationVisitor {
                     .map(predNode -> (PredicateNode) visitPredicateNode(predNode, expected))
                     .collect(Collectors.toList());
             node.setPredicateList(list);
-            return modifyPredicateNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
@@ -103,7 +73,7 @@ public class ASTTransformationVisitor {
             final List<ExprNode> argumentList = node.getExpressionNodes().stream()
                     .map(exprNode -> (ExprNode) visitExprNode(exprNode, expected)).collect(Collectors.toList());
             node.setArgumentsList(argumentList);
-            return modifyPredicateNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
@@ -111,44 +81,44 @@ public class ASTTransformationVisitor {
             final List<ExprNode> arguments = node.getExpressionNodes().stream()
                     .map(exprNode -> (ExprNode) visitExprNode(exprNode, expected)).collect(Collectors.toList());
             node.setExpressionList(arguments);
-            return modifyExprNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
         public Node visitIdentifierExprNode(IdentifierExprNode node, Void expected) {
-            return modifyExprNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
         public Node visitCastPredicateExpressionNode(CastPredicateExpressionNode node, Void expected) {
             Node arg = visitPredicateNode(node.getPredicate(), expected);
             node.setArg((PredicateNode) arg);
-            return modifyExprNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
         public Node visitNumberNode(NumberNode node, Void expected) {
-            return modifyExprNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
         public Node visitSelectSubstitutionNode(SelectSubstitutionNode node, Void expected) {
             node.setCondition((PredicateNode) visitPredicateNode(node.getCondition(), expected));
             node.setSubstitution((SubstitutionNode) visitSubstitutionNode(node.getSubstitution(), expected));
-            return modifySubstitutionNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
         public Node visitSingleAssignSubstitution(SingleAssignSubstitutionNode node, Void expected) {
             node.setValue((ExprNode) visitExprNode(node.getValue(), expected));
-            return modifySubstitutionNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
         public Node visitAnySubstitution(AnySubstitutionNode node, Void expected) {
             node.setPredicate((PredicateNode) visitPredicateNode(node.getWherePredicate(), expected));
             node.setSubstitution((SubstitutionNode) visitSubstitutionNode(node.getThenSubstitution(), expected));
-            return modifySubstitutionNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
@@ -156,12 +126,12 @@ public class ASTTransformationVisitor {
             List<SubstitutionNode> substitutions = node.getSubstitutions().stream()
                     .map(sub -> (SubstitutionNode) visitSubstitutionNode(node, expected)).collect(Collectors.toList());
             node.setSubstitutions(substitutions);
-            return modifySubstitutionNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
         public Node visitIdentifierPredicateNode(IdentifierPredicateNode node, Void expected) {
-            return modifyPredicateNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
@@ -172,14 +142,26 @@ public class ASTTransformationVisitor {
                 ExprNode expr = (ExprNode) visitExprNode(node.getExpressionNode(), expected);
                 node.setExpr(expr);
             }
-            return modifyExprNode(node, expected);
+            return modifyNode(node, expected);
         }
 
         @Override
         public Node visitQuantifiedPredicateNode(QuantifiedPredicateNode node, Void expected) {
             PredicateNode pred = (PredicateNode) visitPredicateNode(node.getPredicateNode(), expected);
             node.setPredicate(pred);
-            return modifyPredicateNode(node, expected);
+            return modifyNode(node, expected);
+        }
+
+        @Override
+        public Node visitBecomesSuchThatSubstitutionNode(BecomesSuchThatSubstitutionNode node, Void expected) {
+            node.setPredicate((PredicateNode) visitPredicateNode(node.getPredicate(), expected));
+            return modifyNode(node, expected);
+        }
+
+        @Override
+        public Node visitBecomesElementOfSubstitutionNode(BecomesElementOfSubstitutionNode node, Void expected) {
+            node.setExpression((ExprNode) visitExprNode(node.getExpression(), expected));
+            return modifyNode(node, expected);
         }
     }
 }

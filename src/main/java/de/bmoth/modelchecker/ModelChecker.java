@@ -1,6 +1,7 @@
 package de.bmoth.modelchecker;
 
 import com.microsoft.z3.*;
+import de.bmoth.backend.Abortable;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
@@ -10,15 +11,22 @@ import de.bmoth.preferences.BMothPreferences;
 
 import java.util.*;
 
-public class ModelChecker {
+public class ModelChecker implements Abortable {
     private Context ctx;
     private Solver solver;
+    private Solver opSolver;
     private MachineToZ3Translator machineTranslator;
+    private SolutionFinder finder;
+    private SolutionFinder opFinder;
+    private volatile boolean isAborted;
 
-    private ModelChecker(MachineNode machine) {
+    public ModelChecker(MachineNode machine) {
         this.ctx = new Context();
         this.solver = Z3SolverFactory.getZ3Solver(ctx);
+        this.opSolver = Z3SolverFactory.getZ3Solver(ctx);
         this.machineTranslator = new MachineToZ3Translator(machine, ctx);
+        this.finder = new SolutionFinder(solver, ctx);
+        this.opFinder = new SolutionFinder(opSolver, ctx);
     }
 
     public static ModelCheckingResult doModelCheck(MachineNode machine) {
@@ -26,22 +34,31 @@ public class ModelChecker {
         return modelChecker.doModelCheck();
     }
 
-    private ModelCheckingResult doModelCheck() {
+    @Override
+    public void abort() {
+        isAborted = true;
+        finder.abort();
+    }
+
+    public ModelCheckingResult doModelCheck() {
+        isAborted = false;
         Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
         // prepare initial states
         BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
 
-        SolutionFinder finder = new SolutionFinder(initialValueConstraint, solver, ctx);
-        Set<Model> models = finder.findSolutions(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
-        for (Model model : models) {
-            State state = getStateFromModel(null, model);
-            queue.add(state);
-        }
+        Set<Model> models = finder.findSolutions(initialValueConstraint, BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
+        models.stream().map(this::getStateFromModel)
+            .forEach(queue::add);
 
         final BoolExpr invariant = machineTranslator.getInvariantConstraint();
         solver.add(invariant);
-        while (!queue.isEmpty()) {
+
+        // create joint operations constraint and permanently add to separate solver
+        final BoolExpr operationsConstraint = ctx.mkOr(machineTranslator.getOperationConstraints().toArray(new BoolExpr[0]));
+        opSolver.add(operationsConstraint);
+
+        while (!isAborted && !queue.isEmpty()) {
             solver.push();
             State current = queue.poll();
 
@@ -62,24 +79,25 @@ public class ModelChecker {
             }
             visited.add(current);
 
-            List<BoolExpr> operationConstraints = machineTranslator.getOperationConstraints();
-            for (BoolExpr currentOperationConstraint : operationConstraints) {
-                // compute successors
-                finder = new SolutionFinder(currentOperationConstraint, solver, ctx);
-                models = finder.findSolutions(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
-                for (Model model : models) {
-                    State state = getStateFromModel(current, model);
+            // compute successors on separate finder
+            models = opFinder.findSolutions(stateConstraint, BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
+            models.stream().map(model -> getStateFromModel(current, model))
+                .filter(state -> !visited.contains(state))
+                .filter(state -> !queue.contains(state))
+                .forEach(queue::add);
 
-                    // add to queue if not in visited
-                    if (!visited.contains(state) && !queue.contains(state)) {
-                        queue.add(state);
-                    }
-                }
-            }
             solver.pop();
         }
 
-        return new ModelCheckingResult("correct");
+        if (isAborted) {
+            return new ModelCheckingResult("aborted");
+        } else {
+            return new ModelCheckingResult("correct");
+        }
+    }
+
+    private State getStateFromModel(Model model) {
+        return getStateFromModel(null, model);
     }
 
     private State getStateFromModel(State predecessor, Model model) {

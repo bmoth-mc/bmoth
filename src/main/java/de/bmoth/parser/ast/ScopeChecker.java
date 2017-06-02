@@ -9,13 +9,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ScopeChecker extends BMoThParserBaseVisitor<Void> {
+public abstract class ScopeChecker extends BMoThParserBaseVisitor<Void> {
     final LinkedList<LinkedHashMap<String, Token>> scopeTable = new LinkedList<>();
-    final AbstractAnalyser analyser;
-
-    ScopeChecker(AbstractAnalyser analyser) {
-        this.analyser = analyser;
-    }
+    final LinkedHashMap<Token, Token> declarationReferences = new LinkedHashMap<>();
 
     @Override
     public Void visitIdentifierExpression(BMoThParser.IdentifierExpressionContext ctx) {
@@ -75,10 +71,29 @@ public class ScopeChecker extends BMoThParserBaseVisitor<Void> {
     }
 
     @Override
-    public Void visitAnySubstitution(BMoThParser.AnySubstitutionContext ctx) {
+    public Void visitBecomesElementOfSubstitution(BMoThParser.BecomesElementOfSubstitutionContext ctx) {
         List<Token> identifiers = ctx.identifier_list().identifiers;
-        LinkedHashMap<String, Token> localIdentifiers = new LinkedHashMap<>();
         for (Token token : identifiers) {
+            lookUpToken(token);
+        }
+        ctx.expression().accept(this);
+        return null;
+    }
+
+    @Override
+    public Void visitBecomesSuchThatSubstitution(BMoThParser.BecomesSuchThatSubstitutionContext ctx) {
+        List<Token> identifiers = ctx.identifier_list().identifiers;
+        for (Token token : identifiers) {
+            lookUpToken(token);
+        }
+        ctx.predicate().accept(this);
+        return null;
+    }
+
+    @Override
+    public Void visitAnySubstitution(BMoThParser.AnySubstitutionContext ctx) {
+        LinkedHashMap<String, Token> localIdentifiers = new LinkedHashMap<>();
+        for (Token token : ctx.identifier_list().identifiers) {
             localIdentifiers.put(token.getText(), token);
         }
         scopeTable.add(localIdentifiers);
@@ -88,17 +103,25 @@ public class ScopeChecker extends BMoThParserBaseVisitor<Void> {
         return null;
     }
 
-    private void lookUpToken(Token identifierToken) {
+    public void addDeclarationReference(Token identifierToken, Token declarationToken) {
+        this.declarationReferences.put(identifierToken, declarationToken);
+    }
+
+    public void lookUpToken(Token identifierToken) {
         String name = identifierToken.getText();
         for (int i = scopeTable.size() - 1; i >= 0; i--) {
             LinkedHashMap<String, Token> map = scopeTable.get(i);
             if (map.containsKey(name)) {
                 Token declarationToken = map.get(name);
-                analyser.addDeclarationReference(identifierToken, declarationToken);
+                addDeclarationReference(identifierToken, declarationToken);
                 return;
             }
         }
-        analyser.identifierNodeFound(identifierToken);
+        identifierNodeNotFound(identifierToken);
+    }
+
+    public void identifierNodeNotFound(Token identifierToken) {
+        throw new ScopeException("Unknown identifier: " + identifierToken.getText());
     }
 
 }

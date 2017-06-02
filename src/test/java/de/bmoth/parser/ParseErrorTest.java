@@ -1,6 +1,6 @@
 package de.bmoth.parser;
 
-import de.bmoth.exceptions.ParseErrorException;
+import de.bmoth.parser.ast.ParseErrorException;
 import org.junit.Test;
 
 public class ParseErrorTest {

@@ -20,6 +20,7 @@ machine_clause
   | INITIALISATION substitution                                           # InitialisationClause
   | OPERATIONS  ops+=single_operation (SEMICOLON ops+=single_operation)*  # OperationsClause
   | SETS set_definition (SEMICOLON set_definition)*                       # SetsClause
+  | definition_clause                                                     # DefinitionClauseIndirection // used to reuse definition_clause for definition files
   ;
 
 set_definition
@@ -27,6 +28,22 @@ set_definition
   | IDENTIFIER EQUAL LEFT_BRACE identifier_list RIGHT_BRACE               # EnumeratedSet
   ;
 
+
+definition_clause
+  : DEFINITIONS defs+=single_definition (SEMICOLON defs+=single_definition)* SEMICOLON?   # DefinitionClause
+  ;
+
+single_definition
+    : name=IDENTIFIER ('(' parameters+=IDENTIFIER (',' parameters+=IDENTIFIER)* ')')? DOUBLE_EQUAL definition_body # OrdinaryDefinition
+    | StringLiteral  # DefinitionFile
+    ;
+
+definition_body
+  : IDENTIFIER ('(' expression_list ')')?           # DefinitionAmbiguousCall
+  | expression                                      # DefinitionExpression
+  | predicate                                       # DefinitionPredicate
+  | substitution                                    # DefinitionSubstitution
+  ;
 
 single_operation
   : IDENTIFIER EQUAL substitution                                         # Operation
@@ -49,6 +66,8 @@ substitution
   | ANY identifier_list WHERE predicate THEN substitution END               # AnySubstitution
   | identifier_list ':=' expression_list                                    # AssignSubstitution
   | substitution DOUBLE_VERTICAL_BAR substitution                           # ParallelSubstitution
+  | identifier_list DOUBLE_COLON expression                                 # BecomesElementOfSubstitution
+  | identifier_list (ELEMENT_OF|COLON) LEFT_PAR predicate RIGHT_PAR         # BecomesSuchThatSubstitution
   ;
 
 expression_list
@@ -63,6 +82,7 @@ formula
 predicate
   : '(' predicate ')'                                                       # ParenthesesPredicate
   | IDENTIFIER                                                              # PredicateIdentifier
+  | IDENTIFIER '(' exprs+=expression (',' exprs+=expression)* ')'           # PredicateDefinitionCall
   | operator=(FOR_ANY|EXITS) quantified_variables_list
       DOT LEFT_PAR predicate RIGHT_PAR                                      # QuantifiedPredicate
   | operator=(TRUE|FALSE)                                                   # PredicateOperator
@@ -87,7 +107,7 @@ expression
       (COMMA exprs+=expression)* ')'                                        # NestedCoupleAsTupleExpression
   | '[' expression_list? ']'                                                # SequenceEnumerationExpression
   | operator=(NATURAL|NATURAL1|INTEGER|INT|NAT
-      |MININT|MAXINT|BOOL|TRUE|FALSE)                                        # ExpressionOperator
+      |MININT|MAXINT|BOOL|TRUE|FALSE)                                       # ExpressionOperator
   | exprs+=expression '(' exprs+=expression
       (',' exprs+=expression)* ')'                                          # FunctionCallExpression
   | operator=(DOM|RAN|CARD|CONC|FIRST|FRONT|ID|ISEQ|ISEQ1

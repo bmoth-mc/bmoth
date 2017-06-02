@@ -1,8 +1,11 @@
 package de.bmoth.modelchecker;
 
+import de.bmoth.parser.Parser;
+import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ModelCheckerTest {
@@ -70,5 +73,33 @@ public class ModelCheckerTest {
         ModelCheckingResult result = ModelChecker.doModelCheck(machine);
         // the operation BlockSubstitution will finally violate the invariant x<=2
         assertFalse(result.isCorrect());
+    }
+
+    @Test
+    public void testAbort() {
+        String machine = "MACHINE SimpleMachine\n";
+        machine += "VARIABLES x\n";
+        machine += "INVARIANT x : INTEGER\n";
+        machine += "INITIALISATION x := 0\n";
+        machine += "OPERATIONS\n";
+        machine += "\tinc = BEGIN x := x + 1 END\n";
+        machine += "END";
+
+        MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machine);
+        ModelChecker modelChecker = new ModelChecker(machineAsSemanticAst);
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            modelChecker.abort();
+        }).start();
+
+        ModelCheckingResult result = modelChecker.doModelCheck();
+
+        assertFalse(result.isCorrect());
+        assertEquals("aborted", result.getMessage());
     }
 }

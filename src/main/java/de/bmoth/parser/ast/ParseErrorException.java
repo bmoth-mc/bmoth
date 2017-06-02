@@ -1,4 +1,4 @@
-package de.bmoth.exceptions;
+package de.bmoth.parser.ast;
 
 import com.google.common.eventbus.EventBus;
 import de.bmoth.eventbus.ErrorEvent;

@@ -15,7 +15,7 @@ import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class DependencyTest {
-    private String[] packages = new String[]{"app", "backend", "checkers", "eventbus", "exceptions", "modelchecker", "parser"};
+    private String[] packages = new String[]{"app", "backend", "checkers", "eventbus", "modelchecker", "parser"};
     private AnalyzerConfig config;
 
     @Before
@@ -30,7 +30,6 @@ public class DependencyTest {
     public void noCycles() {
         assertThat(new ModelAnalyzer(config).analyze(), hasNoClassCycles());
         assertThat(new ModelAnalyzer(config).analyze(), hasNoPackageCycles());
-
     }
 
     @Test
@@ -56,7 +55,6 @@ public class DependencyTest {
                 backend_,
                 checkers_,
                 eventbus,
-                exceptions,
                 modelchecker,
                 parser,
                 parser_,
@@ -64,17 +62,15 @@ public class DependencyTest {
 
             @Override
             public void defineRules() {
-                app.mayUse(checkers_, eventbus, modelchecker, preferences);
+                app.mayUse(checkers_, eventbus, modelchecker, parser, parser_, preferences);
 
                 backend_.mayUse(preferences);
 
                 checkers_.mayUse(backend, backend_);
 
-                exceptions.mustUse(eventbus);
+                modelchecker.mayUse(backend, backend_, preferences);
 
-                modelchecker.mayUse(backend_);
-
-                parser.mayUse(antlr, exceptions, parser_);
+                parser.mayUse(antlr, parser_);
                 parser_.mayUse(antlr, eventbus, parser_);
 
                 //$self.mayUse(util, dependency_);
