@@ -79,6 +79,17 @@ public class FormulaToZ3Translator {
         return z3Context.mkEq(variable, z3Value);
     }
 
+    public BoolExpr getAccumulatedConstraints(Context z3Context) {
+        switch (constraintList.size()) {
+            case 0:
+                return z3Context.mkTrue();
+            case 1:
+                return constraintList.get(0);
+            default:
+                return z3Context.mkAnd(constraintList.toArray(new BoolExpr[0]));
+        }
+    }
+
     public static BoolExpr translatePredicate(String formula, Context z3Context) {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context, formula);
 
