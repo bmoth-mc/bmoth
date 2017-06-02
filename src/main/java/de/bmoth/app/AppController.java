@@ -150,6 +150,7 @@ public class AppController implements Initializable {
                 codeArea.getUndoManager().forgetHistory();
                 codeArea.selectRange(0, 0);
                 hasChanged = false;
+                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
                 infoArea.clear();
             }
         }
@@ -216,8 +217,9 @@ public class AppController implements Initializable {
             if (hasChanged) {
                 handleSave();
                 machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
-                System.err.println(machineNode.getWarnings());
             }
+            modelChecker = new ModelChecker(machineNode);
+
             task = new Task<ModelCheckingResult>() {
                 @Override
                 protected ModelCheckingResult call() throws Exception {
@@ -375,6 +377,7 @@ public class AppController implements Initializable {
         try (FileWriter fileWriter = new FileWriter(file)) {
             fileWriter.write(codeArea.getText());
             primaryStage.setTitle(APPNAME + " - " + file.getName().substring(0, file.getName().length() - 4));
+            machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
         }
     }
 
@@ -433,6 +436,7 @@ public class AppController implements Initializable {
         String content = null;
         try {
             content = new String(Files.readAllBytes(Paths.get(file.getPath())));
+            machineNode = Parser.getMachineAsSemanticAst(content);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "While Reading File", e);
         }
@@ -452,8 +456,6 @@ public class AppController implements Initializable {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
             if (hasChanged) {
                 handleSave();
-                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
-                System.err.println(machineNode.getWarnings());
             }
 
             InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(machineNode);
