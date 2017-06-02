@@ -9,6 +9,8 @@ import de.bmoth.eventbus.ErrorEvent;
 import de.bmoth.eventbus.EventBusProvider;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.parser.Parser;
+import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -207,9 +209,6 @@ public class AppController implements Initializable {
     public void handleCheck() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
 
-            MachineNode machine = Parser.getMachineAsSemanticAst(codeArea.getText());
-            modelChecker = new ModelChecker(machine);
-
             if (hasChanged) {
                 handleSave();
                 MachineNode machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
@@ -270,7 +269,12 @@ public class AppController implements Initializable {
     @FXML
     public void handleInvariantSatisfiability() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
-            InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(codeArea.getText());
+            if (hasChanged) {
+                handleSave();
+                MachineNode machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                System.err.println(machineNode.getWarnings());
+            }
+            InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(machineNode);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Invariant Satisfiability Checking Result");
             alert.setHeaderText("The invariant is...");
@@ -442,7 +446,13 @@ public class AppController implements Initializable {
 
     public void handleInitialStateExists() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
-            InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(codeArea.getText());
+            if (hasChanged) {
+                handleSave();
+                MachineNode machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                System.err.println(machineNode.getWarnings());
+            }
+
+            InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(machineNode);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Invariant Satisfiability Checking Result");
             alert.setHeaderText("Initial state...");
