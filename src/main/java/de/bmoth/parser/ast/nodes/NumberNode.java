@@ -2,15 +2,17 @@ package de.bmoth.parser.ast.nodes;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.math.BigInteger;
+
 public class NumberNode extends ExprNode {
 
-    private final int value;
+    private final BigInteger value;
 
-    public NumberNode(ParseTree ctx, int value) {
+    public NumberNode(ParseTree ctx, BigInteger value) {
         this.value = value;
     }
 
-    public int getValue() {
+    public BigInteger getValue() {
         return value;
     }
 
