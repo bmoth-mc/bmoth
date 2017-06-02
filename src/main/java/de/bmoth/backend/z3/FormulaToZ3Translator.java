@@ -76,7 +76,7 @@ public class FormulaToZ3Translator {
 
         Expr variable = z3Context.mkConst(name, z3Value.getSort());
 
-        return z3Context.mkEq(variable, z3Value);
+        return z3Context.mkAnd(z3Context.mkEq(variable, z3Value),formulaToZ3Translator.getAccumulatedConstraints(z3Context));
     }
 
     public BoolExpr getAccumulatedConstraints(Context z3Context) {
