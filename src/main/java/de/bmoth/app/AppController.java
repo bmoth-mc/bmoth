@@ -433,7 +433,7 @@ public class AppController implements Initializable {
     // <editor-fold desc="Event Bus Subscriptions">
     @Subscribe
     public void showException(ErrorEvent event) {
-        new ErrorAlert(Alert.AlertType.ERROR, event.getErrorType(), event.getMessage());
+        new ErrorAlert(Alert.AlertType.ERROR, event.getErrorType(), event.getMessage()).showAndWait();
     }
     // </editor-fold>
 
