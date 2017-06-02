@@ -27,7 +27,7 @@ public class Issue59Test {
         machine += "\tIncX = SELECT x < 50 THEN x := x+1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
         assertEquals(true, result.isCorrect());
     }
 
@@ -43,7 +43,7 @@ public class Issue59Test {
         machine += "\tIncX = SELECT x < 50 THEN x := x+1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
         assertEquals(true, result.isCorrect());
     }
 

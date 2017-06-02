@@ -7,17 +7,13 @@ import de.bmoth.parser.ast.BDefinition.KIND;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigInteger;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -344,7 +340,7 @@ public class SemanticAstCreator {
 
         @Override
         public ExprNode visitNumberExpression(BMoThParser.NumberExpressionContext ctx) {
-            int value = Integer.parseInt(ctx.Number().getText());
+            BigInteger value = new BigInteger(ctx.Number().getText());
             return new NumberNode(ctx, value);
         }
 

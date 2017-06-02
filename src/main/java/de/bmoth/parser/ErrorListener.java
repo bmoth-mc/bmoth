@@ -1,11 +1,11 @@
 package de.bmoth.parser;
 
-import de.bmoth.exceptions.ParseErrorException;
-
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
+
+import de.bmoth.parser.ast.ParseErrorException;
 
 public class ErrorListener extends BaseErrorListener {
 

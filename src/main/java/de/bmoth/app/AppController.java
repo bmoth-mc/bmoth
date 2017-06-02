@@ -57,6 +57,8 @@ public class AppController implements Initializable {
     @FXML
     MenuItem options;
     @FXML
+    MenuItem presentation;
+    @FXML
     MenuItem exit;
     @FXML
     MenuItem modelCheck;
@@ -69,12 +71,16 @@ public class AppController implements Initializable {
     private Boolean hasChanged = false;
     private Task<ModelCheckingResult> task;
     private ModelChecker modelChecker;
+    private Thread modelCheckingThread;
+    private MachineNode machineNode;
+    private Boolean presentationMode = false;
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
         newFile.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_ANY));
         open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_ANY));
+        presentation.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_ANY));
         primaryStage.setTitle(APPNAME);
         codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -207,15 +213,16 @@ public class AppController implements Initializable {
     public void handleCheck() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
 
-            MachineNode machine = Parser.getMachineAsSemanticAst(codeArea.getText());
-            modelChecker = new ModelChecker(machine);
-
+            if (hasChanged) {
+                handleSave();
+                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                System.err.println(machineNode.getWarnings());
+            }
             task = new Task<ModelCheckingResult>() {
                 @Override
                 protected ModelCheckingResult call() throws Exception {
                     return modelChecker.doModelCheck();
                 }
-
             };
 
             task.setOnSucceeded(event -> {
@@ -242,17 +249,15 @@ public class AppController implements Initializable {
                 alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
                 alert.showAndWait();
             });
-            Thread modelCheckingThread = new Thread(task);
+            modelCheckingThread = new Thread(task);
             modelCheckingThread.start();
         }
     }
 
     @FXML
     public void handelCancelModelCheck(ActionEvent actionEvent) {
-        if (task != null && task.isRunning()) {
-            task.cancel();
-            modelChecker.abort();
-        }
+        task.cancel();
+        modelCheckingThread.interrupt();
     }
 
     @FXML
@@ -268,7 +273,12 @@ public class AppController implements Initializable {
     @FXML
     public void handleInvariantSatisfiability() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
-            InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(codeArea.getText());
+            if (hasChanged) {
+                handleSave();
+                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                System.err.println(machineNode.getWarnings());
+            }
+            InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(machineNode);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Invariant Satisfiability Checking Result");
             alert.setHeaderText("The invariant is...");
@@ -440,7 +450,13 @@ public class AppController implements Initializable {
 
     public void handleInitialStateExists() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
-            InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(codeArea.getText());
+            if (hasChanged) {
+                handleSave();
+                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                System.err.println(machineNode.getWarnings());
+            }
+
+            InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(machineNode);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Invariant Satisfiability Checking Result");
             alert.setHeaderText("Initial state...");
@@ -463,4 +479,14 @@ public class AppController implements Initializable {
         }
     }
 
+    public void handlePresentation(ActionEvent actionEvent) {
+        if (!presentationMode) {
+            codeArea.setStyle("-fx-font-size:25");
+            presentationMode = true;
+        } else {
+            codeArea.setStyle("-fx-font-size:15");
+            presentationMode = false;
+        }
+
+    }
 }

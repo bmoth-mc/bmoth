@@ -14,6 +14,8 @@
             <SeparatorMenuItem/>
             <MenuItem text="Options" fx:id="options" onAction="#handleOptions"/>
             <SeparatorMenuItem/>
+            <MenuItem text="Presentation" fx:id="presentation" onAction="#handlePresentation"/>
+            <SeparatorMenuItem/>
             <MenuItem text="Exit" fx:id="exit" onAction="#handleExit"/>
         </Menu>
         <Menu text="Checks">
@@ -30,6 +32,6 @@
             <MenuItem text="Open REPL" fx:id="openRepl" onAction="#handleREPL"/>
         </Menu>
     </MenuBar>
-    <CodeArea fx:id="codeArea" prefWidth="2560" prefHeight="1440"/>
+    <CodeArea fx:id="codeArea" prefWidth="2560" prefHeight="1440" style="-fx-font-size:15"/>
     <TextArea fx:id="infoArea" editable="false" prefHeight="0" prefWidth="0"/>
 </VBox>

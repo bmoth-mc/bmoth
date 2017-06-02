@@ -23,7 +23,7 @@ public class ModelCheckerTest {
         machine += "\tEND\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
         assertTrue(result.isCorrect());
     }
 
@@ -41,7 +41,7 @@ public class ModelCheckerTest {
         machine += "\tEND\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
         assertFalse(result.isCorrect());
     }
 
@@ -56,7 +56,7 @@ public class ModelCheckerTest {
         machine += "\tDec = SELECT x > 0 THEN x := x - 1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
         assertTrue(result.isCorrect());
     }
 
@@ -70,7 +70,7 @@ public class ModelCheckerTest {
         machine += "\tBlockSubstitution = BEGIN x := x + 1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
         // the operation BlockSubstitution will finally violate the invariant x<=2
         assertFalse(result.isCorrect());
     }

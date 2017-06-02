@@ -3,18 +3,12 @@ package de.bmoth.parser.ast;
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.*;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
-import de.bmoth.exceptions.ScopeException;
 import de.bmoth.parser.ast.BDefinition.KIND;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import static de.bmoth.antlr.BMoThParser.*;
@@ -64,14 +58,14 @@ public class MachineAnalyser {
                 declarations.put(terminalNode.getSymbol().getText(), terminalNode);
             }
             switch (ctx.clauseName.getType()) {
-            case CONSTANTS:
-                constantsDeclarations.putAll(declarations);
-                break;
-            case VARIABLES:
-                variablesDeclarations.putAll(declarations);
-                break;
-            default:
-                unreachable();
+                case CONSTANTS:
+                    constantsDeclarations.putAll(declarations);
+                    break;
+                case VARIABLES:
+                    variablesDeclarations.putAll(declarations);
+                    break;
+                default:
+                    unreachable();
             }
             return null;
         }
@@ -126,9 +120,9 @@ public class MachineAnalyser {
         private void checkGlobalIdentifiers(TerminalNode terminalNode) {
             String name = terminalNode.getSymbol().getText();
             if (MachineAnalyser.this.constantsDeclarations.containsKey(name)
-                    || MachineAnalyser.this.variablesDeclarations.containsKey(name)
-                    || MachineAnalyser.this.operationsDeclarations.containsKey(name)
-                    || MachineAnalyser.this.setsDeclarations.containsKey(name)) {
+                || MachineAnalyser.this.variablesDeclarations.containsKey(name)
+                || MachineAnalyser.this.operationsDeclarations.containsKey(name)
+                || MachineAnalyser.this.setsDeclarations.containsKey(name)) {
                 throw new ScopeException("Duplicate declaration of identifier: " + name);
             }
         }
@@ -149,22 +143,22 @@ public class MachineAnalyser {
         @Override
         public Void visitPredicateClause(BMoThParser.PredicateClauseContext ctx) {
             switch (ctx.clauseName.getType()) {
-            case INVARIANT:
-                if (MachineAnalyser.this.invariant == null) {
-                    MachineAnalyser.this.invariant = ctx;
-                } else {
-                    throw new ScopeException("Duplicate INVARIANT clause.");
-                }
-                break;
-            case PROPERTIES:
-                if (MachineAnalyser.this.properties == null) {
-                    MachineAnalyser.this.properties = ctx;
-                } else {
-                    throw new ScopeException("Duplicate PROPERTIES clause.");
-                }
-                break;
-            default:
-                unreachable();
+                case INVARIANT:
+                    if (MachineAnalyser.this.invariant == null) {
+                        MachineAnalyser.this.invariant = ctx;
+                    } else {
+                        throw new ScopeException("Duplicate INVARIANT clause.");
+                    }
+                    break;
+                case PROPERTIES:
+                    if (MachineAnalyser.this.properties == null) {
+                        MachineAnalyser.this.properties = ctx;
+                    } else {
+                        throw new ScopeException("Duplicate PROPERTIES clause.");
+                    }
+                    break;
+                default:
+                    unreachable();
             }
             return null;
         }
@@ -257,7 +251,7 @@ public class MachineAnalyser {
                 BDefinition bDefinition = definitions.get(declarationTNode);
                 if (bDefinition.getKind() == KIND.SUBSTITUTION || bDefinition.getKind() == KIND.PREDICATE) {
                     throw new ScopeException("Expected a EXPRESSION definition but found a " + bDefinition.getKind()
-                            + " at definition " + bDefinition.getName());
+                        + " at definition " + bDefinition.getName());
                 }
                 if (bDefinition.getArity() > 0) {
                     if (ctx.parent instanceof FunctionCallExpressionContext) {
@@ -265,14 +259,14 @@ public class MachineAnalyser {
                         if (funcCall.exprs.size() - 1 != bDefinition.getArity()) {
                             StringBuilder sb = new StringBuilder();
                             sb.append("The number of paramters does not match the number of arguments of definition '")
-                                    .append(bDefinition.getName()).append("'").append(": ")
-                                    .append(funcCall.exprs.size() - 1).append(" vs ").append(bDefinition.getArity());
+                                .append(bDefinition.getName()).append("'").append(": ")
+                                .append(funcCall.exprs.size() - 1).append(" vs ").append(bDefinition.getArity());
                             throw new ScopeException(sb.toString());
                         }
                         definitionCallReplacements.put(funcCall, bDefinition);
                     } else {
                         throw new ScopeException("Expecting " + bDefinition.getArity() + " argument(s) for definition "
-                                + bDefinition.getName());
+                            + bDefinition.getName());
                     }
                 } else {
                     definitionCallReplacements.put(ctx, bDefinition);
@@ -291,8 +285,8 @@ public class MachineAnalyser {
                 if (ctx.exprs.size() != bDefinition.getArity()) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("The number of paramters does not match the number of arguments of definition '")
-                            .append(bDefinition.getName()).append("'").append(": ").append(ctx.exprs.size())
-                            .append(" vs ").append(bDefinition.getArity());
+                        .append(bDefinition.getName()).append("'").append(": ").append(ctx.exprs.size())
+                        .append(" vs ").append(bDefinition.getArity());
                     throw new ScopeException(sb.toString());
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
@@ -311,13 +305,13 @@ public class MachineAnalyser {
                 BDefinition bDefinition = definitions.get(declarationTNode);
                 if (bDefinition.getArity() > 0 && null == ctx.expression_list()) {
                     throw new ScopeException("Expecting " + bDefinition.getArity() + " argument(s) for definition "
-                            + bDefinition.getName());
+                        + bDefinition.getName());
                 }
                 if (null != ctx.expression_list() && bDefinition.getArity() != ctx.expression_list().exprs.size()) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("The number of paramters does not match the number of arguments of definition '")
-                            .append(bDefinition.getName()).append("'").append(": ")
-                            .append(ctx.expression_list().exprs.size()).append(" vs ").append(bDefinition.getArity());
+                        .append(bDefinition.getName()).append("'").append(": ")
+                        .append(ctx.expression_list().exprs.size()).append(" vs ").append(bDefinition.getArity());
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
             }
@@ -333,11 +327,11 @@ public class MachineAnalyser {
                 BDefinition bDefinition = definitions.get(declarationTNode);
                 if (bDefinition.getKind() == KIND.SUBSTITUTION || bDefinition.getKind() == KIND.EXPRESSION) {
                     throw new ScopeException("Expected a PREDICATE definition but found a " + bDefinition.getKind()
-                            + " at definition " + bDefinition.getName());
+                        + " at definition " + bDefinition.getName());
                 }
                 if (bDefinition.getArity() > 0) {
                     throw new ScopeException("Expecting " + bDefinition.getArity() + " argument(s) for definition "
-                            + bDefinition.getName());
+                        + bDefinition.getName());
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
             }

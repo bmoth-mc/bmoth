@@ -2,8 +2,6 @@ package de.bmoth.parser.ast;
 
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
-import de.bmoth.exceptions.ScopeException;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
