@@ -16,10 +16,32 @@ public class PrettyPrinter {
     private StringJoiner output = new StringJoiner(", ", "{", "}");
 
     public PrettyPrinter(Model model) {
-        FuncDecl[] functionDeclarations = model.getConstDecls();
-        for (FuncDecl decl : functionDeclarations) {
+        FuncDecl[] constantDeclarations = model.getConstDecls();
+        for (FuncDecl constantDeclaration : constantDeclarations) {
             try {
-                output.add(decl.getName().toString() + "=" + processDeclaration(decl, model));
+                System.out.println("Declaration arity: " + constantDeclaration.getArity());
+                System.out.println("Declaration sort: " + constantDeclaration.getRange().getSortKind());
+                output.add(constantDeclaration.getName().toString() + "=");
+                if (constantDeclaration.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
+                    Expr constantInterpretation = model.getConstInterp(constantDeclaration);
+                    Expr[] constInterpretationArgs = constantInterpretation.getArgs();
+                    if (constInterpretationArgs.length == 0) {
+                        output.add(model.getConstInterp(constantDeclaration).toString());
+                    } else {
+                        for (Expr constInterpretationArg : constInterpretationArgs) {
+                            System.out.println(constInterpretationArg);
+                            System.out.println(constInterpretationArg.getSort());
+                            output.add(processDeclaration(constInterpretationArg, model));
+                        }
+                    }
+                } else {
+                    FuncInterp functionInterpretation = model.getFuncInterp(constantDeclaration);
+                    System.out.println(functionInterpretation);
+                    for (FuncInterp.Entry funcInterpEntry : functionInterpretation.getEntries()) {
+                        System.out.println(funcInterpEntry);
+                    }
+                }
+
             } catch (com.microsoft.z3.Z3Exception e) {
                 logger.log(Level.SEVERE, "Z3 exception while solving", e);
             }
@@ -27,44 +49,74 @@ public class PrettyPrinter {
     }
 
 
-    public String processDeclaration(FuncDecl decl, Model model){
-        if (decl.getArity() == 0 && (decl.getRange().getSortKind() == Z3_sort_kind.Z3_ARRAY_SORT
-            || decl.getRange().getSortKind() == Z3_sort_kind.Z3_DATATYPE_SORT)) {
+    public String processDeclaration(Expr constantInterpretation, Model model){
+        System.out.println("Interpretation: " + constantInterpretation.toString());
+        for (Expr interpretationArgs : constantInterpretation.getArgs()) {
+            System.out.println(interpretationArgs);
+        }
+        constantInterpretation.getSort();
+        if (constantInterpretation.getSort().toString().equals("couple")
+            || constantInterpretation.getSort().toString().equals("set")) {
             // not a constant
-            StringJoiner presentation = new StringJoiner(", ", "", "");
-            if (decl.getRange().getSortKind() == Z3_sort_kind.Z3_DATATYPE_SORT) {
+            if (constantInterpretation.getSort().toString().equals("couple")) {
                 // couple
-                presentation.add(formatCouples(model.getConstInterp(decl)));
+                System.out.println("Couple");
+                return formatCouple(constantInterpretation, model);
             } else {
                 // set
-                presentation.add(formatSets(model.getFuncInterp(decl)));
+                return formatSet(constantInterpretation);
             }
-            return presentation.toString();
         } else {
             // constant
-            return model.getConstInterp(decl).toString();
+            System.out.println("Constant " + constantInterpretation.toString());
+            return constantInterpretation.toString();
         }
+
+
+        /*if (constantInterpretation.getRange().getSortKind() == Z3_sort_kind.Z3_ARRAY_SORT
+            || constantInterpretation.getRange().getSortKind() == Z3_sort_kind.Z3_DATATYPE_SORT) {
+            // not a constant
+            if (constantInterpretation.getRange().getSortKind() == Z3_sort_kind.Z3_DATATYPE_SORT) {
+                // couple
+                System.out.println("Couple");
+                if (constantInterpretation.getArity() == 0) {
+                    return formatCouple(model.getConstInterp(constantInterpretation), model);
+                } else {
+                    System.out.println("Arity != 0");
+                    FuncInterp interp =  model.getFuncInterp(constantInterpretation);
+                    System.out.println("Interp: " + interp.toString());
+                    return "1";
+                }
+            } else {
+                // set
+                return formatSet(model.getFuncInterp(constantInterpretation));
+            }
+        } else {
+            System.out.println("Constant " + model.getConstInterp(constantInterpretation).toString());
+            // constant
+            return model.getConstInterp(constantInterpretation).toString();
+        }*/
     }
 
 
-    public String formatCouples(Expr constantArg) {
+    public String formatCouple(Expr constantInterpretation, Model model) {
         StringJoiner coupleJoiner = new StringJoiner(",", "(", ")");
-        for (Expr element : constantArg.getArgs()) {
+        for (Expr element : constantInterpretation.getArgs()) {
             if (element.isNumeral()) {
+                // System.out.println(element.toString() + " is numeral!");
                 coupleJoiner.add(element.toString());
             } else {
-                coupleJoiner.add(formatCouples(element));
+                // System.out.println(element.toString() + " is not numeral!");
+                coupleJoiner.add(processDeclaration(element, model));
             }
         }
         return coupleJoiner.toString();
     }
 
-    public String formatSets(FuncInterp funcInterpretation) {
+    public String formatSet(Expr constantInterpretation) {
         StringJoiner setJoiner = new StringJoiner(",", "{", "}");
-        for (FuncInterp.Entry entry : funcInterpretation.getEntries()) {
-            for (Expr entryArg : entry.getArgs()) {
-                setJoiner.add(entryArg.toString());
-            }
+        for (Expr constInterpretationArg : constantInterpretation.getArgs()) {
+            setJoiner.add(constantInterpretation.toString());
         }
         return setJoiner.toString();
     }
