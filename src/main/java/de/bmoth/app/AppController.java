@@ -66,6 +66,9 @@ public class AppController implements Initializable {
     CodeArea codeArea;
     @FXML
     TextArea infoArea;
+    @FXML
+    TextArea warningArea;
+
     private Stage primaryStage = new Stage();
     private String currentFile;
     private Boolean hasChanged = false;
@@ -150,7 +153,8 @@ public class AppController implements Initializable {
                 codeArea.getUndoManager().forgetHistory();
                 codeArea.selectRange(0, 0);
                 hasChanged = false;
-                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                machineNode = null;
+                warningArea.clear();
                 infoArea.clear();
             }
         }
@@ -214,9 +218,10 @@ public class AppController implements Initializable {
     public void handleCheck() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
 
-            if (hasChanged) {
+            if (hasChanged || machineNode == null) {
                 handleSave();
                 machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                warningArea.setText(machineNode.getWarnings().toString());
             }
             modelChecker = new ModelChecker(machineNode);
 
@@ -275,10 +280,10 @@ public class AppController implements Initializable {
     @FXML
     public void handleInvariantSatisfiability() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
-            if (hasChanged) {
+            if (hasChanged || machineNode == null) {
                 handleSave();
                 machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
-                System.err.println(machineNode.getWarnings());
+                warningArea.setText(machineNode.getWarnings().toString());
             }
             InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(machineNode);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -377,7 +382,6 @@ public class AppController implements Initializable {
         try (FileWriter fileWriter = new FileWriter(file)) {
             fileWriter.write(codeArea.getText());
             primaryStage.setTitle(APPNAME + " - " + file.getName().substring(0, file.getName().length() - 4));
-            machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
         }
     }
 
@@ -436,7 +440,6 @@ public class AppController implements Initializable {
         String content = null;
         try {
             content = new String(Files.readAllBytes(Paths.get(file.getPath())));
-            machineNode = Parser.getMachineAsSemanticAst(content);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "While Reading File", e);
         }
@@ -454,8 +457,9 @@ public class AppController implements Initializable {
 
     public void handleInitialStateExists() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
-            if (hasChanged) {
+            if (hasChanged || machineNode == null) {
                 handleSave();
+                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
             }
 
             InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(machineNode);
