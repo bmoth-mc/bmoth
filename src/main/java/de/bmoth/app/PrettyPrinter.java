@@ -17,22 +17,26 @@ public class PrettyPrinter {
     public PrettyPrinter(Model model) {
         FuncDecl[] constantDeclarations = model.getConstDecls();
         for (FuncDecl constantDeclaration : constantDeclarations) {
-            try {
-                if (constantDeclaration.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
-                    Expr constantInterpretation = model.getConstInterp(constantDeclaration);
-                    if (constantInterpretation.getArgs().length == 0) // constant
-                        output.add(constantDeclaration.getName().toString() + "=" + model.getConstInterp(constantDeclaration).toString());
-                    else // couple
-                        output.add(constantDeclaration.getName().toString() + "=" + formatCouple(constantInterpretation, model));
-                } else { // set
-                    FuncInterp functionInterpretation = model.getFuncInterp(constantDeclaration);
-                    output.add(constantDeclaration.getName().toString() + "="
-                        + formatSet(functionInterpretation, model));
-                }
-            } catch (com.microsoft.z3.Z3Exception e) {
-                logger.log(Level.SEVERE, "Z3 exception while solving", e);
-            }
+            output.add(constantDeclaration.getName().toString() + "=" + processDeclaration(constantDeclaration, model));
         }
+    }
+
+    
+    public String processDeclaration(FuncDecl constantDeclaration, Model model) {
+        try {
+            if (constantDeclaration.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
+                Expr constantInterpretation = model.getConstInterp(constantDeclaration);
+                if (constantInterpretation.getArgs().length == 0) // constant
+                    return model.getConstInterp(constantDeclaration).toString();
+                else // couple
+                    return formatCouple(constantInterpretation, model);
+            } else // set
+                return (formatSet(model.getFuncInterp(constantDeclaration), model));
+        } catch (com.microsoft.z3.Z3Exception e) {
+            logger.log(Level.SEVERE, "Z3 exception while solving", e);
+            return null;
+        }
+
     }
 
 
