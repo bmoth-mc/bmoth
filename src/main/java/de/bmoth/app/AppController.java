@@ -57,6 +57,8 @@ public class AppController implements Initializable {
     @FXML
     MenuItem options;
     @FXML
+    MenuItem presentation;
+    @FXML
     MenuItem exit;
     @FXML
     MenuItem modelCheck;
@@ -71,12 +73,14 @@ public class AppController implements Initializable {
     private ModelChecker modelChecker;
     private Thread modelCheckingThread;
     private MachineNode machineNode;
+    private Boolean presentationMode = false;
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
         newFile.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_ANY));
         open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_ANY));
+        presentation.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_ANY));
         primaryStage.setTitle(APPNAME);
         codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -211,7 +215,7 @@ public class AppController implements Initializable {
 
             if (hasChanged) {
                 handleSave();
-                MachineNode machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
                 System.err.println(machineNode.getWarnings());
             }
             task = new Task<ModelCheckingResult>() {
@@ -271,7 +275,7 @@ public class AppController implements Initializable {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
             if (hasChanged) {
                 handleSave();
-                MachineNode machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
                 System.err.println(machineNode.getWarnings());
             }
             InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(machineNode);
@@ -448,7 +452,7 @@ public class AppController implements Initializable {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
             if (hasChanged) {
                 handleSave();
-                MachineNode machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
                 System.err.println(machineNode.getWarnings());
             }
 
@@ -475,4 +479,14 @@ public class AppController implements Initializable {
         }
     }
 
+    public void handlePresentation(ActionEvent actionEvent) {
+        if (!presentationMode) {
+            codeArea.setStyle("-fx-font-size:25");
+            presentationMode = true;
+        } else {
+            codeArea.setStyle("-fx-font-size:15");
+            presentationMode = false;
+        }
+
+    }
 }
