@@ -19,8 +19,7 @@ public class ErrorAlertTest {
     @Test
     public void testErrorAlert() {
         new JFXPanel(); // Initializes the JavaFx Platform
-        Future<Void> f = WaitForAsyncUtils.asyncFx(() -> {
-            alert = new ErrorAlert(Alert.AlertType.ERROR, ERROR_TYPE_TEST, ERROR_MSG_TEST);});
+        Future<ErrorAlert> f = WaitForAsyncUtils.asyncFx(() -> alert = new ErrorAlert(Alert.AlertType.ERROR, ERROR_TYPE_TEST, ERROR_MSG_TEST));
         WaitForAsyncUtils.waitFor(f);
         assertEquals(Alert.AlertType.ERROR, alert.getAlertType());
         assertEquals(ERROR_TYPE_TEST + "!", alert.getTitle());
