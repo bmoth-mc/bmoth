@@ -4,6 +4,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class DefinitionsTest {
 
@@ -71,5 +72,6 @@ public class DefinitionsTest {
         machine += "OPERATIONS op1 = foo \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
+        assertNotNull(t);
     }
 }
