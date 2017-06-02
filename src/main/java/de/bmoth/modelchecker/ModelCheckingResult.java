@@ -11,7 +11,7 @@ public class ModelCheckingResult {
     ModelCheckingResult(String result) {
         if (result.equals("correct")) {
             correct = true;
-        } else if (result.startsWith("check-sat")) {
+        } else if (result.startsWith("check-sat") || result.equals("aborted")) {
             message = result;
         }
     }

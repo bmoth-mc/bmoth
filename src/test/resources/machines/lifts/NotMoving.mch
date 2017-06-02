@@ -42,7 +42,7 @@ OPERATIONS
     WHERE
       newFloor >= -1
       & newFloor <= 3
-      & newFloor = current_floor
+      & newFloor = current_floor+1
     THEN
       current_floor := newFloor
       || next_floor := newFloor
@@ -53,7 +53,7 @@ OPERATIONS
     WHERE
       newFloor >= -1
       & newFloor <= 3
-      & newFloor = current_floor
+      & newFloor = current_floor-1
     THEN
       current_floor := newFloor
       || next_floor := newFloor
@@ -61,5 +61,9 @@ OPERATIONS
 ;
   Move = 
       current_floor := next_floor
+      || changed_flag := 1
+;
+  MoveFail = 
+      current_floor := current_floor
       || changed_flag := 1
 END

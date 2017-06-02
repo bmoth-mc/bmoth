@@ -28,9 +28,9 @@ INITIALISATION
 || changed_flag := 0
 OPERATIONS
   SetChangedFlag =
-    SELECT changed_flag = 0
+    SELECT changed_flag = 1
     THEN
-      changed_flag := 1
+      changed_flag := 0
     END
 ;
   AccelerateUp =

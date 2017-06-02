@@ -251,4 +251,30 @@ public class MachinesTest {
         assertEquals("BOOL", t.getVariables().get("y").toString());
     }
 
+    @Test
+    public void testBecomesSuchThatSubstitution() {
+        String machine = "MACHINE test \n";
+        machine += "VARIABLES x,y \n";
+        machine += "INVARIANT x=1 & y : BOOL \n";
+        machine += "INITIALISATION x,y:(x = 1 & y = TRUE) \n";
+        machine += "END";
+        TestTypechecker t = new TestTypechecker(machine);
+        assertEquals("INTEGER", t.getVariables().get("x").toString());
+        assertEquals("BOOL", t.getVariables().get("y").toString());
+    }
+
+    @Test
+    public void testBecomesElementOfSubstitution() {
+        String machine = "MACHINE test \n";
+        machine += "VARIABLES a,b,c,d \n";
+        machine += "INVARIANT a : {b,c,1} & d : BOOL \n";
+        machine += "INITIALISATION a::{1} || b,c,d::INTEGER*{2}*BOOL \n";
+        machine += "END";
+        TestTypechecker t = new TestTypechecker(machine);
+        assertEquals("INTEGER", t.getVariables().get("a").toString());
+        assertEquals("INTEGER", t.getVariables().get("b").toString());
+        assertEquals("INTEGER", t.getVariables().get("c").toString());
+        assertEquals("BOOL", t.getVariables().get("d").toString());
+    }
+
 }

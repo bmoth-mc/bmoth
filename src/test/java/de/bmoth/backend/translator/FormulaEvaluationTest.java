@@ -172,8 +172,8 @@ public class FormulaEvaluationTest extends TestUsingZ3 {
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
 
-        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
-        Set<Model> solutions = finder.findSolutions(20);
+        SolutionFinder finder = new SolutionFinder(z3Solver, z3Context);
+        Set<Model> solutions = finder.findSolutions(constraint, 20);
 
         assertEquals(4, solutions.size());
 
@@ -198,8 +198,8 @@ public class FormulaEvaluationTest extends TestUsingZ3 {
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
 
-        SolutionFinder finder = new SolutionFinder(constraint, z3Solver, z3Context);
-        Set<Model> solutions = finder.findSolutions(20);
+        SolutionFinder finder = new SolutionFinder(z3Solver, z3Context);
+        Set<Model> solutions = finder.findSolutions(constraint, 20);
 
         assertEquals(4, solutions.size());
 
