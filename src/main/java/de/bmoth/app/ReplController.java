@@ -41,7 +41,8 @@ public class ReplController implements Initializable {
         ctx = new Context();
         s = ctx.mkSolver();
         FormulaNode node = Parser.getFormulaAsSemanticAst(predicate);
-        if (node.getFormulaType()!=PREDICATE_FORMULA); {
+        boolean concatFlag = false;
+        if (node.getFormulaType()!=PREDICATE_FORMULA) {
             String concatFormula = "x="+predicate;
             FormulaNode concatNode = Parser.getFormulaAsSemanticAst(concatFormula);
             if (concatNode.getFormulaType()!=PREDICATE_FORMULA) {
@@ -50,6 +51,7 @@ public class ReplController implements Initializable {
             else
             {
                 predicate = concatFormula;
+                concatFlag = true;
             }
         }
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(predicate, ctx);
@@ -62,7 +64,14 @@ public class ReplController implements Initializable {
             if (model.toString().equals("")) {
                 return "\n" + check;
             } else {
-                return "\n" + output;
+                if (concatFlag) {
+                    String concatOutput = output.substring(3,output.length()-1);
+                    System.out.println("concatOutput="+concatOutput);
+                    return "\n" + concatOutput;
+                }
+                else {
+                    return "\n" + output;
+                }
             }
         } else {
             return "\n" + Status.UNSATISFIABLE;
