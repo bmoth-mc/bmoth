@@ -6,14 +6,9 @@ import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.backend.z3.Z3SolverFactory;
-import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
 public interface InvariantSatisfiabilityChecker {
-    static InvariantSatisfiabilityCheckingResult doInvariantSatisfiabilityCheck(String machineAsString) {
-        MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
-        return doInvariantSatisfiabilityCheck(machineAsSemanticAst);
-    }
 
     static InvariantSatisfiabilityCheckingResult doInvariantSatisfiabilityCheck(MachineNode machine) {
         Context ctx = new Context();

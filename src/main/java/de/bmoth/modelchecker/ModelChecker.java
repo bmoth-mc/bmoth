@@ -4,7 +4,6 @@ import com.microsoft.z3.*;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
-import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
@@ -20,11 +19,6 @@ public class ModelChecker {
         this.ctx = new Context();
         this.solver = Z3SolverFactory.getZ3Solver(ctx);
         this.machineTranslator = new MachineToZ3Translator(machine, ctx);
-    }
-
-    public static ModelCheckingResult doModelCheck(String machineAsString) {
-        MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
-        return doModelCheck(machineAsSemanticAst);
     }
 
     public static ModelCheckingResult doModelCheck(MachineNode machine) {
