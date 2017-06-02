@@ -83,14 +83,7 @@ public class FormulaToZ3Translator {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context, formula);
 
         if (formulaToZ3Translator.formulaNode.getFormulaType() != FormulaType.PREDICATE_FORMULA) {
-            String concatFormula = "x="+formula;
-            FormulaToZ3Translator concatFormulaToZ3Translator = new FormulaToZ3Translator(z3Context, concatFormula);
-            if (concatFormulaToZ3Translator.formulaNode.getFormulaType() != FormulaType.PREDICATE_FORMULA) {
-                throw new IllegalArgumentException("Expected predicate.");
-            }
-            else {
-                formulaToZ3Translator = concatFormulaToZ3Translator;
-            }
+            throw new IllegalArgumentException("Expected predicate.");
         }
         PredicateNode predNode = AstTransformationsForZ3
             .transformPredicate((PredicateNode) formulaToZ3Translator.formulaNode.getFormula());
