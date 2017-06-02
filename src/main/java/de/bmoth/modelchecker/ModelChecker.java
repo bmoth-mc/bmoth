@@ -30,6 +30,7 @@ public class ModelChecker implements Abortable {
         this.opFinder = new SolutionFinder(opSolver, ctx);
     }
 
+    @Deprecated
     public static ModelCheckingResult doModelCheck(String machineAsString) {
         MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machineAsString);
         return doModelCheck(machineAsSemanticAst);
