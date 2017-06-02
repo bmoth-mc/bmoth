@@ -3,7 +3,7 @@ package de.bmoth.backend.z3;
 import com.microsoft.z3.*;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.parser.Parser;
-import de.bmoth.parser.ast.AbstractVisitor;
+import de.bmoth.parser.ast.FormulaVisitor;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
@@ -158,7 +158,7 @@ public class FormulaToZ3Translator {
 
     }
 
-    class FormulaToZ3TranslatorVisitor implements AbstractVisitor<Expr, TranslationOptions> {
+    class FormulaToZ3TranslatorVisitor implements FormulaVisitor<Expr, TranslationOptions> {
         // used to generate unique identifiers
         private int tempVariablesCounter = 0;
 
@@ -640,21 +640,6 @@ public class FormulaToZ3Translator {
         }
 
         @Override
-        public Expr visitSelectSubstitutionNode(SelectSubstitutionNode node, TranslationOptions opt) {
-            throw new AssertionError("Not reachable");
-        }
-
-        @Override
-        public Expr visitSingleAssignSubstitution(SingleAssignSubstitutionNode node, TranslationOptions opt) {
-            throw new AssertionError("Not reachable");
-        }
-
-        @Override
-        public Expr visitParallelSubstitutionNode(ParallelSubstitutionNode node, TranslationOptions opt) {
-            throw new AssertionError("Not reachable");
-        }
-
-        @Override
         public Expr visitQuantifiedExpressionNode(QuantifiedExpressionNode node, TranslationOptions opt) {
             switch (node.getOperator()) {
             case SET_COMPREHENSION: {
@@ -712,9 +697,5 @@ public class FormulaToZ3Translator {
 
         }
 
-        @Override
-        public Expr visitAnySubstitution(AnySubstitutionNode node, TranslationOptions opt) {
-            throw new AssertionError("Not reachable");
-        }
     }
 }

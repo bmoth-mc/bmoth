@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ScopeChecker extends BMoThParserBaseVisitor<Void> {
+public abstract class ScopeChecker extends BMoThParserBaseVisitor<Void> {
     final LinkedList<LinkedHashMap<String, Token>> scopeTable = new LinkedList<>();
     final LinkedHashMap<Token, Token> declarationReferences = new LinkedHashMap<>();
 
@@ -69,6 +69,26 @@ public class ScopeChecker extends BMoThParserBaseVisitor<Void> {
             lookUpToken(token);
         }
         ctx.expression_list().accept(this);
+        return null;
+    }
+
+    @Override
+    public Void visitBecomesElementOfSubstitution(BMoThParser.BecomesElementOfSubstitutionContext ctx) {
+        List<Token> identifiers = ctx.identifier_list().identifiers;
+        for (Token token : identifiers) {
+            lookUpToken(token);
+        }
+        ctx.expression().accept(this);
+        return null;
+    }
+
+    @Override
+    public Void visitBecomesSuchThatSubstitution(BMoThParser.BecomesSuchThatSubstitutionContext ctx) {
+        List<Token> identifiers = ctx.identifier_list().identifiers;
+        for (Token token : identifiers) {
+            lookUpToken(token);
+        }
+        ctx.predicate().accept(this);
         return null;
     }
 

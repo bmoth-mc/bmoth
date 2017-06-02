@@ -416,6 +416,30 @@ public class SemanticAstCreator {
         }
 
         @Override
+        public SubstitutionNode visitBecomesElementOfSubstitution(BMoThParser.BecomesElementOfSubstitutionContext ctx) {
+            List<IdentifierExprNode> idents = new ArrayList<>();
+            List<Token> identifierTokens = ctx.identifier_list().identifiers;
+            for (Token token : identifierTokens) {
+                IdentifierExprNode identExprNode = createIdentifierExprNode(token);
+                idents.add(identExprNode);
+            }
+            ExprNode expression = (ExprNode) ctx.expression().accept(this);
+            return new BecomesElementOfSubstitutionNode(idents, expression);
+        }
+
+        @Override
+        public SubstitutionNode visitBecomesSuchThatSubstitution(BMoThParser.BecomesSuchThatSubstitutionContext ctx) {
+            List<IdentifierExprNode> idents = new ArrayList<>();
+            List<Token> identifierTokens = ctx.identifier_list().identifiers;
+            for (Token token : identifierTokens) {
+                IdentifierExprNode identExprNode = createIdentifierExprNode(token);
+                idents.add(identExprNode);
+            }
+            PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
+            return new BecomesSuchThatSubstitutionNode(idents, predicate);
+        }
+
+        @Override
         public SubstitutionNode visitAnySubstitution(BMoThParser.AnySubstitutionContext ctx) {
             List<Token> identifiers = ctx.identifier_list().identifiers;
             List<DeclarationNode> declarationList = new ArrayList<>();

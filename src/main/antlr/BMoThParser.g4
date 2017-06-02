@@ -66,6 +66,8 @@ substitution
   | ANY identifier_list WHERE predicate THEN substitution END               # AnySubstitution
   | identifier_list ':=' expression_list                                    # AssignSubstitution
   | substitution DOUBLE_VERTICAL_BAR substitution                           # ParallelSubstitution
+  | identifier_list DOUBLE_COLON expression                                 # BecomesElementOfSubstitution
+  | identifier_list (ELEMENT_OF|COLON) LEFT_PAR predicate RIGHT_PAR         # BecomesSuchThatSubstitution
   ;
 
 expression_list
