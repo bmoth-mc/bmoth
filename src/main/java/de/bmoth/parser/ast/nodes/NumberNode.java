@@ -1,12 +1,13 @@
 package de.bmoth.parser.ast.nodes;
 
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 public class NumberNode extends ExprNode {
 
     private final int value;
 
-    public NumberNode(ParseTree ctx, int value) {
+    public NumberNode(ParserRuleContext ctx, int value) {
+        super(ctx);
         this.value = value;
     }
 

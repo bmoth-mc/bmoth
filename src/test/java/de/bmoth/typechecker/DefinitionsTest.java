@@ -62,6 +62,29 @@ public class DefinitionsTest {
         TestTypechecker t = new TestTypechecker(machine);
         assertEquals("INTEGER", t.getConstants().get("x").toString());
     }
+    
+    @Test
+    public void testAmbigiousDefinition2() {
+        String machine = "MACHINE test \n";
+        machine += "CONSTANTS x \n";
+        machine += "PROPERTIES foo \n";
+        machine += "DEFINITIONS foo == bar ; bar == bazz ; bazz == x = 1  \n";
+        machine += "END";
+        TestTypechecker t = new TestTypechecker(machine);
+        assertEquals("INTEGER", t.getConstants().get("x").toString());
+    }
+    
+    @Ignore
+    @Test
+    public void testVariablesCapturing() {
+        String machine = "MACHINE test \n";
+        machine += "CONSTANTS x \n";
+        machine += "PROPERTIES x = 1 & foo(1) \n";
+        machine += "DEFINITIONS foo(a) == !x.(x : BOOL => x = 1)  \n";
+        machine += "END";
+        TestTypechecker t = new TestTypechecker(machine);
+        assertEquals("INTEGER", t.getConstants().get("x").toString());
+    }
 
     @Ignore
     @Test

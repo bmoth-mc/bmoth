@@ -1,5 +1,10 @@
 package de.bmoth.parser.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import de.bmoth.antlr.BMoThParser.OrdinaryDefinitionContext;
 
 public class BDefinition {
@@ -12,6 +17,7 @@ public class BDefinition {
     private OrdinaryDefinitionContext definitionContext;
     private final int arity;
     private final String name;
+    private final List<TerminalNode> parameters;
 
     public KIND getKind() {
         return kind;
@@ -41,6 +47,16 @@ public class BDefinition {
         this.name = name;
         this.definitionContext = def;
         this.kind = kind;
-        this.arity = def.parameters.size();
+        if (null == def.identifier_list()) {
+            this.arity = 0;
+            this.parameters = new ArrayList<>();
+        } else {
+            this.arity = def.identifier_list().IDENTIFIER().size();
+            this.parameters = def.identifier_list().IDENTIFIER();
+        }
+    }
+
+    public List<TerminalNode> getParameters() {
+        return this.parameters;
     }
 }

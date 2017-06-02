@@ -5,9 +5,20 @@ import de.bmoth.parser.ast.types.Type;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 public abstract class TypedNode implements Node, Observer {
 
     private Type type;
+    private final ParseTree parseTree;
+
+    public TypedNode(ParseTree parseTree) {
+        this.parseTree = parseTree;
+    }
+
+    public ParseTree getParseTree() {
+        return this.parseTree;
+    }
 
     public Type getType() {
         return type;

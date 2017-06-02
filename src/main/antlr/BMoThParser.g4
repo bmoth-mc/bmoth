@@ -34,7 +34,7 @@ definition_clause
   ;
 
 single_definition
-    : name=IDENTIFIER ('(' parameters+=IDENTIFIER (',' parameters+=IDENTIFIER)* ')')? DOUBLE_EQUAL definition_body # OrdinaryDefinition
+    : name=IDENTIFIER ('(' identifier_list ')')? DOUBLE_EQUAL definition_body # OrdinaryDefinition
     | StringLiteral  # DefinitionFile
     ;
 

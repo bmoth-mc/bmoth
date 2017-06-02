@@ -62,11 +62,12 @@ public class AstTransformationsForZ3 {
                         args.add(left);
                         args.add(set);
                         PredicateOperatorWithExprArgsNode predicateOperatorWithExprArgsNode = new PredicateOperatorWithExprArgsNode(
-                                PredOperatorExprArgs.ELEMENT_OF, args);
+                                set.getParseTree(), PredOperatorExprArgs.ELEMENT_OF, args);
                         predicateArguments.add(predicateOperatorWithExprArgsNode);
                     }
                     setChanged();
-                    return new PredicateOperatorNode(PredicateOperator.OR, predicateArguments);
+                    return new PredicateOperatorNode( node.getParseTree(), PredicateOperator.OR,
+                            predicateArguments);
                 }
             }
             return node;

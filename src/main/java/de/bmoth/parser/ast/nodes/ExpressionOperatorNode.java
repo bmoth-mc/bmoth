@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 public class ExpressionOperatorNode extends ExprNode {
 
     public enum ExpressionOperator {
@@ -99,14 +101,17 @@ public class ExpressionOperatorNode extends ExprNode {
     private ExpressionOperator operator;
 
     public ExpressionOperatorNode(ExpressionOperatorContext ctx, List<ExprNode> expressionNodes,
-                                  String operatorString) {
+            String operatorString) {
+        super(ctx);
         this.expressionNodes = expressionNodes;
         this.operatorString = operatorString;
         this.operator = loopUpOperator(ctx.operator.getType());
     }
 
-    public ExpressionOperatorNode(List<ExprNode> expressionNodes, ExpressionOperator operator) {
+    public ExpressionOperatorNode(ParserRuleContext parseTree, List<ExprNode> expressionNodes,
+            ExpressionOperator operator) {
         // used for set enumeration, e.g. {1,2,3}
+        super(parseTree);
         this.expressionNodes = expressionNodes;
         this.operatorString = null;
         this.operator = operator;

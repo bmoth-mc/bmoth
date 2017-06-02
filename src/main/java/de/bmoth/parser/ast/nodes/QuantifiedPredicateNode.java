@@ -26,13 +26,14 @@ public class QuantifiedPredicateNode extends PredicateNode {
     private QuantifiedPredicateOperator operator;
 
     public QuantifiedPredicateNode(QuantifiedPredicateContext ctx, List<DeclarationNode> declarationList,
-                                   PredicateNode predNode) {
+            PredicateNode predNode) {
+        super(ctx);
         this.declarationList = declarationList;
         this.predicateNode = predNode;
-        this.operator = loopUpOperator(ctx.operator.getType());
+        this.operator = lookUpOperator(ctx.operator.getType());
     }
 
-    private QuantifiedPredicateOperator loopUpOperator(int type) {
+    private QuantifiedPredicateOperator lookUpOperator(int type) {
         if (map.containsKey(type)) {
             return map.get(type);
         }

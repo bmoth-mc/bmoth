@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 public class PredicateOperatorNode extends PredicateNode {
     public enum PredicateOperator {
         AND, OR, IMPLIES, EQUIVALENCE, NOT, TRUE, FALSE
@@ -30,12 +32,15 @@ public class PredicateOperatorNode extends PredicateNode {
     private PredicateOperator operator;
 
     public PredicateOperatorNode(PredicateOperatorContext ctx, List<PredicateNode> predicateArguments) {
+        super(ctx);
         this.predicateArguments = predicateArguments;
         this.operatorString = ctx.operator.getText();
         this.setOperator(lookUpOperator(ctx.operator.getType()));
     }
 
-    public PredicateOperatorNode(PredicateOperator operator, List<PredicateNode> predicateArguments) {
+    public PredicateOperatorNode(ParseTree ctx, PredicateOperator operator,
+            List<PredicateNode> predicateArguments) {
+        super(ctx);
         this.predicateArguments = predicateArguments;
         this.operator = operator;
     }

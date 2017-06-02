@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 public class PredicateOperatorWithExprArgsNode extends PredicateNode {
 
     public enum PredOperatorExprArgs {
@@ -38,13 +40,16 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
     private PredOperatorExprArgs operator;
 
     public PredicateOperatorWithExprArgsNode(PredicateOperatorWithExprArgsContext ctx, List<ExprNode> expressionNodes) {
+        super(ctx);
         this.expressionNodes = expressionNodes;
         this.operatorString = ctx.operator.getText();
         this.operator = loopUpOperator(ctx.operator.getType());
 
     }
 
-    public PredicateOperatorWithExprArgsNode(PredOperatorExprArgs operator, List<ExprNode> expressionNodes) {
+    public PredicateOperatorWithExprArgsNode(ParseTree ctx, PredOperatorExprArgs operator,
+            List<ExprNode> expressionNodes) {
+        super(ctx);
         this.expressionNodes = expressionNodes;
         this.operator = operator;
     }

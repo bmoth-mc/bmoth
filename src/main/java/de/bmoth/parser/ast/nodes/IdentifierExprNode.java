@@ -1,16 +1,17 @@
 package de.bmoth.parser.ast.nodes;
 
-import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class IdentifierExprNode extends ExprNode {
 
-    final Token token;
+    final TerminalNode terminalNode;
     final String name;
     private final DeclarationNode declarationNode;
 
-    public IdentifierExprNode(Token token, DeclarationNode declarationNode) {
-        this.token = token;
-        this.name = token.getText();
+    public IdentifierExprNode(TerminalNode terminalNode, DeclarationNode declarationNode) {
+        super(terminalNode);
+        this.terminalNode = terminalNode;
+        this.name = terminalNode.getText();
         this.declarationNode = declarationNode;
     }
 

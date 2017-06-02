@@ -8,6 +8,7 @@ import de.bmoth.parser.ast.BDefinition.KIND;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,20 +23,20 @@ public class MachineAnalyser {
 
     private final StartContext parseTree;
 
-    final LinkedHashMap<String, Token> constantsDeclarations = new LinkedHashMap<>();
-    final LinkedHashMap<String, Token> variablesDeclarations = new LinkedHashMap<>();
-    final LinkedHashMap<String, Token> setsDeclarations = new LinkedHashMap<>();
+    final LinkedHashMap<String, TerminalNode> constantsDeclarations = new LinkedHashMap<>();
+    final LinkedHashMap<String, TerminalNode> variablesDeclarations = new LinkedHashMap<>();
+    final LinkedHashMap<String, TerminalNode> setsDeclarations = new LinkedHashMap<>();
     final List<EnumeratedSetContext> enumeratedSetContexts = new ArrayList<>();
     final List<DeferredSetContext> deferredSetContexts = new ArrayList<>();
-    final LinkedHashMap<String, Token> definitionsDeclarations = new LinkedHashMap<>();
-    final LinkedHashMap<Token, BDefinition> definitions = new LinkedHashMap<>();
+    final LinkedHashMap<String, TerminalNode> definitionsDeclarations = new LinkedHashMap<>();
+    final LinkedHashMap<TerminalNode, BDefinition> definitions = new LinkedHashMap<>();
     final LinkedHashMap<String, OperationContext> operationsDeclarations = new LinkedHashMap<>();
 
     PredicateClauseContext properties;
     PredicateClauseContext invariant;
     InitialisationClauseContext initialisation;
 
-    private LinkedHashMap<Token, Token> declarationReferences;
+    private LinkedHashMap<TerminalNode, TerminalNode> declarationReferences;
     final Map<ParserRuleContext, BDefinition> definitionCallReplacements = new HashMap<>();
 
     public MachineAnalyser(StartContext start) {
@@ -57,11 +58,10 @@ public class MachineAnalyser {
 
         @Override
         public Void visitDeclarationClause(DeclarationClauseContext ctx) {
-            List<Token> identifiers = ctx.identifier_list().identifiers;
-            LinkedHashMap<String, Token> declarations = new LinkedHashMap<>();
-            for (Token token : identifiers) {
-                checkGlobalIdentifiers(token);
-                declarations.put(token.getText(), token);
+            LinkedHashMap<String, TerminalNode> declarations = new LinkedHashMap<>();
+            for (TerminalNode terminalNode : ctx.identifier_list().IDENTIFIER()) {
+                checkGlobalIdentifiers(terminalNode);
+                declarations.put(terminalNode.getSymbol().getText(), terminalNode);
             }
             switch (ctx.clauseName.getType()) {
             case CONSTANTS:
@@ -78,10 +78,10 @@ public class MachineAnalyser {
 
         @Override
         public Void visitOrdinaryDefinition(OrdinaryDefinitionContext ctx) {
-            Token nameToken = ctx.name;
-            checkGlobalIdentifiers(nameToken);
-            String name = nameToken.getText();
-            definitionsDeclarations.put(name, nameToken);
+            TerminalNode terminalNode = ctx.IDENTIFIER();
+            checkGlobalIdentifiers(terminalNode);
+            String name = terminalNode.getSymbol().getText();
+            definitionsDeclarations.put(name, terminalNode);
             BDefinition.KIND kind = null;
             if (ctx.definition_body() instanceof DefinitionExpressionContext) {
                 kind = KIND.EXPRESSION;
@@ -93,20 +93,21 @@ public class MachineAnalyser {
                 kind = KIND.UNKNOWN;
             }
             BDefinition bDefinition = new BDefinition(name, ctx, kind);
-            definitions.put(nameToken, bDefinition);
+            definitions.put(terminalNode, bDefinition);
             return null;
         }
 
         @Override
         public Void visitEnumeratedSet(BMoThParser.EnumeratedSetContext ctx) {
             enumeratedSetContexts.add(ctx);
+            TerminalNode terminalNode = ctx.IDENTIFIER();
             Token nameToken = ctx.IDENTIFIER().getSymbol();
-            checkGlobalIdentifiers(nameToken);
+            checkGlobalIdentifiers(terminalNode);
             String name = nameToken.getText();
-            setsDeclarations.put(name, nameToken);
-            for (Token enumValue : ctx.identifier_list().identifiers) {
+            setsDeclarations.put(name, terminalNode);
+            for (TerminalNode enumValue : ctx.identifier_list().IDENTIFIER()) {
                 checkGlobalIdentifiers(enumValue);
-                setsDeclarations.put(enumValue.getText(), enumValue);
+                setsDeclarations.put(enumValue.getSymbol().getText(), enumValue);
             }
             return null;
         }
@@ -115,14 +116,15 @@ public class MachineAnalyser {
         public Void visitDeferredSet(BMoThParser.DeferredSetContext ctx) {
             deferredSetContexts.add(ctx);
             Token nameToken = ctx.IDENTIFIER().getSymbol();
-            checkGlobalIdentifiers(nameToken);
+            TerminalNode terminalNode = ctx.IDENTIFIER();
+            checkGlobalIdentifiers(terminalNode);
             String name = nameToken.getText();
-            setsDeclarations.put(name, nameToken);
+            setsDeclarations.put(name, terminalNode);
             return null;
         }
 
-        private void checkGlobalIdentifiers(Token token) {
-            String name = token.getText();
+        private void checkGlobalIdentifiers(TerminalNode terminalNode) {
+            String name = terminalNode.getSymbol().getText();
             if (MachineAnalyser.this.constantsDeclarations.containsKey(name)
                     || MachineAnalyser.this.variablesDeclarations.containsKey(name)
                     || MachineAnalyser.this.operationsDeclarations.containsKey(name)
@@ -137,9 +139,9 @@ public class MachineAnalyser {
 
         @Override
         public Void visitOperation(BMoThParser.OperationContext ctx) {
-            Token nameToken = ctx.IDENTIFIER().getSymbol();
-            checkGlobalIdentifiers(nameToken);
-            String name = nameToken.getText();
+            TerminalNode terminalNode = ctx.IDENTIFIER();
+            checkGlobalIdentifiers(terminalNode);
+            String name = terminalNode.getSymbol().getText();
             operationsDeclarations.put(name, ctx);
             return null;
         }
@@ -179,7 +181,7 @@ public class MachineAnalyser {
 
     }
 
-    public Map<Token, Token> getDeclarationReferences() {
+    public Map<TerminalNode, TerminalNode> getDeclarationReferences() {
         return this.declarationReferences;
     }
 
@@ -236,9 +238,9 @@ public class MachineAnalyser {
                 scopeTable.add(MachineAnalyser.this.constantsDeclarations);
                 scopeTable.add(MachineAnalyser.this.variablesDeclarations);
                 scopeTable.add(MachineAnalyser.this.definitionsDeclarations);
-                LinkedHashMap<String, Token> localIdentifiers = new LinkedHashMap<>();
-                for (Token token : bDef.getDefinitionContext().parameters) {
-                    localIdentifiers.put(token.getText(), token);
+                LinkedHashMap<String, TerminalNode> localIdentifiers = new LinkedHashMap<>();
+                for (TerminalNode terminalNode : bDef.getParameters()) {
+                    localIdentifiers.put(terminalNode.getSymbol().getText(), terminalNode);
                 }
                 scopeTable.add(localIdentifiers);
                 bDef.getDefinitionContext().definition_body().accept(this);
@@ -248,11 +250,11 @@ public class MachineAnalyser {
 
         @Override
         public Void visitIdentifierExpression(BMoThParser.IdentifierExpressionContext ctx) {
-            Token identifierToken = ctx.IDENTIFIER().getSymbol();
-            lookUpToken(identifierToken);
-            Token declarationToken = this.declarationReferences.get(identifierToken);
-            if (definitions.containsKey(declarationToken)) {
-                BDefinition bDefinition = definitions.get(declarationToken);
+            TerminalNode terminalNode = ctx.IDENTIFIER();
+            lookUpTerminalNode(terminalNode);
+            TerminalNode declarationTNode = this.declarationReferences.get(terminalNode);
+            if (definitions.containsKey(declarationTNode)) {
+                BDefinition bDefinition = definitions.get(declarationTNode);
                 if (bDefinition.getKind() == KIND.SUBSTITUTION || bDefinition.getKind() == KIND.PREDICATE) {
                     throw new ScopeException("Expected a EXPRESSION definition but found a " + bDefinition.getKind()
                             + " at definition " + bDefinition.getName());
@@ -281,11 +283,11 @@ public class MachineAnalyser {
 
         @Override
         public Void visitPredicateDefinitionCall(BMoThParser.PredicateDefinitionCallContext ctx) {
-            Token identifierToken = ctx.IDENTIFIER().getSymbol();
-            lookUpToken(identifierToken);
-            Token declarationToken = this.declarationReferences.get(identifierToken);
-            if (definitions.containsKey(declarationToken)) {
-                BDefinition bDefinition = definitions.get(declarationToken);
+            TerminalNode terminalNode = ctx.IDENTIFIER();
+            lookUpTerminalNode(terminalNode);
+            TerminalNode declarationTNode = this.declarationReferences.get(terminalNode);
+            if (definitions.containsKey(declarationTNode)) {
+                BDefinition bDefinition = definitions.get(declarationTNode);
                 if (ctx.exprs.size() != bDefinition.getArity()) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("The number of paramters does not match the number of arguments of definition '")
@@ -302,11 +304,11 @@ public class MachineAnalyser {
 
         @Override
         public Void visitDefinitionAmbiguousCall(BMoThParser.DefinitionAmbiguousCallContext ctx) {
-            Token identifierToken = ctx.IDENTIFIER().getSymbol();
-            lookUpToken(identifierToken);
-            Token declarationToken = this.declarationReferences.get(identifierToken);
-            if (definitions.containsKey(declarationToken)) {
-                BDefinition bDefinition = definitions.get(declarationToken);
+            TerminalNode terminalNode = ctx.IDENTIFIER();
+            lookUpTerminalNode(terminalNode);
+            TerminalNode declarationTNode = this.declarationReferences.get(terminalNode);
+            if (definitions.containsKey(declarationTNode)) {
+                BDefinition bDefinition = definitions.get(declarationTNode);
                 if (bDefinition.getArity() > 0 && null == ctx.expression_list()) {
                     throw new ScopeException("Expecting " + bDefinition.getArity() + " argument(s) for definition "
                             + bDefinition.getName());
@@ -319,16 +321,16 @@ public class MachineAnalyser {
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
             }
-            return visitChildren(ctx);
+            return null;
         }
 
         @Override
         public Void visitPredicateIdentifier(BMoThParser.PredicateIdentifierContext ctx) {
-            Token identifierToken = ctx.IDENTIFIER().getSymbol();
-            lookUpToken(identifierToken);
-            Token declarationToken = this.declarationReferences.get(identifierToken);
-            if (definitions.containsKey(declarationToken)) {
-                BDefinition bDefinition = definitions.get(declarationToken);
+            TerminalNode terminalNode = ctx.IDENTIFIER();
+            lookUpTerminalNode(terminalNode);
+            TerminalNode declarationTNode = this.declarationReferences.get(terminalNode);
+            if (definitions.containsKey(declarationTNode)) {
+                BDefinition bDefinition = definitions.get(declarationTNode);
                 if (bDefinition.getKind() == KIND.SUBSTITUTION || bDefinition.getKind() == KIND.EXPRESSION) {
                     throw new ScopeException("Expected a PREDICATE definition but found a " + bDefinition.getKind()
                             + " at definition " + bDefinition.getName());

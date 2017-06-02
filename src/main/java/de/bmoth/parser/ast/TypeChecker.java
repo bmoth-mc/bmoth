@@ -137,93 +137,65 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
 
     @Override
     public Type visitPredicateOperatorNode(PredicateOperatorNode node, Type expected) {
-        try {
-            BoolType.getInstance().unify(expected);
-        } catch (UnificationException e) {
-            throw new TypeErrorException(expected, BoolType.getInstance());
-        }
+        unify(expected, BoolType.getInstance(), node);
         List<PredicateNode> predicateArguments = node.getPredicateArguments();
         for (PredicateNode predicateNode : predicateArguments) {
             visitPredicateNode(predicateNode, BoolType.getInstance());
         }
-        node.setType(BoolType.getInstance());
         return BoolType.getInstance();
     }
 
     @Override
     public Type visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, Type expected) {
-        try {
-            BoolType.getInstance().unify(expected);
-        } catch (UnificationException e) {
-            throw new TypeErrorException(expected, BoolType.getInstance());
-        }
+        unify(expected, BoolType.getInstance(), node);
         final List<ExprNode> expressionNodes = node.getExpressionNodes();
         switch (node.getOperator()) {
         case EQUAL:
-        case NOT_EQUAL: {
-            Type type = visitExprNode(expressionNodes.get(0), new UntypedType());
-            visitExprNode(expressionNodes.get(1), type);
+        case NOT_EQUAL:
+            visitExprNode(expressionNodes.get(1), visitExprNode(expressionNodes.get(0), new UntypedType()));
             break;
-        }
         case NOT_BELONGING:
-        case ELEMENT_OF: {
-            Type type = visitExprNode(expressionNodes.get(0), new UntypedType());
-            visitExprNode(expressionNodes.get(1), new SetType(type));
+        case ELEMENT_OF:
+            Type setType = visitExprNode(expressionNodes.get(0), new UntypedType());
+            visitExprNode(expressionNodes.get(1), new SetType(setType));
             break;
-        }
         case LESS_EQUAL:
         case LESS:
         case GREATER_EQUAL:
-        case GREATER: {
+        case GREATER:
             visitExprNode(expressionNodes.get(0), IntegerType.getInstance());
             visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
             break;
-        }
         case INCLUSION:
         case NON_INCLUSION:
         case STRICT_INCLUSION:
         case STRICT_NON_INCLUSION: {
-            Type type = visitExprNode(expressionNodes.get(0), new SetType(new UntypedType()));
-            visitExprNode(expressionNodes.get(1), type);
+            visitExprNode(expressionNodes.get(1),
+                    visitExprNode(expressionNodes.get(0), new SetType(new UntypedType())));
             break;
         }
         default:
             throw new AssertionError("Not implemented");
         }
-        node.setType(BoolType.getInstance());
         return BoolType.getInstance();
     }
 
     @Override
     public Type visitExprOperatorNode(ExpressionOperatorNode node, Type expected) {
         List<ExprNode> expressionNodes = node.getExpressionNodes();
-        Type returnType = null;
         switch (node.getOperator()) {
         case PLUS:
         case UNARY_MINUS:
         case MOD:
         case DIVIDE:
-        case POWER_OF: {
-            try {
-                IntegerType.getInstance().unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, IntegerType.getInstance());
-            }
+        case POWER_OF:
             for (ExprNode exprNode : expressionNodes) {
                 visitExprNode(exprNode, IntegerType.getInstance());
             }
-            returnType = IntegerType.getInstance();
-            break;
-        }
+            return unify(expected, IntegerType.getInstance(), node);
         case MULT: {
-            UntypedType dd = new UntypedType();
-            Type found = new IntegerOrSetOfPairs(new UntypedType(), dd);
-            try {
-                found = found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            node.setType(found);
+            Type found = new IntegerOrSetOfPairs(new UntypedType(), new UntypedType());
+            unify(expected, found, node);
             ExprNode left = expressionNodes.get(0);
             ExprNode right = expressionNodes.get(1);
             if (found instanceof IntegerType) {
@@ -248,162 +220,82 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
                     visitExprNode(expressionNodes.get(1), s.getRight());
                 }
             } else {
-                throw new RuntimeException();
+                throw new AssertionError();
             }
             this.multOrCartNodes.add(node);
             this.typedNodes.add(node);
-            returnType = node.getType();
-            break;
+            return node.getType();
         }
-        case MINUS: {
-            Type found = new SetOrIntegerType(new UntypedType());
-            try {
-                found = found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            found = visitExprNode(expressionNodes.get(0), found);
-            found = visitExprNode(expressionNodes.get(1), found);
-            returnType = found;
+        case MINUS:
+            unify(expected, new SetOrIntegerType(new UntypedType()), node);
+            visitExprNode(expressionNodes.get(0), node.getType());
+            visitExprNode(expressionNodes.get(1), node.getType());
             this.minusNodes.add(node);
             this.typedNodes.add(node);
-            break;
-        }
-        case INTERVAL: {
-            Type found = new SetType(IntegerType.getInstance());
-            try {
-                found = found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
+            return node.getType();
+
+        case INTERVAL:
+            unify(expected, new SetType(IntegerType.getInstance()), node);
             visitExprNode(expressionNodes.get(0), IntegerType.getInstance());
             visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
-            returnType = found;
-            break;
-        }
+            return node.getType();
         case SET_ENUMERATION: {
-            SetType found = new SetType(new UntypedType());
-            try {
-                found = (SetType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
+            SetType found = (SetType) unify(expected, new SetType(new UntypedType()), node);
             Type subtype = found.getSubtype();
             for (ExprNode exprNode : expressionNodes) {
                 subtype = visitExprNode(exprNode, subtype);
             }
-            returnType = new SetType(subtype);
-            break;
+            return node.getType();
         }
         case MININT:
-        case MAXINT: {
-            try {
-                IntegerType.getInstance().unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, IntegerType.getInstance());
-            }
-            return IntegerType.getInstance();
-        }
+        case MAXINT:
+            return unify(expected, IntegerType.getInstance(), node);
         case INTEGER:
         case NATURAL1:
         case NATURAL:
         case INT:
-        case NAT: {
-            Type type = new SetType(IntegerType.getInstance());
-            try {
-                type = type.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, type);
-            }
-            returnType = type;
-            break;
-        }
+        case NAT:
+            return unify(expected, new SetType(IntegerType.getInstance()), node);
         case FALSE:
-        case TRUE: {
-            try {
-                BoolType.getInstance().unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, BoolType.getInstance());
-            }
-            returnType = BoolType.getInstance();
-            break;
-        }
-        case BOOL: {
-            SetType found = new SetType(BoolType.getInstance());
-            try {
-                found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            returnType = found;
-            break;
-        }
+        case TRUE:
+            return unify(expected, BoolType.getInstance(), node);
+        case BOOL:
+            return unify(expected, new SetType(BoolType.getInstance()), node);
         case SET_SUBTRACTION:
         case INTERSECTION:
-        case UNION: {
-            UntypedType untypedType = new UntypedType();
-            Type type = new SetType(untypedType);
-            try {
-                type = type.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, type);
-            }
-            type = visitExprNode(expressionNodes.get(0), type);
-            type = visitExprNode(expressionNodes.get(1), type);
-
-            returnType = type;
-            break;
-        }
+        case UNION:
+            unify(expected, new SetType(new UntypedType()), node);
+            visitExprNode(expressionNodes.get(0), node.getType());
+            visitExprNode(expressionNodes.get(1), node.getType());
+            return node.getType();
         case COUPLE: {
             Type left = visitExprNode(expressionNodes.get(0), new UntypedType());
             Type right = visitExprNode(expressionNodes.get(1), new UntypedType());
-            CoupleType couple = new CoupleType(left, right);
-            try {
-                couple = couple.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, couple);
-            }
-            returnType = couple;
-            break;
+            CoupleType found = new CoupleType(left, right);
+            unify(expected, found, node);
+            return node.getType();
         }
         case DOMAIN: {
             SetType argument = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             argument = (SetType) visitExprNode(expressionNodes.get(0), argument);
             CoupleType subType = (CoupleType) argument.getSubtype();
             SetType found = new SetType(subType.getLeft());
-            try {
-                found = (SetType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            returnType = found;
-            break;
+            unify(expected, found, node);
+            return node.getType();
         }
         case RANGE: {
             SetType argument = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             argument = (SetType) visitExprNode(expressionNodes.get(0), argument);
             CoupleType subType = (CoupleType) argument.getSubtype();
             SetType found = new SetType(subType.getRight());
-            try {
-                found = (SetType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            returnType = found;
-            break;
+            unify(expected, found, node);
+            return node.getType();
         }
-        case CONCAT: {
-            SequenceType found = new SequenceType(new UntypedType());
-            try {
-                found = (SequenceType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            found = (SequenceType) visitExprNode(expressionNodes.get(0), found);
-            found = (SequenceType) visitExprNode(expressionNodes.get(1), found);
-            returnType = found;
-            break;
-        }
+        case CONCAT:
+            unify(expected, new SequenceType(new UntypedType()), node);
+            visitExprNode(expressionNodes.get(0), node.getType());
+            visitExprNode(expressionNodes.get(1), node.getType());
+            return node.getType();
         case DIRECT_PRODUCT: {
             /*
              * E ⊗ F type of result is is P(T ×(U × V)) type of E is P(T × U)
@@ -412,12 +304,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
              */
             SetType found = new SetType(
                     new CoupleType(new UntypedType(), new CoupleType(new UntypedType(), new UntypedType())));
-            try {
-                found = (SetType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            node.setType(found);
+            found = (SetType) unify(expected, found, node);
             CoupleType c1 = (CoupleType) found.getSubtype();
             CoupleType c2 = (CoupleType) c1.getRight();
             Type T = c1.getLeft();
@@ -426,89 +313,54 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
             SetType leftArg = (SetType) visitExprNode(expressionNodes.get(0), new SetType(new CoupleType(T, U)));
             T = ((CoupleType) leftArg.getSubtype()).getLeft();
             visitExprNode(expressionNodes.get(1), new SetType(new CoupleType(T, V)));
-            returnType = node.getType();
-            break;
+            return node.getType();
         }
         case DOMAIN_RESTRICTION:
         case DOMAIN_SUBTRACTION: {
+            // S <| r
+            // S <<| r
             SetType found = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
-            try {
-                found = (SetType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
+            unify(expected, found, node);
             found = (SetType) visitExprNode(expressionNodes.get(1), found);
             Type left = ((CoupleType) found.getSubtype()).getLeft();
             visitExprNode(expressionNodes.get(0), new SetType(left));
-            returnType = found;
-            break;
+            return node.getType();
         }
         case RANGE_RESTRICTION:
         case RANGE_SUBTRATION: {
+            // r |> S
+            // r |>> S
             SetType found = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
-            try {
-                found = (SetType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            found = (SetType) visitExprNode(expressionNodes.get(0), found);
+            unify(expected, found, node);
+            found = (SetType) visitExprNode(expressionNodes.get(0), node.getType());
             Type right = ((CoupleType) found.getSubtype()).getLeft();
             visitExprNode(expressionNodes.get(1), new SetType(right));
-            returnType = found;
-            break;
+            return node.getType();
         }
         case INSERT_FRONT: {
             // E -> s
-            SequenceType found = new SequenceType(new UntypedType());
-            try {
-                found = (SequenceType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            found = (SequenceType) visitExprNode(expressionNodes.get(1), found);
-            Type elemType = found.getSubtype();
-            visitExprNode(expressionNodes.get(0), elemType);
-            returnType = found;
-            break;
+            unify(expected, new SequenceType(new UntypedType()), node);
+            visitExprNode(expressionNodes.get(1), node.getType());
+            visitExprNode(expressionNodes.get(0), ((SequenceType) node.getType()).getSubtype());
+            return node.getType();
         }
-        case INSERT_TAIL: {
+        case INSERT_TAIL:
             // s <- E
-            SequenceType found = new SequenceType(new UntypedType());
-            try {
-                found = (SequenceType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            found = (SequenceType) visitExprNode(expressionNodes.get(0), found);
-            Type elemType = found.getSubtype();
-            visitExprNode(expressionNodes.get(1), elemType);
-            returnType = found;
-            break;
-        }
-        case OVERWRITE_RELATION: {
-            Type found = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
-            try {
-                found = found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            found = visitExprNode(expressionNodes.get(0), found);
-            found = visitExprNode(expressionNodes.get(1), found);
-            returnType = found;
-            break;
-        }
+            unify(expected, new SequenceType(new UntypedType()), node);
+            visitExprNode(expressionNodes.get(0), node.getType());
+            visitExprNode(expressionNodes.get(1), ((SequenceType) node.getType()).getSubtype());
+            return node.getType();
+        case OVERWRITE_RELATION:
+            unify(expected, new SetType(new CoupleType(new UntypedType(), new UntypedType())), node);
+            visitExprNode(expressionNodes.get(0), node.getType());
+            visitExprNode(expressionNodes.get(1), node.getType());
+            return node.getType();
         case INVERSE_RELATION: {
             SetType argType = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             argType = (SetType) visitExprNode(expressionNodes.get(0), argType);
             CoupleType c = (CoupleType) argType.getSubtype();
             SetType found = new SetType(new CoupleType(c.getRight(), c.getLeft()));
-            try {
-                found = (SetType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            returnType = found;
-            break;
+            return unify(expected, found, node);
         }
         case RESTRICT_FRONT:
         case RESTRICT_TAIL: {
@@ -517,179 +369,96 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
              * ×T) type of n is INTEGER
              */
             Type found = new SetType(new CoupleType(IntegerType.getInstance(), new UntypedType()));
-            try {
-                found = found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            found = visitExprNode(expressionNodes.get(0), found);
+            unify(expected, found, node);
+            visitExprNode(expressionNodes.get(0), node.getType());
             visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
-            returnType = found;
-            break;
+            return node.getType();
         }
         case GENERALIZED_INTER:
-        case GENERALIZED_UNION: {
-            Type found = new SetType(new UntypedType());
-            try {
-                found = found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            SetType s = (SetType) visitExprNode(expressionNodes.get(0), new SetType(found));
-            returnType = s.getSubtype();
-            break;
-        }
-        case EMPTY_SEQUENCE: {
-            SequenceType found = new SequenceType(new UntypedType());
-            try {
-                found = (SequenceType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            returnType = found;
+        case GENERALIZED_UNION:
+            unify(expected, new SetType(new UntypedType()), node);
+            visitExprNode(expressionNodes.get(0), new SetType(node.getType()));
+            return ((SetType) node.getType()).getSubtype();
+        case EMPTY_SEQUENCE:
             typedNodes.add(node);
-            break;
-        }
+            return unify(expected, new SequenceType(new UntypedType()), node);
         case SEQ_ENUMERATION: {
-            SequenceType found = new SequenceType(new UntypedType());
-            try {
-                found = (SequenceType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
+            SequenceType found = (SequenceType) unify(expected, new SequenceType(new UntypedType()), node);
             Type subtype = found.getSubtype();
             for (ExprNode exprNode : expressionNodes) {
                 subtype = visitExprNode(exprNode, subtype);
             }
-            returnType = new SequenceType(subtype);
-            break;
+            return node.getType();
         }
         case LAST:
-        case FIRST: {
-            SequenceType seq = new SequenceType(expected);
-            seq = (SequenceType) visitExprNode(expressionNodes.get(0), seq);
-            returnType = seq.getSubtype();
-            break;
-        }
+        case FIRST:
+            return unify(expected,
+                    ((SequenceType) visitExprNode(expressionNodes.get(0), new SequenceType(expected))).getSubtype(),
+                    node);
         case FRONT:
-        case TAIL: {
-            SequenceType found = new SequenceType(new UntypedType());
-            try {
-                found = (SequenceType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
-            found = (SequenceType) visitExprNode(expressionNodes.get(0), found);
-            returnType = found;
-            break;
-        }
+        case TAIL:
+            return visitExprNode(expressionNodes.get(0), unify(expected, new SequenceType(new UntypedType()), node));
         case SEQ:
         case SEQ1:
         case ISEQ:
         case ISEQ1: {
-            SetType found = new SetType(new SequenceType(new UntypedType()));
-            try {
-                found = (SetType) found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, found);
-            }
+            SetType found = (SetType) unify(expected, new SetType(new SequenceType(new UntypedType())), node);
             Type type = ((SequenceType) found.getSubtype()).getSubtype();
             visitExprNode(expressionNodes.get(0), new SetType(type));
-            returnType = found;
-            break;
+            return node.getType();
         }
         case FUNCTION_CALL: {
             // currently only for sequences
-            {
-                SequenceType seqType = (SequenceType) visitExprNode(expressionNodes.get(0),
-                        new SequenceType(new UntypedType()));
-                visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
-                Type found = seqType.getSubtype();
-                try {
-                    found = found.unify(expected);
-                } catch (UnificationException e) {
-                    throw new TypeErrorException(expected, found);
-                }
-                returnType = found;
-                break;
-            }
+            SequenceType seqType = (SequenceType) visitExprNode(expressionNodes.get(0),
+                    new SequenceType(new UntypedType()));
+            visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
+            Type found = seqType.getSubtype();
+            return unify(expected, found, node);
         }
-        case CARD: {
-            try {
-                IntegerType.getInstance().unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, IntegerType.getInstance());
-            }
+        case CARD:
             visitExprNode(expressionNodes.get(0), new SetType(new UntypedType()));
-            returnType = IntegerType.getInstance();
-            break;
-        }
-        case EMPTY_SET: {
-            SetType found = new SetType(new UntypedType());
-            try {
-                found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, IntegerType.getInstance());
-            }
-            returnType = found;
+            return unify(expected, IntegerType.getInstance(), node);
+        case EMPTY_SET:
             typedNodes.add(node);
-            break;
-        }
+            return unify(expected, new SetType(new UntypedType()), node);
+
         default:
             throw new AssertionError();
-        }
-        if (returnType == null) {
-            throw new AssertionError();
-        } else {
-            node.setType(returnType);
-            return returnType;
         }
     }
 
     @Override
     public Type visitIdentifierExprNode(IdentifierExprNode node, Type expected) {
-        try {
-            Type result = node.getDeclarationNode().getType().unify(expected);
-            node.setType(result);
-            return result;
-        } catch (UnificationException e) {
-            throw new TypeErrorException(expected, node.getDeclarationNode().getType());
-        }
+        return unify(expected, node.getDeclarationNode().getType(), node);
     }
 
     @Override
     public Type visitCastPredicateExpressionNode(CastPredicateExpressionNode node, Type expected) {
-        try {
-            Type boolType = BoolType.getInstance();
-            node.setType(boolType);
-            visitPredicateNode(node.getPredicate(), BoolType.getInstance());
-            return boolType.unify(expected);
-        } catch (UnificationException e) {
-            throw new TypeErrorException(expected, BoolType.getInstance());
-        }
+        visitPredicateNode(node.getPredicate(), BoolType.getInstance());
+        return unify(expected, BoolType.getInstance(), node);
     }
 
     @Override
     public Type visitIdentifierPredicateNode(IdentifierPredicateNode node, Type expected) {
-        try {
-            node.setType(BoolType.getInstance());
-            return node.getDeclarationNode().getType().unify(expected);
-        } catch (UnificationException e) {
-            throw new TypeErrorException(expected, node.getDeclarationNode().getType());
-        }
+        return unify(expected, node.getDeclarationNode().getType(), node);
     }
 
     @Override
     public Type visitNumberNode(NumberNode node, Type expected) {
+        return unify(expected, IntegerType.getInstance(), node);
+    }
+
+    private Type unify(Type expected, Type found, TypedNode node) {
         try {
-            node.setType(IntegerType.getInstance());
-            return IntegerType.getInstance().unify(expected);
+            Type type = found.unify(expected);
+            node.setType(type);
+            return type;
         } catch (UnificationException e) {
-            throw new TypeErrorException(expected, IntegerType.getInstance());
+            throw new TypeErrorException(expected, IntegerType.getInstance(), node, e);
         }
     }
 
-    private void setTypes(List<DeclarationNode> list) {
+    private void setDeclarationTypes(List<DeclarationNode> list) {
         for (DeclarationNode decl : list) {
             decl.setType(new UntypedType());
             this.typedNodes.add(decl);
@@ -698,38 +467,18 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
 
     @Override
     public Type visitQuantifiedExpressionNode(QuantifiedExpressionNode node, Type expected) {
-        setTypes(node.getDeclarationList());
+        setDeclarationTypes(node.getDeclarationList());
         visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
         switch (node.getOperator()) {
         case QUANTIFIED_INTER:
-        case QUANTIFIED_UNION: {
-            Type found = new SetType(new UntypedType());
-            try {
-                found = found.unify(expected);
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, IntegerType.getInstance());
-            }
+        case QUANTIFIED_UNION:
+            unify(expected, new SetType(new UntypedType()), node);
             visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
-            found = visitExprNode(node.getExpressionNode(), found);
-
-            node.setType(found);
-            return found;
-        }
-        case SET_COMPREHENSION: {
-            Type left = node.getDeclarationList().get(0).getType();
-            for (int i = 1; i < node.getDeclarationList().size(); i++) {
-                Type right = node.getDeclarationList().get(0).getType();
-                left = new CoupleType(left, right);
-            }
-            Type found = new SetType(left);
-            try {
-                found = found.unify(expected);
-                node.setType(found);
-                return found;
-            } catch (UnificationException e) {
-                throw new TypeErrorException(expected, IntegerType.getInstance());
-            }
-        }
+            visitExprNode(node.getExpressionNode(), node.getType());
+            return node.getType();
+        case SET_COMPREHENSION:
+            List<Type> types = node.getDeclarationList().stream().map(TypedNode::getType).collect(Collectors.toList());
+            return unify(expected, new SetType(createNestedCouple(types)), node);
         default:
             break;
         }
@@ -738,12 +487,8 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
 
     @Override
     public Type visitQuantifiedPredicateNode(QuantifiedPredicateNode node, Type expected) {
-        try {
-            BoolType.getInstance().unify(expected);
-        } catch (UnificationException e) {
-            throw new TypeErrorException(expected, IntegerType.getInstance());
-        }
-        setTypes(node.getDeclarationList());
+        unify(expected, BoolType.getInstance(), node);
+        setDeclarationTypes(node.getDeclarationList());
         visitPredicateNode(node.getPredicateNode(), BoolType.getInstance());
         return BoolType.getInstance();
     }
@@ -776,7 +521,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
 
     @Override
     public Type visitAnySubstitution(AnySubstitutionNode node, Type expected) {
-        setTypes(node.getParameters());
+        setDeclarationTypes(node.getParameters());
         visitPredicateNode(node.getWherePredicate(), BoolType.getInstance());
         visitSubstitutionNode(node.getThenSubstitution(), null);
         return null;

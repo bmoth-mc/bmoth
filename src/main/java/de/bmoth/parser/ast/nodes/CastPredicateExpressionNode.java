@@ -1,9 +1,12 @@
 package de.bmoth.parser.ast.nodes;
 
+import de.bmoth.antlr.BMoThParser.CastPredicateExpressionContext;
+
 public class CastPredicateExpressionNode extends ExprNode {
     private PredicateNode predicate;
 
-    public CastPredicateExpressionNode(PredicateNode predicate) {
+    public CastPredicateExpressionNode(CastPredicateExpressionContext ctx, PredicateNode predicate) {
+        super(ctx);
         this.predicate = predicate;
     }
 

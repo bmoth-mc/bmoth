@@ -1,15 +1,16 @@
 package de.bmoth.parser.ast.nodes;
 
-import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class DeclarationNode extends TypedNode {
 
     private final String name;
-    private final Token token;
+    private final TerminalNode terminalNode;
 
-    public DeclarationNode(Token token, String name) {
+    public DeclarationNode(TerminalNode terminalNode, String name) {
+        super(terminalNode);
         this.name = name;
-        this.token = token;
+        this.terminalNode = terminalNode;
     }
 
     public String getName() {
@@ -22,11 +23,11 @@ public class DeclarationNode extends TypedNode {
     }
 
     public int getLine() {
-        return token.getLine();
+        return terminalNode.getSymbol().getLine();
     }
 
-    public int getPos() {
-        return token.getCharPositionInLine();
+    public Object getPos() {
+        return terminalNode.getSymbol().getCharPositionInLine();
     }
 
 }
