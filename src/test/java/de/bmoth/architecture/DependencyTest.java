@@ -40,11 +40,13 @@ public class DependencyTest {
             DependencyRule comMicrosoftZ3,
                 comMicrosoftZ3Enumerations,
                 deBmothApp,
-                deBmothBackendZ3;
+                deBmothBackendZ3,
+                deBmothModelchecker;
 
             @Override
             public void defineRules() {
                 deBmothBackendZ3.mustUse(comMicrosoftZ3);
+                deBmothModelchecker.mustUse(comMicrosoftZ3);
             }
         }
 
@@ -72,7 +74,7 @@ public class DependencyTest {
 
                 exceptions.mustUse(eventbus);
 
-                modelchecker.mayUse(backend_);
+                modelchecker.mayUse(backend, backend_, parser_, preferences);
 
                 parser.mayUse(antlr, exceptions, parser_);
                 parser_.mayUse(antlr, eventbus, parser_);
