@@ -72,8 +72,6 @@ public class DependencyTest {
 
                 checkers_.mayUse(backend, backend_, parser, parser_);
 
-                exceptions.mustUse(eventbus);
-
                 modelchecker.mayUse(backend, backend_, parser_, preferences);
 
                 parser.mayUse(antlr, parser_);
