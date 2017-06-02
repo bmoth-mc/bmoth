@@ -18,31 +18,19 @@ public class PrettyPrinter {
         FuncDecl[] constantDeclarations = model.getConstDecls();
         for (FuncDecl constantDeclaration : constantDeclarations) {
             try {
-                StringJoiner declarationOutput;
                 if (constantDeclaration.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
                     // not a set (couple or constant)
                     Expr constantInterpretation = model.getConstInterp(constantDeclaration);
-                    Expr[] constInterpretationArgs = constantInterpretation.getArgs();
-                    if (constInterpretationArgs.length == 0) {
-                        // constant
-                        declarationOutput = new StringJoiner(", ", "", "");
-                        output.add(declarationOutput.add(constantDeclaration.getName().toString() + "=" +
-                            model.getConstInterp(constantDeclaration).toString()).toString());
-                    } else {
-                        // couple
-                        declarationOutput = new StringJoiner(", ", "(", ")");
-                        for (Expr constInterpretationArg : constInterpretationArgs) {
-                            declarationOutput.add(processDeclaration(constInterpretationArg, model));
-                        }
-                        output.add(constantDeclaration.getName().toString() + "=" + declarationOutput.toString());
+                    if (constantInterpretation.getArgs().length == 0) { // constant
+                        output.add(constantDeclaration.getName().toString() + "=" + model.getConstInterp(constantDeclaration).toString());
+                    } else { // couple
+                        output.add(constantDeclaration.getName().toString() + "=" + formatCouple(constantInterpretation, model));
                     }
-                } else {
-                    // set
+                } else { // set
                     FuncInterp functionInterpretation = model.getFuncInterp(constantDeclaration);
                     System.out.println(functionInterpretation);
-                    for (FuncInterp.Entry funcInterpEntry : functionInterpretation.getEntries()) {
-                        System.out.println(funcInterpEntry);
-                    }
+                    output.add(constantDeclaration.getName().toString() + "="
+                        + formatSet(functionInterpretation, model));
                 }
             } catch (com.microsoft.z3.Z3Exception e) {
                 logger.log(Level.SEVERE, "Z3 exception while solving", e);
@@ -62,7 +50,8 @@ public class PrettyPrinter {
             return formatCouple(interpretation, model);
         } else if (interpretation.getSort().toString().equals("set")) {
             System.out.println("Set");
-            return formatSet(interpretation);
+            // return formatSet(interpretation, model);
+            return "1";
         } else {
             // constant
             System.out.println("Constant " + interpretation.toString());
@@ -84,10 +73,15 @@ public class PrettyPrinter {
     }
 
 
-    public String formatSet(Expr interpretation) {
+    public String formatSet(FuncInterp interpretation, Model model) {
         StringJoiner setJoiner = new StringJoiner(",", "{", "}");
-        for (Expr constInterpretationArg : interpretation.getArgs()) {
-            setJoiner.add(constInterpretationArg.toString());
+        for (FuncInterp.Entry interpretationEntry : interpretation.getEntries()) {
+            System.out.println(interpretationEntry);
+            if (interpretationEntry.getArgs()[0].isNumeral()) {
+                setJoiner.add(interpretationEntry.getArgs()[0].toString());
+            } else {
+                setJoiner.add(processDeclaration(interpretationEntry.getArgs()[0], model));
+            }
         }
         return setJoiner.toString();
     }
