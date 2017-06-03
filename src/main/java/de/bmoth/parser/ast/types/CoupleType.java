@@ -54,7 +54,6 @@ public class CoupleType extends Observable implements Type, Observer {
             } else if (otherType instanceof CoupleType) {
                 CoupleType other = (CoupleType) otherType;
                 other.replaceBy(this);
-
                 this.left.unify(other.left);
                 this.right.unify(other.right);
                 return this;

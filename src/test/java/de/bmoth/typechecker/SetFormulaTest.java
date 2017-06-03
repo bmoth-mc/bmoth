@@ -24,7 +24,7 @@ public class SetFormulaTest {
         Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals(INTEGER, formulaTypes.get("x"));
     }
-
+    
     @Test
     public void testStrictInclusion() {
         String formula = "{1} <<: x";

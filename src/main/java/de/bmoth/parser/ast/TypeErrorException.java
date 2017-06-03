@@ -26,8 +26,7 @@ public class TypeErrorException extends RuntimeException {
     public TypeErrorException(Type expected, Type found, TypedNode node, UnificationException e) {
         this.message = createErrorMessage(expected, found, node);
         final Logger logger = Logger.getLogger(getClass().getName());
-        logger.log(Level.SEVERE, "unification failed in update", e);
-
+        logger.log(Level.SEVERE, "Type error", e);
         EventBus eventBus = EventBusProvider.getInstance().getEventBus();
         eventBus.post(new ErrorEvent("Type error", toString()));
     }
@@ -50,10 +49,15 @@ public class TypeErrorException extends RuntimeException {
             line = terminalNode.getSymbol().getLine();
             pos = terminalNode.getSymbol().getCharPositionInLine();
         }
-        sb.append(" at '").append(text).append("' starting ");
+        sb.append("at '").append(text).append("' starting ");
         sb.append("in line ").append(line);
         sb.append(" column ").append(pos).append(".");
         return sb.toString();
+    }
+
+    @Override
+    public String getMessage() {
+        return this.message;
     }
 
     @Override
