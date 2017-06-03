@@ -157,21 +157,21 @@ task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
     classpath = sourceSets.test.runtimeClasspath
     main = 'org.openjdk.jmh.Main'
 
+    def date = new Date().format('ddMMyyyy_HHmmss')
     def resultFolder = file("build/reports/jmh/")
     if (!resultFolder.exists()) resultFolder.mkdirs();
-    def resultFile = file("build/reports/jmh/result.txt")
+    def resultFile = file("build/reports/jmh/result" + date + ".json")
     if (!resultFile.exists()) resultFile.createNewFile()
-    def humanResultFile = file("build/reports/jmh/humanResult.txt")
-    if (!humanResultFile.exists()) humanResultFile.createNewFile()
-    println(args)
+    //def humanResultFile = file("build/reports/jmh/humanResult.txt")
+    //if (!humanResultFile.exists()) humanResultFile.createNewFile()
 
     args '-f' , '1'
     args '-bm', 'avgt'
     args '-i', '10'
     args '-wi', '5'
-    args '-rf', 'TEXT'
+    args '-rf', 'JSON'
     args '-rff', resultFile
-    args '-o', humanResultFile
+    //args '-o', humanResultFile
 
 }
 
