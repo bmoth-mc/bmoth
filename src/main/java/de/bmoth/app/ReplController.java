@@ -38,23 +38,21 @@ public class ReplController implements Initializable {
 
 
     private String processPredicate(String predicate) {
+        String formula = predicate;
         ctx = new Context();
         s = ctx.mkSolver();
         FormulaNode node = Parser.getFormulaAsSemanticAst(predicate);
         boolean concatFlag = false;
-        if (node.getFormulaType()!=PREDICATE_FORMULA) {
-            String concatFormula = "x="+predicate;
-            FormulaNode concatNode = Parser.getFormulaAsSemanticAst(concatFormula);
-            if (concatNode.getFormulaType()!=PREDICATE_FORMULA) {
+        if (node.getFormulaType() != PREDICATE_FORMULA) {
+            formula = "x=" + formula;
+            FormulaNode concatNode = Parser.getFormulaAsSemanticAst(formula);
+            if (concatNode.getFormulaType() != PREDICATE_FORMULA) {
                 throw new IllegalArgumentException("Input can not be extended to a predicate via an additional variable.");
-            }
-            else
-            {
-                predicate = concatFormula;
+            } else {
                 concatFlag = true;
             }
         }
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(predicate, ctx);
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
         s.add(constraint);
         Status check = s.check();
 
@@ -65,11 +63,9 @@ public class ReplController implements Initializable {
                 return "\n" + check;
             } else {
                 if (concatFlag) {
-                    String concatOutput = output.substring(3,output.length()-1);
-                    System.out.println("concatOutput="+concatOutput);
+                    String concatOutput = output.substring(3, output.length() - 1);
                     return "\n" + concatOutput;
-                }
-                else {
+                } else {
                     return "\n" + output;
                 }
             }

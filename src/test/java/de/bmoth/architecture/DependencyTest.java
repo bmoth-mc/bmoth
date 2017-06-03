@@ -6,7 +6,6 @@ import guru.nidi.codeassert.dependency.DependencyRuler;
 import guru.nidi.codeassert.dependency.DependencyRules;
 import guru.nidi.codeassert.model.ModelAnalyzer;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -33,7 +32,6 @@ public class DependencyTest {
     }
 
     @Test
-    @Ignore
     public void dependency() {
         class ExternalPackages extends DependencyRuler {
             DependencyRule comMicrosoftZ3,
@@ -45,6 +43,7 @@ public class DependencyTest {
 
             @Override
             public void defineRules() {
+                deBmothApp.mayUse(comMicrosoftZ3, comMicrosoftZ3Enumerations);
                 deBmothBackendZ3.mustUse(comMicrosoftZ3);
                 deBmothModelchecker.mustUse(comMicrosoftZ3);
                 deBmothCheckers_.mustUse(comMicrosoftZ3);
@@ -66,7 +65,7 @@ public class DependencyTest {
 
             @Override
             public void defineRules() {
-                app.mayUse(checkers_, eventbus, modelchecker, parser, parser_, preferences);
+                app.mayUse(backend_, checkers_, eventbus, modelchecker, parser, parser_, preferences);
 
                 backend_.mayUse(preferences, backend, parser, parser_);
 

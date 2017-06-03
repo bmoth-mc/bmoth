@@ -11,11 +11,7 @@ import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 
-//TODO test with AppController
 public class CustomCheckControllerTest extends HeadlessUITest {
-
-    private static final String INITIAL_CHECK_ID = "initialCheck";
-
     Stage stage;
     private CustomCheckController customCheckController;
 

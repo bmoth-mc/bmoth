@@ -454,7 +454,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
             node.setType(type);
             return type;
         } catch (UnificationException e) {
-            throw new TypeErrorException(expected, IntegerType.getInstance(), node, e);
+            throw new TypeErrorException(expected, found, node, e);
         }
     }
 
