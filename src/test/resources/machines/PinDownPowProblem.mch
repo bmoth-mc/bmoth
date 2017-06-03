@@ -1,0 +1,11 @@
+MACHINE PinDownPowProblem
+VARIABLES
+	x
+INVARIANT
+	x : INTEGER
+	& x < 100
+INITIALISATION
+	x := 10**5
+OPERATIONS
+inc = BEGIN x := 2 * x END
+END

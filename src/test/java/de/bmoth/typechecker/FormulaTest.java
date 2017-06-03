@@ -12,6 +12,10 @@ import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMUL
 import static org.junit.Assert.assertEquals;
 
 public class FormulaTest {
+
+    private final String INTEGER = "INTEGER";
+    private final String POW_INTEGER = "POW(INTEGER)";
+
     @Test
     public void testExpressionFormula() {
         String formula = "x + 2 + 3";
@@ -19,7 +23,7 @@ public class FormulaTest {
         assertEquals(EXPRESSION_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER", declarationNode.getType().toString());
+        assertEquals(INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -31,8 +35,8 @@ public class FormulaTest {
         DeclarationNode node2 = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("a", node1.getName());
         assertEquals("b", node2.getName());
-        assertEquals("INTEGER", node1.getType().toString());
-        assertEquals("INTEGER", node2.getType().toString());
+        assertEquals(INTEGER, node1.getType().toString());
+        assertEquals(INTEGER, node2.getType().toString());
     }
 
     @Test
@@ -41,7 +45,7 @@ public class FormulaTest {
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", node1.getName());
-        assertEquals("INTEGER", node1.getType().toString());
+        assertEquals(INTEGER, node1.getType().toString());
     }
 
     @Test
@@ -50,7 +54,7 @@ public class FormulaTest {
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", node1.getName());
-        assertEquals("POW(INTEGER)", node1.getType().toString());
+        assertEquals(POW_INTEGER, node1.getType().toString());
     }
 
     @Test
@@ -59,7 +63,7 @@ public class FormulaTest {
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", node1.getName());
-        assertEquals("INTEGER", node1.getType().toString());
+        assertEquals(INTEGER, node1.getType().toString());
     }
 
     @Test
@@ -77,7 +81,7 @@ public class FormulaTest {
         assertEquals("POW(BOOL)", a.getType().toString());
         DeclarationNode b = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("b", b.getName());
-        assertEquals("INTEGER", b.getType().toString());
+        assertEquals(INTEGER, b.getType().toString());
     }
 
     @Test(expected = TypeErrorException.class)
@@ -102,7 +106,7 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", node1.getName());
-        assertEquals("POW(INTEGER)", node1.getType().toString());
+        assertEquals(POW_INTEGER, node1.getType().toString());
     }
 
     @Test
@@ -112,15 +116,15 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", a.getName());
-        assertEquals("POW(INTEGER)", a.getType().toString());
+        assertEquals(POW_INTEGER, a.getType().toString());
 
         DeclarationNode b = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("b", b.getName());
-        assertEquals("POW(INTEGER)", b.getType().toString());
+        assertEquals(POW_INTEGER, b.getType().toString());
 
         DeclarationNode c = formulaNode.getImplicitDeclarations().get(2);
         assertEquals("c", c.getName());
-        assertEquals("INTEGER", c.getType().toString());
+        assertEquals(INTEGER, c.getType().toString());
     }
 
     @Test
@@ -140,10 +144,10 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode x = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", x.getName());
-        assertEquals("INTEGER", x.getType().toString());
+        assertEquals(INTEGER, x.getType().toString());
         DeclarationNode y = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("y", y.getName());
-        assertEquals("INTEGER", y.getType().toString());
+        assertEquals(INTEGER, y.getType().toString());
     }
 
     @Test
@@ -153,10 +157,10 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode x = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", x.getName());
-        assertEquals("INTEGER", x.getType().toString());
+        assertEquals(INTEGER, x.getType().toString());
         DeclarationNode y = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("y", y.getName());
-        assertEquals("INTEGER", y.getType().toString());
+        assertEquals(INTEGER, y.getType().toString());
     }
 
     @Test
@@ -166,7 +170,7 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", a.getName());
-        assertEquals("POW(INTEGER)", a.getType().toString());
+        assertEquals(POW_INTEGER, a.getType().toString());
     }
 
     @Test
@@ -176,7 +180,7 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", a.getName());
-        assertEquals("POW(INTEGER)", a.getType().toString());
+        assertEquals(POW_INTEGER, a.getType().toString());
     }
 
     @Test
@@ -186,11 +190,11 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", a.getName());
-        assertEquals("INTEGER", a.getType().toString());
+        assertEquals(INTEGER, a.getType().toString());
 
         DeclarationNode b = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("b", b.getName());
-        assertEquals("INTEGER", b.getType().toString());
+        assertEquals(INTEGER, b.getType().toString());
     }
 
     @Test
@@ -200,11 +204,11 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", a.getName());
-        assertEquals("INTEGER", a.getType().toString());
+        assertEquals(INTEGER, a.getType().toString());
 
         DeclarationNode b = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("b", b.getName());
-        assertEquals("INTEGER", b.getType().toString());
+        assertEquals(INTEGER, b.getType().toString());
     }
 
     @Test
@@ -234,7 +238,7 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", a.getName());
-        assertEquals("INTEGER", a.getType().toString());
+        assertEquals(INTEGER, a.getType().toString());
     }
 
     @Test
@@ -244,7 +248,7 @@ public class FormulaTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("a", a.getName());
-        assertEquals("POW(INTEGER)", a.getType().toString());
+        assertEquals(POW_INTEGER, a.getType().toString());
     }
 
     @Test
@@ -264,9 +268,9 @@ public class FormulaTest {
         assertEquals("b", b.getName());
         assertEquals("c", c.getName());
 
-        assertEquals("INTEGER", a.getType().toString());
-        assertEquals("INTEGER", b.getType().toString());
-        assertEquals("INTEGER", c.getType().toString());
+        assertEquals(INTEGER, a.getType().toString());
+        assertEquals(INTEGER, b.getType().toString());
+        assertEquals(INTEGER, c.getType().toString());
 
         assertEquals("POW(INTEGER*INTEGER*INTEGER)", setComprehension.getType().toString());
     }
@@ -285,8 +289,8 @@ public class FormulaTest {
         DeclarationNode y = declarationList.get(1);
         assertEquals("x", x.getName());
         assertEquals("y", y.getName());
-        assertEquals("INTEGER", x.getType().toString());
-        assertEquals("POW(INTEGER)", y.getType().toString());
+        assertEquals(INTEGER, x.getType().toString());
+        assertEquals(POW_INTEGER, y.getType().toString());
     }
 
     @Test
@@ -303,8 +307,8 @@ public class FormulaTest {
         DeclarationNode y = declarationList.get(1);
         assertEquals("x", x.getName());
         assertEquals("y", y.getName());
-        assertEquals("INTEGER", x.getType().toString());
-        assertEquals("POW(INTEGER)", y.getType().toString());
+        assertEquals(INTEGER, x.getType().toString());
+        assertEquals(POW_INTEGER, y.getType().toString());
     }
 
     @Test(expected = TypeErrorException.class)

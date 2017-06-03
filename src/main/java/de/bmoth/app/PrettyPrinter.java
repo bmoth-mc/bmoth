@@ -1,6 +1,5 @@
 package de.bmoth.app;
 
-
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.FuncDecl;
 import com.microsoft.z3.FuncInterp;
@@ -16,45 +15,59 @@ public class PrettyPrinter {
     private StringJoiner output = new StringJoiner(", ", "{", "}");
 
     public PrettyPrinter(Model model) {
-        FuncDecl[] functionDeclarations = model.getConstDecls();
-        for (FuncDecl decl : functionDeclarations) {
-            try {
-                if (decl.getArity() == 0 && decl.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
-                    // this is a constant
-                    if (decl.getRange().getSortKind() != Z3_sort_kind.Z3_DATATYPE_SORT) {
-                        output.add(decl.getName().toString() + "=" + model.getConstInterp(decl));
-                    } else {
-                        // this is a couple
-                        output.add(decl.getName().toString() + "=" + formatCouples(model.getConstInterp(decl)));
-                    }
-                } else {
-                    // not a constant, e.g. some representation of a set
-                    output.add(decl.getName().toString() + "=" + formatSets(model.getFuncInterp(decl)));
-                }
-
-            } catch (com.microsoft.z3.Z3Exception e) {
-                logger.log(Level.SEVERE, "Z3 exception while solving", e);
-            }
+        FuncDecl[] constantDeclarations = model.getConstDecls();
+        for (FuncDecl constantDeclaration : constantDeclarations) {
+            output.add(constantDeclaration.getName().toString() + "=" + processDeclaration(constantDeclaration, model));
         }
     }
 
-    public String formatCouples(Expr constantArg) {
+    
+    public String processDeclaration(FuncDecl constantDeclaration, Model model) {
+        try {
+            if (constantDeclaration.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
+                Expr constantInterpretation = model.getConstInterp(constantDeclaration);
+                if (constantInterpretation.getArgs().length == 0) // constant
+                    return model.getConstInterp(constantDeclaration).toString();
+                else // couple
+                    return formatCouple(constantInterpretation, model);
+            } else // set
+                return (formatSet(model.getFuncInterp(constantDeclaration), model));
+        } catch (com.microsoft.z3.Z3Exception e) {
+            logger.log(Level.SEVERE, "Z3 exception while solving", e);
+            return null;
+        }
+
+    }
+
+
+    public String processInterpretation(Expr interpretation, Model model){
+        if (interpretation.getSort().getSortKind() == Z3_sort_kind.Z3_DATATYPE_SORT)
+            return formatCouple(interpretation, model);
+        else if (interpretation.getSort().getSortKind() == Z3_sort_kind.Z3_ARRAY_SORT)
+            return formatSet(model.getFuncInterp(interpretation.getFuncDecl()), model);
+        else // constant
+            return interpretation.toString();
+    }
+
+
+    public String formatCouple(Expr interpretation, Model model) {
         StringJoiner coupleJoiner = new StringJoiner(",", "(", ")");
-        for (Expr element : constantArg.getArgs()) {
-            if (element.isNumeral()) {
+        for (Expr element : interpretation.getArgs()) {
+            if (element.isNumeral())
                 coupleJoiner.add(element.toString());
-            } else {
-                coupleJoiner.add(formatCouples(element));
-            }
+            else coupleJoiner.add(processInterpretation(element, model));
         }
         return coupleJoiner.toString();
     }
 
-    public String formatSets(FuncInterp funcInterpretation) {
+
+    public String formatSet(FuncInterp interpretation, Model model) {
         StringJoiner setJoiner = new StringJoiner(",", "{", "}");
-        for (FuncInterp.Entry entry : funcInterpretation.getEntries()) {
-            for (Expr entryArg : entry.getArgs()) {
-                setJoiner.add(entryArg.toString());
+        if (interpretation != null) {
+            for (FuncInterp.Entry interpretationEntry : interpretation.getEntries()) {
+                if (interpretationEntry.getArgs()[0].isNumeral())
+                    setJoiner.add(interpretationEntry.getArgs()[0].toString());
+                else setJoiner.add(processInterpretation(interpretationEntry.getArgs()[0], model));
             }
         }
         return setJoiner.toString();
