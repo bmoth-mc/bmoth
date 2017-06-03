@@ -4,6 +4,9 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
+
+import de.bmoth.backend.TranslationOptions;
+import de.bmoth.parser.ast.SubstitutionVisitor;
 import de.bmoth.parser.ast.nodes.*;
 
 import java.util.*;
@@ -15,17 +18,18 @@ public class MachineToZ3Translator {
     private BoolExpr invariantConstraint = null;
     private final HashMap<String, String> primedVariablesToVariablesMap;
     private final List<BoolExpr> operationConstraints;
+    private final SubstitutionToZ3TranslatorVisitor visitor;
 
     public MachineToZ3Translator(MachineNode machineNode, Context ctx) {
         this.machineNode = machineNode;
         this.z3Context = ctx;
+        this.visitor = new SubstitutionToZ3TranslatorVisitor();
 
         if (machineNode.getInitialisation() != null) {
-            this.initialisationConstraint = visitSubstitution(machineNode.getInitialisation());
+            this.initialisationConstraint = visitor.visitSubstitutionNode(machineNode.getInitialisation(), null);
         }
         if (machineNode.getInvariant() != null) {
-            this.invariantConstraint = FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(),
-                z3Context);
+            this.invariantConstraint = FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(), z3Context);
         } else {
             this.invariantConstraint = z3Context.mkTrue();
         }
@@ -41,7 +45,9 @@ public class MachineToZ3Translator {
     private List<BoolExpr> visitOperations(List<OperationNode> operations) {
         List<BoolExpr> results = new ArrayList<>(operations.size());
         for (OperationNode operationNode : this.machineNode.getOperations()) {
-            BoolExpr temp = visitSubstitution(operationNode.getSubstitution());
+            BoolExpr temp = visitor.
+
+                    visitSubstitutionNode(operationNode.getSubstitution(), null);
             // for unassigned variables add a dummy assignment, e.g. x' = x
             Set<DeclarationNode> set = new HashSet<>(this.getVariables());
             set.removeAll(operationNode.getSubstitution().getAssignedVariables());
@@ -95,53 +101,61 @@ public class MachineToZ3Translator {
         return invariantConstraint;
     }
 
-    private BoolExpr visitSubstitution(SubstitutionNode node) {
-        if (node instanceof SingleAssignSubstitutionNode) {
-            return visitSingleAssignSubstitution((SingleAssignSubstitutionNode) node);
-        } else if (node instanceof ParallelSubstitutionNode) {
-            return visitParallelSubstitution((ParallelSubstitutionNode) node);
-        } else if (node instanceof AnySubstitutionNode) {
-            return visitAnySubstitution((AnySubstitutionNode) node);
-        } else if (node instanceof SelectSubstitutionNode) {
-            return visitSelectSubstitutionNode((SelectSubstitutionNode) node);
-        }
-        throw new AssertionError("Not implemented" + node.getClass());
-    }
+    class SubstitutionToZ3TranslatorVisitor implements SubstitutionVisitor<BoolExpr, TranslationOptions> {
 
-    private BoolExpr visitSelectSubstitutionNode(SelectSubstitutionNode node) {
-        BoolExpr condition = FormulaToZ3Translator.translatePredicate(node.getCondition(), z3Context);
-        BoolExpr substitution = visitSubstitution(node.getSubstitution());
-        return z3Context.mkAnd(condition, substitution);
-    }
-
-    private BoolExpr visitAnySubstitution(AnySubstitutionNode node) {
-        Expr[] parameters = new Expr[node.getParameters().size()];
-        for (int i = 0; i < parameters.length; i++) {
-            parameters[i] = getVariableAsZ3Expression(node.getParameters().get(i));
-        }
-        BoolExpr parameterConstraints = FormulaToZ3Translator.translatePredicate(node.getWherePredicate(), z3Context);
-        BoolExpr transition = visitSubstitution(node.getThenSubstitution());
-        BoolExpr existsBody = z3Context.mkAnd(parameterConstraints, transition);
-        return z3Context.mkExists(parameters, existsBody, parameters.length, null, null, null, null);
-    }
-
-    private BoolExpr visitParallelSubstitution(ParallelSubstitutionNode node) {
-        List<SubstitutionNode> substitutions = node.getSubstitutions();
-        BoolExpr boolExpr = null;
-        for (SubstitutionNode substitutionNode : substitutions) {
-            BoolExpr temp = visitSubstitution(substitutionNode);
-            if (boolExpr == null) {
-                boolExpr = temp;
-            } else {
-                boolExpr = z3Context.mkAnd(boolExpr, temp);
+        @Override
+        public BoolExpr visitAnySubstitution(AnySubstitutionNode node, TranslationOptions ops) {
+            Expr[] parameters = new Expr[node.getParameters().size()];
+            for (int i = 0; i < parameters.length; i++) {
+                parameters[i] = getVariableAsZ3Expression(node.getParameters().get(i));
             }
+            BoolExpr parameterConstraints = FormulaToZ3Translator.translatePredicate(node.getWherePredicate(),
+                    z3Context);
+            BoolExpr transition = visitSubstitutionNode(node.getThenSubstitution(), ops);
+            BoolExpr existsBody = z3Context.mkAnd(parameterConstraints, transition);
+            return z3Context.mkExists(parameters, existsBody, parameters.length, null, null, null, null);
         }
-        return boolExpr;
-    }
 
-    private BoolExpr visitSingleAssignSubstitution(SingleAssignSubstitutionNode node) {
-        String name = getPrimedName(node.getIdentifier().getName());
-        return FormulaToZ3Translator.translateVariableEqualToExpr(name, node.getValue(), z3Context);
+        @Override
+        public BoolExpr visitSelectSubstitutionNode(SelectSubstitutionNode node, TranslationOptions ops) {
+            BoolExpr condition = FormulaToZ3Translator.translatePredicate(node.getCondition(), z3Context);
+            BoolExpr substitution = visitSubstitutionNode(node.getSubstitution(), ops);
+            return z3Context.mkAnd(condition, substitution);
+        }
+
+        @Override
+        public BoolExpr visitSingleAssignSubstitution(SingleAssignSubstitutionNode node, TranslationOptions ops) {
+            String name = getPrimedName(node.getIdentifier().getName());
+            return FormulaToZ3Translator.translateVariableEqualToExpr(name, node.getValue(), z3Context);
+        }
+
+        @Override
+        public BoolExpr visitParallelSubstitutionNode(ParallelSubstitutionNode node, TranslationOptions ops) {
+            List<SubstitutionNode> substitutions = node.getSubstitutions();
+            BoolExpr boolExpr = null;
+            for (SubstitutionNode substitutionNode : substitutions) {
+                BoolExpr temp = visitSubstitutionNode(substitutionNode, ops);
+                if (boolExpr == null) {
+                    boolExpr = temp;
+                } else {
+                    boolExpr = z3Context.mkAnd(boolExpr, temp);
+                }
+            }
+            return boolExpr;
+        }
+
+        @Override
+        public BoolExpr visitBecomesElementOfSubstitutionNode(BecomesElementOfSubstitutionNode node,
+                TranslationOptions ops) {
+            throw new AssertionError("Currently not supported");
+        }
+
+        @Override
+        public BoolExpr visitBecomesSuchThatSubstitutionNode(BecomesSuchThatSubstitutionNode node,
+                TranslationOptions ops) {
+            throw new AssertionError("Currently not supported");
+        }
+
     }
 
     private String getPrimedName(String name) {
