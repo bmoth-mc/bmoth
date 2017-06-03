@@ -8,6 +8,8 @@ import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
+
 public class ModelCheckerTest {
     @Test
     public void testAnySubstitution() {
@@ -36,7 +38,8 @@ public class ModelCheckerTest {
         machine += "OPERATIONS\n";
         machine += "\treplaceX =\n";
         machine += "\t\tANY nVal \n";
-        machine += "\t\tWHERE nVal > 0 & nVal < 5\n"; // should be < 4 to avoid violation
+        machine += "\t\tWHERE nVal > 0 & nVal < 5\n"; // should be < 4 to avoid
+                                                      // violation
         machine += "\t\tTHEN x := nVal\n";
         machine += "\tEND\n";
         machine += "END";
@@ -71,7 +74,8 @@ public class ModelCheckerTest {
         machine += "END";
 
         ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
-        // the operation BlockSubstitution will finally violate the invariant x<=2
+        // the operation BlockSubstitution will finally violate the invariant
+        // x<=2
         assertFalse(result.isCorrect());
     }
 
@@ -101,5 +105,34 @@ public class ModelCheckerTest {
 
         assertFalse(result.isCorrect());
         assertEquals("aborted", result.getMessage());
+    }
+
+    @Test
+    public void testEnumeratedSet() {
+        String machine = "MACHINE SimpleMachine\n";
+        machine += "SETS set={s1,s2,s3} \n";
+        machine += "VARIABLES x\n";
+        machine += "INVARIANT x: set & x = s2 \n";
+        machine += "INITIALISATION x := s1 \n";
+        machine += "END";
+        System.out.println(machine);
+        
+        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
+        // the initialisation will finally violate the invariant x = s2
+        assertFalse(result.isCorrect());
+    }
+
+    @Ignore
+    @Test
+    public void testDeferredSet() {
+        String machine = "MACHINE SimpleMachine\n";
+        machine += "SETS set\n";
+        machine += "VARIABLES x,y\n";
+        machine += "INVARIANT x : set & y : set & x = y\n";
+        machine += "INITIALISATION x :: set || y :: set \n";
+        machine += "END";
+        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
+        // the initialisation will finally violate the invariant x = s2
+        assertFalse(result.isCorrect());
     }
 }

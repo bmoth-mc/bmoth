@@ -25,7 +25,8 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
     private TypeChecker(MachineNode machineNode) {
         for (EnumeratedSet eSet : machineNode.getEnumaratedSets()) {
             DeclarationNode setDeclaration = eSet.getSetDeclaration();
-            UserDefinedElementType userDefinedElementType = new UserDefinedElementType(setDeclaration.getName());
+            UserDefinedElementType userDefinedElementType = new UserDefinedElementType(setDeclaration.getName(),
+                    eSet.getElementsAsStrings());
             setDeclaration.setType(new SetType(userDefinedElementType));
             for (DeclarationNode element : eSet.getElements()) {
                 element.setType(userDefinedElementType);
@@ -33,7 +34,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
         }
 
         for (DeclarationNode deferredSet : machineNode.getDeferredSets()) {
-            UserDefinedElementType userDefinedElementType = new UserDefinedElementType(deferredSet.getName());
+            UserDefinedElementType userDefinedElementType = new UserDefinedElementType(deferredSet.getName(), null);
             deferredSet.setType(new SetType(userDefinedElementType));
         }
 

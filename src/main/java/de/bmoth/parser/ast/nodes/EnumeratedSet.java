@@ -1,6 +1,7 @@
 package de.bmoth.parser.ast.nodes;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EnumeratedSet {
     final DeclarationNode setDeclaration;
@@ -17,5 +18,9 @@ public class EnumeratedSet {
 
     public List<DeclarationNode> getElements() {
         return this.elements;
+    }
+
+    public List<String> getElementsAsStrings() {
+        return elements.stream().map(DeclarationNode::getName).collect(Collectors.toList());
     }
 }

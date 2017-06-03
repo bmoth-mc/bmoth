@@ -19,7 +19,7 @@ machine_clause
   | clauseName=(CONSTANTS|VARIABLES) identifier_list                      # DeclarationClause
   | INITIALISATION substitution                                           # InitialisationClause
   | OPERATIONS  ops+=single_operation (SEMICOLON ops+=single_operation)*  # OperationsClause
-  | SETS set_definition (SEMICOLON set_definition)*                       # SetsClause
+  | SETS set_definition (';' set_definition)*                             # SetsClause
   | definition_clause                                                     # DefinitionClauseIndirection // used to reuse definition_clause for definition files
   ;
 

@@ -1,11 +1,16 @@
 package de.bmoth.parser.ast.types;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserDefinedElementType implements Type {
 
-    private String setName;
+    private final String setName;
+    private final List<String> elements;
 
-    public UserDefinedElementType(String name) {
+    public UserDefinedElementType(String name, List<String> list) {
         this.setName = name;
+        this.elements = list;
     }
 
     public String getSetName() {
@@ -44,6 +49,10 @@ public class UserDefinedElementType implements Type {
     @Override
     public String toString() {
         return this.setName;
+    }
+
+    public List<String> getElements() {
+        return new ArrayList<>(this.elements);
     }
 
 }
