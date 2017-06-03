@@ -15,12 +15,13 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'antlr'
 apply plugin: 'jacoco'
-
 // Apply the application plugin to add support for building an application
 apply plugin: 'application'
 
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.plugins.ide.eclipse.model.AccessRule
+
+import java.sql.DriverManager
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -81,6 +82,7 @@ task uiTest(type: Test) {
 }
 
 dependencies {
+
     // Antlr4 Parser Generator
     antlr "org.antlr:antlr4:4.5.3"
 
@@ -103,6 +105,11 @@ dependencies {
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
+
+    // Use JMH for Benchmarking
+    testCompile project
+    testCompile 'org.openjdk.jmh:jmh-core:1.19'
+    testCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.19'
 }
 
 // Define the main class for the application
@@ -143,6 +150,52 @@ task downloadZ3 {
                 }
             }
         }
+    }
+}
+
+task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'org.openjdk.jmh.Main'
+
+    ext.date = new Date().format('dd.MM.yyyy HH:mm:ss')
+    def resultFolder = file("build/reports/jmh/")
+    if (!resultFolder.exists()) resultFolder.mkdirs();
+    def resultFile = file("build/reports/jmh/result.txt")
+    if (!resultFile.exists()) resultFile.createNewFile()
+    //def humanResultFile = file("build/reports/jmh/humanResult.txt")
+    //if (!humanResultFile.exists()) humanResultFile.createNewFile()
+
+    args '-f' , '1'
+    args '-bm', 'avgt'
+    args '-i', '20'
+    args '-wi', '10'
+    args '-rf', 'TEXT'
+    args '-rff', resultFile
+    //args '-o', humanResultFile
+}
+
+jmh.doLast {
+    def resultsFolder = "build/reports/jmh/"
+    def result = file("build/reports/jmh/result.txt")
+    def lines = result.readLines()
+    for(int i = 1; i < lines.size(); i++) {
+        def columns = lines.get(i).split(" ")
+        //columns.each({column -> if(!column.isEmpty()) println(column)})
+        def names = columns[0].split("\\.")
+        def resultFolder = file(resultsFolder + names[0])
+        if(!resultFolder.exists()) resultFolder.mkdirs()
+        def resultFile = file(resultsFolder + names[0] + "/" + names[1] + ".txt")
+        if (!resultFile.exists()) {
+            resultFile.createNewFile()
+            resultFile.append("Date\t\t\t\t\tMode\t\tCnt\t\tScore\t\tError\t\tUnits\n")
+        }
+        resultFile.append(jmh.date + "\t\t")
+        for (int j = 1; j < columns.length; j++) {
+            if (!columns[j].empty) {
+                resultFile.append(columns[j] + (columns[j].equals("±") ? "" : "\t\t"))
+            }
+        }
+        resultFile.append("\n")
     }
 }
 
