@@ -15,12 +15,13 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'antlr'
 apply plugin: 'jacoco'
-
 // Apply the application plugin to add support for building an application
 apply plugin: 'application'
 
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.plugins.ide.eclipse.model.AccessRule
+
+import java.sql.DriverManager
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -81,6 +82,7 @@ task uiTest(type: Test) {
 }
 
 dependencies {
+
     // Antlr4 Parser Generator
     antlr "org.antlr:antlr4:4.5.3"
 
@@ -103,6 +105,11 @@ dependencies {
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
+
+    // Use JMH for Benchmarking
+    testCompile project
+    testCompile 'org.openjdk.jmh:jmh-core:1.19'
+    testCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.19'
 }
 
 // Define the main class for the application
@@ -144,6 +151,28 @@ task downloadZ3 {
             }
         }
     }
+}
+
+task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'org.openjdk.jmh.Main'
+
+    def resultFolder = file("build/reports/jmh/")
+    if (!resultFolder.exists()) resultFolder.mkdirs();
+    def resultFile = file("build/reports/jmh/result.txt")
+    if (!resultFile.exists()) resultFile.createNewFile()
+    def humanResultFile = file("build/reports/jmh/humanResult.txt")
+    if (!humanResultFile.exists()) humanResultFile.createNewFile()
+    println(args)
+
+    args '-f' , '1'
+    args '-bm', 'avgt'
+    args '-i', '10'
+    args '-wi', '5'
+    args '-rf', 'TEXT'
+    args '-rff', resultFile
+    args '-o', humanResultFile
+
 }
 
 compileJava {

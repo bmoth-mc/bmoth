@@ -27,5 +27,4 @@ public class ErrorAlertTest {
         assertEquals(ERROR_TYPE_TEST + " occurred.", alert.getHeaderText());
         assertEquals(ERROR_MSG_TEST, alert.getContentText());
     }
-
 }
