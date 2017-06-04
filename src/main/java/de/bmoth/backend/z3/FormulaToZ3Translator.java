@@ -13,7 +13,6 @@ import de.bmoth.preferences.BMothPreferences;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -42,6 +41,9 @@ public class FormulaToZ3Translator {
     private ArrayExpr setInt = null;
     private ArrayExpr setNat = null;
 
+    // used to generate unique identifiers
+    private static int tempVariablesCounter = 0;
+
     public List<DeclarationNode> getImplicitDeclarations() {
         return this.implicitDeclarations;
     }
@@ -53,6 +55,11 @@ public class FormulaToZ3Translator {
             list.add(mkConst);
         }
         return list;
+    }
+
+    protected static String createFreshTemporaryVariable() {
+        tempVariablesCounter++;
+        return "$t_" + tempVariablesCounter;
     }
 
     private FormulaToZ3Translator(Context z3Context, String formula) {
@@ -75,10 +82,26 @@ public class FormulaToZ3Translator {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context);
         FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
         Expr z3Value = visitor.visitExprNode(value, opt);
-
         Expr variable = z3Context.mkConst(name, z3Value.getSort());
+        BoolExpr mkEq = z3Context.mkEq(variable, z3Value);
 
-        return z3Context.mkEq(variable, z3Value);
+        List<BoolExpr> list = new ArrayList<>();
+        list.add(mkEq);
+        list.addAll(formulaToZ3Translator.constraintList);
+        return z3Context.mkAnd(list.toArray(new BoolExpr[list.size()]));
+    }
+
+    public static BoolExpr translateVariableElementOfSetExpr(String name, Type variableType, ExprNode setValue,
+            Context z3Context, TranslationOptions opt) {
+        FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context);
+        FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
+        ArrayExpr z3Value = (ArrayExpr) visitor.visitExprNode(setValue, opt);
+        Expr variable = z3Context.mkConst(name, bTypeToZ3Sort(z3Context, variableType));
+        BoolExpr mkEq = z3Context.mkSetMembership(variable, z3Value);
+        List<BoolExpr> list = new ArrayList<>();
+        list.add(mkEq);
+        list.addAll(formulaToZ3Translator.constraintList);
+        return z3Context.mkAnd(list.toArray(new BoolExpr[list.size()]));
     }
 
     public static BoolExpr translatePredicate(String formula, Context z3Context) {
@@ -175,13 +198,6 @@ public class FormulaToZ3Translator {
     }
 
     class FormulaToZ3TranslatorVisitor implements FormulaVisitor<Expr, TranslationOptions> {
-        // used to generate unique identifiers
-        private int tempVariablesCounter = 0;
-
-        private String createFreshTemporaryVariable() {
-            this.tempVariablesCounter++;
-            return "$t_" + this.tempVariablesCounter;
-        }
 
         private String addPrimes(TranslationOptions ops, String name) {
             int numOfPrimes = ops.getPrimeLevel();

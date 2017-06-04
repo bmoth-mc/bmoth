@@ -61,13 +61,24 @@ identifier_list
 substitution
   : BEGIN substitution END                                                  # BlockSubstitution
   | SKIP_SUB                                                                # SkipSubstitution
-  | SELECT predicate THEN substitution END                                  # SelectSubstitution // WHEN is missing
-  | PRE predicate THEN substitution END                                     # PreSubstitution
+  | SELECT preds+=predicate THEN subs+=substitution
+      (WHEN preds+=predicate THEN subs+=substitution)*
+      (ELSE elseSub=substitution)? END                                     # SelectSubstitution
+  | CASE expr=expression OF
+      EITHER either=expression_list THEN sub=substitution
+      (SUBSTITUTION_OR or_exprs+=expression_list THEN or_subs+=substitution)+
+      (ELSE else_sub=substitution)? END END                                 # CaseSubstitution
+  | keyword=(PRE|ASSERT) predicate THEN substitution END                    # ConditionSubstitution
   | ANY identifier_list WHERE predicate THEN substitution END               # AnySubstitution
   | identifier_list ':=' expression_list                                    # AssignSubstitution
   | substitution DOUBLE_VERTICAL_BAR substitution                           # ParallelSubstitution
   | identifier_list DOUBLE_COLON expression                                 # BecomesElementOfSubstitution
   | identifier_list (ELEMENT_OF|COLON) LEFT_PAR predicate RIGHT_PAR         # BecomesSuchThatSubstitution
+  | IF preds+=predicate THEN subs+=substitution
+      (ELSIF preds+=predicate THEN subs+=substitution)*
+      (ELSE elseSub=substitution)? END                                      # IfSubstitution
+  | WHILE condition=predicate DO substitution INVARIANT invariant=predicate
+      VARIANT variant=expression END                                        # WhileSubstitution
   ;
 
 expression_list

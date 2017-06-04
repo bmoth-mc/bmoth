@@ -4,10 +4,12 @@ import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.BecomesElementOfSubstitutionNode;
 import de.bmoth.parser.ast.nodes.BecomesSuchThatSubstitutionNode;
 import de.bmoth.parser.ast.nodes.CastPredicateExpressionNode;
+import de.bmoth.parser.ast.nodes.ConditionSubstitutionNode;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
 import de.bmoth.parser.ast.nodes.IdentifierExprNode;
 import de.bmoth.parser.ast.nodes.IdentifierPredicateNode;
+import de.bmoth.parser.ast.nodes.IfSubstitutionNode;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.NumberNode;
 import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
@@ -18,6 +20,7 @@ import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
 import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
 import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
+import de.bmoth.parser.ast.nodes.SkipSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
 
 public class AbstractASTTransformation implements AbstractVisitor<Node, Void> {
@@ -46,6 +49,8 @@ public class AbstractASTTransformation implements AbstractVisitor<Node, Void> {
         }
         throw new AssertionError();
     }
+
+    // returning node means do nothing
 
     @Override
     public Node visitPredicateOperatorNode(PredicateOperatorNode node, Void expected) {
@@ -119,6 +124,21 @@ public class AbstractASTTransformation implements AbstractVisitor<Node, Void> {
 
     @Override
     public Node visitBecomesSuchThatSubstitutionNode(BecomesSuchThatSubstitutionNode node, Void expected) {
+        return node;
+    }
+
+    @Override
+    public Node visitConditionSubstitutionNode(ConditionSubstitutionNode node, Void expected) {
+        return node;
+    }
+
+    @Override
+    public Node visitIfSubstitutionNode(IfSubstitutionNode node, Void expected) {
+        return node;
+    }
+
+    @Override
+    public Node visitSkipSubstitutionNode(SkipSubstitutionNode node, Void expected) {
         return node;
     }
 

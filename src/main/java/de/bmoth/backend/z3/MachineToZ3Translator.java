@@ -45,19 +45,25 @@ public class MachineToZ3Translator {
     private List<BoolExpr> visitOperations(List<OperationNode> operations) {
         List<BoolExpr> results = new ArrayList<>(operations.size());
         for (OperationNode operationNode : this.machineNode.getOperations()) {
-            BoolExpr temp = visitor.
-
-                    visitSubstitutionNode(operationNode.getSubstitution(), null);
+            BoolExpr temp = visitor.visitSubstitutionNode(operationNode.getSubstitution(), null);
             // for unassigned variables add a dummy assignment, e.g. x' = x
             Set<DeclarationNode> set = new HashSet<>(this.getVariables());
             set.removeAll(operationNode.getSubstitution().getAssignedVariables());
-            for (DeclarationNode node : set) {
-                BoolExpr mkEq = z3Context.mkEq(getPrimedVariable(node), getVariableAsZ3Expression(node));
-                temp = z3Context.mkAnd(temp, mkEq);
-            }
-            results.add(temp);
+            List<BoolExpr> dummyAssignments = createDummyAssignment(set);
+            dummyAssignments.add(0, temp);
+            BoolExpr[] array = dummyAssignments.toArray(new BoolExpr[dummyAssignments.size()]);
+            results.add(z3Context.mkAnd(array));
         }
         return results;
+    }
+
+    protected List<BoolExpr> createDummyAssignment(Set<DeclarationNode> unassignedVariables) {
+        List<BoolExpr> list = new ArrayList<>();
+        for (DeclarationNode node : unassignedVariables) {
+            BoolExpr mkEq = z3Context.mkEq(getPrimedVariable(node), getVariableAsZ3Expression(node));
+            list.add(mkEq);
+        }
+        return list;
     }
 
     public List<DeclarationNode> getVariables() {
@@ -103,6 +109,8 @@ public class MachineToZ3Translator {
 
     class SubstitutionToZ3TranslatorVisitor implements SubstitutionVisitor<BoolExpr, TranslationOptions> {
 
+        private static final String CURRENTLY_NOT_SUPPORTED = "Currently not supported";
+
         @Override
         public BoolExpr visitAnySubstitution(AnySubstitutionNode node, TranslationOptions ops) {
             Expr[] parameters = new Expr[node.getParameters().size()];
@@ -118,8 +126,11 @@ public class MachineToZ3Translator {
 
         @Override
         public BoolExpr visitSelectSubstitutionNode(SelectSubstitutionNode node, TranslationOptions ops) {
-            BoolExpr condition = FormulaToZ3Translator.translatePredicate(node.getCondition(), z3Context);
-            BoolExpr substitution = visitSubstitutionNode(node.getSubstitution(), ops);
+            if (node.getConditions().size() > 1 || node.getElseSubstitution() != null) {
+                throw new AssertionError(CURRENTLY_NOT_SUPPORTED);
+            }
+            BoolExpr condition = FormulaToZ3Translator.translatePredicate(node.getConditions().get(0), z3Context);
+            BoolExpr substitution = visitSubstitutionNode(node.getSubstitutions().get(0), ops);
             return z3Context.mkAnd(condition, substitution);
         }
 
@@ -145,15 +156,65 @@ public class MachineToZ3Translator {
         }
 
         @Override
+        public BoolExpr visitConditionSubstitutionNode(ConditionSubstitutionNode node, TranslationOptions ops) {
+            // PRE and ASSERT
+            BoolExpr condition = FormulaToZ3Translator.translatePredicate(node.getCondition(), z3Context);
+            BoolExpr substitution = visitSubstitutionNode(node.getSubstitution(), ops);
+            return z3Context.mkAnd(condition, substitution);
+        }
+
+        @Override
         public BoolExpr visitBecomesElementOfSubstitutionNode(BecomesElementOfSubstitutionNode node,
                 TranslationOptions ops) {
-            throw new AssertionError("Currently not supported");
+            if (node.getIdentifiers().size() > 1) {
+                throw new AssertionError(CURRENTLY_NOT_SUPPORTED);
+            }
+            IdentifierExprNode identifierExprNode = node.getIdentifiers().get(0);
+            String name = getPrimedName(identifierExprNode.getName());
+            return FormulaToZ3Translator.translateVariableElementOfSetExpr(name, identifierExprNode.getType(),
+                    node.getExpression(), z3Context, new TranslationOptions());
         }
 
         @Override
         public BoolExpr visitBecomesSuchThatSubstitutionNode(BecomesSuchThatSubstitutionNode node,
                 TranslationOptions ops) {
-            throw new AssertionError("Currently not supported");
+            throw new AssertionError(CURRENTLY_NOT_SUPPORTED);
+        }
+
+        @Override
+        public BoolExpr visitIfSubstitutionNode(IfSubstitutionNode node, TranslationOptions ops) {
+            if (node.getConditions().size() > 1) {
+                throw new AssertionError(CURRENTLY_NOT_SUPPORTED);
+            }
+            BoolExpr condition = FormulaToZ3Translator.translatePredicate(node.getConditions().get(0), z3Context);
+            BoolExpr substitution = visitSubstitutionNode(node.getSubstitutions().get(0), ops);
+            List<BoolExpr> ifThenList = new ArrayList<>();
+            ifThenList.add(condition);
+            ifThenList.add(substitution);
+            Set<DeclarationNode> set = new HashSet<>(node.getAssignedVariables());
+            set.removeAll(node.getSubstitutions().get(0).getAssignedVariables());
+            ifThenList.addAll(createDummyAssignment(set));
+            BoolExpr ifThen = z3Context.mkAnd(ifThenList.toArray(new BoolExpr[ifThenList.size()]));
+
+            BoolExpr elseExpr = null;
+            List<BoolExpr> elseList = new ArrayList<>();
+            elseList.add(z3Context.mkNot(condition));
+            if (null == node.getElseSubstitution()) {
+                elseList.addAll(createDummyAssignment(node.getAssignedVariables()));
+            } else {
+                elseList.add(visitSubstitutionNode(node.getElseSubstitution(), ops));
+                Set<DeclarationNode> elseDummies = new HashSet<>(node.getAssignedVariables());
+                elseDummies.removeAll(node.getElseSubstitution().getAssignedVariables());
+                elseList.addAll(createDummyAssignment(elseDummies));
+            }
+            elseExpr = z3Context.mkAnd(elseList.toArray(new BoolExpr[elseList.size()]));
+
+            return z3Context.mkOr(ifThen, elseExpr);
+        }
+
+        @Override
+        public BoolExpr visitSkipSubstitutionNode(SkipSubstitutionNode node, TranslationOptions expected) {
+            return z3Context.mkBool(true);
         }
 
     }

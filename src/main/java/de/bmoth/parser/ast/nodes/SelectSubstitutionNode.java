@@ -1,34 +1,26 @@
 package de.bmoth.parser.ast.nodes;
 
-public class SelectSubstitutionNode extends SubstitutionNode {
+import java.util.List;
 
-    private PredicateNode condition;
-    private SubstitutionNode substitution;
+public class SelectSubstitutionNode extends AbstractConditionsAndSubstitutionsNode {
 
-    public SelectSubstitutionNode(PredicateNode condition, SubstitutionNode substitution) {
-        this.condition = condition;
-        this.substitution = substitution;
-        super.setAssignedVariables(substitution.getAssignedVariables());
-    }
-
-    public SubstitutionNode getSubstitution() {
-        return substitution;
-    }
-
-    public PredicateNode getCondition() {
-        return condition;
+    public SelectSubstitutionNode(List<PredicateNode> conditions, List<SubstitutionNode> substitutions,
+            SubstitutionNode elseSubstition) {
+        super(conditions, substitutions, elseSubstition);
     }
 
     @Override
     public String toString() {
-        return "SELECT " + condition + " THEN " + substitution + " END";
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT ").append(conditions.get(0)).append(" THEN ").append(substitutions.get(0));
+        for (int i = 1; i < conditions.size(); i++) {
+            sb.append(" WHEN ").append(conditions.get(i)).append(" THEN ").append(substitutions.get(i));
+        }
+        if (null != elseSubstitution) {
+            sb.append(" ELSE " + elseSubstitution);
+        }
+        sb.append(" END");
+        return sb.toString();
     }
 
-    public void setSubstitution(SubstitutionNode substitution) {
-        this.substitution = substitution;
-    }
-
-    public void setCondition(PredicateNode predicate) {
-        this.condition = predicate;
-    }
 }

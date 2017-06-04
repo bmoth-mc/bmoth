@@ -277,4 +277,23 @@ public class MachinesTest {
         assertEquals("BOOL", t.getVariables().get("d").toString());
     }
 
+    @Test
+    public void testIfSubstitution() {
+        String machine = "MACHINE test \n";
+        machine += "VARIABLES a \n";
+        machine += "INVARIANT a : INTEGER \n";
+        machine += "INITIALISATION IF 1=1 THEN a := 1 ELSE a:= 2 END \n";
+        machine += "END";
+        TestTypechecker t = new TestTypechecker(machine);
+        assertEquals("INTEGER", t.getVariables().get("a").toString());
+    }
+
+    @Test
+    public void testSkipSubstitution() {
+        String machine = "MACHINE test \n";
+        machine += "INITIALISATION skip \n";
+        machine += "END";
+        new TestTypechecker(machine);
+    }
+
 }

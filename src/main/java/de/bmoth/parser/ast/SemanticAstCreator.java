@@ -5,6 +5,7 @@ import de.bmoth.antlr.BMoThParser.*;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
 import de.bmoth.parser.ast.BDefinition.KIND;
 import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.nodes.ConditionSubstitutionNode.ConditionSubstitutionKind;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -134,6 +135,8 @@ public class SemanticAstCreator {
     }
 
     class FormulaVisitor extends BMoThParserBaseVisitor<Node> {
+        // TODO refactor defintions handling
+        BDefinition.KIND currentKind;
 
         @Override
         public Node visitChildren(RuleNode node) {
@@ -157,8 +160,6 @@ public class SemanticAstCreator {
                         ExpressionOperator.SEQ_ENUMERATION);
             }
         }
-
-        BDefinition.KIND currentKind;
 
         @Override
         public Node visitFunctionCallExpression(BMoThParser.FunctionCallExpressionContext ctx) {
@@ -421,16 +422,43 @@ public class SemanticAstCreator {
 
         @Override
         public SelectSubstitutionNode visitSelectSubstitution(BMoThParser.SelectSubstitutionContext ctx) {
-            PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
-            SubstitutionNode sub = (SubstitutionNode) ctx.substitution().accept(this);
-            return new SelectSubstitutionNode(predicate, sub);
+            List<PredicateNode> predNodes = ctx.preds.stream().map(t -> (PredicateNode) t.accept(this))
+                    .collect(Collectors.toList());
+            List<SubstitutionNode> subNodes = ctx.subs.stream().map(t -> (SubstitutionNode) t.accept(this))
+                    .collect(Collectors.toList());
+            SubstitutionNode elseSubNode = null;
+            if (ctx.elseSub != null) {
+                elseSubNode = (SubstitutionNode) ctx.elseSub.accept(this);
+            }
+            return new SelectSubstitutionNode(predNodes, subNodes, elseSubNode);
         }
 
         @Override
-        public SelectSubstitutionNode visitPreSubstitution(BMoThParser.PreSubstitutionContext ctx) {
+        public SubstitutionNode visitIfSubstitution(BMoThParser.IfSubstitutionContext ctx) {
+            List<PredicateNode> predNodes = ctx.preds.stream().map(t -> (PredicateNode) t.accept(this))
+                    .collect(Collectors.toList());
+            List<SubstitutionNode> subNodes = ctx.subs.stream().map(t -> (SubstitutionNode) t.accept(this))
+                    .collect(Collectors.toList());
+            SubstitutionNode elseSubNode = null;
+            if (ctx.elseSub != null) {
+                elseSubNode = (SubstitutionNode) ctx.elseSub.accept(this);
+            }
+            return new IfSubstitutionNode(predNodes, subNodes, elseSubNode);
+        }
+
+        @Override
+        public ConditionSubstitutionNode visitConditionSubstitution(BMoThParser.ConditionSubstitutionContext ctx) {
             PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
             SubstitutionNode sub = (SubstitutionNode) ctx.substitution().accept(this);
-            return new SelectSubstitutionNode(predicate, sub);
+            ConditionSubstitutionKind kind;
+            if (ctx.keyword.getType() == BMoThParser.PRE) {
+                kind = ConditionSubstitutionKind.PRECONDITION;
+            } else if (ctx.keyword.getType() == BMoThParser.ASSERT) {
+                kind = ConditionSubstitutionKind.ASSERT;
+            } else {
+                throw new AssertionError();
+            }
+            return new ConditionSubstitutionNode(kind, predicate, sub);
         }
 
         private IdentifierExprNode createIdentifierExprNode(TerminalNode terminalNode) {
@@ -452,6 +480,11 @@ public class SemanticAstCreator {
                 throw new AssertionError(token.getText() + " Line " + token.getLine());
             }
             return new IdentifierPredicateNode(terminalNode, declarationNode);
+        }
+
+        @Override
+        public SubstitutionNode visitSkipSubstitution(BMoThParser.SkipSubstitutionContext ctx) {
+            return new SkipSubstitutionNode();
         }
 
         @Override

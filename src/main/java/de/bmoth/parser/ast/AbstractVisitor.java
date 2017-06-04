@@ -75,9 +75,21 @@ public interface AbstractVisitor<R, P> {
             return visitBecomesSuchThatSubstitutionNode((BecomesSuchThatSubstitutionNode) node, expected);
         } else if (node instanceof BecomesElementOfSubstitutionNode) {
             return visitBecomesElementOfSubstitutionNode((BecomesElementOfSubstitutionNode) node, expected);
+        } else if (node instanceof ConditionSubstitutionNode) {
+            return visitConditionSubstitutionNode((ConditionSubstitutionNode) node, expected);
+        } else if (node instanceof IfSubstitutionNode) {
+            return visitIfSubstitutionNode((IfSubstitutionNode) node, expected);
+        } else if (node instanceof SkipSubstitutionNode) {
+            return visitSkipSubstitutionNode((SkipSubstitutionNode) node, expected);
         }
         throw new AssertionError();
     }
+
+    R visitSkipSubstitutionNode(SkipSubstitutionNode node, P expected);
+
+    R visitIfSubstitutionNode(IfSubstitutionNode node, P expected);
+
+    R visitConditionSubstitutionNode(ConditionSubstitutionNode node, P expected);
 
     R visitAnySubstitution(AnySubstitutionNode node, P expected);
 

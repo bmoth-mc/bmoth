@@ -3,14 +3,17 @@ package de.bmoth.parser.ast;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.bmoth.parser.ast.nodes.AbstractConditionsAndSubstitutionsNode;
 import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.BecomesElementOfSubstitutionNode;
 import de.bmoth.parser.ast.nodes.BecomesSuchThatSubstitutionNode;
 import de.bmoth.parser.ast.nodes.CastPredicateExpressionNode;
+import de.bmoth.parser.ast.nodes.ConditionSubstitutionNode;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
 import de.bmoth.parser.ast.nodes.IdentifierExprNode;
 import de.bmoth.parser.ast.nodes.IdentifierPredicateNode;
+import de.bmoth.parser.ast.nodes.IfSubstitutionNode;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.NumberNode;
 import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
@@ -21,6 +24,7 @@ import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
 import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
 import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
+import de.bmoth.parser.ast.nodes.SkipSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
 
 public class ASTTransformationVisitor {
@@ -103,6 +107,29 @@ public class ASTTransformationVisitor {
 
         @Override
         public Node visitSelectSubstitutionNode(SelectSubstitutionNode node, Void expected) {
+            return visitConditionsAndSubstitutionsNode(node, expected);
+        }
+
+        @Override
+        public Node visitIfSubstitutionNode(IfSubstitutionNode node, Void expected) {
+            return visitConditionsAndSubstitutionsNode(node, expected);
+        }
+
+        private Node visitConditionsAndSubstitutionsNode(AbstractConditionsAndSubstitutionsNode node, Void expected) {
+            node.setConditions(node.getConditions().stream().map(t -> (PredicateNode) visitPredicateNode(t, expected))
+                    .collect(Collectors.toList()));
+            node.setSubstitutions(node.getSubstitutions().stream()
+                    .map(t -> (SubstitutionNode) visitSubstitutionNode(t, expected)).collect(Collectors.toList()));
+            if (null != node.getElseSubstitution()) {
+                SubstitutionNode elseSub = (SubstitutionNode) visitSubstitutionNode(node.getElseSubstitution(),
+                        expected);
+                node.setElseSubstitution(elseSub);
+            }
+            return modifyNode(node, expected);
+        }
+
+        @Override
+        public Node visitConditionSubstitutionNode(ConditionSubstitutionNode node, Void expected) {
             node.setCondition((PredicateNode) visitPredicateNode(node.getCondition(), expected));
             node.setSubstitution((SubstitutionNode) visitSubstitutionNode(node.getSubstitution(), expected));
             return modifyNode(node, expected);
@@ -163,5 +190,11 @@ public class ASTTransformationVisitor {
             node.setExpression((ExprNode) visitExprNode(node.getExpression(), expected));
             return modifyNode(node, expected);
         }
+
+        @Override
+        public Node visitSkipSubstitutionNode(SkipSubstitutionNode node, Void expected) {
+            return modifyNode(node, expected);
+        }
+
     }
 }

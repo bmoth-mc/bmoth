@@ -500,6 +500,23 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
 
     @Override
     public Type visitSelectSubstitutionNode(SelectSubstitutionNode node, Type expected) {
+        visitConditionsAndSubstitionsNode(node);
+        return null;
+    }
+
+    @Override
+    public Type visitIfSubstitutionNode(IfSubstitutionNode node, Type expected) {
+        visitConditionsAndSubstitionsNode(node);
+        return null;
+    }
+
+    private void visitConditionsAndSubstitionsNode(AbstractConditionsAndSubstitutionsNode node) {
+        node.getConditions().stream().forEach(t -> visitPredicateNode(t, BoolType.getInstance()));
+        node.getSubstitutions().stream().forEach(t -> visitSubstitutionNode(t, null));
+    }
+
+    @Override
+    public Type visitConditionSubstitutionNode(ConditionSubstitutionNode node, Type expected) {
         visitPredicateNode(node.getCondition(), BoolType.getInstance());
         visitSubstitutionNode(node.getSubstitution(), expected);
         return null;
@@ -549,6 +566,11 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
     public Type visitBecomesSuchThatSubstitutionNode(BecomesSuchThatSubstitutionNode node, Type expected) {
         node.getIdentifiers().stream().forEach(t -> visitIdentifierExprNode(t, new UntypedType()));
         visitPredicateNode(node.getPredicate(), BoolType.getInstance());
+        return null;
+    }
+
+    @Override
+    public Type visitSkipSubstitutionNode(SkipSubstitutionNode node, Type expected) {
         return null;
     }
 
