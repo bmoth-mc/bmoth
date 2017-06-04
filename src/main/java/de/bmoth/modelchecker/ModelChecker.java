@@ -47,15 +47,17 @@ public class ModelChecker implements Abortable {
         // prepare initial states
         BoolExpr initialValueConstraint = machineTranslator.getInitialValueConstraint();
 
-        Set<Model> models = finder.findSolutions(initialValueConstraint, BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
-        models.stream().map(this::getStateFromModel)
-            .forEach(queue::add);
+        Set<Model> models = finder.findSolutions(initialValueConstraint,
+                BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
+        models.stream().map(this::getStateFromModel).forEach(queue::add);
 
         final BoolExpr invariant = machineTranslator.getInvariantConstraint();
         solver.add(invariant);
 
-        // create joint operations constraint and permanently add to separate solver
-        final BoolExpr operationsConstraint = ctx.mkOr(machineTranslator.getOperationConstraints().toArray(new BoolExpr[0]));
+        // create joint operations constraint and permanently add to separate
+        // solver
+        final BoolExpr operationsConstraint = ctx
+                .mkOr(machineTranslator.getOperationConstraints().toArray(new BoolExpr[0]));
         opSolver.add(operationsConstraint);
 
         while (!isAborted && !queue.isEmpty()) {
@@ -69,30 +71,30 @@ public class ModelChecker implements Abortable {
             // check invariant & state
             Status check = solver.check();
             switch (check) {
-                case UNKNOWN:
-                    return new ModelCheckingResult("check-sat = unknown, reason: " + solver.getReasonUnknown());
-                case UNSATISFIABLE:
-                    return new ModelCheckingResult(current);
-                case SATISFIABLE:
-                default:
-                    // continue
+            case UNKNOWN:
+                return new ModelCheckingResult("check-sat = unknown, reason: " + solver.getReasonUnknown(),
+                        visited.size());
+            case UNSATISFIABLE:
+                return new ModelCheckingResult(current, visited.size());
+            case SATISFIABLE:
+            default:
+                // continue
             }
             visited.add(current);
 
             // compute successors on separate finder
-            models = opFinder.findSolutions(stateConstraint, BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
-            models.stream().map(model -> getStateFromModel(current, model))
-                .filter(state -> !visited.contains(state))
-                .filter(state -> !queue.contains(state))
-                .forEach(queue::add);
+            models = opFinder.findSolutions(stateConstraint,
+                    BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
+            models.stream().map(model -> getStateFromModel(current, model)).filter(state -> !visited.contains(state))
+                    .filter(state -> !queue.contains(state)).forEach(queue::add);
 
             solver.pop();
         }
 
         if (isAborted) {
-            return new ModelCheckingResult("aborted");
+            return new ModelCheckingResult("aborted", visited.size());
         } else {
-            return new ModelCheckingResult("correct");
+            return new ModelCheckingResult("correct", visited.size());
         }
     }
 

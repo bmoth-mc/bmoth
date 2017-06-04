@@ -15,7 +15,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     State thirdState;
 
     String correct = "correct";
-    String unknonw = "check-sat ...";
+    String unknown = "check-sat ...";
     String invalid = "loremIpsum";
 
     @Before
@@ -28,7 +28,6 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
         secondMap.put("x", z3Context.mkInt(11));
         thirdMap.put("x", z3Context.mkInt(12));
 
-
         thirdState = new State(null, thirdMap);
         secondState = new State(thirdState, secondMap);
         firstState = new State(secondState, firstMap);
@@ -36,9 +35,9 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     @Test
     public void testIsCorrect() {
-        ModelCheckingResult resultCorrect = new ModelCheckingResult(correct);
-        ModelCheckingResult resultIncorrectUnknown = new ModelCheckingResult(unknonw);
-        ModelCheckingResult resultIncorrectPath = new ModelCheckingResult(firstState);
+        ModelCheckingResult resultCorrect = new ModelCheckingResult(correct, 0);
+        ModelCheckingResult resultIncorrectUnknown = new ModelCheckingResult(unknown, 0);
+        ModelCheckingResult resultIncorrectPath = new ModelCheckingResult(firstState, 0);
 
         assertTrue(resultCorrect.isCorrect());
         assertFalse(resultIncorrectUnknown.isCorrect());
@@ -47,21 +46,22 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     @Test
     public void testGetLastState() {
-        ModelCheckingResult resultIncorrectPath = new ModelCheckingResult(firstState);
+        ModelCheckingResult resultIncorrectPath = new ModelCheckingResult(firstState, 0);
         assertEquals(firstState, resultIncorrectPath.getLastState());
     }
 
     @Test
     public void testGetPath() {
-        assertEquals("[" + secondState + ", " + thirdState.toString() + "]", ModelCheckingResult.getPath(firstState).toString());
+        assertEquals("[" + secondState + ", " + thirdState.toString() + "]",
+                ModelCheckingResult.getPath(firstState).toString());
     }
 
     @Test
     public void testGetMessage() {
-        ModelCheckingResult resultIncorrectUnknown = new ModelCheckingResult(unknonw);
-        ModelCheckingResult resultIncorrectInvaild = new ModelCheckingResult(invalid);
+        ModelCheckingResult resultIncorrectUnknown = new ModelCheckingResult(unknown, 0);
+        ModelCheckingResult resultIncorrectInvaild = new ModelCheckingResult(invalid, 0);
 
-        assertEquals(unknonw, resultIncorrectUnknown.getMessage());
+        assertEquals(unknown, resultIncorrectUnknown.getMessage());
         assertEquals("", resultIncorrectInvaild.getMessage());
     }
 }

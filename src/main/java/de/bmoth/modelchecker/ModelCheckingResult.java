@@ -7,8 +7,10 @@ public class ModelCheckingResult {
     private Boolean correct = false;
     private String message = "";
     private State lastState;
+    private final int numberOfStatesVisited;
 
-    ModelCheckingResult(String result) {
+    ModelCheckingResult(String result, int numberOfStatesVisited) {
+        this.numberOfStatesVisited = numberOfStatesVisited;
         if (result.equals("correct")) {
             correct = true;
         } else if (result.startsWith("check-sat") || result.equals("aborted")) {
@@ -16,8 +18,13 @@ public class ModelCheckingResult {
         }
     }
 
-    ModelCheckingResult(State state) {
+    ModelCheckingResult(State state, int numberOfStatesVisited) {
+        this.numberOfStatesVisited = numberOfStatesVisited;
         lastState = state;
+    }
+
+    public int getNumberOfDistinctStatesVisited() {
+        return this.numberOfStatesVisited;
     }
 
     public Boolean isCorrect() {
