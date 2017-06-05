@@ -49,7 +49,7 @@ public class ModelChecker implements Abortable {
 
         Set<Model> models = finder.findSolutions(initialValueConstraint,
                 BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
-        models.stream().map(this::getStateFromModel).forEach(queue::add);
+        models.stream().map(this::getStateFromModel).filter(s -> !queue.contains(s)).forEach(queue::add);
 
         final BoolExpr invariant = machineTranslator.getInvariantConstraint();
         solver.add(invariant);
