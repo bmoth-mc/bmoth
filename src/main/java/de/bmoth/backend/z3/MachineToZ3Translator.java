@@ -184,6 +184,7 @@ public class MachineToZ3Translator {
         @Override
         public BoolExpr visitIfSubstitutionNode(IfSubstitutionNode node, TranslationOptions ops) {
             if (node.getConditions().size() > 1) {
+                // ELSIF THEN ...
                 throw new AssertionError(CURRENTLY_NOT_SUPPORTED);
             }
             BoolExpr condition = FormulaToZ3Translator.translatePredicate(node.getConditions().get(0), z3Context);
@@ -208,7 +209,6 @@ public class MachineToZ3Translator {
                 elseList.addAll(createDummyAssignment(elseDummies));
             }
             elseExpr = z3Context.mkAnd(elseList.toArray(new BoolExpr[elseList.size()]));
-
             return z3Context.mkOr(ifThen, elseExpr);
         }
 
