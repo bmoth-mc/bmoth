@@ -1,7 +1,7 @@
 package de.bmoth.parser.ast.nodes;
 
-public interface OperatorNode<OpType> extends Node {
-    OpType getOperator();
+public interface OperatorNode<T> extends Node {
+    T getOperator();
 
-    void setOperator(OpType operator);
+    void setOperator(T operator);
 }
