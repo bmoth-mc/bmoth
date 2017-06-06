@@ -18,6 +18,10 @@ public class SetType extends Observable implements BType, Observer {
         }
     }
 
+    public BType getSubType() {
+        return this.subType;
+    }
+
     @Override
     public boolean unifiable(BType otherType) {
         if (otherType == this) {
@@ -28,7 +32,7 @@ public class SetType extends Observable implements BType, Observer {
             return true;
         } else if (otherType instanceof SetType) {
             SetType setType = (SetType) otherType;
-            return this.subType.unifiable(setType.subType);
+            return getSubType().unifiable(setType.getSubType());
         } else if (otherType instanceof IntegerOrSetOfPairs) {
             return true;
         }
@@ -93,7 +97,7 @@ public class SetType extends Observable implements BType, Observer {
 
     @Override
     public String toString() {
-        return "POW(" + subType.toString() + ")";
+        return "POW(" + getSubType().toString() + ")";
     }
 
     @Override

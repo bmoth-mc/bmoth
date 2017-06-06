@@ -123,7 +123,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
         for (ExpressionOperatorNode minusNode : minusNodes) {
             BType type = minusNode.getType();
             if (type instanceof SetType) {
-                minusNode.changeOperator(ExpressionOperatorNode.ExpressionOperator.SET_SUBTRACTION);
+                minusNode.setOperator(ExpressionOperatorNode.ExpressionOperator.SET_SUBTRACTION);
             }
         }
 
@@ -131,7 +131,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
         for (ExpressionOperatorNode node : multOrCartNodes) {
             BType type = node.getType();
             if (type instanceof SetType) {
-                node.changeOperator(ExpressionOperatorNode.ExpressionOperator.CARTESIAN_PRODUCT);
+                node.setOperator(ExpressionOperatorNode.ExpressionOperator.CARTESIAN_PRODUCT);
             }
         }
     }
@@ -204,7 +204,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
                 visitExprNode(right, IntegerType.getInstance());
             } else if (found instanceof SetType) {
                 SetType setType = (SetType) found;
-                CoupleType coupleType = (CoupleType) setType.getSubtype();
+                CoupleType coupleType = (CoupleType) setType.getSubType();
                 visitExprNode(left, new SetType(coupleType.getLeft()));
                 visitExprNode(right, new SetType(coupleType.getRight()));
             } else if (found instanceof IntegerOrSetOfPairs) {
@@ -214,7 +214,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
                     visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
                 } else if (leftType instanceof SetType) {
                     SetType s = (SetType) node.getType();
-                    CoupleType c = (CoupleType) s.getSubtype();
+                    CoupleType c = (CoupleType) s.getSubType();
                     visitExprNode(expressionNodes.get(1), new SetType(c.getRight()));
                 } else {
                     IntegerOrSetOfPairs s = (IntegerOrSetOfPairs) node.getType();
@@ -279,7 +279,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
         case DOMAIN: {
             SetType argument = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             argument = (SetType) visitExprNode(expressionNodes.get(0), argument);
-            CoupleType subType = (CoupleType) argument.getSubtype();
+            CoupleType subType = (CoupleType) argument.getSubType();
             SetType found = new SetType(subType.getLeft());
             unify(expected, found, node);
             return node.getType();
@@ -303,13 +303,13 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
             SetType found = new SetType(
                     new CoupleType(new UntypedType(), new CoupleType(new UntypedType(), new UntypedType())));
             found = (SetType) unify(expected, found, node);
-            CoupleType c1 = (CoupleType) found.getSubtype();
+            CoupleType c1 = (CoupleType) found.getSubType();
             CoupleType c2 = (CoupleType) c1.getRight();
             BType T = c1.getLeft();
             BType U = c2.getLeft();
             BType V = c2.getRight();
             SetType leftArg = (SetType) visitExprNode(expressionNodes.get(0), new SetType(new CoupleType(T, U)));
-            T = ((CoupleType) leftArg.getSubtype()).getLeft();
+            T = ((CoupleType) leftArg.getSubType()).getLeft();
             visitExprNode(expressionNodes.get(1), new SetType(new CoupleType(T, V)));
             return node.getType();
         }
@@ -368,7 +368,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
         case GENERALIZED_UNION:
             unify(expected, new SetType(new UntypedType()), node);
             visitExprNode(expressionNodes.get(0), new SetType(node.getType()));
-            return ((SetType) node.getType()).getSubtype();
+            return ((SetType) node.getType()).getSubType();
         case EMPTY_SEQUENCE:
             typedNodes.add(node);
             return unify(expected, new SetType(new CoupleType(IntegerType.getInstance(), new UntypedType())), node);

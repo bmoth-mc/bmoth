@@ -160,6 +160,14 @@ public class FormulaToZ3Translator {
 
     class FormulaToZ3TranslatorVisitor implements FormulaVisitor<Expr, TranslationOptions> {
 
+        class OperatorNotImplementedError extends AssertionError {
+            private static final long serialVersionUID = 4872994563768693737L;
+
+            OperatorNotImplementedError(OperatorNode node) {
+                super("Not implemented: " + node.getOperator());
+            }
+        }
+
         private String addPrimes(TranslationOptions ops, String name) {
             int numOfPrimes = ops.getPrimeLevel();
             StringBuilder nameBuilder = new StringBuilder(name);
@@ -228,9 +236,9 @@ public class FormulaToZ3Translator {
             case STRICT_NON_INCLUSION:
                 return z3Context
                         .mkNot(z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arguments.get(0), arguments.get(1))),
-                                z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1))));
-            default:
-                throw new AssertionError("Not implemented: " + node.getOperator());
+                            z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1))));
+                default:
+                    throw new OperatorNotImplementedError(node);
             }
         }
 
@@ -507,7 +515,7 @@ public class FormulaToZ3Translator {
             default:
                 break;
             }
-            throw new AssertionError("Not implemented: " + node.getOperator());
+            throw new OperatorNotImplementedError(node);
         }
 
         private Expr translateGeneralizedUnion(ExpressionOperatorNode node, List<Expr> arguments) {
@@ -621,22 +629,22 @@ public class FormulaToZ3Translator {
             final List<BoolExpr> arguments = node.getPredicateArguments().stream()
                     .map(it -> (BoolExpr) visitPredicateNode(it, ops)).collect(Collectors.toList());
             switch (node.getOperator()) {
-            case AND:
-                return z3Context.mkAnd(arguments.toArray(new BoolExpr[arguments.size()]));
-            case OR:
-                return z3Context.mkOr(arguments.toArray(new BoolExpr[arguments.size()]));
-            case IMPLIES:
-                return z3Context.mkImplies(arguments.get(0), arguments.get(1));
-            case EQUIVALENCE:
-                return z3Context.mkEq(arguments.get(0), arguments.get(1));
-            case NOT:
-                return z3Context.mkNot(arguments.get(0));
-            case TRUE:
-                return z3Context.mkTrue();
-            case FALSE:
-                return z3Context.mkFalse();
-            default:
-                throw new AssertionError("Not implemented: " + node.getOperator());
+                case AND:
+                    return z3Context.mkAnd(arguments.toArray(new BoolExpr[arguments.size()]));
+                case OR:
+                    return z3Context.mkOr(arguments.toArray(new BoolExpr[arguments.size()]));
+                case IMPLIES:
+                    return z3Context.mkImplies(arguments.get(0), arguments.get(1));
+                case EQUIVALENCE:
+                    return z3Context.mkEq(arguments.get(0), arguments.get(1));
+                case NOT:
+                    return z3Context.mkNot(arguments.get(0));
+                case TRUE:
+                    return z3Context.mkTrue();
+                case FALSE:
+                    return z3Context.mkFalse();
+                default:
+                    throw new OperatorNotImplementedError(node);
             }
         }
 

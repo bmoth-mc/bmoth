@@ -172,7 +172,19 @@ public class MachineAnalyser {
             }
             return null;
         }
+    }
 
+    class UnmatchedArgumentsQuantityException extends ScopeException {
+        UnmatchedArgumentsQuantityException(BDefinition definition, int actual) {
+            super("The number of parameters does not match the number of arguments of definition '" +
+                definition.getName() +
+                "': " + actual + " vs " + definition.getArity());
+        }
+
+        UnmatchedArgumentsQuantityException(BDefinition definition) {
+            super("Expecting " + definition.getArity() + " argument(s) for definition "
+                + definition.getName());
+        }
     }
 
     public Map<TerminalNode, TerminalNode> getDeclarationReferences() {
@@ -257,16 +269,11 @@ public class MachineAnalyser {
                     if (ctx.parent instanceof FunctionCallExpressionContext) {
                         FunctionCallExpressionContext funcCall = (FunctionCallExpressionContext) ctx.parent;
                         if (funcCall.exprs.size() - 1 != bDefinition.getArity()) {
-                            StringBuilder sb = new StringBuilder();
-                            sb.append("The number of paramters does not match the number of arguments of definition '")
-                                .append(bDefinition.getName()).append("'").append(": ")
-                                .append(funcCall.exprs.size() - 1).append(" vs ").append(bDefinition.getArity());
-                            throw new ScopeException(sb.toString());
+                            throw new UnmatchedArgumentsQuantityException(bDefinition, funcCall.exprs.size() - 1);
                         }
                         definitionCallReplacements.put(funcCall, bDefinition);
                     } else {
-                        throw new ScopeException("Expecting " + bDefinition.getArity() + " argument(s) for definition "
-                            + bDefinition.getName());
+                        throw new UnmatchedArgumentsQuantityException(bDefinition);
                     }
                 } else {
                     definitionCallReplacements.put(ctx, bDefinition);
@@ -283,11 +290,7 @@ public class MachineAnalyser {
             if (definitions.containsKey(declarationTNode)) {
                 BDefinition bDefinition = definitions.get(declarationTNode);
                 if (ctx.exprs.size() != bDefinition.getArity()) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("The number of paramters does not match the number of arguments of definition '")
-                        .append(bDefinition.getName()).append("'").append(": ").append(ctx.exprs.size())
-                        .append(" vs ").append(bDefinition.getArity());
-                    throw new ScopeException(sb.toString());
+                    throw new UnmatchedArgumentsQuantityException(bDefinition, ctx.exprs.size());
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
 
@@ -304,14 +307,10 @@ public class MachineAnalyser {
             if (definitions.containsKey(declarationTNode)) {
                 BDefinition bDefinition = definitions.get(declarationTNode);
                 if (bDefinition.getArity() > 0 && null == ctx.expression_list()) {
-                    throw new ScopeException("Expecting " + bDefinition.getArity() + " argument(s) for definition "
-                        + bDefinition.getName());
+                    throw new UnmatchedArgumentsQuantityException(bDefinition);
                 }
                 if (null != ctx.expression_list() && bDefinition.getArity() != ctx.expression_list().exprs.size()) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("The number of paramters does not match the number of arguments of definition '")
-                        .append(bDefinition.getName()).append("'").append(": ")
-                        .append(ctx.expression_list().exprs.size()).append(" vs ").append(bDefinition.getArity());
+                    throw new UnmatchedArgumentsQuantityException(bDefinition, ctx.expression_list().exprs.size());
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
             }
@@ -330,8 +329,7 @@ public class MachineAnalyser {
                         + " at definition " + bDefinition.getName());
                 }
                 if (bDefinition.getArity() > 0) {
-                    throw new ScopeException("Expecting " + bDefinition.getArity() + " argument(s) for definition "
-                        + bDefinition.getName());
+                    throw new UnmatchedArgumentsQuantityException(bDefinition);
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
             }

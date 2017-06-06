@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-public class ExpressionOperatorNode extends ExprNode {
+public class ExpressionOperatorNode extends ExprNode implements OperatorNode<ExpressionOperatorNode.ExpressionOperator> {
 
     public enum ExpressionOperator {
 
@@ -131,11 +131,13 @@ public class ExpressionOperatorNode extends ExprNode {
         throw new AssertionError("Operator not implemented: " + operatorString);
     }
 
+    @Override
     public ExpressionOperator getOperator() {
         return operator;
     }
 
-    public void changeOperator(ExpressionOperator operator) {
+    @Override
+    public void setOperator(ExpressionOperator operator) {
         this.operator = operator;
     }
 

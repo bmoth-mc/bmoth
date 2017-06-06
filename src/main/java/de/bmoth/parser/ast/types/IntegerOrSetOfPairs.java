@@ -48,7 +48,7 @@ public class IntegerOrSetOfPairs extends Observable implements BType, Observer {
                     ((Observable) right).deleteObserver(this);
                 }
                 SetType r = (SetType) right.unify(new SetType(new UntypedType()));
-                this.notifyObservers(new SetType(new CoupleType(((SetType) newType).getSubtype(), r.getSubtype())));
+                this.notifyObservers(new SetType(new CoupleType(((SetType) newType).getSubType(), r.getSubType())));
             } else if (newType instanceof SetType && o != getLeft()) {
                 this.setChanged();
                 // right is a set
@@ -56,7 +56,7 @@ public class IntegerOrSetOfPairs extends Observable implements BType, Observer {
                     ((Observable) left).deleteObserver(this);
                 }
                 SetType l = (SetType) left.unify(new SetType(new UntypedType()));
-                this.notifyObservers(new SetType(new CoupleType(l.getSubtype(), ((SetType) newType).getSubtype())));
+                this.notifyObservers(new SetType(new CoupleType(l.getSubType(), ((SetType) newType).getSubType())));
             } else if (o == getLeft()) {
                 setLeftType(newType);
             } else {
@@ -80,7 +80,7 @@ public class IntegerOrSetOfPairs extends Observable implements BType, Observer {
             }
             SetType l = (SetType) left.unify(new SetType(new UntypedType()));
             SetType r = (SetType) right.unify(new SetType(new UntypedType()));
-            SetType found = new SetType(new CoupleType(l.getSubtype(), r.getSubtype()));
+            SetType found = new SetType(new CoupleType(l.getSubType(), r.getSubType()));
             found = (SetType) found.unify(otherType);
             this.setChanged();
             this.notifyObservers(found);
@@ -130,7 +130,7 @@ public class IntegerOrSetOfPairs extends Observable implements BType, Observer {
             return true;
         } else if (otherType instanceof SetType) {
             SetType setType = (SetType) otherType;
-            return setType.getSubtype() instanceof CoupleType;
+            return setType.getSubType() instanceof CoupleType;
         } else {
             return false;
         }

@@ -9,6 +9,9 @@ import static org.junit.Assert.assertEquals;
 
 public class SequenceFormulaTest {
 
+    private static final String INTEGER = "INTEGER";
+    private static final String SEQ_INTEGER = "SEQUENCE(INTEGER)";
+
     @Test
     public void testSequenceEnumeration() {
         String formula = "a = [1,b]";
@@ -37,14 +40,14 @@ public class SequenceFormulaTest {
     public void testFirst() {
         String formula = "1 = first([a])";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("INTEGER", formulaTypes.get("a"));
+        assertEquals(INTEGER, formulaTypes.get("a"));
     }
 
     @Test
     public void testLast() {
         String formula = "a = last([1])";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("INTEGER", formulaTypes.get("a"));
+        assertEquals(INTEGER, formulaTypes.get("a"));
     }
 
     @Test
@@ -88,7 +91,7 @@ public class SequenceFormulaTest {
     public void testSeq1() {
         String formula = "[a] : seq(INTEGER)";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("INTEGER", formulaTypes.get("a"));
+        assertEquals(INTEGER, formulaTypes.get("a"));
     }
 
     @Test
@@ -101,6 +104,13 @@ public class SequenceFormulaTest {
     @Test
     public void testiSeq1() {
         String formula = "[1] : seq({a})";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals(INTEGER, formulaTypes.get("a"));
+    }
+
+    @Test
+    public void testFunctionCall() {
+        String formula = "[4,5,6](2) = a";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("a"));
     }
