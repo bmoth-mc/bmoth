@@ -5,6 +5,7 @@ import de.bmoth.parser.ast.TypeErrorException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TypeErrorExceptionTest {
 
@@ -37,7 +38,8 @@ public class TypeErrorExceptionTest {
     private static String getExceptionMessage(String formula) {
         try {
             Parser.getFormulaAsSemanticAst(formula);
-            throw new RuntimeException("Expected a type error exception.");
+            fail("Expected a type error exception.");
+            return null;
         } catch (TypeErrorException e) {
             return e.getMessage();
         }
