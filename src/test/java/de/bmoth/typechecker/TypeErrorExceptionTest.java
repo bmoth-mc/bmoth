@@ -39,7 +39,7 @@ public class TypeErrorExceptionTest {
         try {
             Parser.getFormulaAsSemanticAst(formula);
             fail("Expected a type error exception.");
-            return null;
+            return "";
         } catch (TypeErrorException e) {
             return e.getMessage();
         }
