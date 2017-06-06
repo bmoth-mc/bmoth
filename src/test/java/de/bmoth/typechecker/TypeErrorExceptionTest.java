@@ -25,14 +25,14 @@ public class TypeErrorExceptionTest {
     public void testSetEnumeration() {
         String formula = "x = {1,2,(3,4)}";
         String exceptionMessage = getExceptionMessage(formula);
-        assertTrue(exceptionMessage.contains("Expected INTEGER but found INTEGER*INTEGER"));
+        assertTrue(exceptionMessage != null &&exceptionMessage.contains("Expected INTEGER but found INTEGER*INTEGER"));
     }
 
     @Test
     public void testSetEnumeration2() {
         String formula = "x = {1,2,{3,4}}";
         String exceptionMessage = getExceptionMessage(formula);
-        assertTrue(exceptionMessage.contains("found POW"));
+        assertTrue(exceptionMessage != null &&exceptionMessage.contains("found POW"));
     }
 
     private static String getExceptionMessage(String formula) {
