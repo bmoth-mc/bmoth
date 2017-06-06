@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
-public class PredicateOperatorWithExprArgsNode extends PredicateNode {
+public class PredicateOperatorWithExprArgsNode extends PredicateNode implements OperatorNode<PredicateOperatorWithExprArgsNode.PredOperatorExprArgs> {
 
     public enum PredOperatorExprArgs {
         EQUAL, NOT_EQUAL, ELEMENT_OF, LESS_EQUAL, LESS, GREATER_EQUAL, GREATER//
@@ -61,10 +61,12 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
         throw new AssertionError("Operator not implemented: " + operatorString);
     }
 
+    @Override
     public PredOperatorExprArgs getOperator() {
         return operator;
     }
 
+    @Override
     public void setOperator(PredOperatorExprArgs operator) {
         this.operator = operator;
     }
