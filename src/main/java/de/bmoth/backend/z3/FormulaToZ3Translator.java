@@ -43,6 +43,12 @@ public class FormulaToZ3Translator {
     // used to generate unique identifiers
     private static int tempVariablesCounter = 0;
 
+    class OperatorNotImplementedException extends AssertionError {
+        OperatorNotImplementedException(OperatorNode node) {
+            super("Not implemented: " + node.getOperator());
+        }
+    }
+
     public List<DeclarationNode> getImplicitDeclarations() {
         return this.implicitDeclarations;
     }
@@ -273,7 +279,7 @@ public class FormulaToZ3Translator {
                         .mkNot(z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arguments.get(0), arguments.get(1))),
                             z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1))));
                 default:
-                    throw new AssertionError("Not implemented: " + node.getOperator());
+                    throw new OperatorNotImplementedException(node);
             }
         }
 
@@ -553,7 +559,7 @@ public class FormulaToZ3Translator {
                 default:
                     break;
             }
-            throw new AssertionError("Not implemented: " + node.getOperator());
+            throw new OperatorNotImplementedException(node);
         }
 
         private Expr translateGeneralizedUnion(ExpressionOperatorNode node, List<Expr> arguments) {
@@ -678,7 +684,7 @@ public class FormulaToZ3Translator {
                 case FALSE:
                     return z3Context.mkFalse();
                 default:
-                    throw new AssertionError("Not implemented: " + node.getOperator());
+                    throw new OperatorNotImplementedException(node);
             }
         }
 
