@@ -1,6 +1,6 @@
 package de.bmoth.parser.ast.types;
 
-public class SetType extends SubTypedObservable implements Type {
+public class SetType extends SubTypedObservable {
 
     public SetType(Type subType) {
         setSubType(subType);
@@ -21,11 +21,6 @@ public class SetType extends SubTypedObservable implements Type {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean contains(Type other) {
-        return getSubType() == other || getSubType().contains(other);
     }
 
     @Override
@@ -60,10 +55,4 @@ public class SetType extends SubTypedObservable implements Type {
     public String toString() {
         return "POW(" + getSubType().toString() + ")";
     }
-
-    @Override
-    public boolean isUntyped() {
-        return getSubType().isUntyped();
-    }
-
 }

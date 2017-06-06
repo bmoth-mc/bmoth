@@ -1,6 +1,6 @@
 package de.bmoth.parser.ast.types;
 
-public class SequenceType extends SubTypedObservable implements Type {
+public class SequenceType extends SubTypedObservable {
 
     public SequenceType(Type subType) {
         setSubType(subType);
@@ -17,11 +17,6 @@ public class SequenceType extends SubTypedObservable implements Type {
             return getSubType().unifiable(seqType.getSubType());
         }
         return false;
-    }
-
-    @Override
-    public boolean contains(Type other) {
-        return getSubType() == other || getSubType().contains(other);
     }
 
     @Override
@@ -52,10 +47,4 @@ public class SequenceType extends SubTypedObservable implements Type {
     public String toString() {
         return "SEQUENCE(" + getSubType().toString() + ")";
     }
-
-    @Override
-    public boolean isUntyped() {
-        return getSubType().isUntyped();
-    }
-
 }

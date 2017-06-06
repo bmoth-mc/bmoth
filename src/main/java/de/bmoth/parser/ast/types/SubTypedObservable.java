@@ -3,7 +3,7 @@ package de.bmoth.parser.ast.types;
 import java.util.Observable;
 import java.util.Observer;
 
-public class SubTypedObservable extends Observable implements Observer {
+public abstract class SubTypedObservable extends Observable implements Observer, Type {
     private Type subType;
 
     void setSubType(Type subType) {
@@ -34,5 +34,15 @@ public class SubTypedObservable extends Observable implements Observer {
     public void update(Observable o, Object arg) {
         o.deleteObserver(this);
         setSubType((Type) arg);
+    }
+
+    @Override
+    public boolean contains(Type other) {
+        return subType == other || subType.contains(other);
+    }
+
+    @Override
+    public boolean isUntyped() {
+        return subType.isUntyped();
     }
 }
