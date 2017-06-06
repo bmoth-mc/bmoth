@@ -16,10 +16,12 @@ public class ModelCheckerMachineFilesTest {
         MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "OnlyInitViolation.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
+        assertEquals(1, result.getNumberOfDistinctStatesVisited());
 
         MachineNode simpleMachineWithoutViolation = Parser.getMachineFileAsSemanticAst(dir + "OnlyInitNoViolation.mch");
         result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
         assertEquals(true, result.isCorrect());
+        assertEquals(1, result.getNumberOfDistinctStatesVisited());
     }
 
     @Test

@@ -8,8 +8,6 @@ import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
-
 public class ModelCheckerTest {
     @Test
     public void testAnySubstitution() {
@@ -27,6 +25,7 @@ public class ModelCheckerTest {
 
         ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
         assertTrue(result.isCorrect());
+        assertEquals(4, result.getNumberOfDistinctStatesVisited());
     }
 
     @Test
@@ -39,7 +38,7 @@ public class ModelCheckerTest {
         machine += "\treplaceX =\n";
         machine += "\t\tANY nVal \n";
         machine += "\t\tWHERE nVal > 0 & nVal < 5\n"; // should be < 4 to avoid
-                                                      // violation
+        // violation
         machine += "\t\tTHEN x := nVal\n";
         machine += "\tEND\n";
         machine += "END";
@@ -61,6 +60,7 @@ public class ModelCheckerTest {
 
         ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
         assertTrue(result.isCorrect());
+        assertEquals(3, result.getNumberOfDistinctStatesVisited());
     }
 
     @Test
@@ -77,6 +77,7 @@ public class ModelCheckerTest {
         // the operation BlockSubstitution will finally violate the invariant
         // x<=2
         assertFalse(result.isCorrect());
+        assertEquals(4, result.getNumberOfDistinctStatesVisited());
     }
 
     @Test
@@ -116,13 +117,13 @@ public class ModelCheckerTest {
         machine += "INITIALISATION x := s1 \n";
         machine += "END";
         System.out.println(machine);
-        
+
         ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
         // the initialisation will finally violate the invariant x = s2
         assertFalse(result.isCorrect());
+        assertEquals(1, result.getNumberOfDistinctStatesVisited());
     }
 
-    @Ignore
     @Test
     public void testDeferredSet() {
         String machine = "MACHINE SimpleMachine\n";
@@ -134,5 +135,6 @@ public class ModelCheckerTest {
         ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
         // the initialisation will finally violate the invariant x = s2
         assertFalse(result.isCorrect());
+        assertEquals(1, result.getNumberOfDistinctStatesVisited());
     }
 }
