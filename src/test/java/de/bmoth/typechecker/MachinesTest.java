@@ -235,7 +235,7 @@ public class MachinesTest {
         AnySubstitutionNode any = (AnySubstitutionNode) machineAsSemanticAst.getOperations().get(0).getSubstitution();
         DeclarationNode p = any.getParameters().get(0);
         assertEquals("p", p.getName());
-        assertEquals("INTEGER", p.getType());
+        assertEquals("INTEGER", p.getType().toString());
     }
 
     @Test
