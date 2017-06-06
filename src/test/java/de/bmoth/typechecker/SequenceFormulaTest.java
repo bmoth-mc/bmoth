@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 public class SequenceFormulaTest {
 
     private static final String INTEGER = "INTEGER";
-    private static final String SEQ_INTEGER = "SEQUENCE(INTEGER)";
 
     @Test
     public void testSequenceEnumeration() {
@@ -113,6 +112,13 @@ public class SequenceFormulaTest {
         String formula = "[4,5,6](2) = a";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("a"));
+    }
+    
+    @Test
+    public void testRangeOnSequence() {
+        String formula = "ran([4,5,6]) = a";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(INTEGER)", formulaTypes.get("a"));
     }
 
 }

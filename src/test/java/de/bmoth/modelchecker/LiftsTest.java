@@ -41,7 +41,7 @@ public class LiftsTest {
             result.getLastState().toString());
     }
 
-    @Ignore("Error in Type Checker")
+    @Ignore("iseq not implemented in FormularToZ3Translator")
     @Test
     public void testLiftDoesNotMoveTowardsFirstPressedButton() throws IOException {
         MachineNode simpleMachineWithViolation = Parser
