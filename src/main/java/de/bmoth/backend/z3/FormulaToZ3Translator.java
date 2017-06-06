@@ -84,10 +84,8 @@ public class FormulaToZ3Translator {
         Expr variable = z3Context.mkConst(name, z3Value.getSort());
         BoolExpr mkEq = z3Context.mkEq(variable, z3Value);
 
-        List<BoolExpr> list = new ArrayList<>();
-        list.add(mkEq);
-        list.addAll(formulaToZ3Translator.constraintList);
-        return z3Context.mkAnd(list.toArray(new BoolExpr[list.size()]));
+        // adding all additional constraints to result
+        return z3Context.mkAnd(mkEq,formulaToZ3Translator.getAccumulatedConstraints(z3Context));
     }
 
     public static BoolExpr translateVariableElementOfSetExpr(String name, Type variableType, ExprNode setValue,
@@ -103,6 +101,17 @@ public class FormulaToZ3Translator {
         return z3Context.mkAnd(list.toArray(new BoolExpr[list.size()]));
     }
 
+    public BoolExpr getAccumulatedConstraints(Context z3Context) {
+        switch (constraintList.size()) {
+            case 0:
+                return z3Context.mkTrue();
+            case 1:
+                return constraintList.get(0);
+            default:
+                return z3Context.mkAnd(constraintList.toArray(new BoolExpr[0]));
+        }
+    }
+
     public static BoolExpr translatePredicate(String formula, Context z3Context) {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context, formula);
 
@@ -116,12 +125,9 @@ public class FormulaToZ3Translator {
         if (!(constraint instanceof BoolExpr)) {
             throw new RuntimeException("Invalid translation. Expected BoolExpr but found " + constraint.getClass());
         }
-        BoolExpr boolExpr = (BoolExpr) constraint;
         // adding all additional constraints to result
-        for (BoolExpr bExpr : formulaToZ3Translator.constraintList) {
-            boolExpr = z3Context.mkAnd(boolExpr, bExpr);
-        }
-        return boolExpr;
+        BoolExpr accumulatedConstraints = formulaToZ3Translator.getAccumulatedConstraints(z3Context);
+        return z3Context.mkAnd((BoolExpr) constraint, accumulatedConstraints);
     }
 
     public static BoolExpr translatePredicate(PredicateNode pred, Context z3Context) {
@@ -136,10 +142,8 @@ public class FormulaToZ3Translator {
 
         BoolExpr boolExpr = (BoolExpr) formulaToZ3TranslatorVisitor.visitPredicateNode(predNode, opt);
         // adding all additional constraints to result
-        for (BoolExpr bExpr : formulaToZ3Translator.constraintList) {
-            boolExpr = z3Context.mkAnd(boolExpr, bExpr);
-        }
-        return boolExpr;
+        BoolExpr accumulatedConstraints = formulaToZ3Translator.getAccumulatedConstraints(z3Context);
+        return z3Context.mkAnd(boolExpr, accumulatedConstraints);
     }
 
     public static Sort bTypeToZ3Sort(Context z3Context, Type t) {
