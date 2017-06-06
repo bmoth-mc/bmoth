@@ -17,18 +17,20 @@ public class TypeErrorException extends RuntimeException {
     private static final long serialVersionUID = -5344167922965323221L;
     private final String message;
 
+    private static final String TYPE_ERROR = "Type error";
+
     public TypeErrorException(String message) {
         this.message = message;
         EventBus eventBus = EventBusProvider.getInstance().getEventBus();
-        eventBus.post(new ErrorEvent("Type error", message));
+        eventBus.post(new ErrorEvent(TYPE_ERROR, message));
     }
 
     public TypeErrorException(Type expected, Type found, TypedNode node, UnificationException e) {
         this.message = createErrorMessage(expected, found, node);
         final Logger logger = Logger.getLogger(getClass().getName());
-        logger.log(Level.SEVERE, "Type error", e);
+        logger.log(Level.SEVERE, TYPE_ERROR, e);
         EventBus eventBus = EventBusProvider.getInstance().getEventBus();
-        eventBus.post(new ErrorEvent("Type error", toString()));
+        eventBus.post(new ErrorEvent(TYPE_ERROR, toString()));
     }
 
     private String createErrorMessage(Type expected, Type found, TypedNode node) {
