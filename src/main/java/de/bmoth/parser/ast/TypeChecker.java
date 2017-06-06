@@ -204,7 +204,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
                 visitExprNode(right, IntegerType.getInstance());
             } else if (found instanceof SetType) {
                 SetType setType = (SetType) found;
-                CoupleType coupleType = (CoupleType) setType.getSubtype();
+                CoupleType coupleType = (CoupleType) setType.getSubType();
                 visitExprNode(left, new SetType(coupleType.getLeft()));
                 visitExprNode(right, new SetType(coupleType.getRight()));
             } else if (found instanceof IntegerOrSetOfPairs) {
@@ -214,7 +214,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
                     visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
                 } else if (leftType instanceof SetType) {
                     SetType s = (SetType) node.getType();
-                    CoupleType c = (CoupleType) s.getSubtype();
+                    CoupleType c = (CoupleType) s.getSubType();
                     visitExprNode(expressionNodes.get(1), new SetType(c.getRight()));
                 } else {
                     IntegerOrSetOfPairs s = (IntegerOrSetOfPairs) node.getType();
@@ -242,7 +242,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
             return node.getType();
         case SET_ENUMERATION: {
             SetType found = (SetType) unify(expected, new SetType(new UntypedType()), node);
-            Type subtype = found.getSubtype();
+            Type subtype = found.getSubType();
             for (ExprNode exprNode : expressionNodes) {
                 subtype = visitExprNode(exprNode, subtype);
             }
@@ -279,7 +279,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
         case DOMAIN: {
             SetType argument = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             argument = (SetType) visitExprNode(expressionNodes.get(0), argument);
-            CoupleType subType = (CoupleType) argument.getSubtype();
+            CoupleType subType = (CoupleType) argument.getSubType();
             SetType found = new SetType(subType.getLeft());
             unify(expected, found, node);
             return node.getType();
@@ -287,7 +287,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
         case RANGE: {
             SetType argument = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             argument = (SetType) visitExprNode(expressionNodes.get(0), argument);
-            CoupleType subType = (CoupleType) argument.getSubtype();
+            CoupleType subType = (CoupleType) argument.getSubType();
             SetType found = new SetType(subType.getRight());
             unify(expected, found, node);
             return node.getType();
@@ -306,13 +306,13 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
             SetType found = new SetType(
                     new CoupleType(new UntypedType(), new CoupleType(new UntypedType(), new UntypedType())));
             found = (SetType) unify(expected, found, node);
-            CoupleType c1 = (CoupleType) found.getSubtype();
+            CoupleType c1 = (CoupleType) found.getSubType();
             CoupleType c2 = (CoupleType) c1.getRight();
             Type T = c1.getLeft();
             Type U = c2.getLeft();
             Type V = c2.getRight();
             SetType leftArg = (SetType) visitExprNode(expressionNodes.get(0), new SetType(new CoupleType(T, U)));
-            T = ((CoupleType) leftArg.getSubtype()).getLeft();
+            T = ((CoupleType) leftArg.getSubType()).getLeft();
             visitExprNode(expressionNodes.get(1), new SetType(new CoupleType(T, V)));
             return node.getType();
         }
@@ -323,7 +323,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
             SetType found = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             unify(expected, found, node);
             found = (SetType) visitExprNode(expressionNodes.get(1), found);
-            Type left = ((CoupleType) found.getSubtype()).getLeft();
+            Type left = ((CoupleType) found.getSubType()).getLeft();
             visitExprNode(expressionNodes.get(0), new SetType(left));
             return node.getType();
         }
@@ -334,7 +334,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
             SetType found = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             unify(expected, found, node);
             found = (SetType) visitExprNode(expressionNodes.get(0), node.getType());
-            Type right = ((CoupleType) found.getSubtype()).getLeft();
+            Type right = ((CoupleType) found.getSubType()).getLeft();
             visitExprNode(expressionNodes.get(1), new SetType(right));
             return node.getType();
         }
@@ -342,14 +342,14 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
             // E -> s
             unify(expected, new SequenceType(new UntypedType()), node);
             visitExprNode(expressionNodes.get(1), node.getType());
-            visitExprNode(expressionNodes.get(0), ((SequenceType) node.getType()).getSubtype());
+            visitExprNode(expressionNodes.get(0), ((SequenceType) node.getType()).getSubType());
             return node.getType();
         }
         case INSERT_TAIL:
             // s <- E
             unify(expected, new SequenceType(new UntypedType()), node);
             visitExprNode(expressionNodes.get(0), node.getType());
-            visitExprNode(expressionNodes.get(1), ((SequenceType) node.getType()).getSubtype());
+            visitExprNode(expressionNodes.get(1), ((SequenceType) node.getType()).getSubType());
             return node.getType();
         case OVERWRITE_RELATION:
             unify(expected, new SetType(new CoupleType(new UntypedType(), new UntypedType())), node);
@@ -359,7 +359,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
         case INVERSE_RELATION: {
             SetType argType = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             argType = (SetType) visitExprNode(expressionNodes.get(0), argType);
-            CoupleType c = (CoupleType) argType.getSubtype();
+            CoupleType c = (CoupleType) argType.getSubType();
             SetType found = new SetType(new CoupleType(c.getRight(), c.getLeft()));
             return unify(expected, found, node);
         }
@@ -379,13 +379,13 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
         case GENERALIZED_UNION:
             unify(expected, new SetType(new UntypedType()), node);
             visitExprNode(expressionNodes.get(0), new SetType(node.getType()));
-            return ((SetType) node.getType()).getSubtype();
+            return ((SetType) node.getType()).getSubType();
         case EMPTY_SEQUENCE:
             typedNodes.add(node);
             return unify(expected, new SequenceType(new UntypedType()), node);
         case SEQ_ENUMERATION: {
             SequenceType found = (SequenceType) unify(expected, new SequenceType(new UntypedType()), node);
-            Type subtype = found.getSubtype();
+            Type subtype = found.getSubType();
             for (ExprNode exprNode : expressionNodes) {
                 subtype = visitExprNode(exprNode, subtype);
             }
@@ -394,7 +394,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
         case LAST:
         case FIRST:
             return unify(expected,
-                    ((SequenceType) visitExprNode(expressionNodes.get(0), new SequenceType(expected))).getSubtype(),
+                    ((SequenceType) visitExprNode(expressionNodes.get(0), new SequenceType(expected))).getSubType(),
                     node);
         case FRONT:
         case TAIL:
@@ -404,7 +404,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
         case ISEQ:
         case ISEQ1: {
             SetType found = (SetType) unify(expected, new SetType(new SequenceType(new UntypedType())), node);
-            Type type = ((SequenceType) found.getSubtype()).getSubtype();
+            Type type = ((SequenceType) found.getSubType()).getSubType();
             visitExprNode(expressionNodes.get(0), new SetType(type));
             return node.getType();
         }
@@ -413,7 +413,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
             SequenceType seqType = (SequenceType) visitExprNode(expressionNodes.get(0),
                     new SequenceType(new UntypedType()));
             visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
-            Type found = seqType.getSubtype();
+            Type found = seqType.getSubType();
             return unify(expected, found, node);
         }
         case CARD:

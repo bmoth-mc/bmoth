@@ -16,7 +16,7 @@ public class SetType extends SubTypedObservable implements Type {
             return true;
         } else if (otherType instanceof SetType) {
             SetType setType = (SetType) otherType;
-            return getSubtype().unifiable(setType.getSubtype());
+            return getSubType().unifiable(setType.getSubType());
         } else if (otherType instanceof IntegerOrSetOfPairs) {
             return true;
         }
@@ -25,7 +25,7 @@ public class SetType extends SubTypedObservable implements Type {
 
     @Override
     public boolean contains(Type other) {
-        return getSubtype() == other || getSubtype().contains(other);
+        return getSubType() == other || getSubType().contains(other);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SetType extends SubTypedObservable implements Type {
                 otherSetType.replaceBy(this);
 
                 // unify the sub types
-                getSubtype().unify(otherSetType.getSubtype());
+                getSubType().unify(otherSetType.getSubType());
                 /*
                  * Note, if the sub type has changed this instance will be
                  * automatically updated. Hence, there is no need to store the
@@ -58,12 +58,12 @@ public class SetType extends SubTypedObservable implements Type {
 
     @Override
     public String toString() {
-        return "POW(" + getSubtype().toString() + ")";
+        return "POW(" + getSubType().toString() + ")";
     }
 
     @Override
     public boolean isUntyped() {
-        return getSubtype().isUntyped();
+        return getSubType().isUntyped();
     }
 
 }

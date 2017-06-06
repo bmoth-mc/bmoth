@@ -13,7 +13,7 @@ public class SubTypedObservable extends Observable implements Observer {
         }
     }
 
-    public Type getSubtype() {
+    public Type getSubType() {
         return this.subType;
     }
 

@@ -14,14 +14,14 @@ public class SequenceType extends SubTypedObservable implements Type {
             return true;
         } else if (otherType instanceof SequenceType) {
             SequenceType seqType = (SequenceType) otherType;
-            return getSubtype().unifiable(seqType.getSubtype());
+            return getSubType().unifiable(seqType.getSubType());
         }
         return false;
     }
 
     @Override
     public boolean contains(Type other) {
-        return getSubtype() == other || getSubtype().contains(other);
+        return getSubType() == other || getSubType().contains(other);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class SequenceType extends SubTypedObservable implements Type {
                 otherSeqType.replaceBy(this);
 
                 // unify the sub types
-                getSubtype().unify(otherSeqType.getSubtype());
+                getSubType().unify(otherSeqType.getSubType());
                 /*
                  * Note, if the sub type has changed this instance will be
                  * automatically updated. Hence, there is no need to store the
@@ -50,12 +50,12 @@ public class SequenceType extends SubTypedObservable implements Type {
 
     @Override
     public String toString() {
-        return "SEQUENCE(" + getSubtype().toString() + ")";
+        return "SEQUENCE(" + getSubType().toString() + ")";
     }
 
     @Override
     public boolean isUntyped() {
-        return getSubtype().isUntyped();
+        return getSubType().isUntyped();
     }
 
 }
