@@ -212,14 +212,14 @@ public class FormulaToZ3Translator {
             } else {
                 // element of an enumerated set or an deferred set
                 UserDefinedElementType elementType = (UserDefinedElementType) type;
-                EnumSort enumSort = (EnumSort) bTypeToZ3Sort(type);
                 String name = node.getName();
                 List<String> elements = elementType.getElements();
                 // elements is null if it is a deferred set
                 if (elements != null && elements.indexOf(name) != -1) {
+                    EnumSort enumSort = (EnumSort) bTypeToZ3Sort(type);
                     return enumSort.getConsts()[elements.indexOf(name)];
                 } else {
-                    return z3Context.mkConst(addPrimes(ops, node.getName()), enumSort);
+                    return z3Context.mkConst(addPrimes(ops, node.getName()), bTypeToZ3Sort(type));
                 }
             }
 

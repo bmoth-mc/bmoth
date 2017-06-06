@@ -133,7 +133,7 @@ public class ModelCheckerTest {
         machine += "INITIALISATION x :: set || y :: set \n";
         machine += "END";
         ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
-        // the initialisation will finally violate the invariant x = s2
+        // the initialisation will finally violate the invariant x = y
         assertFalse(result.isCorrect());
         assertEquals(1, result.getNumberOfDistinctStatesVisited());
     }
