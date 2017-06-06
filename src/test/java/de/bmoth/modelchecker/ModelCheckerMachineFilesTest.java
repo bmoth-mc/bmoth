@@ -30,11 +30,4 @@ public class ModelCheckerMachineFilesTest {
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(true, result.isCorrect());
     }
-
-    @Test
-    public void testPinDownPowProblem() throws IOException {
-        MachineNode pinDownPowProblem = Parser.getMachineFileAsSemanticAst(dir + "PinDownPowProblem.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(pinDownPowProblem);
-        assertEquals(false, result.isCorrect());
-    }
 }
