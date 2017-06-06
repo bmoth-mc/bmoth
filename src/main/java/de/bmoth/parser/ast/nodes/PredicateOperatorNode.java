@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
-public class PredicateOperatorNode extends PredicateNode {
+public class PredicateOperatorNode extends PredicateNode implements OperatorNode<PredicateOperatorNode.PredicateOperator> {
     public enum PredicateOperator {
         AND, OR, IMPLIES, EQUIVALENCE, NOT, TRUE, FALSE
     }
@@ -56,10 +56,12 @@ public class PredicateOperatorNode extends PredicateNode {
         return predicateArguments;
     }
 
+    @Override
     public PredicateOperator getOperator() {
         return operator;
     }
 
+    @Override
     public void setOperator(PredicateOperator operator) {
         this.operator = operator;
     }

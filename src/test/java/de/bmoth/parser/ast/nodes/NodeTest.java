@@ -52,7 +52,7 @@ public class NodeTest {
         assertEquals("EQUAL(x,1)", equalNode.toString());
         assertEquals("LESS_EQUAL(x,1)", otherNode.toString());
 
-        otherNode.changeOperator(PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.GREATER_EQUAL);
+        otherNode.setOperator(PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.GREATER_EQUAL);
         assertEquals("GREATER_EQUAL(x,1)", otherNode.toString());
     }
 
@@ -62,7 +62,7 @@ public class NodeTest {
 
         assertEquals("POWER_OF(1,1)", node.toString());
 
-        node.changeOperator(ExpressionOperatorNode.ExpressionOperator.TRUE);
+        node.setOperator(ExpressionOperatorNode.ExpressionOperator.TRUE);
         node.setExpressionList(new ArrayList<>());
         assertEquals("TRUE", node.toString());
 
