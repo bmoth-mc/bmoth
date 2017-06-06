@@ -1,5 +1,6 @@
 package de.bmoth.backend.z3;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.types.*;
 
 public class Z3TypeInference {
+    Map<TypedNode, Z3Type> types = new HashMap<>();
+    Map<DeclarationNode, Z3Type> declarationNodesTypes = new HashMap<>();
 
     public void visitMachineNode(MachineNode machineNode) {
         Visitor visitor = new Visitor();
@@ -37,12 +40,20 @@ public class Z3TypeInference {
         visitor.visitPredicateNode(node, null);
     }
 
+    interface Z3Type {
+
+    }
+
     enum Basic {
         INTEGER, BOOL
     }
 
-    interface Z3Type {
+    class Z3BasicType implements Z3Type {
+        Basic kind;
 
+        public Z3BasicType(Basic kind) {
+            this.kind = kind;
+        }
     }
 
     class Z3SequenceType implements Z3Type {
@@ -117,17 +128,6 @@ public class Z3TypeInference {
         }
     }
 
-    class Z3BasicType implements Z3Type {
-        Basic kind;
-
-        public Z3BasicType(Basic kind) {
-            this.kind = kind;
-        }
-    }
-
-    Map<TypedNode, Z3Type> types = new HashMap<>();
-    Map<DeclarationNode, Z3Type> declarationNodesTypes = new HashMap<>();
-
     public Sort getZ3Sort(TypedNode node, Context z3Context) {
         if (declarationNodesTypes.containsKey(node)) {
             Z3Type z3Type = declarationNodesTypes.get(node);
@@ -185,15 +185,6 @@ public class Z3TypeInference {
         throw new AssertionError("Missing Type Conversion: " + t.getClass());
     }
 
-    protected Z3Type getType(DeclarationNode node) {
-        if (declarationNodesTypes.containsKey(node)) {
-            return this.declarationNodesTypes.get(node);
-        } else {
-            Z3Type z3Type = convertBTypeToZ3Type(node.getType());
-            return declarationNodesTypes.put(node, z3Type);
-        }
-    }
-
     protected Z3Type updateDeclarationType(DeclarationNode node, Z3Type newZ3Type) {
         if (declarationNodesTypes.containsKey(node)) {
             Z3Type z3Type = declarationNodesTypes.get(node);
@@ -220,7 +211,7 @@ public class Z3TypeInference {
         return subType;
     }
 
-    protected Z3Type getTypeOfNode(TypedNode node) {
+    protected Z3Type getZ3TypeOfNode(TypedNode node) {
         if (types.containsKey(node)) {
             return types.get(node);
         } else {
@@ -264,11 +255,11 @@ public class Z3TypeInference {
             case INSERT_TAIL:
             case RESTRICT_FRONT:
             case RESTRICT_TAIL:
-                return setSubType(node, getTypeOfNode(arguments.get(0)));
+                return setSubType(node, getZ3TypeOfNode(arguments.get(0)));
             case INSERT_FRONT:
-                return setSubType(node, getTypeOfNode(arguments.get(1)));
+                return setSubType(node, getZ3TypeOfNode(arguments.get(1)));
             case SEQ_ENUMERATION:
-                return setSubType(node, new Z3SequenceType(getTypeOfNode(arguments.get(0))));
+                return setSubType(node, new Z3SequenceType(getZ3TypeOfNode(arguments.get(0))));
             case EMPTY_SEQUENCE: {
                 de.bmoth.parser.ast.types.SetType setType = (de.bmoth.parser.ast.types.SetType) node.getType();
                 de.bmoth.parser.ast.types.CoupleType c = (de.bmoth.parser.ast.types.CoupleType) setType.getSubtype();
@@ -399,15 +390,29 @@ public class Z3TypeInference {
 
         @Override
         public Z3Type visitBecomesElementOfSubstitutionNode(BecomesElementOfSubstitutionNode node, Void expected) {
-            visitExprNode(node.getExpression(), expected);
-            // TODO unify
+            Z3SetType setType = (Z3SetType) visitExprNode(node.getExpression(), expected);
+            Z3Type type = setType.getSubtype();
+            if (node.getIdentifiers().size() == 1) {
+                updateDeclarationType(node.getIdentifiers().get(0).getDeclarationNode(), type);
+            } else {
+                List<Z3Type> typesList = new ArrayList<>();
+                Z3CoupleType couple = (Z3CoupleType) type;
+                while (node.getIdentifiers().size() - 1 > typesList.size()) {
+                    typesList.add(0, couple.getRightType());
+                    couple = (Z3CoupleType) couple.getLeftType();
+                }
+                typesList.add(0, couple);
+                for (int i = 0; i < node.getIdentifiers().size(); i++) {
+                    updateDeclarationType(node.getIdentifiers().get(i).getDeclarationNode(), typesList.get(i));
+                }
+            }
+
             return null;
         }
 
         @Override
         public Z3Type visitBecomesSuchThatSubstitutionNode(BecomesSuchThatSubstitutionNode node, Void expected) {
             visitPredicateNode(node.getPredicate(), expected);
-            // TODO unify
             return null;
         }
 

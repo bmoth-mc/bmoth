@@ -175,6 +175,8 @@ public class MachineAnalyser {
     }
 
     class UnmatchedArgumentsQuantityException extends ScopeException {
+        private static final long serialVersionUID = -2894774140796162549L;
+
         UnmatchedArgumentsQuantityException(BDefinition definition, int actual) {
             super("The number of parameters does not match the number of arguments of definition '" +
                 definition.getName() +

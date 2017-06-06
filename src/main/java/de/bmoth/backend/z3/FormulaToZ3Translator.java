@@ -8,6 +8,7 @@ import de.bmoth.parser.ast.FormulaVisitor;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
+import de.bmoth.parser.ast.types.BType;
 import de.bmoth.preferences.BMothPreferences;
 
 import java.util.ArrayList;
@@ -67,9 +68,7 @@ public class FormulaToZ3Translator {
         formulaNode = Parser.getFormulaAsSemanticAst(formula);
         this.implicitDeclarations = formulaNode.getImplicitDeclarations();
         z3TypeInference = new Z3TypeInference();
-        if (formulaNode.getFormulaType() == FormulaType.PREDICATE_FORMULA) {
-            z3TypeInference.visitPredicateNode((PredicateNode) formulaNode.getFormula());
-        }
+        z3TypeInference.visitPredicateNode((PredicateNode) formulaNode.getFormula());
     }
 
     private FormulaToZ3Translator(Context z3Context, Z3TypeInference z3TypeInference) {
@@ -158,6 +157,18 @@ public class FormulaToZ3Translator {
         return z3TypeInference.getZ3Sort(node, z3Context);
     }
 
+    Z3Type getZ3Type(TypedNode node) {
+        return z3TypeInference.getZ3TypeOfNode(node);
+    }
+
+    Sort getZ3Sort(BType bType) {
+        return z3TypeInference.getZ3Sort(bType, z3Context);
+    }
+
+    Sort getZ3Sort(Z3Type z3Type) {
+        return z3TypeInference.getZ3Sort(z3Type, z3Context);
+    }
+
     class FormulaToZ3TranslatorVisitor implements FormulaVisitor<Expr, TranslationOptions> {
 
         class OperatorNotImplementedError extends AssertionError {
@@ -180,7 +191,7 @@ public class FormulaToZ3Translator {
 
         @Override
         public Expr visitIdentifierExprNode(IdentifierExprNode node, TranslationOptions ops) {
-            Z3Type z3Type = z3TypeInference.getTypeOfNode(node);
+            Z3Type z3Type = getZ3Type(node);
             if (z3Type instanceof Z3EnumeratedSetType
                     && ((Z3EnumeratedSetType) z3Type).getElements().contains(node.getName())) {
                 Z3EnumeratedSetType enumType = (Z3EnumeratedSetType) z3Type;
@@ -236,9 +247,9 @@ public class FormulaToZ3Translator {
             case STRICT_NON_INCLUSION:
                 return z3Context
                         .mkNot(z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arguments.get(0), arguments.get(1))),
-                            z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1))));
-                default:
-                    throw new OperatorNotImplementedError(node);
+                                z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1))));
+            default:
+                throw new OperatorNotImplementedError(node);
             }
         }
 
@@ -320,16 +331,15 @@ public class FormulaToZ3Translator {
             case DOMAIN: {
                 ArrayExpr argument = (ArrayExpr) visitExprNode(node.getExpressionNodes().get(0), ops);
 
-                Z3SetType setOfTuples = (Z3SetType) z3TypeInference.getTypeOfNode(node.getExpressionNodes().get(0));
+                Z3SetType setOfTuples = (Z3SetType) getZ3Type(node.getExpressionNodes().get(0));
                 Z3CoupleType coupleType = (Z3CoupleType) setOfTuples.getSubtype();
-                TupleSort tupleSort = (TupleSort) z3TypeInference.getZ3Sort(coupleType, z3Context);
+                TupleSort tupleSort = (TupleSort) getZ3Sort(coupleType);
 
                 Expr dom = z3Context.mkConst(createFreshTemporaryVariable(),
                         z3TypeInference.getZ3Sort(z3TypeInference.new Z3SetType(coupleType.getRightType()), z3Context));
                 Expr domMember = z3Context.mkConst(createFreshTemporaryVariable(),
-                        z3TypeInference.getZ3Sort(coupleType.getRightType(), z3Context));
-                Expr ranMember = z3Context.mkConst(createFreshTemporaryVariable(),
-                        z3TypeInference.getZ3Sort(coupleType.getLeftType(), z3Context));
+                        getZ3Sort(coupleType.getRightType()));
+                Expr ranMember = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(coupleType.getLeftType()));
 
                 BoolExpr domMemberInDom = z3Context.mkSetMembership(domMember, (ArrayExpr) dom);
                 BoolExpr ranAndDomInArgument = z3Context.mkSetMembership(tupleSort.mkDecl().apply(ranMember, domMember),
@@ -345,16 +355,15 @@ public class FormulaToZ3Translator {
             case RANGE: {
                 ArrayExpr argument = (ArrayExpr) visitExprNode(node.getExpressionNodes().get(0), ops);
 
-                Z3SetType setOfTuples = (Z3SetType) z3TypeInference.getTypeOfNode(node.getExpressionNodes().get(0));
+                Z3SetType setOfTuples = (Z3SetType) getZ3Type(node.getExpressionNodes().get(0));
                 Z3CoupleType coupleType = (Z3CoupleType) setOfTuples.getSubtype();
-                TupleSort tupleSort = (TupleSort) z3TypeInference.getZ3Sort(coupleType, z3Context);
+                TupleSort tupleSort = (TupleSort) getZ3Sort(coupleType);
 
                 Expr ran = z3Context.mkConst(createFreshTemporaryVariable(),
-                        z3TypeInference.getZ3Sort(z3TypeInference.new Z3SetType(coupleType.getLeftType()), z3Context));
+                        getZ3Sort(z3TypeInference.new Z3SetType(coupleType.getLeftType())));
                 Expr domMember = z3Context.mkConst(createFreshTemporaryVariable(),
-                        z3TypeInference.getZ3Sort(coupleType.getRightType(), z3Context));
-                Expr ranMember = z3Context.mkConst(createFreshTemporaryVariable(),
-                        z3TypeInference.getZ3Sort(coupleType.getLeftType(), z3Context));
+                        getZ3Sort(coupleType.getRightType()));
+                Expr ranMember = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(coupleType.getLeftType()));
 
                 BoolExpr ranMemberInRan = z3Context.mkSetMembership(ranMember, (ArrayExpr) ran);
                 BoolExpr ranAndDomInArgument = z3Context.mkSetMembership(tupleSort.mkDecl().apply(ranMember, domMember),
@@ -392,9 +401,9 @@ public class FormulaToZ3Translator {
             case EMPTY_SET: // not missing! it is equal to an empty enumeration
                 // below
             case SET_ENUMERATION: {
-                Z3SetType setType = (Z3SetType) z3TypeInference.getTypeOfNode(node);
+                Z3SetType setType = (Z3SetType) getZ3Type(node);
                 Z3Type subType = setType.getSubtype();
-                ArrayExpr z3Set = z3Context.mkEmptySet(z3TypeInference.getZ3Sort(subType, z3Context));
+                ArrayExpr z3Set = z3Context.mkEmptySet(getZ3Sort(subType));
                 for (Expr expr : arguments) {
                     z3Set = z3Context.mkSetAdd(z3Set, expr);
                 }
@@ -441,19 +450,17 @@ public class FormulaToZ3Translator {
             case OVERWRITE_RELATION:
                 break;
             case INVERSE_RELATION: {
-                Z3SetType setType = (Z3SetType) z3TypeInference.getTypeOfNode(node);
+                Z3SetType setType = (Z3SetType) getZ3Type(node);
                 Z3CoupleType couple = (Z3CoupleType) setType.getSubtype();
                 Z3CoupleType revCouple = z3TypeInference.new Z3CoupleType(couple.getRightType(), couple.getLeftType());
 
-                TupleSort subSort = (TupleSort) z3TypeInference.getZ3Sort(couple, z3Context);
-                TupleSort revSort = (TupleSort) z3TypeInference.getZ3Sort(revCouple, z3Context);
+                TupleSort subSort = (TupleSort) getZ3Sort(couple);
+                TupleSort revSort = (TupleSort) getZ3Sort(revCouple);
 
-                Expr tempLeft = z3Context.mkConst(createFreshTemporaryVariable(),
-                        z3TypeInference.getZ3Sort(couple.getLeftType(), z3Context));
-                Expr tempRight = z3Context.mkConst(createFreshTemporaryVariable(),
-                        z3TypeInference.getZ3Sort(couple.getRightType(), z3Context));
+                Expr tempLeft = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(couple.getLeftType()));
+                Expr tempRight = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(couple.getRightType()));
                 ArrayExpr tempConstant = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(),
-                        z3TypeInference.getZ3Sort(z3TypeInference.new Z3SetType(revCouple), z3Context));
+                        getZ3Sort(z3TypeInference.new Z3SetType(revCouple)));
 
                 BoolExpr lrInExpr = z3Context.mkSetMembership(subSort.mkDecl().apply(tempLeft, tempRight),
                         (ArrayExpr) arguments.get(0));
@@ -482,15 +489,15 @@ public class FormulaToZ3Translator {
                 break;
             case CARTESIAN_PRODUCT: {
 
-                Z3SetType setType = (Z3SetType) z3TypeInference.getTypeOfNode(node);
+                Z3SetType setType = (Z3SetType) getZ3Type(node);
                 Z3CoupleType coupleType = (Z3CoupleType) setType.getSubtype();
 
-                TupleSort bTypeToZ3Sort = (TupleSort) z3TypeInference.getZ3Sort(coupleType, z3Context);
+                TupleSort bTypeToZ3Sort = (TupleSort) getZ3Sort(coupleType);
 
                 ArithExpr leftExpr = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(),
-                        z3TypeInference.getZ3Sort(coupleType.getLeftType(), z3Context));
+                        getZ3Sort(coupleType.getLeftType()));
                 ArithExpr rightExpr = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(),
-                        z3TypeInference.getZ3Sort(coupleType.getRightType(), z3Context));
+                        getZ3Sort(coupleType.getRightType()));
 
                 ArrayExpr tempConstant = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
                 Expr couple = bTypeToZ3Sort.mkDecl().apply(leftExpr, rightExpr);
@@ -522,14 +529,12 @@ public class FormulaToZ3Translator {
             // union(S)
             // return Res
             // !(e).(e : Res <=> #(s).(s : S & e : s)
-            Z3SetType setType = (Z3SetType) z3TypeInference.getTypeOfNode(node);
+            Z3SetType setType = (Z3SetType) getZ3Type(node);
 
             Expr SetOfSets = arguments.get(0);
             Expr res = z3Context.mkConst(createFreshTemporaryVariable(), z3TypeInference.getZ3Sort(setType, z3Context));
-            Expr setVar = z3Context.mkConst(createFreshTemporaryVariable(),
-                    z3TypeInference.getZ3Sort(setType, z3Context));
-            Expr elementVar = z3Context.mkConst(createFreshTemporaryVariable(),
-                    z3TypeInference.getZ3Sort(setType.getSubtype(), z3Context));
+            Expr setVar = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(setType));
+            Expr elementVar = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(setType.getSubtype()));
 
             BoolExpr eIsInRes = z3Context.mkSetMembership(elementVar, (ArrayExpr) res);
             BoolExpr sIsInS = z3Context.mkSetMembership(setVar, (ArrayExpr) SetOfSets);
@@ -544,10 +549,8 @@ public class FormulaToZ3Translator {
 
         private Expr translateSeqEnumeration(ExpressionOperatorNode node, List<Expr> arguments) {
             Sort intType = z3Context.getIntSort();
-
-            Z3SequenceType setType = (Z3SequenceType) z3TypeInference.getTypeOfNode(node);
-
-            Sort rangeType = z3TypeInference.getZ3Sort(setType.getSubtype(), z3Context);
+            Z3SequenceType setType = (Z3SequenceType) getZ3Type(node);
+            Sort rangeType = getZ3Sort(setType.getSubtype());
             ArrayExpr a = z3Context.mkArrayConst(createFreshTemporaryVariable(), intType, rangeType);
             int index = 1;
             for (Expr value : arguments) {
@@ -629,22 +632,22 @@ public class FormulaToZ3Translator {
             final List<BoolExpr> arguments = node.getPredicateArguments().stream()
                     .map(it -> (BoolExpr) visitPredicateNode(it, ops)).collect(Collectors.toList());
             switch (node.getOperator()) {
-                case AND:
-                    return z3Context.mkAnd(arguments.toArray(new BoolExpr[arguments.size()]));
-                case OR:
-                    return z3Context.mkOr(arguments.toArray(new BoolExpr[arguments.size()]));
-                case IMPLIES:
-                    return z3Context.mkImplies(arguments.get(0), arguments.get(1));
-                case EQUIVALENCE:
-                    return z3Context.mkEq(arguments.get(0), arguments.get(1));
-                case NOT:
-                    return z3Context.mkNot(arguments.get(0));
-                case TRUE:
-                    return z3Context.mkTrue();
-                case FALSE:
-                    return z3Context.mkFalse();
-                default:
-                    throw new OperatorNotImplementedError(node);
+            case AND:
+                return z3Context.mkAnd(arguments.toArray(new BoolExpr[arguments.size()]));
+            case OR:
+                return z3Context.mkOr(arguments.toArray(new BoolExpr[arguments.size()]));
+            case IMPLIES:
+                return z3Context.mkImplies(arguments.get(0), arguments.get(1));
+            case EQUIVALENCE:
+                return z3Context.mkEq(arguments.get(0), arguments.get(1));
+            case NOT:
+                return z3Context.mkNot(arguments.get(0));
+            case TRUE:
+                return z3Context.mkTrue();
+            case FALSE:
+                return z3Context.mkFalse();
+            default:
+                throw new OperatorNotImplementedError(node);
             }
         }
 
@@ -666,8 +669,8 @@ public class FormulaToZ3Translator {
                 }
                 Expr tuple = null;
                 if (boundVariables.length > 1) {
-                    Z3SetType setType = (Z3SetType) z3TypeInference.getTypeOfNode(node);
-                    TupleSort tupleSort = (TupleSort) z3TypeInference.getZ3Sort(setType.getSubtype(), z3Context);
+                    Z3SetType setType = (Z3SetType) getZ3Type(node);
+                    TupleSort tupleSort = (TupleSort) getZ3Sort(setType.getSubtype());
                     tuple = tupleSort.mkDecl().apply(boundVariables);
                 } else {
                     tuple = boundVariables[0];
