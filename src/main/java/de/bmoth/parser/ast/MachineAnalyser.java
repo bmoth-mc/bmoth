@@ -172,7 +172,14 @@ public class MachineAnalyser {
             }
             return null;
         }
+    }
 
+    class UnmatchedArgumentsQuantityException extends ScopeException {
+        UnmatchedArgumentsQuantityException(BDefinition definition, int actual, int expected) {
+            super("The number of paramters does not match the number of arguments of definition '" +
+                definition.getName() +
+                "': " + actual + " vs " + expected);
+        }
     }
 
     public Map<TerminalNode, TerminalNode> getDeclarationReferences() {
@@ -257,11 +264,7 @@ public class MachineAnalyser {
                     if (ctx.parent instanceof FunctionCallExpressionContext) {
                         FunctionCallExpressionContext funcCall = (FunctionCallExpressionContext) ctx.parent;
                         if (funcCall.exprs.size() - 1 != bDefinition.getArity()) {
-                            StringBuilder sb = new StringBuilder();
-                            sb.append("The number of paramters does not match the number of arguments of definition '")
-                                .append(bDefinition.getName()).append("'").append(": ")
-                                .append(funcCall.exprs.size() - 1).append(" vs ").append(bDefinition.getArity());
-                            throw new ScopeException(sb.toString());
+                            throw new UnmatchedArgumentsQuantityException(bDefinition, funcCall.exprs.size() - 1, bDefinition.getArity());
                         }
                         definitionCallReplacements.put(funcCall, bDefinition);
                     } else {
@@ -283,11 +286,7 @@ public class MachineAnalyser {
             if (definitions.containsKey(declarationTNode)) {
                 BDefinition bDefinition = definitions.get(declarationTNode);
                 if (ctx.exprs.size() != bDefinition.getArity()) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("The number of paramters does not match the number of arguments of definition '")
-                        .append(bDefinition.getName()).append("'").append(": ").append(ctx.exprs.size())
-                        .append(" vs ").append(bDefinition.getArity());
-                    throw new ScopeException(sb.toString());
+                    throw new UnmatchedArgumentsQuantityException(bDefinition, ctx.exprs.size(), bDefinition.getArity());
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
 
@@ -308,10 +307,7 @@ public class MachineAnalyser {
                         + bDefinition.getName());
                 }
                 if (null != ctx.expression_list() && bDefinition.getArity() != ctx.expression_list().exprs.size()) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("The number of paramters does not match the number of arguments of definition '")
-                        .append(bDefinition.getName()).append("'").append(": ")
-                        .append(ctx.expression_list().exprs.size()).append(" vs ").append(bDefinition.getArity());
+                    throw new UnmatchedArgumentsQuantityException(bDefinition, ctx.expression_list().exprs.size(), bDefinition.getArity());
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
             }
