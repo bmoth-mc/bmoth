@@ -52,7 +52,10 @@ public class UserDefinedElementType implements Type {
     }
 
     public List<String> getElements() {
-        return new ArrayList<>(this.elements);
+        if (this.elements != null) {
+            return new ArrayList<>(this.elements);
+        }
+        return null;
     }
 
 }
