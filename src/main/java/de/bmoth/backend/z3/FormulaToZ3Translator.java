@@ -95,10 +95,8 @@ public class FormulaToZ3Translator {
         ArrayExpr z3Value = (ArrayExpr) visitor.visitExprNode(setValue, opt);
         Expr variable = z3Context.mkConst(name, bTypeToZ3Sort(z3Context, variableType));
         BoolExpr mkEq = z3Context.mkSetMembership(variable, z3Value);
-        List<BoolExpr> list = new ArrayList<>();
-        list.add(mkEq);
-        list.addAll(formulaToZ3Translator.constraintList);
-        return z3Context.mkAnd(list.toArray(new BoolExpr[list.size()]));
+
+        return z3Context.mkAnd(mkEq, formulaToZ3Translator.getAccumulatedConstraints(z3Context));
     }
 
     public BoolExpr getAccumulatedConstraints(Context z3Context) {
