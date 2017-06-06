@@ -63,6 +63,7 @@ public class ModelChecker implements Abortable {
         while (!isAborted && !queue.isEmpty()) {
             solver.push();
             State current = queue.poll();
+            visited.add(current);
 
             // apply current state - remains stored in solver for loop iteration
             BoolExpr stateConstraint = current.getStateConstraint(ctx);
@@ -80,7 +81,6 @@ public class ModelChecker implements Abortable {
             default:
                 // continue
             }
-            visited.add(current);
 
             // compute successors on separate finder
             models = opFinder.findSolutions(stateConstraint,
