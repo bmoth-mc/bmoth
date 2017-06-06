@@ -75,10 +75,6 @@ public class DependencyTest {
 
                 parser.mayUse(antlr, parser_);
                 parser_.mayUse(antlr, eventbus, parser_);
-
-                //$self.mayUse(util, dependency_);
-                //dependency_.mustUse(model);
-                //model.mayUse(util).mustNotUse($self);
             }
         }
 

@@ -3,7 +3,6 @@ package de.bmoth.modelchecker;
 import com.microsoft.z3.Expr;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -35,19 +34,18 @@ public class LiftsTest {
     @Test
     public void testInvalidPositions() throws IOException {
         MachineNode simpleMachineWithViolation = Parser
-                .getMachineFileAsSemanticAst(dir + "LiftStopsAtInvalidPositions.mch");
+            .getMachineFileAsSemanticAst(dir + "LiftStopsAtInvalidPositions.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
         assertEquals("{MAX_FLOOR=5, MIN_FLOOR=0, doors_open=false, moving=false, current_floor=1, betweenFloors=true}",
-                result.getLastState().toString());
+            result.getLastState().toString());
     }
 
-    @Ignore // TODO Enumerated sets are currently not supported by the z3
-            // translation
+    @Ignore("Error in Type Checker")
     @Test
     public void testLiftDoesNotMoveTowardsFirstPressedButton() throws IOException {
         MachineNode simpleMachineWithViolation = Parser
-                .getMachineFileAsSemanticAst(dir + "LiftDoesNotMoveTowardsFirstPressedButton.mch");
+            .getMachineFileAsSemanticAst(dir + "LiftDoesNotMoveTowardsFirstPressedButton.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
     }
@@ -63,7 +61,7 @@ public class LiftsTest {
     @Test
     public void testTargetAndCurrentCorrespond() throws IOException {
         MachineNode simpleMachineWithViolation = Parser
-                .getMachineFileAsSemanticAst(dir + "TargetAndCurrentCorrespond.mch");
+            .getMachineFileAsSemanticAst(dir + "TargetAndCurrentCorrespond.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
         Expr targetFloor = result.getLastState().values.get("target_floor");

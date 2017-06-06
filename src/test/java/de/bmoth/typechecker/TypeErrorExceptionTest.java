@@ -1,11 +1,10 @@
 package de.bmoth.typechecker;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.TypeErrorException;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class TypeErrorExceptionTest {
 
@@ -32,11 +31,10 @@ public class TypeErrorExceptionTest {
     public void testSetEnumeration2() {
         String formula = "x = {1,2,{3,4}}";
         String exceptionMessage = getExceptionMessage(formula);
-        System.out.println(exceptionMessage);
         assertTrue(exceptionMessage.contains("found POW"));
     }
 
-    public static String getExceptionMessage(String formula) {
+    private static String getExceptionMessage(String formula) {
         try {
             Parser.getFormulaAsSemanticAst(formula);
             throw new RuntimeException("Expected a type error exception.");

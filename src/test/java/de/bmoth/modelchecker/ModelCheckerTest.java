@@ -116,7 +116,6 @@ public class ModelCheckerTest {
         machine += "INVARIANT x: set & x = s2 \n";
         machine += "INITIALISATION x := s1 \n";
         machine += "END";
-        System.out.println(machine);
 
         ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
         // the initialisation will finally violate the invariant x = s2

@@ -1,12 +1,11 @@
 package de.bmoth.modelchecker;
 
-import static org.junit.Assert.assertEquals;
-
+import de.bmoth.parser.Parser;
 import org.junit.Test;
 
-import de.bmoth.parser.Parser;
+import static org.junit.Assert.assertEquals;
 
-public class ModelcheckerMachineTest {
+public class ModelCheckerMachineTest {
 
     @Test
     public void testIfThenElseSubstitutition() {
