@@ -175,10 +175,11 @@ public class MachineAnalyser {
     }
 
     class UnmatchedArgumentsQuantityException extends ScopeException {
-        UnmatchedArgumentsQuantityException(BDefinition definition, int actual, int expected) {
-            super("The number of paramters does not match the number of arguments of definition '" +
+        UnmatchedArgumentsQuantityException(BDefinition definition, int actual) {
+            super("The number of parameters does not match the number of arguments of definition '" +
                 definition.getName() +
-                "': " + actual + " vs " + expected);
+                "': " + actual + " vs " + definition.getArity());
+        }
         }
     }
 
@@ -264,7 +265,7 @@ public class MachineAnalyser {
                     if (ctx.parent instanceof FunctionCallExpressionContext) {
                         FunctionCallExpressionContext funcCall = (FunctionCallExpressionContext) ctx.parent;
                         if (funcCall.exprs.size() - 1 != bDefinition.getArity()) {
-                            throw new UnmatchedArgumentsQuantityException(bDefinition, funcCall.exprs.size() - 1, bDefinition.getArity());
+                            throw new UnmatchedArgumentsQuantityException(bDefinition, funcCall.exprs.size() - 1);
                         }
                         definitionCallReplacements.put(funcCall, bDefinition);
                     } else {
@@ -286,7 +287,7 @@ public class MachineAnalyser {
             if (definitions.containsKey(declarationTNode)) {
                 BDefinition bDefinition = definitions.get(declarationTNode);
                 if (ctx.exprs.size() != bDefinition.getArity()) {
-                    throw new UnmatchedArgumentsQuantityException(bDefinition, ctx.exprs.size(), bDefinition.getArity());
+                    throw new UnmatchedArgumentsQuantityException(bDefinition, ctx.exprs.size());
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
 
@@ -307,7 +308,7 @@ public class MachineAnalyser {
                         + bDefinition.getName());
                 }
                 if (null != ctx.expression_list() && bDefinition.getArity() != ctx.expression_list().exprs.size()) {
-                    throw new UnmatchedArgumentsQuantityException(bDefinition, ctx.expression_list().exprs.size(), bDefinition.getArity());
+                    throw new UnmatchedArgumentsQuantityException(bDefinition, ctx.expression_list().exprs.size());
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
             }
