@@ -85,7 +85,7 @@ public class FormulaToZ3Translator {
         BoolExpr mkEq = z3Context.mkEq(variable, z3Value);
 
         // adding all additional constraints to result
-        return z3Context.mkAnd(mkEq,formulaToZ3Translator.getAccumulatedConstraints(z3Context));
+        return z3Context.mkAnd(mkEq, formulaToZ3Translator.getAccumulatedConstraints(z3Context));
     }
 
     public static BoolExpr translateVariableElementOfSetExpr(String name, Type variableType, ExprNode setValue,
@@ -568,13 +568,13 @@ public class FormulaToZ3Translator {
             // !(e).(e : Res <=> #(s).(s : S & e : s)
 
             SetType setType = (SetType) node.getType();
-            Expr SetOfSets = arguments.get(0);
+            Expr setOfSets = arguments.get(0);
             Expr res = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType));
             Expr setVar = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType));
             Expr elementVar = z3Context.mkConst(createFreshTemporaryVariable(), bTypeToZ3Sort(setType.getSubtype()));
 
             BoolExpr eIsInRes = z3Context.mkSetMembership(elementVar, (ArrayExpr) res);
-            BoolExpr sIsInS = z3Context.mkSetMembership(setVar, (ArrayExpr) SetOfSets);
+            BoolExpr sIsInS = z3Context.mkSetMembership(setVar, (ArrayExpr) setOfSets);
             BoolExpr eIsIns = z3Context.mkSetMembership(elementVar, (ArrayExpr) setVar);
             Quantifier exists = z3Context.mkExists(new Expr[]{setVar}, z3Context.mkAnd(sIsInS, eIsIns), 1, null,
                 null, null, null);
