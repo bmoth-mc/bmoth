@@ -180,6 +180,10 @@ public class MachineAnalyser {
                 definition.getName() +
                 "': " + actual + " vs " + definition.getArity());
         }
+
+        UnmatchedArgumentsQuantityException(BDefinition definition) {
+            super("Expecting " + definition.getArity() + " argument(s) for definition "
+                + definition.getName());
         }
     }
 
@@ -269,8 +273,7 @@ public class MachineAnalyser {
                         }
                         definitionCallReplacements.put(funcCall, bDefinition);
                     } else {
-                        throw new ScopeException("Expecting " + bDefinition.getArity() + " argument(s) for definition "
-                            + bDefinition.getName());
+                        throw new UnmatchedArgumentsQuantityException(bDefinition);
                     }
                 } else {
                     definitionCallReplacements.put(ctx, bDefinition);
@@ -304,8 +307,7 @@ public class MachineAnalyser {
             if (definitions.containsKey(declarationTNode)) {
                 BDefinition bDefinition = definitions.get(declarationTNode);
                 if (bDefinition.getArity() > 0 && null == ctx.expression_list()) {
-                    throw new ScopeException("Expecting " + bDefinition.getArity() + " argument(s) for definition "
-                        + bDefinition.getName());
+                    throw new UnmatchedArgumentsQuantityException(bDefinition);
                 }
                 if (null != ctx.expression_list() && bDefinition.getArity() != ctx.expression_list().exprs.size()) {
                     throw new UnmatchedArgumentsQuantityException(bDefinition, ctx.expression_list().exprs.size());
@@ -327,8 +329,7 @@ public class MachineAnalyser {
                         + " at definition " + bDefinition.getName());
                 }
                 if (bDefinition.getArity() > 0) {
-                    throw new ScopeException("Expecting " + bDefinition.getArity() + " argument(s) for definition "
-                        + bDefinition.getName());
+                    throw new UnmatchedArgumentsQuantityException(bDefinition);
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
             }
