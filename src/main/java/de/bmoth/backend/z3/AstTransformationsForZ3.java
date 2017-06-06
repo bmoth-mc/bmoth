@@ -1,21 +1,16 @@
 package de.bmoth.backend.z3;
 
+import de.bmoth.parser.ast.ASTTransformationVisitor;
+import de.bmoth.parser.ast.AbstractASTTransformation;
+import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode.PredOperatorExprArgs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import de.bmoth.parser.ast.ASTTransformationVisitor;
-import de.bmoth.parser.ast.AbstractASTTransformation;
-import de.bmoth.parser.ast.nodes.ExprNode;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
-import de.bmoth.parser.ast.nodes.Node;
-import de.bmoth.parser.ast.nodes.PredicateNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
 
 public class AstTransformationsForZ3 {
     private static AstTransformationsForZ3 instance;
@@ -26,6 +21,7 @@ public class AstTransformationsForZ3 {
         this.transformationList = new ArrayList<>();
         transformationList.add(new ConvertNestedUnionsToUnionList());
         transformationList.add(new ConvertElementOfUnionToMultipleElementOfs());
+        transformationList.add(new ConvertMemberOfIntervalToLeqAndGeq());
     }
 
     public static AstTransformationsForZ3 getInstance() {
@@ -54,7 +50,7 @@ public class AstTransformationsForZ3 {
                 ExprNode left = node.getExpressionNodes().get(0);
                 ExprNode right = node.getExpressionNodes().get(1);
                 if (right instanceof ExpressionOperatorNode
-                        && ((ExpressionOperatorNode) right).getOperator() == ExpressionOperator.UNION) {
+                    && ((ExpressionOperatorNode) right).getOperator() == ExpressionOperator.UNION) {
                     List<PredicateNode> predicateArguments = new ArrayList<>();
                     ExpressionOperatorNode union = (ExpressionOperatorNode) right;
                     for (ExprNode set : union.getExpressionNodes()) {
@@ -62,12 +58,12 @@ public class AstTransformationsForZ3 {
                         args.add(left);
                         args.add(set);
                         PredicateOperatorWithExprArgsNode predicateOperatorWithExprArgsNode = new PredicateOperatorWithExprArgsNode(
-                                set.getParseTree(), PredOperatorExprArgs.ELEMENT_OF, args);
+                            set.getParseTree(), PredOperatorExprArgs.ELEMENT_OF, args);
                         predicateArguments.add(predicateOperatorWithExprArgsNode);
                     }
                     setChanged();
-                    return new PredicateOperatorNode( node.getParseTree(), PredicateOperator.OR,
-                            predicateArguments);
+                    return new PredicateOperatorNode(node.getParseTree(), PredicateOperator.OR,
+                        predicateArguments);
                 }
             }
             return node;
@@ -78,12 +74,12 @@ public class AstTransformationsForZ3 {
         @Override
         public Node visitExprOperatorNode(ExpressionOperatorNode node, Void expected) {
             final List<ExprNode> arguments = node.getExpressionNodes().stream()
-                    .map(exprNode -> (ExprNode) visitExprNode(exprNode, expected)).collect(Collectors.toList());
+                .map(exprNode -> (ExprNode) visitExprNode(exprNode, expected)).collect(Collectors.toList());
             if (node.getOperator() == ExpressionOperator.UNION) {
                 List<ExprNode> list = new ArrayList<>();
                 for (ExprNode expr : node.getExpressionNodes()) {
                     if (expr instanceof ExpressionOperatorNode
-                            && ((ExpressionOperatorNode) expr).getOperator() == ExpressionOperator.UNION) {
+                        && ((ExpressionOperatorNode) expr).getOperator() == ExpressionOperator.UNION) {
                         list.addAll(((ExpressionOperatorNode) expr).getExpressionNodes());
                         setChanged();
                     } else {
@@ -97,6 +93,30 @@ public class AstTransformationsForZ3 {
                 return node;
             }
 
+        }
+    }
+
+    private class ConvertMemberOfIntervalToLeqAndGeq extends AbstractASTTransformation {
+        @Override
+        public Node visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, Void expected) {
+            if (node.getOperator() == PredOperatorExprArgs.ELEMENT_OF) {
+                ExprNode left = node.getExpressionNodes().get(0);
+                ExprNode right = node.getExpressionNodes().get(1);
+                if (right instanceof ExpressionOperatorNode
+                    && ((ExpressionOperatorNode) right).getOperator() == ExpressionOperator.INTERVAL) {
+                    ExpressionOperatorNode interval = (ExpressionOperatorNode) right;
+
+                    ExprNode leftBound = interval.getExpressionNodes().get(0);
+                    ExprNode rightBound = interval.getExpressionNodes().get(1);
+                    PredicateNode geqLeftBound = new PredicateOperatorWithExprArgsNode(leftBound.getParseTree(), PredOperatorExprArgs.GREATER_EQUAL, Arrays.asList(left, leftBound));
+                    PredicateNode leqRightBound = new PredicateOperatorWithExprArgsNode(leftBound.getParseTree(), PredOperatorExprArgs.LESS_EQUAL, Arrays.asList(left, rightBound));
+
+                    setChanged();
+                    return new PredicateOperatorNode(node.getParseTree(), PredicateOperator.AND,
+                        Arrays.asList(geqLeftBound, leqRightBound));
+                }
+            }
+            return node;
         }
     }
 
