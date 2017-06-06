@@ -1,21 +1,9 @@
 package de.bmoth.parser.ast.types;
 
-import java.util.Observable;
-import java.util.Observer;
-
-public class SetType extends Observable implements Type, Observer {
-
-    private Type subType;
+public class SetType extends SubTypedObservable implements Type {
 
     public SetType(Type subType) {
         setSubType(subType);
-    }
-
-    private void setSubType(Type subType) {
-        this.subType = subType;
-        if (subType instanceof Observable) {
-            ((Observable) subType).addObserver(this);
-        }
     }
 
     @Override
@@ -28,7 +16,7 @@ public class SetType extends Observable implements Type, Observer {
             return true;
         } else if (otherType instanceof SetType) {
             SetType setType = (SetType) otherType;
-            return this.subType.unifiable(setType.subType);
+            return getSubtype().unifiable(setType.getSubtype());
         } else if (otherType instanceof IntegerOrSetOfPairs) {
             return true;
         }
@@ -37,7 +25,7 @@ public class SetType extends Observable implements Type, Observer {
 
     @Override
     public boolean contains(Type other) {
-        return this.subType == other || this.subType.contains(other);
+        return getSubtype() == other || getSubtype().contains(other);
     }
 
     @Override
@@ -55,7 +43,7 @@ public class SetType extends Observable implements Type, Observer {
                 otherSetType.replaceBy(this);
 
                 // unify the sub types
-                this.subType.unify(otherSetType.subType);
+                getSubtype().unify(otherSetType.getSubtype());
                 /*
                  * Note, if the sub type has changed this instance will be
                  * automatically updated. Hence, there is no need to store the
@@ -68,37 +56,14 @@ public class SetType extends Observable implements Type, Observer {
         }
     }
 
-    public void replaceBy(Type otherType) {
-        /*
-         * unregister this instance from the sub type, i.e. it will be no longer
-         * updated
-         */
-        if (subType instanceof Observable) {
-            ((Observable) subType).deleteObserver(this);
-        }
-        // notify all observers of this, they should point now to the otherType
-        this.setChanged();
-        this.notifyObservers(otherType);
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        o.deleteObserver(this);
-        setSubType((Type) arg);
-    }
-
-    public Type getSubtype() {
-        return this.subType;
-    }
-
     @Override
     public String toString() {
-        return "POW(" + subType.toString() + ")";
+        return "POW(" + getSubtype().toString() + ")";
     }
 
     @Override
     public boolean isUntyped() {
-        return this.subType.isUntyped();
+        return getSubtype().isUntyped();
     }
 
 }
