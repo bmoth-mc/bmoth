@@ -1,6 +1,6 @@
 package de.bmoth.parser.ast.types;
 
-public class IntegerType implements Type {
+public class IntegerType implements BType {
 
     private static IntegerType instance = new IntegerType();
 
@@ -9,13 +9,13 @@ public class IntegerType implements Type {
     }
 
     @Override
-    public boolean unifiable(Type otherType) {
+    public boolean unifiable(BType otherType) {
         return otherType == this || otherType instanceof UntypedType || otherType instanceof SetOrIntegerType
             || otherType instanceof IntegerOrSetOfPairs;
     }
 
     @Override
-    public Type unify(Type otherType) throws UnificationException {
+    public BType unify(BType otherType) throws UnificationException {
         if (unifiable(otherType)) {
             if (otherType == instance) {
                 return instance;
@@ -44,7 +44,7 @@ public class IntegerType implements Type {
     }
 
     @Override
-    public boolean contains(Type other) {
+    public boolean contains(BType other) {
         return false;
     }
 }

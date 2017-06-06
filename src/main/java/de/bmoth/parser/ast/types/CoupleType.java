@@ -3,35 +3,35 @@ package de.bmoth.parser.ast.types;
 import java.util.Observable;
 import java.util.Observer;
 
-public class CoupleType extends Observable implements Type, Observer {
+public class CoupleType extends Observable implements BType, Observer {
 
-    private Type left;
-    private Type right;
+    private BType left;
+    private BType right;
 
-    public CoupleType(Type left, Type right) {
+    public CoupleType(BType left, BType right) {
         setLeftType(left);
         setRightType(right);
     }
 
-    private void setLeftType(Type leftType) {
+    private void setLeftType(BType leftType) {
         this.left = leftType;
         if (left instanceof Observable) {
             ((Observable) left).addObserver(this);
         }
     }
 
-    private void setRightType(Type rightType) {
+    private void setRightType(BType rightType) {
         this.right = rightType;
         if (right instanceof Observable) {
             ((Observable) right).addObserver(this);
         }
     }
 
-    public Type getLeft() {
+    public BType getLeft() {
         return this.left;
     }
 
-    public Type getRight() {
+    public BType getRight() {
         return this.right;
     }
 
@@ -39,14 +39,14 @@ public class CoupleType extends Observable implements Type, Observer {
     public void update(Observable o, Object arg) {
         o.deleteObserver(this);
         if (this.left == o) {
-            setLeftType((Type) arg);
+            setLeftType((BType) arg);
         } else {
-            setRightType((Type) arg);
+            setRightType((BType) arg);
         }
     }
 
     @Override
-    public CoupleType unify(Type otherType) throws UnificationException {
+    public CoupleType unify(BType otherType) throws UnificationException {
         if (unifiable(otherType)) {
             if (otherType instanceof UntypedType) {
                 ((UntypedType) otherType).replaceBy(this);
@@ -62,7 +62,7 @@ public class CoupleType extends Observable implements Type, Observer {
         throw new UnificationException();
     }
 
-    public void replaceBy(Type otherType) {
+    public void replaceBy(BType otherType) {
         /*
          * unregister this instance from the sub type, i.e. it will be no longer
 		 * updated
@@ -79,7 +79,7 @@ public class CoupleType extends Observable implements Type, Observer {
     }
 
     @Override
-    public boolean unifiable(Type otherType) {
+    public boolean unifiable(BType otherType) {
         if (otherType == this) {
             return true;
         } else if (otherType instanceof UntypedType && !this.contains(otherType)) {
@@ -92,7 +92,7 @@ public class CoupleType extends Observable implements Type, Observer {
     }
 
     @Override
-    public boolean contains(Type other) {
+    public boolean contains(BType other) {
         return this.left == other || this.right == other || this.left.contains(other) || this.right.contains(other);
     }
 

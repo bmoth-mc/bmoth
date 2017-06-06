@@ -13,7 +13,7 @@ public class SequenceFormulaTest {
     public void testSequenceEnumeration() {
         String formula = "a = [1,b]";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
 
@@ -21,7 +21,7 @@ public class SequenceFormulaTest {
     public void testInsertTail() {
         String formula = "a = [b] <- 1";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
 
@@ -29,7 +29,7 @@ public class SequenceFormulaTest {
     public void testInsertFront() {
         String formula = "a = 1 -> [b]";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
 
@@ -51,7 +51,7 @@ public class SequenceFormulaTest {
     public void testFront() {
         String formula = "a = front([1,b])";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
 
@@ -59,7 +59,7 @@ public class SequenceFormulaTest {
     public void testTail() {
         String formula = "a = tail([1,b])";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("a"));
         assertEquals("INTEGER", formulaTypes.get("b"));
     }
 
@@ -74,7 +74,7 @@ public class SequenceFormulaTest {
         String formula = "[1,2] = [a] ^ b";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("a"));
-        assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("b"));
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("b"));
     }
 
     @Test
@@ -95,19 +95,12 @@ public class SequenceFormulaTest {
     public void testiSeq() {
         String formula = "a : seq(INTEGER)";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("SEQUENCE(INTEGER)", formulaTypes.get("a"));
+        assertEquals("POW(INTEGER*INTEGER)", formulaTypes.get("a"));
     }
 
     @Test
     public void testiSeq1() {
         String formula = "[1] : seq({a})";
-        Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("INTEGER", formulaTypes.get("a"));
-    }
-
-    @Test
-    public void testFunctionCall() {
-        String formula = "[4,5,6](2) = a";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
         assertEquals("INTEGER", formulaTypes.get("a"));
     }

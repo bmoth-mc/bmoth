@@ -5,23 +5,23 @@ import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
-    private Type left;
-    private Type right;
+public class IntegerOrSetOfPairs extends Observable implements BType, Observer {
+    private BType left;
+    private BType right;
 
-    public IntegerOrSetOfPairs(Type left, Type right) {
+    public IntegerOrSetOfPairs(BType left, BType right) {
         setLeftType(left);
         setRightType(right);
     }
 
-    private void setLeftType(Type left) {
+    private void setLeftType(BType left) {
         this.left = left;
         if (left instanceof Observable) {
             ((Observable) left).addObserver(this);
         }
     }
 
-    private void setRightType(Type right) {
+    private void setRightType(BType right) {
         this.right = right;
         if (right instanceof Observable) {
             ((Observable) right).addObserver(this);
@@ -31,7 +31,7 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
     @Override
     public void update(Observable o, Object arg) {
         o.deleteObserver(this);
-        Type newType = (Type) arg;
+        BType newType = (BType) arg;
         try {
             if (newType instanceof IntegerType) {
                 this.setChanged();
@@ -70,7 +70,7 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
     }
 
     @Override
-    public Type unify(Type otherType) throws UnificationException {
+    public BType unify(BType otherType) throws UnificationException {
         if (otherType instanceof SetType) {
             if (left instanceof Observable) {
                 ((Observable) left).deleteObserver(this);
@@ -107,7 +107,7 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
         throw new UnificationException();
     }
 
-    public void replaceBy(Type otherType) {
+    public void replaceBy(BType otherType) {
         /*
          * unregister this instance from the sub types, i.e. it will be no
          * longer updated
@@ -124,7 +124,7 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
     }
 
     @Override
-    public boolean unifiable(Type otherType) {
+    public boolean unifiable(BType otherType) {
         if (otherType instanceof SetOrIntegerType || otherType instanceof IntegerType
             || otherType instanceof IntegerOrSetOfPairs || otherType instanceof UntypedType) {
             return true;
@@ -137,7 +137,7 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
     }
 
     @Override
-    public boolean contains(Type other) {
+    public boolean contains(BType other) {
         return other == getLeft() || other == getRight();
     }
 
@@ -146,11 +146,11 @@ public class IntegerOrSetOfPairs extends Observable implements Type, Observer {
         return true;
     }
 
-    public Type getLeft() {
+    public BType getLeft() {
         return left;
     }
 
-    public Type getRight() {
+    public BType getRight() {
         return right;
     }
 

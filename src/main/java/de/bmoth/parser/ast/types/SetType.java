@@ -3,15 +3,15 @@ package de.bmoth.parser.ast.types;
 import java.util.Observable;
 import java.util.Observer;
 
-public class SetType extends Observable implements Type, Observer {
+public class SetType extends Observable implements BType, Observer {
 
-    private Type subType;
+    private BType subType;
 
-    public SetType(Type subType) {
+    public SetType(BType subType) {
         setSubType(subType);
     }
 
-    private void setSubType(Type subType) {
+    private void setSubType(BType subType) {
         this.subType = subType;
         if (subType instanceof Observable) {
             ((Observable) subType).addObserver(this);
@@ -19,7 +19,7 @@ public class SetType extends Observable implements Type, Observer {
     }
 
     @Override
-    public boolean unifiable(Type otherType) {
+    public boolean unifiable(BType otherType) {
         if (otherType == this) {
             return true;
         } else if (otherType instanceof UntypedType && !this.contains(otherType)) {
@@ -36,12 +36,12 @@ public class SetType extends Observable implements Type, Observer {
     }
 
     @Override
-    public boolean contains(Type other) {
+    public boolean contains(BType other) {
         return this.subType == other || this.subType.contains(other);
     }
 
     @Override
-    public Type unify(Type otherType) throws UnificationException {
+    public BType unify(BType otherType) throws UnificationException {
         if (unifiable(otherType)) {
             if (otherType instanceof UntypedType) {
                 ((UntypedType) otherType).replaceBy(this);
@@ -68,7 +68,7 @@ public class SetType extends Observable implements Type, Observer {
         }
     }
 
-    public void replaceBy(Type otherType) {
+    public void replaceBy(BType otherType) {
         /*
          * unregister this instance from the sub type, i.e. it will be no longer
          * updated
@@ -84,10 +84,10 @@ public class SetType extends Observable implements Type, Observer {
     @Override
     public void update(Observable o, Object arg) {
         o.deleteObserver(this);
-        setSubType((Type) arg);
+        setSubType((BType) arg);
     }
 
-    public Type getSubtype() {
+    public BType getSubtype() {
         return this.subType;
     }
 

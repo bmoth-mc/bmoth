@@ -13,6 +13,13 @@ public class RelationsTest {
     private static final String POW_INTEGER_X_INTEGER = "POW(INTEGER*INTEGER)";
 
     @Test
+    public void testFunctionCall() {
+        String formula = "[4,5,6](2) = a";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("INTEGER", formulaTypes.get("a"));
+    }
+
+    @Test
     public void testDirectProduct() {
         String formula = "a = {1 |-> TRUE} >< {b |-> 1}";
         Map<String, String> formulaTypes = getFormulaTypes(formula);

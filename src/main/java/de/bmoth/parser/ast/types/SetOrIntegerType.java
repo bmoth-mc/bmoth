@@ -3,29 +3,29 @@ package de.bmoth.parser.ast.types;
 import java.util.Observable;
 import java.util.Observer;
 
-public class SetOrIntegerType extends Observable implements Type, Observer {
+public class SetOrIntegerType extends Observable implements BType, Observer {
 
-    private Type argType;
+    private BType argType;
 
-    public SetOrIntegerType(Type arg) {
+    public SetOrIntegerType(BType arg) {
         setArgType(arg);
     }
 
-    private void setArgType(Type argType) {
+    private void setArgType(BType argType) {
         this.argType = argType;
         if (argType instanceof Observable) {
             ((Observable) argType).addObserver(this);
         }
     }
 
-    public Type getArgType() {
+    public BType getArgType() {
         return this.argType;
     }
 
     @Override
     public void update(Observable o, Object arg) {
         o.deleteObserver(this);
-        Type newType = (Type) arg;
+        BType newType = (BType) arg;
         if (newType instanceof IntegerType || newType instanceof SetType) {
             this.setChanged();
             this.notifyObservers(newType);
@@ -36,7 +36,7 @@ public class SetOrIntegerType extends Observable implements Type, Observer {
     }
 
     @Override
-    public Type unify(Type otherType) throws UnificationException {
+    public BType unify(BType otherType) throws UnificationException {
         if (otherType instanceof IntegerType || otherType instanceof SetType) {
             if (argType instanceof Observable) {
                 ((Observable) argType).deleteObserver(this);
@@ -59,7 +59,7 @@ public class SetOrIntegerType extends Observable implements Type, Observer {
         throw new UnificationException();
     }
 
-    public void replaceBy(Type otherType) {
+    public void replaceBy(BType otherType) {
         /*
          * unregister this instance from the sub types, i.e. it will be no
          * longer updated
@@ -73,13 +73,13 @@ public class SetOrIntegerType extends Observable implements Type, Observer {
     }
 
     @Override
-    public boolean unifiable(Type otherType) {
+    public boolean unifiable(BType otherType) {
         return otherType instanceof SetOrIntegerType || otherType instanceof IntegerType || otherType instanceof SetType
             || otherType instanceof UntypedType || otherType instanceof IntegerOrSetOfPairs;
     }
 
     @Override
-    public boolean contains(Type other) {
+    public boolean contains(BType other) {
         return false;
     }
 

@@ -3,7 +3,7 @@ package de.bmoth.parser.ast.types;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDefinedElementType implements Type {
+public class UserDefinedElementType implements BType {
 
     private final String setName;
     private final List<String> elements;
@@ -18,7 +18,7 @@ public class UserDefinedElementType implements Type {
     }
 
     @Override
-    public Type unify(Type otherType) throws UnificationException {
+    public BType unify(BType otherType) throws UnificationException {
         if (!this.unifiable(otherType)) {
             throw new UnificationException();
         }
@@ -29,7 +29,7 @@ public class UserDefinedElementType implements Type {
     }
 
     @Override
-    public boolean unifiable(Type otherType) {
+    public boolean unifiable(BType otherType) {
         if (otherType instanceof UntypedType) {
             return true;
         }
@@ -37,7 +37,7 @@ public class UserDefinedElementType implements Type {
     }
 
     @Override
-    public boolean contains(Type other) {
+    public boolean contains(BType other) {
         return false;
     }
 

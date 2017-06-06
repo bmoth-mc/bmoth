@@ -1,6 +1,6 @@
 package de.bmoth.parser.ast.nodes;
 
-import de.bmoth.parser.ast.types.Type;
+import de.bmoth.parser.ast.types.BType;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 public abstract class TypedNode implements Node, Observer {
 
-    private Type type;
+    private BType type;
     private final ParseTree parseTree;
 
     public TypedNode(ParseTree parseTree) {
@@ -20,7 +20,7 @@ public abstract class TypedNode implements Node, Observer {
         return this.parseTree;
     }
 
-    public Type getType() {
+    public BType getType() {
         return type;
     }
 
@@ -28,7 +28,7 @@ public abstract class TypedNode implements Node, Observer {
         return type.isUntyped();
     }
 
-    public void setType(Type type) {
+    public void setType(BType type) {
         if (type != null && type instanceof Observable) {
             ((Observable) type).deleteObserver(this);
         }
@@ -41,6 +41,6 @@ public abstract class TypedNode implements Node, Observer {
     @Override
     public void update(Observable o, Object arg) {
         o.deleteObserver(this);
-        setType((Type) arg);
+        setType((BType) arg);
     }
 }

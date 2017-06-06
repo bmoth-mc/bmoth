@@ -82,7 +82,7 @@ public interface AbstractVisitor<R, P> {
         } else if (node instanceof SkipSubstitutionNode) {
             return visitSkipSubstitutionNode((SkipSubstitutionNode) node, expected);
         }
-        throw new AssertionError();
+        throw new AssertionError(node.getClass());
     }
 
     R visitSkipSubstitutionNode(SkipSubstitutionNode node, P expected);

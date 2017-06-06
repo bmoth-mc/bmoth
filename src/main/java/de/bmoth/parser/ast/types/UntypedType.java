@@ -2,10 +2,10 @@ package de.bmoth.parser.ast.types;
 
 import java.util.Observable;
 
-public class UntypedType extends Observable implements Type {
+public class UntypedType extends Observable implements BType {
 
     @Override
-    public boolean unifiable(Type otherType) {
+    public boolean unifiable(BType otherType) {
         if (otherType instanceof UntypedType) {
             return true;
         } else {
@@ -14,7 +14,7 @@ public class UntypedType extends Observable implements Type {
     }
 
     @Override
-    public Type unify(Type otherType) throws UnificationException {
+    public BType unify(BType otherType) throws UnificationException {
         if (this.unifiable(otherType)) {
             if (otherType instanceof UntypedType) {
                 ((UntypedType) otherType).replaceBy(this);
@@ -27,7 +27,7 @@ public class UntypedType extends Observable implements Type {
         }
     }
 
-    public void replaceBy(Type otherType) {
+    public void replaceBy(BType otherType) {
         this.setChanged();
         this.notifyObservers(otherType);
     }
@@ -38,7 +38,7 @@ public class UntypedType extends Observable implements Type {
     }
 
     @Override
-    public boolean contains(Type other) {
+    public boolean contains(BType other) {
         return false;
     }
 

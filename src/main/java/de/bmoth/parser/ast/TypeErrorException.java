@@ -10,7 +10,7 @@ import com.google.common.eventbus.EventBus;
 import de.bmoth.eventbus.ErrorEvent;
 import de.bmoth.eventbus.EventBusProvider;
 import de.bmoth.parser.ast.nodes.TypedNode;
-import de.bmoth.parser.ast.types.Type;
+import de.bmoth.parser.ast.types.BType;
 import de.bmoth.parser.ast.types.UnificationException;
 
 public class TypeErrorException extends RuntimeException {
@@ -23,7 +23,7 @@ public class TypeErrorException extends RuntimeException {
         eventBus.post(new ErrorEvent("Type error", message));
     }
 
-    public TypeErrorException(Type expected, Type found, TypedNode node, UnificationException e) {
+    public TypeErrorException(BType expected, BType found, TypedNode node, UnificationException e) {
         this.message = createErrorMessage(expected, found, node);
         final Logger logger = Logger.getLogger(getClass().getName());
         logger.log(Level.SEVERE, "Type error", e);
@@ -31,7 +31,7 @@ public class TypeErrorException extends RuntimeException {
         eventBus.post(new ErrorEvent("Type error", toString()));
     }
 
-    private String createErrorMessage(Type expected, Type found, TypedNode node) {
+    private String createErrorMessage(BType expected, BType found, TypedNode node) {
         StringBuilder sb = new StringBuilder();
         sb.append("Expected ").append(expected).append(" but found ").append(found).append(" ");
 
