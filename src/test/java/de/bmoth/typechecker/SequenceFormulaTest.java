@@ -9,8 +9,8 @@ import static org.junit.Assert.assertEquals;
 
 public class SequenceFormulaTest {
 
-    private final String INTEGER = "INTEGER";
-    private final String SEQ_INTEGER = "SEQUENCE(INTEGER)";
+    private static final String INTEGER = "INTEGER";
+    private static final String SEQ_INTEGER = "SEQUENCE(INTEGER)";
 
     @Test
     public void testSequenceEnumeration() {
