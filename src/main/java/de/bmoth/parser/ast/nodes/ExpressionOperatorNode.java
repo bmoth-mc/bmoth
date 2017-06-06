@@ -135,7 +135,7 @@ public class ExpressionOperatorNode extends ExprNode {
         return operator;
     }
 
-    public void changeOperator(ExpressionOperator operator) {
+    public void setOperator(ExpressionOperator operator) {
         this.operator = operator;
     }
 

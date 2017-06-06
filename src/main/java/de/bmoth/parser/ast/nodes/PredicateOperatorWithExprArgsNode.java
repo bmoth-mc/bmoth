@@ -65,7 +65,7 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode {
         return operator;
     }
 
-    public void changeOperator(PredOperatorExprArgs operator) {
+    public void setOperator(PredOperatorExprArgs operator) {
         this.operator = operator;
     }
 

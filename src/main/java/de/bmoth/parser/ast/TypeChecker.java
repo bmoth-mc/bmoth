@@ -123,7 +123,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
         for (ExpressionOperatorNode minusNode : minusNodes) {
             Type type = minusNode.getType();
             if (type instanceof SetType) {
-                minusNode.changeOperator(ExpressionOperatorNode.ExpressionOperator.SET_SUBTRACTION);
+                minusNode.setOperator(ExpressionOperatorNode.ExpressionOperator.SET_SUBTRACTION);
             }
         }
 
@@ -131,7 +131,7 @@ public class TypeChecker implements AbstractVisitor<Type, Type> {
         for (ExpressionOperatorNode node : multOrCartNodes) {
             Type type = node.getType();
             if (type instanceof SetType) {
-                node.changeOperator(ExpressionOperatorNode.ExpressionOperator.CARTESIAN_PRODUCT);
+                node.setOperator(ExpressionOperatorNode.ExpressionOperator.CARTESIAN_PRODUCT);
             }
         }
     }
