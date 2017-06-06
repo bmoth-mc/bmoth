@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * This class translates a FormulaNode of the parser to a z3 backend node.
@@ -186,11 +185,7 @@ public class FormulaToZ3Translator {
                 return z3Context.mkEnumSort(type.getSetName(), elements.toArray(new String[elements.size()]));
             } else {
                 // deferred set
-                // TODO we need a preference for the deferred set size
-                int size = 4;
-                String[] generatedElements = IntStream.range(0, size).mapToObj(e -> "$D_" + type.getSetName() + "_" + e)
-                        .toArray(String[]::new);
-                return z3Context.mkEnumSort(type.getSetName(), generatedElements);
+                return z3Context.mkUninterpretedSort(type.getSetName());
             }
         }
         throw new AssertionError("Missing Type Conversion: " + t.getClass());
