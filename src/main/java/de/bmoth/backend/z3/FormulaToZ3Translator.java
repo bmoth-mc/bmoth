@@ -77,13 +77,13 @@ public class FormulaToZ3Translator {
     }
 
     public static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context,
-            Z3TypeInference z3TypeInference) {
+                                                        Z3TypeInference z3TypeInference) {
         ExprNode exprNode = AstTransformationsForZ3.transformExprNode(value);
         return translateVariableEqualToExpr(name, exprNode, z3Context, new TranslationOptions(), z3TypeInference);
     }
 
     public static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context,
-            TranslationOptions opt, Z3TypeInference z3TypeInference) {
+                                                        TranslationOptions opt, Z3TypeInference z3TypeInference) {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context, z3TypeInference);
         FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
         Expr z3Value = visitor.visitExprNode(value, opt);
@@ -95,12 +95,12 @@ public class FormulaToZ3Translator {
     }
 
     public static BoolExpr translateVariableElementOfSetExpr(String name, DeclarationNode variable, ExprNode setValue,
-            Context z3Context, TranslationOptions opt, Z3TypeInference z3TypeInference) {
+                                                             Context z3Context, TranslationOptions opt, Z3TypeInference z3TypeInference) {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context, z3TypeInference);
         FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
         ArrayExpr z3Value = (ArrayExpr) visitor.visitExprNode(setValue, opt);
         Expr variableExpr = z3Context.mkConst(name,
-                formulaToZ3Translator.z3TypeInference.getZ3Sort(variable, z3Context));
+            formulaToZ3Translator.z3TypeInference.getZ3Sort(variable, z3Context));
         BoolExpr mkEq = z3Context.mkSetMembership(variableExpr, z3Value);
 
         return z3Context.mkAnd(mkEq, formulaToZ3Translator.getAccumulatedConstraints(z3Context));
@@ -108,12 +108,12 @@ public class FormulaToZ3Translator {
 
     public BoolExpr getAccumulatedConstraints(Context z3Context) {
         switch (constraintList.size()) {
-        case 0:
-            return z3Context.mkTrue();
-        case 1:
-            return constraintList.get(0);
-        default:
-            return z3Context.mkAnd(constraintList.toArray(new BoolExpr[0]));
+            case 0:
+                return z3Context.mkTrue();
+            case 1:
+                return constraintList.get(0);
+            default:
+                return z3Context.mkAnd(constraintList.toArray(new BoolExpr[0]));
         }
     }
 
@@ -124,7 +124,7 @@ public class FormulaToZ3Translator {
             throw new IllegalArgumentException("Expected predicate.");
         }
         PredicateNode predNode = AstTransformationsForZ3
-                .transformPredicate((PredicateNode) formulaToZ3Translator.formulaNode.getFormula());
+            .transformPredicate((PredicateNode) formulaToZ3Translator.formulaNode.getFormula());
 
         FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
         Expr constraint = visitor.visitPredicateNode(predNode, new TranslationOptions());
@@ -142,7 +142,7 @@ public class FormulaToZ3Translator {
     }
 
     public static BoolExpr translatePredicate(PredicateNode pred, Context z3Context, TranslationOptions opt,
-            Z3TypeInference z3TypeInference) {
+                                              Z3TypeInference z3TypeInference) {
         PredicateNode predNode = AstTransformationsForZ3.transformPredicate(pred);
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context, z3TypeInference);
         FormulaToZ3TranslatorVisitor formulaToZ3TranslatorVisitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
@@ -208,311 +208,311 @@ public class FormulaToZ3Translator {
         @Override
         public Expr visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, TranslationOptions ops) {
             final List<Expr> arguments = node.getExpressionNodes().stream().map(it -> visitExprNode(it, ops))
-                    .collect(Collectors.toList());
+                .collect(Collectors.toList());
             switch (node.getOperator()) {
-            case EQUAL:
-                return z3Context.mkEq(arguments.get(0), arguments.get(1));
-            case NOT_EQUAL:
-                return z3Context.mkNot(z3Context.mkEq(arguments.get(0), arguments.get(1)));
-            case ELEMENT_OF:
-                return z3Context.mkSetMembership(arguments.get(0), (ArrayExpr) arguments.get(1));
-            case LESS_EQUAL:
-                return z3Context.mkLe((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
-            case LESS:
-                return z3Context.mkLt((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
-            case GREATER_EQUAL:
-                return z3Context.mkGe((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
-            case GREATER:
-                return z3Context.mkGt((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
-            case NOT_BELONGING:
-                return z3Context.mkNot(z3Context.mkSetMembership(arguments.get(0), (ArrayExpr) arguments.get(1)));
-            case INCLUSION:
-                // a <: S
-                return z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1));
-            case STRICT_INCLUSION:
-                // a <<: S
-                return z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arguments.get(0), arguments.get(1))),
+                case EQUAL:
+                    return z3Context.mkEq(arguments.get(0), arguments.get(1));
+                case NOT_EQUAL:
+                    return z3Context.mkNot(z3Context.mkEq(arguments.get(0), arguments.get(1)));
+                case ELEMENT_OF:
+                    return z3Context.mkSetMembership(arguments.get(0), (ArrayExpr) arguments.get(1));
+                case LESS_EQUAL:
+                    return z3Context.mkLe((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case LESS:
+                    return z3Context.mkLt((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case GREATER_EQUAL:
+                    return z3Context.mkGe((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case GREATER:
+                    return z3Context.mkGt((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case NOT_BELONGING:
+                    return z3Context.mkNot(z3Context.mkSetMembership(arguments.get(0), (ArrayExpr) arguments.get(1)));
+                case INCLUSION:
+                    // a <: S
+                    return z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1));
+                case STRICT_INCLUSION:
+                    // a <<: S
+                    return z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arguments.get(0), arguments.get(1))),
                         z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1)));
-            case NON_INCLUSION:
-                return z3Context
+                case NON_INCLUSION:
+                    return z3Context
                         .mkNot(z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1)));
-            case STRICT_NON_INCLUSION:
-                return z3Context
+                case STRICT_NON_INCLUSION:
+                    return z3Context
                         .mkNot(z3Context.mkAnd(z3Context.mkNot(z3Context.mkEq(arguments.get(0), arguments.get(1))),
-                                z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1))));
-            default:
-                throw new OperatorNotImplementedError(node);
+                            z3Context.mkSetSubset((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1))));
+                default:
+                    throw new OperatorNotImplementedError(node);
             }
         }
 
         @Override
         public Expr visitExprOperatorNode(ExpressionOperatorNode node, TranslationOptions ops) {
             final List<Expr> arguments = node.getExpressionNodes().stream().map(it -> visitExprNode(it, ops))
-                    .collect(Collectors.toList());
+                .collect(Collectors.toList());
             switch (node.getOperator()) {
-            case PLUS:
-                return z3Context.mkAdd((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
-            case UNARY_MINUS:
-                return z3Context.mkUnaryMinus((ArithExpr) arguments.get(0));
-            case MINUS:
-                return z3Context.mkSub((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
-            case MOD:
-                return z3Context.mkMod((IntExpr) arguments.get(0), (IntExpr) arguments.get(1));
-            case MULT:
-                return z3Context.mkMul((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
-            case DIVIDE:
-                constraintList.add(z3Context.mkNot(z3Context.mkEq(arguments.get(1), z3Context.mkInt(0))));
-                return z3Context.mkDiv((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
-            case POWER_OF:
-                if (pow == null) {
-                    pow = initPowerOf();
-                }
-                return pow.apply(arguments.get(0), arguments.get(1));
-            case INTERVAL:
-                ArrayExpr interval = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
-                constraintList
+                case PLUS:
+                    return z3Context.mkAdd((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case UNARY_MINUS:
+                    return z3Context.mkUnaryMinus((ArithExpr) arguments.get(0));
+                case MINUS:
+                    return z3Context.mkSub((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case MOD:
+                    return z3Context.mkMod((IntExpr) arguments.get(0), (IntExpr) arguments.get(1));
+                case MULT:
+                    return z3Context.mkMul((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case DIVIDE:
+                    constraintList.add(z3Context.mkNot(z3Context.mkEq(arguments.get(1), z3Context.mkInt(0))));
+                    return z3Context.mkDiv((ArithExpr) arguments.get(0), (ArithExpr) arguments.get(1));
+                case POWER_OF:
+                    if (pow == null) {
+                        pow = initPowerOf();
+                    }
+                    return pow.apply(arguments.get(0), arguments.get(1));
+                case INTERVAL:
+                    ArrayExpr interval = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
+                    constraintList
                         .add(prepareSetQuantifier(interval, (IntExpr) arguments.get(0), (IntExpr) arguments.get(1)));
-                return interval;
-            case INTEGER:
-                return z3Context.mkFullSet(z3Context.mkIntSort());
-            case NATURAL1:
-                if (setNatural1 == null) {
-                    // node.getType() = POW(INTEGER)
-                    setNatural1 = (ArrayExpr) z3Context.mkConst("NATURAL1", getZ3Sort(node));
-                    constraintList.add(prepareSetQuantifier(setNatural1, z3Context.mkInt(1), null));
+                    return interval;
+                case INTEGER:
+                    return z3Context.mkFullSet(z3Context.mkIntSort());
+                case NATURAL1:
+                    if (setNatural1 == null) {
+                        // node.getType() = POW(INTEGER)
+                        setNatural1 = (ArrayExpr) z3Context.mkConst("NATURAL1", getZ3Sort(node));
+                        constraintList.add(prepareSetQuantifier(setNatural1, z3Context.mkInt(1), null));
+                    }
+                    return setNatural1;
+                case NATURAL:
+                    if (setNatural == null) {
+                        // node.getType() = POW(INTEGER)
+                        setNatural = (ArrayExpr) z3Context.mkConst("NATURAL", getZ3Sort(node));
+                        constraintList.add(prepareSetQuantifier(setNatural, z3Context.mkInt(0), null));
+                    }
+                    return setNatural;
+                case INT:
+                    if (setInt == null) {
+                        int maxInt = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT);
+                        int minInt = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT);
+                        // node.getType() = POW(INTEGER)
+                        setInt = (ArrayExpr) z3Context.mkConst(ExpressionOperator.INT.toString(), getZ3Sort(node));
+                        constraintList.add(prepareSetQuantifier(setInt, z3Context.mkInt(minInt), z3Context.mkInt(maxInt)));
+                    }
+                    return setInt;
+                case NAT:
+                    if (setNat == null) {
+                        int maxInt = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT);
+                        // node.getType() = POW(INTEGER)
+                        setNat = (ArrayExpr) z3Context.mkConst(ExpressionOperator.NAT.toString(), getZ3Sort(node));
+                        constraintList.add(prepareSetQuantifier(setNat, z3Context.mkInt(0), z3Context.mkInt(maxInt)));
+                    }
+                    return setNat;
+                case FALSE:
+                    return z3Context.mkFalse();
+                case TRUE:
+                    return z3Context.mkTrue();
+                case BOOL:
+                    return z3Context.mkFullSet(z3Context.mkBoolSort());
+                case UNION:
+                    return z3Context.mkSetUnion(arguments.stream().map(it -> (ArrayExpr) it).toArray(ArrayExpr[]::new));
+                case COUPLE: {
+                    TupleSort bTypeToZ3Sort = (TupleSort) getZ3Sort(node);
+                    return bTypeToZ3Sort.mkDecl().apply(arguments.get(0), arguments.get(1));
                 }
-                return setNatural1;
-            case NATURAL:
-                if (setNatural == null) {
-                    // node.getType() = POW(INTEGER)
-                    setNatural = (ArrayExpr) z3Context.mkConst("NATURAL", getZ3Sort(node));
-                    constraintList.add(prepareSetQuantifier(setNatural, z3Context.mkInt(0), null));
-                }
-                return setNatural;
-            case INT:
-                if (setInt == null) {
-                    int maxInt = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT);
-                    int minInt = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT);
-                    // node.getType() = POW(INTEGER)
-                    setInt = (ArrayExpr) z3Context.mkConst(ExpressionOperator.INT.toString(), getZ3Sort(node));
-                    constraintList.add(prepareSetQuantifier(setInt, z3Context.mkInt(minInt), z3Context.mkInt(maxInt)));
-                }
-                return setInt;
-            case NAT:
-                if (setNat == null) {
-                    int maxInt = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT);
-                    // node.getType() = POW(INTEGER)
-                    setNat = (ArrayExpr) z3Context.mkConst(ExpressionOperator.NAT.toString(), getZ3Sort(node));
-                    constraintList.add(prepareSetQuantifier(setNat, z3Context.mkInt(0), z3Context.mkInt(maxInt)));
-                }
-                return setNat;
-            case FALSE:
-                return z3Context.mkFalse();
-            case TRUE:
-                return z3Context.mkTrue();
-            case BOOL:
-                return z3Context.mkFullSet(z3Context.mkBoolSort());
-            case UNION:
-                return z3Context.mkSetUnion(arguments.stream().map(it -> (ArrayExpr) it).toArray(ArrayExpr[]::new));
-            case COUPLE: {
-                TupleSort bTypeToZ3Sort = (TupleSort) getZ3Sort(node);
-                return bTypeToZ3Sort.mkDecl().apply(arguments.get(0), arguments.get(1));
-            }
-            case INTERSECTION:
-                return z3Context.mkSetIntersection((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1));
-            case DOMAIN: {
-                ArrayExpr argument = (ArrayExpr) visitExprNode(node.getExpressionNodes().get(0), ops);
+                case INTERSECTION:
+                    return z3Context.mkSetIntersection((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1));
+                case DOMAIN: {
+                    ArrayExpr argument = (ArrayExpr) visitExprNode(node.getExpressionNodes().get(0), ops);
 
-                Z3SetType setOfTuples = (Z3SetType) getZ3Type(node.getExpressionNodes().get(0));
-                Z3CoupleType coupleType = (Z3CoupleType) setOfTuples.getSubtype();
-                TupleSort tupleSort = (TupleSort) getZ3Sort(coupleType);
+                    Z3SetType setOfTuples = (Z3SetType) getZ3Type(node.getExpressionNodes().get(0));
+                    Z3CoupleType coupleType = (Z3CoupleType) setOfTuples.getSubtype();
+                    TupleSort tupleSort = (TupleSort) getZ3Sort(coupleType);
 
-                Expr dom = z3Context.mkConst(createFreshTemporaryVariable(),
+                    Expr dom = z3Context.mkConst(createFreshTemporaryVariable(),
                         z3TypeInference.getZ3Sort(z3TypeInference.new Z3SetType(coupleType.getRightType()), z3Context));
-                Expr domMember = z3Context.mkConst(createFreshTemporaryVariable(),
+                    Expr domMember = z3Context.mkConst(createFreshTemporaryVariable(),
                         getZ3Sort(coupleType.getRightType()));
-                Expr ranMember = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(coupleType.getLeftType()));
+                    Expr ranMember = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(coupleType.getLeftType()));
 
-                BoolExpr domMemberInDom = z3Context.mkSetMembership(domMember, (ArrayExpr) dom);
-                BoolExpr ranAndDomInArgument = z3Context.mkSetMembership(tupleSort.mkDecl().apply(ranMember, domMember),
+                    BoolExpr domMemberInDom = z3Context.mkSetMembership(domMember, (ArrayExpr) dom);
+                    BoolExpr ranAndDomInArgument = z3Context.mkSetMembership(tupleSort.mkDecl().apply(ranMember, domMember),
                         argument);
 
-                Quantifier existsRan = z3Context.mkExists(new Expr[] { ranMember }, ranAndDomInArgument, 1, null, null,
+                    Quantifier existsRan = z3Context.mkExists(new Expr[]{ranMember}, ranAndDomInArgument, 1, null, null,
                         null, null);
-                Quantifier q = z3Context.mkForall(new Expr[] { domMember }, z3Context.mkEq(existsRan, domMemberInDom),
+                    Quantifier q = z3Context.mkForall(new Expr[]{domMember}, z3Context.mkEq(existsRan, domMemberInDom),
                         1, null, null, null, null);
-                constraintList.add(q);
-                return dom;
-            }
-            case RANGE: {
-                ArrayExpr argument = (ArrayExpr) visitExprNode(node.getExpressionNodes().get(0), ops);
-
-                Z3SetType setOfTuples = (Z3SetType) getZ3Type(node.getExpressionNodes().get(0));
-                Z3CoupleType coupleType = (Z3CoupleType) setOfTuples.getSubtype();
-                TupleSort tupleSort = (TupleSort) getZ3Sort(coupleType);
-
-                Expr ran = z3Context.mkConst(createFreshTemporaryVariable(),
-                        getZ3Sort(z3TypeInference.new Z3SetType(coupleType.getLeftType())));
-                Expr domMember = z3Context.mkConst(createFreshTemporaryVariable(),
-                        getZ3Sort(coupleType.getRightType()));
-                Expr ranMember = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(coupleType.getLeftType()));
-
-                BoolExpr ranMemberInRan = z3Context.mkSetMembership(ranMember, (ArrayExpr) ran);
-                BoolExpr ranAndDomInArgument = z3Context.mkSetMembership(tupleSort.mkDecl().apply(ranMember, domMember),
-                        argument);
-
-                Quantifier existsDom = z3Context.mkExists(new Expr[] { domMember }, ranAndDomInArgument, 1, null, null,
-                        null, null);
-                Quantifier q = z3Context.mkForall(new Expr[] { ranMember }, z3Context.mkEq(existsDom, ranMemberInRan),
-                        1, null, null, null, null);
-                constraintList.add(q);
-                return ran;
-            }
-            case LAST: {
-                DatatypeExpr d = (DatatypeExpr) arguments.get(0);
-                Expr[] args = d.getArgs();
-                ArrayExpr array = (ArrayExpr) args[0];
-                ArithExpr size = (ArithExpr) args[1];
-                // add WD constraint
-                constraintList.add(z3Context.mkLe(z3Context.mkInt(1), size));
-                return z3Context.mkSelect(array, size);
-            }
-            case FRONT: {
-                DatatypeExpr d = (DatatypeExpr) arguments.get(0);
-                Expr[] args = d.getArgs();
-                ArrayExpr array = (ArrayExpr) args[0];
-                ArithExpr size = (ArithExpr) args[1];
-                constraintList.add(z3Context.mkLe(z3Context.mkInt(1), size));
-                TupleSort mkTupleSort = (TupleSort) getZ3Sort(node);
-                return mkTupleSort.mkDecl().apply(array, z3Context.mkSub(size, z3Context.mkInt(1)));
-            }
-            case TAIL:
-                break;
-            case CONC:
-                break;
-            case EMPTY_SET: // not missing! it is equal to an empty enumeration
-                // below
-            case SET_ENUMERATION: {
-                Z3SetType setType = (Z3SetType) getZ3Type(node);
-                Z3Type subType = setType.getSubtype();
-                ArrayExpr z3Set = z3Context.mkEmptySet(getZ3Sort(subType));
-                for (Expr expr : arguments) {
-                    z3Set = z3Context.mkSetAdd(z3Set, expr);
+                    constraintList.add(q);
+                    return dom;
                 }
-                return z3Set;
-            }
-            case SET_SUBTRACTION:
-                return z3Context.mkSetDifference((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1));
-            case CONCAT:
-            case DIRECT_PRODUCT:
-            case DOMAIN_RESTRICTION:
-            case DOMAIN_SUBTRACTION:
-            case GENERALIZED_INTER:
-                break;
-            case GENERALIZED_UNION:
-                return translateGeneralizedUnion(node, arguments);
-            case EMPTY_SEQUENCE: // handled by SEQ_enumeration with empty
-                // arguments
-            case SEQ_ENUMERATION:
-                return translateSeqEnumeration(node, arguments);
-            case FIRST: {
-                DatatypeExpr d = (DatatypeExpr) arguments.get(0);
-                Expr[] args = d.getArgs();
-                ArrayExpr array = (ArrayExpr) args[0];
-                ArithExpr size = (ArithExpr) args[1];
-                // add WD constraint
-                constraintList.add(z3Context.mkLe(z3Context.mkInt(1), size));
-                return z3Context.mkSelect(array, z3Context.mkInt(1));
-            }
-            case FUNCTION_CALL: {
-                DatatypeExpr d = (DatatypeExpr) arguments.get(0);
-                Expr[] args = d.getArgs();
-                ArrayExpr array = (ArrayExpr) args[0];
-                ArithExpr size = (ArithExpr) args[1];
-                ArithExpr index = (ArithExpr) arguments.get(1);
-                // add WD constraint
-                constraintList
+                case RANGE: {
+                    ArrayExpr argument = (ArrayExpr) visitExprNode(node.getExpressionNodes().get(0), ops);
+
+                    Z3SetType setOfTuples = (Z3SetType) getZ3Type(node.getExpressionNodes().get(0));
+                    Z3CoupleType coupleType = (Z3CoupleType) setOfTuples.getSubtype();
+                    TupleSort tupleSort = (TupleSort) getZ3Sort(coupleType);
+
+                    Expr ran = z3Context.mkConst(createFreshTemporaryVariable(),
+                        getZ3Sort(z3TypeInference.new Z3SetType(coupleType.getLeftType())));
+                    Expr domMember = z3Context.mkConst(createFreshTemporaryVariable(),
+                        getZ3Sort(coupleType.getRightType()));
+                    Expr ranMember = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(coupleType.getLeftType()));
+
+                    BoolExpr ranMemberInRan = z3Context.mkSetMembership(ranMember, (ArrayExpr) ran);
+                    BoolExpr ranAndDomInArgument = z3Context.mkSetMembership(tupleSort.mkDecl().apply(ranMember, domMember),
+                        argument);
+
+                    Quantifier existsDom = z3Context.mkExists(new Expr[]{domMember}, ranAndDomInArgument, 1, null, null,
+                        null, null);
+                    Quantifier q = z3Context.mkForall(new Expr[]{ranMember}, z3Context.mkEq(existsDom, ranMemberInRan),
+                        1, null, null, null, null);
+                    constraintList.add(q);
+                    return ran;
+                }
+                case LAST: {
+                    DatatypeExpr d = (DatatypeExpr) arguments.get(0);
+                    Expr[] args = d.getArgs();
+                    ArrayExpr array = (ArrayExpr) args[0];
+                    ArithExpr size = (ArithExpr) args[1];
+                    // add WD constraint
+                    constraintList.add(z3Context.mkLe(z3Context.mkInt(1), size));
+                    return z3Context.mkSelect(array, size);
+                }
+                case FRONT: {
+                    DatatypeExpr d = (DatatypeExpr) arguments.get(0);
+                    Expr[] args = d.getArgs();
+                    ArrayExpr array = (ArrayExpr) args[0];
+                    ArithExpr size = (ArithExpr) args[1];
+                    constraintList.add(z3Context.mkLe(z3Context.mkInt(1), size));
+                    TupleSort mkTupleSort = (TupleSort) getZ3Sort(node);
+                    return mkTupleSort.mkDecl().apply(array, z3Context.mkSub(size, z3Context.mkInt(1)));
+                }
+                case TAIL:
+                    break;
+                case CONC:
+                    break;
+                case EMPTY_SET: // not missing! it is equal to an empty enumeration
+                    // below
+                case SET_ENUMERATION: {
+                    Z3SetType setType = (Z3SetType) getZ3Type(node);
+                    Z3Type subType = setType.getSubtype();
+                    ArrayExpr z3Set = z3Context.mkEmptySet(getZ3Sort(subType));
+                    for (Expr expr : arguments) {
+                        z3Set = z3Context.mkSetAdd(z3Set, expr);
+                    }
+                    return z3Set;
+                }
+                case SET_SUBTRACTION:
+                    return z3Context.mkSetDifference((ArrayExpr) arguments.get(0), (ArrayExpr) arguments.get(1));
+                case CONCAT:
+                case DIRECT_PRODUCT:
+                case DOMAIN_RESTRICTION:
+                case DOMAIN_SUBTRACTION:
+                case GENERALIZED_INTER:
+                    break;
+                case GENERALIZED_UNION:
+                    return translateGeneralizedUnion(node, arguments);
+                case EMPTY_SEQUENCE: // handled by SEQ_enumeration with empty
+                    // arguments
+                case SEQ_ENUMERATION:
+                    return translateSeqEnumeration(node, arguments);
+                case FIRST: {
+                    DatatypeExpr d = (DatatypeExpr) arguments.get(0);
+                    Expr[] args = d.getArgs();
+                    ArrayExpr array = (ArrayExpr) args[0];
+                    ArithExpr size = (ArithExpr) args[1];
+                    // add WD constraint
+                    constraintList.add(z3Context.mkLe(z3Context.mkInt(1), size));
+                    return z3Context.mkSelect(array, z3Context.mkInt(1));
+                }
+                case FUNCTION_CALL: {
+                    DatatypeExpr d = (DatatypeExpr) arguments.get(0);
+                    Expr[] args = d.getArgs();
+                    ArrayExpr array = (ArrayExpr) args[0];
+                    ArithExpr size = (ArithExpr) args[1];
+                    ArithExpr index = (ArithExpr) arguments.get(1);
+                    // add WD constraint
+                    constraintList
                         .add(z3Context.mkAnd(z3Context.mkGe(index, z3Context.mkInt(1)), z3Context.mkLe(index, size)));
-                return z3Context.mkSelect(array, index);
-            }
-            case CARD:
-                break;
-            case INSERT_FRONT:
-            case INSERT_TAIL:
-            case OVERWRITE_RELATION:
-                break;
-            case INVERSE_RELATION: {
-                Z3SetType setType = (Z3SetType) getZ3Type(node);
-                Z3CoupleType couple = (Z3CoupleType) setType.getSubtype();
-                Z3CoupleType revCouple = z3TypeInference.new Z3CoupleType(couple.getRightType(), couple.getLeftType());
+                    return z3Context.mkSelect(array, index);
+                }
+                case CARD:
+                    break;
+                case INSERT_FRONT:
+                case INSERT_TAIL:
+                case OVERWRITE_RELATION:
+                    break;
+                case INVERSE_RELATION: {
+                    Z3SetType setType = (Z3SetType) getZ3Type(node);
+                    Z3CoupleType couple = (Z3CoupleType) setType.getSubtype();
+                    Z3CoupleType revCouple = z3TypeInference.new Z3CoupleType(couple.getRightType(), couple.getLeftType());
 
-                TupleSort subSort = (TupleSort) getZ3Sort(couple);
-                TupleSort revSort = (TupleSort) getZ3Sort(revCouple);
+                    TupleSort subSort = (TupleSort) getZ3Sort(couple);
+                    TupleSort revSort = (TupleSort) getZ3Sort(revCouple);
 
-                Expr tempLeft = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(couple.getLeftType()));
-                Expr tempRight = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(couple.getRightType()));
-                ArrayExpr tempConstant = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(),
+                    Expr tempLeft = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(couple.getLeftType()));
+                    Expr tempRight = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(couple.getRightType()));
+                    ArrayExpr tempConstant = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(),
                         getZ3Sort(z3TypeInference.new Z3SetType(revCouple)));
 
-                BoolExpr lrInExpr = z3Context.mkSetMembership(subSort.mkDecl().apply(tempLeft, tempRight),
+                    BoolExpr lrInExpr = z3Context.mkSetMembership(subSort.mkDecl().apply(tempLeft, tempRight),
                         (ArrayExpr) arguments.get(0));
-                BoolExpr rlInTempExpr = z3Context.mkSetMembership(revSort.mkDecl().apply(tempRight, tempLeft),
+                    BoolExpr rlInTempExpr = z3Context.mkSetMembership(revSort.mkDecl().apply(tempRight, tempLeft),
                         tempConstant);
 
-                BoolExpr equality = z3Context.mkEq(lrInExpr, rlInTempExpr);
-                Expr[] bound = new Expr[] { tempLeft, tempRight };
+                    BoolExpr equality = z3Context.mkEq(lrInExpr, rlInTempExpr);
+                    Expr[] bound = new Expr[]{tempLeft, tempRight};
 
-                Quantifier q = z3Context.mkForall(bound, equality, 2, null, null, null, null);
-                constraintList.add(q);
-                return tempConstant;
-            }
-            case RANGE_RESTRICTION:
-            case RANGE_SUBTRATION:
-            case RESTRICT_FRONT:
-            case RESTRICT_TAIL:
-                break;
-            case SEQ:
-                break;
-            case SEQ1:
-                break;
-            case ISEQ:
-                break;
-            case ISEQ1:
-                break;
-            case CARTESIAN_PRODUCT: {
+                    Quantifier q = z3Context.mkForall(bound, equality, 2, null, null, null, null);
+                    constraintList.add(q);
+                    return tempConstant;
+                }
+                case RANGE_RESTRICTION:
+                case RANGE_SUBTRATION:
+                case RESTRICT_FRONT:
+                case RESTRICT_TAIL:
+                    break;
+                case SEQ:
+                    break;
+                case SEQ1:
+                    break;
+                case ISEQ:
+                    break;
+                case ISEQ1:
+                    break;
+                case CARTESIAN_PRODUCT: {
 
-                Z3SetType setType = (Z3SetType) getZ3Type(node);
-                Z3CoupleType coupleType = (Z3CoupleType) setType.getSubtype();
+                    Z3SetType setType = (Z3SetType) getZ3Type(node);
+                    Z3CoupleType coupleType = (Z3CoupleType) setType.getSubtype();
 
-                TupleSort bTypeToZ3Sort = (TupleSort) getZ3Sort(coupleType);
+                    TupleSort bTypeToZ3Sort = (TupleSort) getZ3Sort(coupleType);
 
-                ArithExpr leftExpr = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(),
+                    ArithExpr leftExpr = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(),
                         getZ3Sort(coupleType.getLeftType()));
-                ArithExpr rightExpr = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(),
+                    ArithExpr rightExpr = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(),
                         getZ3Sort(coupleType.getRightType()));
 
-                ArrayExpr tempConstant = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
-                Expr couple = bTypeToZ3Sort.mkDecl().apply(leftExpr, rightExpr);
+                    ArrayExpr tempConstant = (ArrayExpr) z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
+                    Expr couple = bTypeToZ3Sort.mkDecl().apply(leftExpr, rightExpr);
 
-                BoolExpr xInLeft = z3Context.mkSetMembership(leftExpr, (ArrayExpr) arguments.get(0));
-                BoolExpr yInRight = z3Context.mkSetMembership(rightExpr, (ArrayExpr) arguments.get(1));
-                BoolExpr coupleInCartesian = z3Context.mkSetMembership(couple, tempConstant);
+                    BoolExpr xInLeft = z3Context.mkSetMembership(leftExpr, (ArrayExpr) arguments.get(0));
+                    BoolExpr yInRight = z3Context.mkSetMembership(rightExpr, (ArrayExpr) arguments.get(1));
+                    BoolExpr coupleInCartesian = z3Context.mkSetMembership(couple, tempConstant);
 
-                BoolExpr cartesian = z3Context.mkAnd(xInLeft, yInRight);
-                BoolExpr equality = z3Context.mkEq(cartesian, coupleInCartesian);
+                    BoolExpr cartesian = z3Context.mkAnd(xInLeft, yInRight);
+                    BoolExpr equality = z3Context.mkEq(cartesian, coupleInCartesian);
 
-                Expr[] bound = new Expr[] { leftExpr, rightExpr };
+                    Expr[] bound = new Expr[]{leftExpr, rightExpr};
 
-                Quantifier q = z3Context.mkForall(bound, equality, 2, null, null, null, null);
-                constraintList.add(q);
-                return tempConstant;
-            }
-            case MAXINT:
-                return z3Context.mkInt(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT));
-            case MININT:
-                return z3Context.mkInt(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT));
-            default:
-                break;
+                    Quantifier q = z3Context.mkForall(bound, equality, 2, null, null, null, null);
+                    constraintList.add(q);
+                    return tempConstant;
+                }
+                case MAXINT:
+                    return z3Context.mkInt(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT));
+                case MININT:
+                    return z3Context.mkInt(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT));
+                default:
+                    break;
             }
             throw new OperatorNotImplementedError(node);
         }
@@ -531,10 +531,10 @@ public class FormulaToZ3Translator {
             BoolExpr eIsInRes = z3Context.mkSetMembership(elementVar, (ArrayExpr) res);
             BoolExpr sIsInS = z3Context.mkSetMembership(setVar, (ArrayExpr) SetOfSets);
             BoolExpr eIsIns = z3Context.mkSetMembership(elementVar, (ArrayExpr) setVar);
-            Quantifier exists = z3Context.mkExists(new Expr[] { setVar }, z3Context.mkAnd(sIsInS, eIsIns), 1, null,
-                    null, null, null);
-            Quantifier q = z3Context.mkForall(new Expr[] { elementVar }, z3Context.mkEq(eIsInRes, exists), 1, null,
-                    null, null, null);
+            Quantifier exists = z3Context.mkExists(new Expr[]{setVar}, z3Context.mkAnd(sIsInS, eIsIns), 1, null,
+                null, null, null);
+            Quantifier q = z3Context.mkForall(new Expr[]{elementVar}, z3Context.mkEq(eIsInRes, exists), 1, null,
+                null, null, null);
             constraintList.add(q);
             return res;
         }
@@ -554,7 +554,7 @@ public class FormulaToZ3Translator {
 
         private Quantifier prepareSetQuantifier(ArrayExpr set, IntExpr min, IntExpr max) {
             ArithExpr x = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), z3Context.getIntSort());
-            ArithExpr[] bound = new ArithExpr[] { x };
+            ArithExpr[] bound = new ArithExpr[]{x};
 
             // x : set
             BoolExpr membership = z3Context.mkSetMembership(x, set);
@@ -576,25 +576,25 @@ public class FormulaToZ3Translator {
         private FuncDecl initPowerOf() {
             // create function declaration
             FuncDecl powerOf = z3Context.mkFuncDecl(ExpressionOperator.POWER_OF.toString(),
-                    new Sort[] { z3Context.mkIntSort(), z3Context.mkIntSort() }, z3Context.mkIntSort());
+                new Sort[]{z3Context.mkIntSort(), z3Context.mkIntSort()}, z3Context.mkIntSort());
 
             // create arguments & bounds
             Expr a = z3Context.mkConst("a", z3Context.getIntSort());
             Expr b = z3Context.mkConst("b", z3Context.getIntSort());
-            Expr[] bound = new Expr[] { a, b };
+            Expr[] bound = new Expr[]{a, b};
 
             // pow( a, b / 2 ) * pow( a, b / 2 )
             Expr expEven = z3Context.mkMul(
-                    (ArithExpr) powerOf.apply(a, z3Context.mkDiv((ArithExpr) b, z3Context.mkInt(2))),
-                    (ArithExpr) powerOf.apply(a, z3Context.mkDiv((ArithExpr) b, z3Context.mkInt(2))));
+                (ArithExpr) powerOf.apply(a, z3Context.mkDiv((ArithExpr) b, z3Context.mkInt(2))),
+                (ArithExpr) powerOf.apply(a, z3Context.mkDiv((ArithExpr) b, z3Context.mkInt(2))));
             // a * pow( a, b - 1 )
             Expr expOdd = z3Context.mkMul((ArithExpr) a,
-                    (ArithExpr) powerOf.apply(a, z3Context.mkSub((ArithExpr) b, z3Context.mkInt(1))));
+                (ArithExpr) powerOf.apply(a, z3Context.mkSub((ArithExpr) b, z3Context.mkInt(1))));
 
             // b % 2 == 0 ? expEven : expOdd
             Expr expEvenOdd = z3Context.mkITE(
-                    z3Context.mkEq(z3Context.mkInt(0), z3Context.mkMod((IntExpr) b, z3Context.mkInt(2))), expEven,
-                    expOdd);
+                z3Context.mkEq(z3Context.mkInt(0), z3Context.mkMod((IntExpr) b, z3Context.mkInt(2))), expEven,
+                expOdd);
 
             // b == 0 ? 1 : expEvenOdd
             Expr expZero = z3Context.mkITE(z3Context.mkEq(z3Context.mkInt(0), b), z3Context.mkInt(1), expEvenOdd);
@@ -603,7 +603,7 @@ public class FormulaToZ3Translator {
             Expr body = z3Context.mkEq(powerOf.apply(a, b), expZero);
 
             // prepare pattern
-            Pattern[] patterns = new Pattern[] { z3Context.mkPattern(powerOf.apply(a, b)) };
+            Pattern[] patterns = new Pattern[]{z3Context.mkPattern(powerOf.apply(a, b))};
 
             // annotate recursive function
             Symbol recFun = z3Context.mkSymbol(":rec-fun");
@@ -622,64 +622,64 @@ public class FormulaToZ3Translator {
         @Override
         public Expr visitPredicateOperatorNode(PredicateOperatorNode node, TranslationOptions ops) {
             final List<BoolExpr> arguments = node.getPredicateArguments().stream()
-                    .map(it -> (BoolExpr) visitPredicateNode(it, ops)).collect(Collectors.toList());
+                .map(it -> (BoolExpr) visitPredicateNode(it, ops)).collect(Collectors.toList());
             switch (node.getOperator()) {
-            case AND:
-                return z3Context.mkAnd(arguments.toArray(new BoolExpr[arguments.size()]));
-            case OR:
-                return z3Context.mkOr(arguments.toArray(new BoolExpr[arguments.size()]));
-            case IMPLIES:
-                return z3Context.mkImplies(arguments.get(0), arguments.get(1));
-            case EQUIVALENCE:
-                return z3Context.mkEq(arguments.get(0), arguments.get(1));
-            case NOT:
-                return z3Context.mkNot(arguments.get(0));
-            case TRUE:
-                return z3Context.mkTrue();
-            case FALSE:
-                return z3Context.mkFalse();
-            default:
-                throw new OperatorNotImplementedError(node);
+                case AND:
+                    return z3Context.mkAnd(arguments.toArray(new BoolExpr[arguments.size()]));
+                case OR:
+                    return z3Context.mkOr(arguments.toArray(new BoolExpr[arguments.size()]));
+                case IMPLIES:
+                    return z3Context.mkImplies(arguments.get(0), arguments.get(1));
+                case EQUIVALENCE:
+                    return z3Context.mkEq(arguments.get(0), arguments.get(1));
+                case NOT:
+                    return z3Context.mkNot(arguments.get(0));
+                case TRUE:
+                    return z3Context.mkTrue();
+                case FALSE:
+                    return z3Context.mkFalse();
+                default:
+                    throw new OperatorNotImplementedError(node);
             }
         }
 
         @Override
         public Expr visitQuantifiedExpressionNode(QuantifiedExpressionNode node, TranslationOptions opt) {
             switch (node.getOperator()) {
-            case SET_COMPREHENSION: {
-                // {e| P}
-                // return T
-                // !(e).(e : T <=> P )
-                Expr comprehensionPredicate = visitPredicateNode(node.getPredicateNode(), opt);
-                Expr elementInComprehension = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
+                case SET_COMPREHENSION: {
+                    // {e| P}
+                    // return T
+                    // !(e).(e : T <=> P )
+                    Expr comprehensionPredicate = visitPredicateNode(node.getPredicateNode(), opt);
+                    Expr elementInComprehension = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
 
-                Expr[] boundVariables = new Expr[node.getDeclarationList().size()];
-                for (int i = 0; i < boundVariables.length; i++) {
-                    DeclarationNode decl = node.getDeclarationList().get(i);
-                    Expr e = z3Context.mkConst(decl.getName(), getZ3Sort(decl));
-                    boundVariables[i] = e;
-                }
-                Expr tuple = null;
-                if (boundVariables.length > 1) {
-                    Z3SetType setType = (Z3SetType) getZ3Type(node);
-                    TupleSort tupleSort = (TupleSort) getZ3Sort(setType.getSubtype());
-                    tuple = tupleSort.mkDecl().apply(boundVariables);
-                } else {
-                    tuple = boundVariables[0];
-                }
+                    Expr[] boundVariables = new Expr[node.getDeclarationList().size()];
+                    for (int i = 0; i < boundVariables.length; i++) {
+                        DeclarationNode decl = node.getDeclarationList().get(i);
+                        Expr e = z3Context.mkConst(decl.getName(), getZ3Sort(decl));
+                        boundVariables[i] = e;
+                    }
+                    Expr tuple = null;
+                    if (boundVariables.length > 1) {
+                        Z3SetType setType = (Z3SetType) getZ3Type(node);
+                        TupleSort tupleSort = (TupleSort) getZ3Sort(setType.getSubtype());
+                        tuple = tupleSort.mkDecl().apply(boundVariables);
+                    } else {
+                        tuple = boundVariables[0];
+                    }
 
-                BoolExpr a = z3Context.mkSetMembership(tuple, (ArrayExpr) elementInComprehension);
-                // a <=> P
-                BoolExpr body = z3Context.mkEq(a, comprehensionPredicate);
-                Quantifier q = z3Context.mkForall(boundVariables, body, boundVariables.length, null, null, null, null);
-                constraintList.add(q);
-                return elementInComprehension;
-            }
-            case QUANTIFIED_INTER:
-            case QUANTIFIED_UNION:
-                break;
-            default:
-                break;
+                    BoolExpr a = z3Context.mkSetMembership(tuple, (ArrayExpr) elementInComprehension);
+                    // a <=> P
+                    BoolExpr body = z3Context.mkEq(a, comprehensionPredicate);
+                    Quantifier q = z3Context.mkForall(boundVariables, body, boundVariables.length, null, null, null, null);
+                    constraintList.add(q);
+                    return elementInComprehension;
+                }
+                case QUANTIFIED_INTER:
+                case QUANTIFIED_UNION:
+                    break;
+                default:
+                    break;
             }
             throw new AssertionError("Implement: " + node.getClass());
         }
@@ -687,16 +687,16 @@ public class FormulaToZ3Translator {
         @Override
         public Expr visitQuantifiedPredicateNode(QuantifiedPredicateNode node, TranslationOptions opt) {
             final Expr[] identifiers = node.getDeclarationList().stream()
-                    .map(declaration -> z3Context.mkConst(declaration.getName(), getZ3Sort(declaration)))
-                    .toArray(Expr[]::new);
+                .map(declaration -> z3Context.mkConst(declaration.getName(), getZ3Sort(declaration)))
+                .toArray(Expr[]::new);
             final Expr predicate = visitPredicateNode(node.getPredicateNode(), opt);
             switch (node.getOperator()) {
-            case EXISTENTIAL_QUANTIFICATION:
-                return z3Context.mkExists(identifiers, predicate, identifiers.length, null, null, null, null);
-            case UNIVERSAL_QUANTIFICATION:
-                return z3Context.mkForall(identifiers, predicate, identifiers.length, null, null, null, null);
-            default:
-                throw new AssertionError("Implement: " + node.getClass());
+                case EXISTENTIAL_QUANTIFICATION:
+                    return z3Context.mkExists(identifiers, predicate, identifiers.length, null, null, null, null);
+                case UNIVERSAL_QUANTIFICATION:
+                    return z3Context.mkForall(identifiers, predicate, identifiers.length, null, null, null, null);
+                default:
+                    throw new AssertionError("Implement: " + node.getClass());
             }
 
         }
@@ -706,16 +706,15 @@ public class FormulaToZ3Translator {
             Z3SetType setType = (Z3SetType) getZ3Type(node);
             Z3Type subtype = setType.getSubtype();
             EnumSort enumSort = (EnumSort) getZ3Sort(subtype);
-            ArrayExpr z3Set = z3Context.mkEmptySet(enumSort);
-            for (Expr expr : enumSort.getConsts()) {
-                z3Set = z3Context.mkSetAdd(z3Set, expr);
-            }
-            return z3Set;
+            return z3Context.mkFullSet(enumSort);
         }
 
         @Override
         public Expr visitDeferredSetNode(DeferredSetNode node, TranslationOptions ops) {
-            return z3Context.mkConst(addPrimes(ops, node.getName()), getZ3Sort(node.getDeclarationNode()));
+            Z3SetType setType = (Z3SetType) getZ3Type(node);
+            Z3Type subtype = setType.getSubtype();
+            Sort defSetSort = getZ3Sort(subtype);
+            return z3Context.mkFullSet(defSetSort);
         }
 
         @Override
