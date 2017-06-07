@@ -22,16 +22,16 @@ public abstract class AbstractConditionsAndSubstitutionsNode extends Substitutio
      *            the list of conditions
      * @param substitutions
      *            the list of substitution
-     * @param elseSubstition
+     * @param elseSubstitution
      *            the else substitution; maybe {@code null}
      */
     public AbstractConditionsAndSubstitutionsNode(List<PredicateNode> conditions, List<SubstitutionNode> substitutions,
-            SubstitutionNode elseSubstition) {
+            SubstitutionNode elseSubstitution) {
         this.conditions = conditions;
         this.substitutions = substitutions;
-        this.elseSubstitution = elseSubstition;
+        this.elseSubstitution = elseSubstitution;
         Set<DeclarationNode> assignedVariables = new HashSet<>();
-        substitutions.stream().forEach(t -> assignedVariables.addAll(t.getAssignedVariables()));
+        substitutions.forEach(t -> assignedVariables.addAll(t.getAssignedVariables()));
         setAssignedVariables(assignedVariables);
     }
 

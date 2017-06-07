@@ -5,8 +5,8 @@ import java.util.List;
 public class SelectSubstitutionNode extends AbstractConditionsAndSubstitutionsNode {
 
     public SelectSubstitutionNode(List<PredicateNode> conditions, List<SubstitutionNode> substitutions,
-            SubstitutionNode elseSubstition) {
-        super(conditions, substitutions, elseSubstition);
+            SubstitutionNode elseSubstitution) {
+        super(conditions, substitutions, elseSubstitution);
     }
 
     @Override
@@ -17,7 +17,7 @@ public class SelectSubstitutionNode extends AbstractConditionsAndSubstitutionsNo
             sb.append(" WHEN ").append(conditions.get(i)).append(" THEN ").append(substitutions.get(i));
         }
         if (null != elseSubstitution) {
-            sb.append(" ELSE " + elseSubstitution);
+            sb.append(" ELSE ").append(elseSubstitution);
         }
         sb.append(" END");
         return sb.toString();
