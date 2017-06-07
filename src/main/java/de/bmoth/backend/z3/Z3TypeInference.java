@@ -233,7 +233,7 @@ public class Z3TypeInference {
             return new Z3CoupleType(convertBTypeToZ3Type(couple.getLeft()), convertBTypeToZ3Type(couple.getRight()));
         } else if (bType instanceof UserDefinedElementType) {
             UserDefinedElementType userType = (UserDefinedElementType) bType;
-            if (null == userType.getElements()) {
+            if (userType.getElements().isEmpty()) {
                 return new Z3DeferredType(userType.getSetName());
             } else {
                 return new Z3EnumeratedSetType(userType.getSetName(), userType.getElements());

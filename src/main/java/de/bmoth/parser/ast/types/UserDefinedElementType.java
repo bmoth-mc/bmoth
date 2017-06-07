@@ -1,6 +1,7 @@
 package de.bmoth.parser.ast.types;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class UserDefinedElementType implements BType {
@@ -55,7 +56,7 @@ public class UserDefinedElementType implements BType {
         if (this.elements != null) {
             return new ArrayList<>(this.elements);
         }
-        return null;
+        return Collections.emptyList();
     }
 
 }
