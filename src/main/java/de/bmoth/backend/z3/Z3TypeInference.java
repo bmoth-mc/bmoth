@@ -287,7 +287,7 @@ public class Z3TypeInference {
 
         @Override
         public Z3Type visitQuantifiedExpressionNode(QuantifiedExpressionNode node, Void expected) {
-            visitPredicateNode(node.getPredicateNode(), expected);
+            AbstractVisitor.super.visitPredicateNode(node.getPredicateNode(), expected);
             if (node.getExpressionNode() != null) {
                 visitExprNode(node.getExpressionNode(), expected);
             }
@@ -301,7 +301,7 @@ public class Z3TypeInference {
 
         @Override
         public Z3Type visitPredicateOperatorNode(PredicateOperatorNode node, Void expected) {
-            node.getPredicateArguments().stream().forEach(e -> visitPredicateNode(e, expected));
+            node.getPredicateArguments().stream().forEach(e -> AbstractVisitor.super.visitPredicateNode(e, expected));
             return setSubType(node, convertBTypeToZ3Type(node.getType()));
         }
 
@@ -331,7 +331,7 @@ public class Z3TypeInference {
 
         @Override
         public Z3Type visitQuantifiedPredicateNode(QuantifiedPredicateNode node, Void expected) {
-            visitPredicateNode(node.getPredicateNode(), expected);
+            AbstractVisitor.super.visitPredicateNode(node.getPredicateNode(), expected);
             return setSubType(node, convertBTypeToZ3Type(node.getType()));
         }
 
@@ -342,7 +342,7 @@ public class Z3TypeInference {
 
         @Override
         public Z3Type visitIfSubstitutionNode(IfSubstitutionNode node, Void expected) {
-            node.getConditions().stream().forEach(t -> visitPredicateNode(t, expected));
+            node.getConditions().stream().forEach(t -> AbstractVisitor.super.visitPredicateNode(t, expected));
             node.getSubstitutions().stream().forEach(t -> visitSubstitutionNode(t, expected));
             if (node.getElseSubstitution() != null) {
                 visitSubstitutionNode(node.getElseSubstitution(), expected);
@@ -352,21 +352,21 @@ public class Z3TypeInference {
 
         @Override
         public Z3Type visitConditionSubstitutionNode(ConditionSubstitutionNode node, Void expected) {
-            visitPredicateNode(node.getCondition(), expected);
+            AbstractVisitor.super.visitPredicateNode(node.getCondition(), expected);
             visitSubstitutionNode(node.getSubstitution(), expected);
             return null;
         }
 
         @Override
         public Z3Type visitAnySubstitution(AnySubstitutionNode node, Void expected) {
-            visitPredicateNode(node.getWherePredicate(), expected);
+            AbstractVisitor.super.visitPredicateNode(node.getWherePredicate(), expected);
             visitSubstitutionNode(node.getThenSubstitution(), expected);
             return null;
         }
 
         @Override
         public Z3Type visitSelectSubstitutionNode(SelectSubstitutionNode node, Void expected) {
-            node.getConditions().stream().forEach(t -> visitPredicateNode(t, expected));
+            node.getConditions().stream().forEach(t -> AbstractVisitor.super.visitPredicateNode(t, expected));
             node.getSubstitutions().stream().forEach(t -> visitSubstitutionNode(t, expected));
             if (node.getElseSubstitution() != null) {
                 visitSubstitutionNode(node.getElseSubstitution(), expected);
@@ -412,7 +412,7 @@ public class Z3TypeInference {
 
         @Override
         public Z3Type visitBecomesSuchThatSubstitutionNode(BecomesSuchThatSubstitutionNode node, Void expected) {
-            visitPredicateNode(node.getPredicate(), expected);
+            AbstractVisitor.super.visitPredicateNode(node.getPredicate(), expected);
             return null;
         }
 
