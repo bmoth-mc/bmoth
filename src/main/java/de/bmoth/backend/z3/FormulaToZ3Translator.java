@@ -523,13 +523,13 @@ public class FormulaToZ3Translator {
             // !(e).(e : Res <=> #(s).(s : S & e : s)
             Z3SetType setType = (Z3SetType) getZ3Type(node);
 
-            Expr SetOfSets = arguments.get(0);
+            Expr setOfSets = arguments.get(0);
             Expr res = z3Context.mkConst(createFreshTemporaryVariable(), z3TypeInference.getZ3Sort(setType, z3Context));
             Expr setVar = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(setType));
             Expr elementVar = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(setType.getSubtype()));
 
             BoolExpr eIsInRes = z3Context.mkSetMembership(elementVar, (ArrayExpr) res);
-            BoolExpr sIsInS = z3Context.mkSetMembership(setVar, (ArrayExpr) SetOfSets);
+            BoolExpr sIsInS = z3Context.mkSetMembership(setVar, (ArrayExpr) setOfSets);
             BoolExpr eIsIns = z3Context.mkSetMembership(elementVar, (ArrayExpr) setVar);
             Quantifier exists = z3Context.mkExists(new Expr[]{setVar}, z3Context.mkAnd(sIsInS, eIsIns), 1, null,
                 null, null, null);

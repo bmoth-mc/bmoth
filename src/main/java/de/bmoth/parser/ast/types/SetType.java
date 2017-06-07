@@ -90,11 +90,7 @@ public class SetType extends Observable implements BType, Observer {
         o.deleteObserver(this);
         setSubType((BType) arg);
     }
-
-    public BType getSubtype() {
-        return this.subType;
-    }
-
+    
     @Override
     public String toString() {
         return "POW(" + getSubType().toString() + ")";
