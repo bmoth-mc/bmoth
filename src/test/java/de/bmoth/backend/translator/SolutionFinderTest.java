@@ -84,6 +84,14 @@ public class SolutionFinderTest extends TestUsingZ3 {
     }
 
     @Test
+    public void testExistsSolutionFinderNumberOfSolutionsNotInfluencedByQuantifier() {
+        String formula = "#x.(x : {1,2}) & a = 1";
+        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        Set<Model> solutions = finder.findSolutions(constraint, 20);
+        assertEquals(1, solutions.size());
+    }
+
+    @Test
     public void testExistsSolutionFinder2() {
         String formula = "#a,b,c.(c = TRUE & a : {1,2} & b : {1,2} & a /= b & x = a+b)";
         BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
@@ -91,7 +99,7 @@ public class SolutionFinderTest extends TestUsingZ3 {
         //all existentially quantified variables are part of the model
         //{c!0=true, a!2=2, b!1=1, x=3}
         //{c!0=true, a!2=1, b!1=2, x=3}
-        assertEquals(2, solutions.size());
+        assertEquals(1, solutions.size()); // only solution is x=3
     }
 
     @Test

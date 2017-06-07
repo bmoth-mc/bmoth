@@ -45,6 +45,7 @@ public class DependencyTest {
             public void defineRules() {
                 deBmothApp.mayUse(comMicrosoftZ3, comMicrosoftZ3Enumerations);
                 deBmothBackendZ3.mustUse(comMicrosoftZ3);
+                deBmothBackendZ3.mayUse(comMicrosoftZ3Enumerations);
                 deBmothModelchecker.mustUse(comMicrosoftZ3);
                 deBmothCheckers_.mustUse(comMicrosoftZ3);
             }

@@ -38,6 +38,9 @@ public class SolutionFinder implements Abortable {
 
         BoolExpr result = null;
         for (FuncDecl var : constants) {
+            if (var.getName().toString().contains("!")) {
+                continue;
+            }
             Expr value = model.eval(var.apply(), true);
 
             if (result == null) {
