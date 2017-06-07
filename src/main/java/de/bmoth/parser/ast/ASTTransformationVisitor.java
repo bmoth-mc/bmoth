@@ -9,6 +9,9 @@ import de.bmoth.parser.ast.nodes.BecomesElementOfSubstitutionNode;
 import de.bmoth.parser.ast.nodes.BecomesSuchThatSubstitutionNode;
 import de.bmoth.parser.ast.nodes.CastPredicateExpressionNode;
 import de.bmoth.parser.ast.nodes.ConditionSubstitutionNode;
+import de.bmoth.parser.ast.nodes.DeferredSetNode;
+import de.bmoth.parser.ast.nodes.EnumeratedSetElementNode;
+import de.bmoth.parser.ast.nodes.EnumerationSetNode;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
 import de.bmoth.parser.ast.nodes.IdentifierExprNode;
@@ -193,6 +196,21 @@ public class ASTTransformationVisitor {
 
         @Override
         public Node visitSkipSubstitutionNode(SkipSubstitutionNode node, Void expected) {
+            return modifyNode(node, expected);
+        }
+
+        @Override
+        public Node visitEnumerationSetNode(EnumerationSetNode node, Void expected) {
+            return modifyNode(node, expected);
+        }
+
+        @Override
+        public Node visitDeferredSetNode(DeferredSetNode node, Void expected) {
+            return modifyNode(node, expected);
+        }
+
+        @Override
+        public Node visitEnumeratedSetElementNode(EnumeratedSetElementNode node, Void expected) {
             return modifyNode(node, expected);
         }
 

@@ -19,9 +19,21 @@ public interface AbstractVisitor<R, P> {
             return visitQuantifiedExpressionNode((QuantifiedExpressionNode) node, expected);
         } else if (node instanceof CastPredicateExpressionNode) {
             return visitCastPredicateExpressionNode((CastPredicateExpressionNode) node, expected);
+        } else if (node instanceof EnumeratedSetElementNode) {
+            return visitEnumeratedSetElementNode((EnumeratedSetElementNode) node, expected);
+        } else if (node instanceof DeferredSetNode) {
+            return visitDeferredSetNode((DeferredSetNode) node, expected);
+        } else if (node instanceof EnumerationSetNode) {
+            return visitEnumerationSetNode((EnumerationSetNode) node, expected);
         }
         throw new AssertionError();
     }
+
+    R visitEnumerationSetNode(EnumerationSetNode node, P expected);
+
+    R visitDeferredSetNode(DeferredSetNode node, P expected);
+
+    R visitEnumeratedSetElementNode(EnumeratedSetElementNode node, P expected);
 
     R visitExprOperatorNode(ExpressionOperatorNode node, P expected);
 

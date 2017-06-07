@@ -174,9 +174,10 @@ public class FormulaToZ3Translator {
         class OperatorNotImplementedError extends AssertionError {
             private static final long serialVersionUID = 4872994563768693737L;
 
-            OperatorNotImplementedError(OperatorNode node) {
+            OperatorNotImplementedError(OperatorNode<?> node) {
                 super("Not implemented: " + node.getOperator());
             }
+
         }
 
         private String addPrimes(TranslationOptions ops, String name) {
@@ -191,16 +192,7 @@ public class FormulaToZ3Translator {
 
         @Override
         public Expr visitIdentifierExprNode(IdentifierExprNode node, TranslationOptions ops) {
-            Z3Type z3Type = getZ3Type(node);
-            if (z3Type instanceof Z3EnumeratedSetType
-                    && ((Z3EnumeratedSetType) z3Type).getElements().contains(node.getName())) {
-                Z3EnumeratedSetType enumType = (Z3EnumeratedSetType) z3Type;
-                String name = node.getName();
-                EnumSort enumSort = (EnumSort) getZ3Sort(node);
-                return enumSort.getConsts()[enumType.getElements().indexOf(name)];
-            } else {
-                return z3Context.mkConst(addPrimes(ops, node.getName()), getZ3Sort(node.getDeclarationNode()));
-            }
+            return z3Context.mkConst(addPrimes(ops, node.getName()), getZ3Sort(node.getDeclarationNode()));
         }
 
         @Override
@@ -707,6 +699,32 @@ public class FormulaToZ3Translator {
                 throw new AssertionError("Implement: " + node.getClass());
             }
 
+        }
+
+        @Override
+        public Expr visitEnumerationSetNode(EnumerationSetNode node, TranslationOptions ops) {
+            Z3SetType setType = (Z3SetType) getZ3Type(node);
+            Z3Type subtype = setType.getSubtype();
+            EnumSort enumSort = (EnumSort) getZ3Sort(subtype);
+            ArrayExpr z3Set = z3Context.mkEmptySet(enumSort);
+            for (Expr expr : enumSort.getConsts()) {
+                z3Set = z3Context.mkSetAdd(z3Set, expr);
+            }
+            return z3Set;
+        }
+
+        @Override
+        public Expr visitDeferredSetNode(DeferredSetNode node, TranslationOptions ops) {
+            return z3Context.mkConst(addPrimes(ops, node.getName()), getZ3Sort(node.getDeclarationNode()));
+        }
+
+        @Override
+        public Expr visitEnumeratedSetElementNode(EnumeratedSetElementNode node, TranslationOptions ops) {
+            Z3Type z3Type = getZ3Type(node);
+            Z3EnumeratedSetType enumType = (Z3EnumeratedSetType) z3Type;
+            String name = node.getName();
+            EnumSort enumSort = (EnumSort) getZ3Sort(node);
+            return enumSort.getConsts()[enumType.getElements().indexOf(name)];
         }
 
     }

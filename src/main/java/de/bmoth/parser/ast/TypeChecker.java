@@ -23,7 +23,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
     }
 
     private TypeChecker(MachineNode machineNode) {
-        for (EnumeratedSet eSet : machineNode.getEnumaratedSets()) {
+        for (EnumeratedSetDeclarationNode eSet : machineNode.getEnumaratedSets()) {
             DeclarationNode setDeclaration = eSet.getSetDeclaration();
             UserDefinedElementType userDefinedElementType = new UserDefinedElementType(setDeclaration.getName(),
                     eSet.getElementsAsStrings());
@@ -593,6 +593,21 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
     @Override
     public BType visitSkipSubstitutionNode(SkipSubstitutionNode node, BType expected) {
         return null;
+    }
+
+    @Override
+    public BType visitEnumerationSetNode(EnumerationSetNode node, BType expected) {
+        return unify(expected, node.getEnumeratedSetDeclarationNode().getSetDeclaration().getType(), node);
+    }
+
+    @Override
+    public BType visitDeferredSetNode(DeferredSetNode node, BType expected) {
+        return unify(expected, node.getDeclarationNode().getType(), node);
+    }
+
+    @Override
+    public BType visitEnumeratedSetElementNode(EnumeratedSetElementNode node, BType expected) {
+        return unify(expected, node.getDeclarationNode().getType(), node);
     }
 
 }

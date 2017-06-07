@@ -14,7 +14,7 @@ public class MachineNode implements Node {
     private SubstitutionNode initialisation;
     private List<OperationNode> operations;
     private final List<String> warnings = new ArrayList<>();
-    private final List<EnumeratedSet> setEnumerations = new ArrayList<>();
+    private final List<EnumeratedSetDeclarationNode> setEnumerations = new ArrayList<>();
     private final List<DeclarationNode> deferredSets = new ArrayList<>();
 
     public List<DeclarationNode> getVariables() {
@@ -77,11 +77,11 @@ public class MachineNode implements Node {
         return this.warnings;
     }
 
-    public void addSetEnumeration(EnumeratedSet setEnumeration) {
+    public void addSetEnumeration(EnumeratedSetDeclarationNode setEnumeration) {
         this.setEnumerations.add(setEnumeration);
     }
 
-    public List<EnumeratedSet> getEnumaratedSets() {
+    public List<EnumeratedSetDeclarationNode> getEnumaratedSets() {
         return this.setEnumerations;
     }
 

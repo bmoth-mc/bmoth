@@ -22,9 +22,15 @@ public class MachineAnalyser {
     final LinkedHashMap<String, TerminalNode> setsDeclarations = new LinkedHashMap<>();
     final List<EnumeratedSetContext> enumeratedSetContexts = new ArrayList<>();
     final List<DeferredSetContext> deferredSetContexts = new ArrayList<>();
+    
+    
     final LinkedHashMap<String, TerminalNode> definitionsDeclarations = new LinkedHashMap<>();
+    
+    
     final LinkedHashMap<TerminalNode, BDefinition> definitions = new LinkedHashMap<>();
     final LinkedHashMap<String, OperationContext> operationsDeclarations = new LinkedHashMap<>();
+    final LinkedHashMap<String, EnumeratedSetContext> enumeratedSetElementsDeclarations = new LinkedHashMap<>();
+    
 
     PredicateClauseContext properties;
     PredicateClauseContext invariant;
@@ -260,9 +266,9 @@ public class MachineAnalyser {
         public Void visitIdentifierExpression(BMoThParser.IdentifierExpressionContext ctx) {
             TerminalNode terminalNode = ctx.IDENTIFIER();
             lookUpTerminalNode(terminalNode);
-            TerminalNode declarationTNode = this.declarationReferences.get(terminalNode);
-            if (definitions.containsKey(declarationTNode)) {
-                BDefinition bDefinition = definitions.get(declarationTNode);
+            TerminalNode declarationNode = this.declarationReferences.get(terminalNode);
+            if (definitions.containsKey(declarationNode)) {
+                BDefinition bDefinition = definitions.get(declarationNode);
                 if (bDefinition.getKind() == KIND.SUBSTITUTION || bDefinition.getKind() == KIND.PREDICATE) {
                     throw new ScopeException("Expected a EXPRESSION definition but found a " + bDefinition.getKind()
                         + " at definition " + bDefinition.getName());

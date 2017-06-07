@@ -206,7 +206,7 @@ public class Z3TypeInference {
             return newZ3Type;
     }
 
-    protected Z3Type setSubType(TypedNode node, Z3Type subType) {
+    protected Z3Type setZ3Type(TypedNode node, Z3Type subType) {
         types.put(node, subType);
         return subType;
     }
@@ -255,34 +255,34 @@ public class Z3TypeInference {
             case INSERT_TAIL:
             case RESTRICT_FRONT:
             case RESTRICT_TAIL:
-                return setSubType(node, getZ3TypeOfNode(arguments.get(0)));
+                return setZ3Type(node, getZ3TypeOfNode(arguments.get(0)));
             case INSERT_FRONT:
-                return setSubType(node, getZ3TypeOfNode(arguments.get(1)));
+                return setZ3Type(node, getZ3TypeOfNode(arguments.get(1)));
             case SEQ_ENUMERATION:
-                return setSubType(node, new Z3SequenceType(getZ3TypeOfNode(arguments.get(0))));
+                return setZ3Type(node, new Z3SequenceType(getZ3TypeOfNode(arguments.get(0))));
             case EMPTY_SEQUENCE: {
                 de.bmoth.parser.ast.types.SetType setType = (de.bmoth.parser.ast.types.SetType) node.getType();
                 de.bmoth.parser.ast.types.CoupleType c = (de.bmoth.parser.ast.types.CoupleType) setType.getSubtype();
-                return setSubType(node, new Z3SequenceType(convertBTypeToZ3Type(c.getRight())));
+                return setZ3Type(node, new Z3SequenceType(convertBTypeToZ3Type(c.getRight())));
             }
             default:
-                return setSubType(node, convertBTypeToZ3Type(node.getType()));
+                return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
             }
         }
 
         @Override
         public Z3Type visitIdentifierExprNode(IdentifierExprNode node, Void expected) {
-            return setSubType(node, convertBTypeToZ3Type(node.getType()));
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
         }
 
         @Override
         public Z3Type visitCastPredicateExpressionNode(CastPredicateExpressionNode node, Void expected) {
-            return setSubType(node, convertBTypeToZ3Type(node.getType()));
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
         }
 
         @Override
         public Z3Type visitNumberNode(NumberNode node, Void expected) {
-            return setSubType(node, convertBTypeToZ3Type(node.getType()));
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
         }
 
         @Override
@@ -291,18 +291,18 @@ public class Z3TypeInference {
             if (node.getExpressionNode() != null) {
                 visitExprNode(node.getExpressionNode(), expected);
             }
-            return setSubType(node, convertBTypeToZ3Type(node.getType()));
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
         }
 
         @Override
         public Z3Type visitIdentifierPredicateNode(IdentifierPredicateNode node, Void expected) {
-            return setSubType(node, convertBTypeToZ3Type(node.getType()));
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
         }
 
         @Override
         public Z3Type visitPredicateOperatorNode(PredicateOperatorNode node, Void expected) {
             node.getPredicateArguments().forEach(e -> AbstractVisitor.super.visitPredicateNode(e, expected));
-            return setSubType(node, convertBTypeToZ3Type(node.getType()));
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
         }
 
         @Override
@@ -326,13 +326,13 @@ public class Z3TypeInference {
                 break;
             }
             arguments.forEach(a -> visitExprNode(a, expected));
-            return setSubType(node, convertBTypeToZ3Type(node.getType()));
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
         }
 
         @Override
         public Z3Type visitQuantifiedPredicateNode(QuantifiedPredicateNode node, Void expected) {
             AbstractVisitor.super.visitPredicateNode(node.getPredicateNode(), expected);
-            return setSubType(node, convertBTypeToZ3Type(node.getType()));
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
         }
 
         @Override
@@ -414,6 +414,21 @@ public class Z3TypeInference {
         public Z3Type visitBecomesSuchThatSubstitutionNode(BecomesSuchThatSubstitutionNode node, Void expected) {
             AbstractVisitor.super.visitPredicateNode(node.getPredicate(), expected);
             return null;
+        }
+
+        @Override
+        public Z3Type visitEnumerationSetNode(EnumerationSetNode node, Void expected) {
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
+        }
+
+        @Override
+        public Z3Type visitDeferredSetNode(DeferredSetNode node, Void expected) {
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
+        }
+
+        @Override
+        public Z3Type visitEnumeratedSetElementNode(EnumeratedSetElementNode node, Void expected) {
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
         }
 
     }
