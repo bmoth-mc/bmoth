@@ -270,13 +270,10 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
             visitExprNode(expressionNodes.get(0), node.getType());
             visitExprNode(expressionNodes.get(1), node.getType());
             return node.getType();
-        case COUPLE: {
-            BType left = visitExprNode(expressionNodes.get(0), new UntypedType());
-            BType right = visitExprNode(expressionNodes.get(1), new UntypedType());
-            CoupleType found = new CoupleType(left, right);
-            unify(expected, found, node);
-            return node.getType();
-        }
+        case COUPLE:
+            return unify(expected, new CoupleType(visitExprNode(expressionNodes.get(0), new UntypedType()),
+                    visitExprNode(expressionNodes.get(1), new UntypedType())), node);
+
         case DOMAIN: {
             SetType argument = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
             argument = (SetType) visitExprNode(expressionNodes.get(0), argument);
