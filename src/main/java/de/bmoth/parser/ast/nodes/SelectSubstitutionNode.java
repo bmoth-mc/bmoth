@@ -2,7 +2,7 @@ package de.bmoth.parser.ast.nodes;
 
 import java.util.List;
 
-public class SelectSubstitutionNode extends AbstractConditionsAndSubstitutionsNode {
+public class SelectSubstitutionNode extends AbstractIfAndSelectSubstitutionsNode {
 
     public SelectSubstitutionNode(List<PredicateNode> conditions, List<SubstitutionNode> substitutions,
             SubstitutionNode elseSubstitution) {

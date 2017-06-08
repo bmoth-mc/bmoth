@@ -1,7 +1,8 @@
-package de.bmoth.parser.ast;
+package de.bmoth.parser.cst;
 
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;

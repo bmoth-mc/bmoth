@@ -1,7 +1,8 @@
 package de.bmoth.parser;
 
-import de.bmoth.parser.ast.ScopeException;
 import org.junit.Test;
+
+import de.bmoth.parser.cst.ScopeException;
 
 public class SemanticChecksTest {
 

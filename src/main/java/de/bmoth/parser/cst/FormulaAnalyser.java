@@ -1,14 +1,15 @@
-package de.bmoth.parser.ast;
+package de.bmoth.parser.cst;
 
 import de.bmoth.antlr.BMoThParser.FormulaContext;
+
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class FormulaAnalyser {
-    final FormulaContext formula;
-    final LinkedHashMap<String, TerminalNode> implicitDeclarations = new LinkedHashMap<>();
+    private final FormulaContext formula;
+    private final LinkedHashMap<String, TerminalNode> implicitDeclarations = new LinkedHashMap<>();
     private final LinkedHashMap<TerminalNode, TerminalNode> declarationReferences;
 
     public FormulaAnalyser(FormulaContext formula) {
@@ -16,6 +17,14 @@ public class FormulaAnalyser {
         FormulaScopeChecker scopeChecker = new FormulaScopeChecker();
         formula.accept(scopeChecker);
         this.declarationReferences = scopeChecker.declarationReferences;
+    }
+
+    public FormulaContext getFormula() {
+        return this.formula;
+    }
+
+    public Map<String, TerminalNode> getImplicitDeclarations() {
+        return new LinkedHashMap<>(this.implicitDeclarations);
     }
 
     public Map<TerminalNode, TerminalNode> getDeclarationReferences() {

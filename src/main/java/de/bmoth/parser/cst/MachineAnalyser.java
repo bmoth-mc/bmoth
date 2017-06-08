@@ -1,9 +1,9 @@
-package de.bmoth.parser.ast;
+package de.bmoth.parser.cst;
 
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.*;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
-import de.bmoth.parser.ast.BDefinition.KIND;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -22,22 +22,19 @@ public class MachineAnalyser {
     final LinkedHashMap<String, TerminalNode> setsDeclarations = new LinkedHashMap<>();
     final List<EnumeratedSetContext> enumeratedSetContexts = new ArrayList<>();
     final List<DeferredSetContext> deferredSetContexts = new ArrayList<>();
-    
-    
+
     final LinkedHashMap<String, TerminalNode> definitionsDeclarations = new LinkedHashMap<>();
-    
-    
+
     final LinkedHashMap<TerminalNode, BDefinition> definitions = new LinkedHashMap<>();
     final LinkedHashMap<String, OperationContext> operationsDeclarations = new LinkedHashMap<>();
     final LinkedHashMap<String, EnumeratedSetContext> enumeratedSetElementsDeclarations = new LinkedHashMap<>();
-    
 
-    PredicateClauseContext properties;
-    PredicateClauseContext invariant;
-    InitialisationClauseContext initialisation;
+    private PredicateClauseContext propertiesClause;
+    private PredicateClauseContext invariantClause;
+    private InitialisationClauseContext initialisationClause;
 
     private LinkedHashMap<TerminalNode, TerminalNode> declarationReferences;
-    final Map<ParserRuleContext, BDefinition> definitionCallReplacements = new HashMap<>();
+    private final Map<ParserRuleContext, BDefinition> definitionCallReplacements = new HashMap<>();
 
     public MachineAnalyser(StartContext start) {
         this.parseTree = start;
@@ -48,7 +45,42 @@ public class MachineAnalyser {
         // check that all used identifiers are declared
         // store a reference for each to identifier to its declaration
         checkScope();
+    }
 
+    public PredicateClauseContext getPropertiesClause() {
+        return this.propertiesClause;
+    }
+
+    public PredicateClauseContext getInvariantClause() {
+        return this.invariantClause;
+    }
+
+    public InitialisationClauseContext getInitialisationClause() {
+        return this.initialisationClause;
+    }
+
+    public Map<ParserRuleContext, BDefinition> getDefinitionCallReplacements() {
+        return this.definitionCallReplacements;
+    }
+
+    public List<TerminalNode> getConstants() {
+        return new ArrayList<>(this.constantsDeclarations.values());
+    }
+
+    public List<TerminalNode> getVariables() {
+        return new ArrayList<>(this.variablesDeclarations.values());
+    }
+
+    public List<EnumeratedSetContext> getEnumeratedSets() {
+        return new ArrayList<>(this.enumeratedSetContexts);
+    }
+
+    public List<DeferredSetContext> getDeferredSetContexts() {
+        return new ArrayList<>(this.deferredSetContexts);
+    }
+
+    public List<OperationContext> getOperations() {
+        return new ArrayList<>(this.operationsDeclarations.values());
     }
 
     class DeclarationFinder extends BMoThParserBaseVisitor<Void> {
@@ -64,14 +96,14 @@ public class MachineAnalyser {
                 declarations.put(terminalNode.getSymbol().getText(), terminalNode);
             }
             switch (ctx.clauseName.getType()) {
-                case CONSTANTS:
-                    constantsDeclarations.putAll(declarations);
-                    break;
-                case VARIABLES:
-                    variablesDeclarations.putAll(declarations);
-                    break;
-                default:
-                    unreachable();
+            case CONSTANTS:
+                constantsDeclarations.putAll(declarations);
+                break;
+            case VARIABLES:
+                variablesDeclarations.putAll(declarations);
+                break;
+            default:
+                unreachable();
             }
             return null;
         }
@@ -84,13 +116,13 @@ public class MachineAnalyser {
             definitionsDeclarations.put(name, terminalNode);
             BDefinition.KIND kind = null;
             if (ctx.definition_body() instanceof DefinitionExpressionContext) {
-                kind = KIND.EXPRESSION;
+                kind = BDefinition.KIND.EXPRESSION;
             } else if (ctx.definition_body() instanceof DefinitionPredicateContext) {
-                kind = KIND.PREDICATE;
+                kind = BDefinition.KIND.PREDICATE;
             } else if (ctx.definition_body() instanceof DefinitionSubstitutionContext) {
-                kind = KIND.SUBSTITUTION;
+                kind = BDefinition.KIND.SUBSTITUTION;
             } else if (ctx.definition_body() instanceof DefinitionAmbiguousCallContext) {
-                kind = KIND.UNKNOWN;
+                kind = BDefinition.KIND.UNKNOWN;
             }
             BDefinition bDefinition = new BDefinition(name, ctx, kind);
             definitions.put(terminalNode, bDefinition);
@@ -126,9 +158,9 @@ public class MachineAnalyser {
         private void checkGlobalIdentifiers(TerminalNode terminalNode) {
             String name = terminalNode.getSymbol().getText();
             if (MachineAnalyser.this.constantsDeclarations.containsKey(name)
-                || MachineAnalyser.this.variablesDeclarations.containsKey(name)
-                || MachineAnalyser.this.operationsDeclarations.containsKey(name)
-                || MachineAnalyser.this.setsDeclarations.containsKey(name)) {
+                    || MachineAnalyser.this.variablesDeclarations.containsKey(name)
+                    || MachineAnalyser.this.operationsDeclarations.containsKey(name)
+                    || MachineAnalyser.this.setsDeclarations.containsKey(name)) {
                 throw new ScopeException("Duplicate declaration of identifier: " + name);
             }
         }
@@ -149,30 +181,30 @@ public class MachineAnalyser {
         @Override
         public Void visitPredicateClause(BMoThParser.PredicateClauseContext ctx) {
             switch (ctx.clauseName.getType()) {
-                case INVARIANT:
-                    if (MachineAnalyser.this.invariant == null) {
-                        MachineAnalyser.this.invariant = ctx;
-                    } else {
-                        throw new ScopeException("Duplicate INVARIANT clause.");
-                    }
-                    break;
-                case PROPERTIES:
-                    if (MachineAnalyser.this.properties == null) {
-                        MachineAnalyser.this.properties = ctx;
-                    } else {
-                        throw new ScopeException("Duplicate PROPERTIES clause.");
-                    }
-                    break;
-                default:
-                    unreachable();
+            case INVARIANT:
+                if (MachineAnalyser.this.invariantClause == null) {
+                    MachineAnalyser.this.invariantClause = ctx;
+                } else {
+                    throw new ScopeException("Duplicate INVARIANT clause.");
+                }
+                break;
+            case PROPERTIES:
+                if (MachineAnalyser.this.propertiesClause == null) {
+                    MachineAnalyser.this.propertiesClause = ctx;
+                } else {
+                    throw new ScopeException("Duplicate PROPERTIES clause.");
+                }
+                break;
+            default:
+                unreachable();
             }
             return null;
         }
 
         @Override
         public Void visitInitialisationClause(BMoThParser.InitialisationClauseContext ctx) {
-            if (MachineAnalyser.this.initialisation == null) {
-                MachineAnalyser.this.initialisation = ctx;
+            if (MachineAnalyser.this.initialisationClause == null) {
+                MachineAnalyser.this.initialisationClause = ctx;
             } else {
                 throw new ScopeException("Duplicate PROPERTIES clause.");
             }
@@ -184,14 +216,12 @@ public class MachineAnalyser {
         private static final long serialVersionUID = -2894774140796162549L;
 
         UnmatchedArgumentsQuantityException(BDefinition definition, int actual) {
-            super("The number of parameters does not match the number of arguments of definition '" +
-                definition.getName() +
-                "': " + actual + " vs " + definition.getArity());
+            super("The number of parameters does not match the number of arguments of definition '"
+                    + definition.getName() + "': " + actual + " vs " + definition.getArity());
         }
 
         UnmatchedArgumentsQuantityException(BDefinition definition) {
-            super("Expecting " + definition.getArity() + " argument(s) for definition "
-                + definition.getName());
+            super("Expecting " + definition.getArity() + " argument(s) for definition " + definition.getName());
         }
     }
 
@@ -207,32 +237,32 @@ public class MachineAnalyser {
     class MachineScopeChecker extends ScopeChecker {
 
         MachineScopeChecker() {
-            if (MachineAnalyser.this.properties != null) {
+            if (MachineAnalyser.this.propertiesClause != null) {
                 scopeTable.clear();
                 scopeTable.add(MachineAnalyser.this.setsDeclarations);
                 scopeTable.add(MachineAnalyser.this.constantsDeclarations);
                 scopeTable.add(MachineAnalyser.this.definitionsDeclarations);
-                MachineAnalyser.this.properties.accept(this);
+                MachineAnalyser.this.propertiesClause.accept(this);
                 scopeTable.clear();
             }
 
-            if (MachineAnalyser.this.invariant != null) {
+            if (MachineAnalyser.this.invariantClause != null) {
                 scopeTable.clear();
                 scopeTable.add(MachineAnalyser.this.setsDeclarations);
                 scopeTable.add(MachineAnalyser.this.constantsDeclarations);
                 scopeTable.add(MachineAnalyser.this.variablesDeclarations);
                 scopeTable.add(MachineAnalyser.this.definitionsDeclarations);
-                MachineAnalyser.this.invariant.accept(this);
+                MachineAnalyser.this.invariantClause.accept(this);
                 scopeTable.clear();
             }
 
-            if (MachineAnalyser.this.initialisation != null) {
+            if (MachineAnalyser.this.initialisationClause != null) {
                 scopeTable.clear();
                 scopeTable.add(MachineAnalyser.this.setsDeclarations);
                 scopeTable.add(MachineAnalyser.this.constantsDeclarations);
                 scopeTable.add(MachineAnalyser.this.variablesDeclarations);
                 scopeTable.add(MachineAnalyser.this.definitionsDeclarations);
-                MachineAnalyser.this.initialisation.accept(this);
+                MachineAnalyser.this.initialisationClause.accept(this);
                 scopeTable.clear();
             }
 
@@ -269,9 +299,9 @@ public class MachineAnalyser {
             TerminalNode declarationNode = this.declarationReferences.get(terminalNode);
             if (definitions.containsKey(declarationNode)) {
                 BDefinition bDefinition = definitions.get(declarationNode);
-                if (bDefinition.getKind() == KIND.SUBSTITUTION || bDefinition.getKind() == KIND.PREDICATE) {
+                if (bDefinition.getKind() == BDefinition.KIND.SUBSTITUTION || bDefinition.getKind() == BDefinition.KIND.PREDICATE) {
                     throw new ScopeException("Expected a EXPRESSION definition but found a " + bDefinition.getKind()
-                        + " at definition " + bDefinition.getName());
+                            + " at definition " + bDefinition.getName());
                 }
                 if (bDefinition.getArity() > 0) {
                     if (ctx.parent instanceof FunctionCallExpressionContext) {
@@ -332,9 +362,9 @@ public class MachineAnalyser {
             TerminalNode declarationTNode = this.declarationReferences.get(terminalNode);
             if (definitions.containsKey(declarationTNode)) {
                 BDefinition bDefinition = definitions.get(declarationTNode);
-                if (bDefinition.getKind() == KIND.SUBSTITUTION || bDefinition.getKind() == KIND.EXPRESSION) {
+                if (bDefinition.getKind() == BDefinition.KIND.SUBSTITUTION || bDefinition.getKind() == BDefinition.KIND.EXPRESSION) {
                     throw new ScopeException("Expected a PREDICATE definition but found a " + bDefinition.getKind()
-                        + " at definition " + bDefinition.getName());
+                            + " at definition " + bDefinition.getName());
                 }
                 if (bDefinition.getArity() > 0) {
                     throw new UnmatchedArgumentsQuantityException(bDefinition);

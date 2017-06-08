@@ -3,11 +3,15 @@ package de.bmoth.parser.ast;
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.*;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
-import de.bmoth.parser.ast.BDefinition.KIND;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ConditionSubstitutionNode.ConditionSubstitutionKind;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
+import de.bmoth.parser.cst.BDefinition;
+import de.bmoth.parser.cst.FormulaAnalyser;
+import de.bmoth.parser.cst.MachineAnalyser;
+import de.bmoth.parser.cst.BDefinition.KIND;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.RuleNode;
@@ -38,10 +42,10 @@ public class SemanticAstCreator {
     public SemanticAstCreator(FormulaAnalyser formulaAnalyser) {
         this.declarationReferences = formulaAnalyser.getDeclarationReferences();
         this.definitionCallReplacements = new LinkedHashMap<>();
-        FormulaContext formulaContext = formulaAnalyser.formula;
+        FormulaContext formulaContext = formulaAnalyser.getFormula();
         FormulaNode.FormulaType type = formulaContext.expression() != null ? EXPRESSION_FORMULA : PREDICATE_FORMULA;
         FormulaNode formulaNode = new FormulaNode(type);
-        formulaNode.setImplicitDeclarations(createDeclarationList(formulaAnalyser.implicitDeclarations));
+        formulaNode.setImplicitDeclarations(createDeclarationList(formulaAnalyser.getImplicitDeclarations()));
         FormulaVisitor formulaVisitor = new FormulaVisitor();
         Node node;
         if (type == EXPRESSION_FORMULA) {
@@ -55,39 +59,40 @@ public class SemanticAstCreator {
 
     public SemanticAstCreator(MachineAnalyser machineAnalyser) {
         this.declarationReferences = machineAnalyser.getDeclarationReferences();
-        this.definitionCallReplacements = machineAnalyser.definitionCallReplacements;
+        this.definitionCallReplacements = machineAnalyser.getDefinitionCallReplacements();
+
         MachineNode machineNode = new MachineNode(null, null);
-        machineNode.setConstants(createDeclarationList(machineAnalyser.constantsDeclarations));
-        machineNode.setVariables(createDeclarationList(machineAnalyser.variablesDeclarations));
-        addEnumeratedSets(machineAnalyser.enumeratedSetContexts, machineNode);
-        addDeferredSets(machineAnalyser.deferredSetContexts, machineNode);
+        machineNode.setConstants(createDeclarationList(machineAnalyser.getConstants()));
+        machineNode.setVariables(createDeclarationList(machineAnalyser.getVariables()));
+        addEnumeratedSets(machineAnalyser.getEnumeratedSets(), machineNode);
+
+        addDeferredSets(machineAnalyser.getDeferredSetContexts(), machineNode);
 
         FormulaVisitor formulaVisitor = new FormulaVisitor();
 
-        if (machineAnalyser.properties != null) {
-            PredicateNode pred = (PredicateNode) machineAnalyser.properties.predicate().accept(formulaVisitor);
+        if (null != machineAnalyser.getPropertiesClause()) {
+            PredicateNode pred = (PredicateNode) machineAnalyser.getPropertiesClause().predicate()
+                    .accept(formulaVisitor);
             machineNode.setProperties(pred);
         }
 
-        if (machineAnalyser.invariant != null) {
-            PredicateNode pred = (PredicateNode) machineAnalyser.invariant.predicate().accept(formulaVisitor);
+        if (null != machineAnalyser.getInvariantClause()) {
+            PredicateNode pred = (PredicateNode) machineAnalyser.getInvariantClause().predicate()
+                    .accept(formulaVisitor);
             machineNode.setInvariant(pred);
         }
 
-        if (machineAnalyser.initialisation != null) {
-            SubstitutionNode substitution = (SubstitutionNode) machineAnalyser.initialisation.substitution()
+        if (null != machineAnalyser.getInitialisationClause()) {
+            SubstitutionNode substitution = (SubstitutionNode) machineAnalyser.getInitialisationClause().substitution()
                     .accept(formulaVisitor);
             machineNode.setInitialisation(substitution);
         }
 
-        List<OperationNode> operationsList = new ArrayList<>();
-        for (Entry<String, OperationContext> entry : machineAnalyser.operationsDeclarations.entrySet()) {
-            OperationContext operationContext = entry.getValue();
-            SubstitutionNode substitution = (SubstitutionNode) operationContext.substitution().accept(formulaVisitor);
-            OperationNode operationNode = new OperationNode(entry.getKey(), substitution);
-            operationsList.add(operationNode);
-        }
-        machineNode.setOperations(operationsList);
+        machineNode
+                .setOperations(machineAnalyser.getOperations().stream()
+                        .map(op -> new OperationNode(op.IDENTIFIER().getText(),
+                                (SubstitutionNode) op.substitution().accept(formulaVisitor)))
+                        .collect(Collectors.toList()));
 
         this.semanticNode = machineNode;
 
@@ -102,7 +107,17 @@ public class SemanticAstCreator {
         }
     }
 
-    private List<DeclarationNode> createDeclarationList(LinkedHashMap<String, TerminalNode> map) {
+    private List<DeclarationNode> createDeclarationList(List<TerminalNode> list) {
+        List<DeclarationNode> declarationList = new ArrayList<>();
+        for (TerminalNode terminalNode : list) {
+            DeclarationNode declNode = new DeclarationNode(terminalNode, terminalNode.getSymbol().getText());
+            declarationList.add(declNode);
+            declarationMap.put(terminalNode, declNode);
+        }
+        return declarationList;
+    }
+
+    private List<DeclarationNode> createDeclarationList(Map<String, TerminalNode> map) {
         List<DeclarationNode> declarationList = new ArrayList<>();
         for (Entry<String, TerminalNode> entry : map.entrySet()) {
             TerminalNode terminalNode = entry.getValue();
@@ -480,7 +495,7 @@ public class SemanticAstCreator {
             TerminalNode declNode = SemanticAstCreator.this.declarationReferences.get(terminalNode);
             DeclarationNode declarationNode = declarationMap.get(declNode);
             if (declarationNode == null) {
-                throw new AssertionError("Can not find declaration node of identifier " + token.getText() + " Line "
+                throw new AssertionError("Can not find declaration node of identifier '" + token.getText() + "' Line "
                         + token.getLine() + " Pos " + token.getCharPositionInLine());
             }
             return new IdentifierExprNode(terminalNode, declarationNode);

@@ -17,7 +17,7 @@ import java.util.List;
  * 
  */
 
-public class IfSubstitutionNode extends AbstractConditionsAndSubstitutionsNode {
+public class IfSubstitutionNode extends AbstractIfAndSelectSubstitutionsNode {
 
     public IfSubstitutionNode(List<PredicateNode> conditions, List<SubstitutionNode> substitutions,
             SubstitutionNode elseSubstitution) {

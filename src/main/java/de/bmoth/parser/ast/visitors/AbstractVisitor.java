@@ -1,4 +1,4 @@
-package de.bmoth.parser.ast;
+package de.bmoth.parser.ast.visitors;
 
 import de.bmoth.parser.ast.nodes.*;
 

@@ -1,11 +1,11 @@
 package de.bmoth.backend.z3;
 
-import de.bmoth.parser.ast.ASTTransformationVisitor;
-import de.bmoth.parser.ast.AbstractASTTransformation;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode.PredOperatorExprArgs;
+import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
+import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 
 import java.util.ArrayList;
 import java.util.Arrays;

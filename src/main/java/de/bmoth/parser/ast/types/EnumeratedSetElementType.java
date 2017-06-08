@@ -1,15 +1,14 @@
 package de.bmoth.parser.ast.types;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class UserDefinedElementType implements BType {
+public class EnumeratedSetElementType implements BType {
 
     private final String setName;
     private final List<String> elements;
 
-    public UserDefinedElementType(String name, List<String> list) {
+    public EnumeratedSetElementType(String name, List<String> list) {
         this.setName = name;
         this.elements = list;
     }
@@ -53,10 +52,7 @@ public class UserDefinedElementType implements BType {
     }
 
     public List<String> getElements() {
-        if (this.elements != null) {
-            return new ArrayList<>(this.elements);
-        }
-        return Collections.emptyList();
+        return new ArrayList<>(this.elements);
     }
 
 }

@@ -4,12 +4,14 @@ import de.bmoth.antlr.BMoThLexer;
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.FormulaContext;
 import de.bmoth.antlr.BMoThParser.StartContext;
-import de.bmoth.parser.ast.FormulaAnalyser;
-import de.bmoth.parser.ast.MachineAnalyser;
 import de.bmoth.parser.ast.SemanticAstCreator;
 import de.bmoth.parser.ast.TypeChecker;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.parser.cst.CSTAnalyser;
+import de.bmoth.parser.cst.FormulaAnalyser;
+import de.bmoth.parser.cst.MachineAnalyser;
+
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 

@@ -1,9 +1,9 @@
-package de.bmoth.parser.ast;
+package de.bmoth.parser.ast.visitors;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.bmoth.parser.ast.nodes.AbstractConditionsAndSubstitutionsNode;
+import de.bmoth.parser.ast.nodes.AbstractIfAndSelectSubstitutionsNode;
 import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.BecomesElementOfSubstitutionNode;
 import de.bmoth.parser.ast.nodes.BecomesSuchThatSubstitutionNode;
@@ -118,7 +118,7 @@ public class ASTTransformationVisitor {
             return visitConditionsAndSubstitutionsNode(node, expected);
         }
 
-        private Node visitConditionsAndSubstitutionsNode(AbstractConditionsAndSubstitutionsNode node, Void expected) {
+        private Node visitConditionsAndSubstitutionsNode(AbstractIfAndSelectSubstitutionsNode node, Void expected) {
             node.setConditions(node.getConditions().stream().map(t -> (PredicateNode) visitPredicateNode(t, expected))
                     .collect(Collectors.toList()));
             node.setSubstitutions(node.getSubstitutions().stream()

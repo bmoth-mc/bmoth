@@ -1,4 +1,4 @@
-package de.bmoth.parser.ast;
+package de.bmoth.parser.cst;
 
 import java.util.ArrayList;
 import java.util.List;

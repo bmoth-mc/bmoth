@@ -6,8 +6,8 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
 
 import de.bmoth.backend.TranslationOptions;
-import de.bmoth.parser.ast.SubstitutionVisitor;
 import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.visitors.SubstitutionVisitor;
 
 import java.util.*;
 

@@ -8,8 +8,6 @@ import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 
-import de.bmoth.parser.ast.ParseErrorException;
-
 public class ErrorListener extends BaseErrorListener {
 
     @Override

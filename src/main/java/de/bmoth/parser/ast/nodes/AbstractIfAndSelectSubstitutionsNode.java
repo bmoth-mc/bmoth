@@ -10,7 +10,7 @@ import java.util.Set;
  * and at least one element. {@code elseSubstitution} can be {@code null}.
  * 
  **/
-public abstract class AbstractConditionsAndSubstitutionsNode extends SubstitutionNode {
+public abstract class AbstractIfAndSelectSubstitutionsNode extends SubstitutionNode {
     protected List<PredicateNode> conditions;
     protected List<SubstitutionNode> substitutions;
     protected SubstitutionNode elseSubstitution;
@@ -25,7 +25,7 @@ public abstract class AbstractConditionsAndSubstitutionsNode extends Substitutio
      * @param elseSubstitution
      *            the else substitution; maybe {@code null}
      */
-    public AbstractConditionsAndSubstitutionsNode(List<PredicateNode> conditions, List<SubstitutionNode> substitutions,
+    public AbstractIfAndSelectSubstitutionsNode(List<PredicateNode> conditions, List<SubstitutionNode> substitutions,
             SubstitutionNode elseSubstitution) {
         this.conditions = conditions;
         this.substitutions = substitutions;
