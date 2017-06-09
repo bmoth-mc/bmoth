@@ -8,8 +8,8 @@ public class ConditionSubstitutionNode extends SubstitutionNode {
         PRECONDITION, ASSERT
     }
 
-    public ConditionSubstitutionNode(ConditionSubstitutionKind kind, PredicateNode condition,
-            SubstitutionNode substitution) {
+    public ConditionSubstitutionNode(PredicateNode condition,
+                                     SubstitutionNode substitution) {
         this.condition = condition;
         this.substitution = substitution;
         super.setAssignedVariables(substitution.getAssignedVariables());

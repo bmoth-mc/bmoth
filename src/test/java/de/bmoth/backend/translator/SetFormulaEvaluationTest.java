@@ -373,7 +373,6 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Ignore
     @Test
     public void testGeneralizedUnion() {
-        // TODO z3 is currently not able to handle sets of sets and reports the
         // status UNKNOWN
         String formula = "union({{1},{2},{3}}) = {1,2,3} ";
         check(SATISFIABLE, formula);
