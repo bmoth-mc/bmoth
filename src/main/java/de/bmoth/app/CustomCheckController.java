@@ -17,7 +17,7 @@ public class CustomCheckController {
     CheckBox modelCheck;
 
     Stage stage;
-    AppController appController;
+    AppView appController;
 
     public Stage getStage(Parent root) {
         if (stage != null) return stage;
@@ -60,7 +60,7 @@ public class CustomCheckController {
         }
     }
 
-    public void setAppControllerReference(AppController appCtrl) {
+    public void setAppControllerReference(AppView appCtrl) {
         this.appController = appCtrl;
     }
 }

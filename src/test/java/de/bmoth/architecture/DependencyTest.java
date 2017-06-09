@@ -39,11 +39,12 @@ public class DependencyTest {
                 deBmothApp,
                 deBmothBackendZ3,
                 deBmothModelchecker,
-                deBmothCheckers_;
+                deBmothCheckers_,
+                deSaxsysMvvmfx;
 
             @Override
             public void defineRules() {
-                deBmothApp.mayUse(comMicrosoftZ3, comMicrosoftZ3Enumerations);
+                deBmothApp.mayUse(comMicrosoftZ3, comMicrosoftZ3Enumerations, deSaxsysMvvmfx);
                 deBmothBackendZ3.mustUse(comMicrosoftZ3);
                 deBmothBackendZ3.mayUse(comMicrosoftZ3Enumerations);
                 deBmothModelchecker.mustUse(comMicrosoftZ3);

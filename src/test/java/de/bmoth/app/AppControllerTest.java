@@ -17,7 +17,7 @@ public class AppControllerTest extends HeadlessUITest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("app.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("AppView.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root, 500, 300);
         AppController appController = loader.getController();

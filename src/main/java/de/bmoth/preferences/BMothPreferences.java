@@ -27,6 +27,10 @@ public class BMothPreferences {
         prefs.put(p.toString(), val);
     }
 
+    public static void setIntPreference(IntPreference p, Integer val) {
+        prefs.put(p.toString(), val.toString());
+    }
+
     public enum StringPreference {
         LAST_FILE(""), LAST_DIR(System.getProperty("user.dir"));
 

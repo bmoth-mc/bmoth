@@ -6,7 +6,7 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity"
             prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111"
-            fx:controller="de.bmoth.app.OptionController">
+            fx:controller="de.bmoth.app.OptionView">
     <children>
         <TextField editable="false" layoutX="14.0" layoutY="15.0" text="MIN INT"/>
         <TextField layoutX="190.0" layoutY="15.0" fx:id="minInt"/>

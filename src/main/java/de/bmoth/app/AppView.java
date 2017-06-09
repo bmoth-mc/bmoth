@@ -12,6 +12,10 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
+import de.saxsys.mvvmfx.FluentViewLoader;
+import de.saxsys.mvvmfx.FxmlView;
+import de.saxsys.mvvmfx.InjectViewModel;
+import de.saxsys.mvvmfx.ViewTuple;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -41,7 +45,11 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AppController implements Initializable {
+/**
+ * Created by Julian on 09.06.2017.
+ */
+public class AppView implements FxmlView<AppViewModel>, Initializable {
+
     private static final String APPNAME = "Bmoth";
     private final Logger logger = Logger.getLogger(getClass().getName());
     @FXML
@@ -68,7 +76,8 @@ public class AppController implements Initializable {
     TextArea infoArea;
     @FXML
     TextArea warningArea;
-
+    @InjectViewModel
+    private AppViewModel appViewModel;
     private Stage primaryStage = new Stage();
     private String currentFile;
     private Boolean hasChanged = false;
@@ -79,21 +88,22 @@ public class AppController implements Initializable {
     private Boolean presentationMode = false;
 
     @Override
-    public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
+    public void initialize(URL location, ResourceBundle resources) {
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_ANY));
         newFile.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_ANY));
         open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_ANY));
         warningArea.setWrapText(true);
         presentation.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_ANY));
-        primaryStage.setTitle(APPNAME);
         codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
             .subscribe(change -> codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText())));
         codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
-
+        appViewModel.codeProperty().bind(codeArea.textProperty());
+        warningArea.textProperty().bind(appViewModel.warningsProperty());
         EventBusProvider.getInstance();
         EventBusProvider.getInstance().getEventBus().register(this);
+
     }
 
     void setupStage(Stage stage) {
@@ -123,7 +133,7 @@ public class AppController implements Initializable {
         });
     }
 
-    // <editor-fold desc="Menu handlers">
+
     @FXML
     public void handleNew() {
         int nextStep = -1;
@@ -206,11 +216,10 @@ public class AppController implements Initializable {
 
     @FXML
     public void handleOptions() throws IOException {
-        Stage optionStage = new Stage();
-        optionStage.setTitle("Options");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionView.fxml"));
-        Parent root = loader.load();
+        ViewTuple<OptionView, OptionViewModel> viewOptionViewModelViewTuple = FluentViewLoader.fxmlView(OptionView.class).load();
+        Parent root = viewOptionViewModelViewTuple.getView();
         Scene scene = new Scene(root);
+        Stage optionStage = new Stage();
         optionStage.setScene(scene);
         optionStage.show();
     }
@@ -277,7 +286,7 @@ public class AppController implements Initializable {
         Parent root = loader.load();
         CustomCheckController customCheckController = loader.getController();
         Stage customCheckStage = customCheckController.getStage(root);
-        //customCheckController.setAppControllerReference(this);
+        customCheckController.setAppControllerReference(this);
         customCheckStage.show();
     }
 
@@ -324,7 +333,6 @@ public class AppController implements Initializable {
         Scene scene = new Scene(root, 500, 300);
         replStage.setScene(scene);
         replStage.show();
-
     }
     // </editor-fold>
 

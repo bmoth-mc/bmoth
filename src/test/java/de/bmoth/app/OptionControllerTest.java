@@ -27,7 +27,7 @@ public class OptionControllerTest extends HeadlessUITest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("options.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionView.fxml"));
         Parent root = loader.load();
         optionController = loader.getController();
         Scene scene = new Scene(root);

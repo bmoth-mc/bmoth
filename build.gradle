@@ -94,6 +94,8 @@ dependencies {
 
     // JavaFX RichText Editor
     compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
+    // MVVMFx
+    compile group: 'de.saxsys',name:'mvvmfx',version: '1.6.0'
 
     // TestFX & monocle for headless testing
     testCompile "org.testfx:testfx-core:4.0.+"
