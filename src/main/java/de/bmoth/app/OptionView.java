@@ -42,17 +42,20 @@ public class OptionView implements FxmlView<OptionViewModel>, Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        minInt.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT)));
-        maxInt.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT)));
-        maxInitState.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE)));
-        maxTrans.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS)));
-        z3Timeout.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT)));
+        loadPrefs();
         optionViewModel.minInt.bind(minInt.textProperty());
         optionViewModel.maxInt.bind(maxInt.textProperty());
         optionViewModel.maxInitState.bind(maxInitState.textProperty());
         optionViewModel.maxTrans.bind(maxTrans.textProperty());
         optionViewModel.z3Timeout.bind(z3Timeout.textProperty());
+    }
 
+    void loadPrefs() {
+        minInt.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT)));
+        maxInt.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT)));
+        maxInitState.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE)));
+        maxTrans.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS)));
+        z3Timeout.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT)));
     }
 
     boolean checkPrefs() {

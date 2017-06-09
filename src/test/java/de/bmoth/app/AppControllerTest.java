@@ -1,6 +1,7 @@
 package de.bmoth.app;
 
-import javafx.fxml.FXMLLoader;
+import de.saxsys.mvvmfx.FluentViewLoader;
+import de.saxsys.mvvmfx.ViewTuple;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -17,12 +18,12 @@ public class AppControllerTest extends HeadlessUITest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("AppView.fxml"));
-        Parent root = loader.load();
-        Scene scene = new Scene(root, 500, 300);
-        AppController appController = loader.getController();
-        appController.setupStage(stage);
+        ViewTuple<AppView, AppViewModel> viewTuple = FluentViewLoader.fxmlView(AppView.class).load();
+        Parent root = viewTuple.getView();
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(App.class.getResource("keywords.css").toExternalForm());
         stage.setScene(scene);
+        viewTuple.getCodeBehind().setupStage(stage);
         stage.show();
     }
 
