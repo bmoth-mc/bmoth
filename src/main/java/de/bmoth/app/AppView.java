@@ -100,6 +100,10 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         codeArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
             .subscribe(change -> codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText())));
         codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
+        codeArea.textProperty().addListener((observableValue, s, t1) -> {
+            hasChanged = true;
+            infoArea.setText("Unsaved changes");
+        });
         appViewModel.codeProperty().bind(codeArea.textProperty());
         warningArea.textProperty().bind(appViewModel.warningsProperty());
         EventBusProvider.getInstance();
@@ -128,10 +132,6 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
             codeArea.getUndoManager().forgetHistory();
 
         }
-        codeArea.textProperty().addListener((observableValue, s, t1) -> {
-            hasChanged = true;
-            infoArea.setText("Unsaved changes");
-        });
     }
 
 
