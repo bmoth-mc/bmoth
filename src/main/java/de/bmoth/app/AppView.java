@@ -1,6 +1,7 @@
 package de.bmoth.app;
 
 import com.google.common.eventbus.Subscribe;
+import com.microsoft.z3.Status;
 import de.bmoth.checkers.initialstateexists.InitialStateExistsChecker;
 import de.bmoth.checkers.initialstateexists.InitialStateExistsCheckingResult;
 import de.bmoth.checkers.invariantsatisfiability.InvariantSatisfiabilityChecker;
@@ -115,7 +116,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         });
     }
 
-    private void setupPersonalPreferences() {
+    void setupPersonalPreferences() {
         if (!BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_FILE).isEmpty()) {
             currentFile = BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_FILE);
             if (new File(currentFile).exists()) {
@@ -301,26 +302,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
                 }
             }
             InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(machineNode);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Invariant Satisfiability Checking Result");
-            alert.setHeaderText("The invariant is...");
-            switch (result.getResult()) {
-
-                case UNSATISFIABLE:
-                    alert.setContentText("...unsatisfiable!\nThe model is probably not correct.");
-                    break;
-                case UNKNOWN:
-                    alert.setContentText("...unknown!\nThe invariant is too complex for the backend.");
-                    break;
-                case SATISFIABLE:
-                    alert.setContentText("...satisfiable!");
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unhandled result: " + result.toString());
-            }
-
-            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-            alert.showAndWait();
+            showResultAlert(result.getResult());
         }
     }
 
@@ -477,26 +459,31 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
             }
 
             InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(machineNode);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Invariant Satisfiability Checking Result");
-            alert.setHeaderText("Initial state...");
-            switch (result.getResult()) {
-                case UNSATISFIABLE:
-                    alert.setContentText("...does not exists!\nThe model is probably not correct.");
-                    break;
-                case UNKNOWN:
-                    alert.setContentText("...is unknown!\nThe initialization is too complex for the backend.");
-                    break;
-                case SATISFIABLE:
-                    alert.setContentText("...exists!");
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unhandled result: " + result.toString());
-            }
-
-            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-            alert.showAndWait();
+            showResultAlert(result.getResult());
         }
+    }
+
+    private void showResultAlert(Status status) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Invariant Satisfiability Checking Result");
+        alert.setHeaderText("Initial state...");
+        switch (status) {
+            case UNSATISFIABLE:
+                alert.setContentText("...does not exists!\nThe model is probably not correct.");
+                break;
+            case UNKNOWN:
+                alert.setContentText("...is unknown!\nThe initialization is too complex for the backend.");
+                break;
+            case SATISFIABLE:
+                alert.setContentText("...exists!");
+                break;
+            default:
+                throw new IllegalArgumentException("Unhandled result: " + status.toString());
+        }
+
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.showAndWait();
+
     }
 
     public void handlePresentation(ActionEvent actionEvent) {
