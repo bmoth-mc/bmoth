@@ -4,7 +4,6 @@ import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.*;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
 import de.bmoth.parser.ast.nodes.*;
-import de.bmoth.parser.ast.nodes.ConditionSubstitutionNode.ConditionSubstitutionKind;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
 import de.bmoth.parser.cst.BDefinition;
@@ -478,14 +477,6 @@ public class SemanticAstCreator {
         public ConditionSubstitutionNode visitConditionSubstitution(BMoThParser.ConditionSubstitutionContext ctx) {
             PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
             SubstitutionNode sub = (SubstitutionNode) ctx.substitution().accept(this);
-            ConditionSubstitutionKind kind;
-            if (ctx.keyword.getType() == BMoThParser.PRE) {
-                kind = ConditionSubstitutionKind.PRECONDITION;
-            } else if (ctx.keyword.getType() == BMoThParser.ASSERT) {
-                kind = ConditionSubstitutionKind.ASSERT;
-            } else {
-                throw new AssertionError();
-            }
             return new ConditionSubstitutionNode(predicate, sub);
         }
 
