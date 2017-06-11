@@ -13,9 +13,15 @@ import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 
-public class AppTest {
+public class AppTest extends HeadlessUITest {
     private final Logger logger = Logger.getLogger(getClass().getName());
     private Stage stage;
+
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        this.stage = stage;
+    }
 
     @Test
     public void testApp() throws InterruptedException {
@@ -34,6 +40,4 @@ public class AppTest {
         assertEquals(true, stage.isShowing());
         Platform.runLater(() -> stage.close());
     }
-
-
 }
