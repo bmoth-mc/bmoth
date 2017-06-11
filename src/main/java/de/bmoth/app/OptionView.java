@@ -1,6 +1,5 @@
 package de.bmoth.app;
 
-import de.bmoth.preferences.BMothPreferences;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.fxml.FXML;
@@ -42,20 +41,12 @@ public class OptionView implements FxmlView<OptionViewModel>, Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadPrefs();
-        optionViewModel.minInt.bind(minInt.textProperty());
-        optionViewModel.maxInt.bind(maxInt.textProperty());
-        optionViewModel.maxInitState.bind(maxInitState.textProperty());
-        optionViewModel.maxTrans.bind(maxTrans.textProperty());
-        optionViewModel.z3Timeout.bind(z3Timeout.textProperty());
-    }
-
-    void loadPrefs() {
-        minInt.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT)));
-        maxInt.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT)));
-        maxInitState.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE)));
-        maxTrans.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS)));
-        z3Timeout.setText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT)));
+        optionViewModel.loadPrefs();
+        optionViewModel.minInt.bindBidirectional(minInt.textProperty());
+        optionViewModel.maxInt.bindBidirectional(maxInt.textProperty());
+        optionViewModel.maxInitState.bindBidirectional(maxInitState.textProperty());
+        optionViewModel.maxTrans.bindBidirectional(maxTrans.textProperty());
+        optionViewModel.z3Timeout.bindBidirectional(z3Timeout.textProperty());
     }
 
     boolean checkPrefs() {
@@ -100,18 +91,9 @@ public class OptionView implements FxmlView<OptionViewModel>, Initializable {
         return true;
     }
 
-    void savePrefs() {
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MIN_INT, optionViewModel.minInt.get());
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, optionViewModel.maxInt.get());
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE, optionViewModel.maxInitState.get());
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS, optionViewModel.maxTrans.get());
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT, optionViewModel.z3Timeout.get());
-    }
-
-
     public void handleApply() {
         if (checkPrefs())
-            savePrefs();
+            optionViewModel.savePrefs();
     }
 
     public void handleClose() {
@@ -121,7 +103,7 @@ public class OptionView implements FxmlView<OptionViewModel>, Initializable {
 
     public void handleOk() {
         if (checkPrefs()) {
-            savePrefs();
+            optionViewModel.savePrefs();
             handleClose();
         }
     }
