@@ -129,7 +129,7 @@ public class FormulaToZ3Translator {
         FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
         Expr constraint = visitor.visitPredicateNode(predNode, new TranslationOptions());
         if (!(constraint instanceof BoolExpr)) {
-            throw new RuntimeException("Invalid translation. Expected BoolExpr but found " + constraint.getClass());
+            throw new IllegalStateException("Invalid translation. Expected BoolExpr but found " + constraint.getClass());
         }
         // adding all additional constraints to result
         BoolExpr accumulatedConstraints = formulaToZ3Translator.getAccumulatedConstraints(z3Context);
