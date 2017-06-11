@@ -14,12 +14,11 @@ import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.*;
 
 public class AppViewTest extends HeadlessUITest {
-    ViewTuple<AppView, AppViewModel> viewTuple;
     private String codeAreaId = "#codeArea";
 
     @Override
     public void start(Stage stage) throws Exception {
-        viewTuple = FluentViewLoader.fxmlView(AppView.class).load();
+        ViewTuple<AppView, AppViewModel> viewTuple = FluentViewLoader.fxmlView(AppView.class).load();
         Parent root = viewTuple.getView();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(App.class.getResource("keywords.css").toExternalForm());
