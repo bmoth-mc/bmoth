@@ -234,7 +234,6 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
                 machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
                 if (!machineNode.getWarnings().isEmpty()) {
                     warningArea.setText(machineNode.getWarnings().toString());
-                    System.err.println("test");
                 }
             }
             modelChecker = new ModelChecker(machineNode);

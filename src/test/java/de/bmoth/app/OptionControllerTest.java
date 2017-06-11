@@ -8,7 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -36,11 +35,9 @@ public class OptionControllerTest extends HeadlessUITest {
 
     @Before
     public void setup() {
-        viewOptionViewModelViewTuple.getCodeBehind().loadPrefs();
+        viewOptionViewModelViewTuple.getViewModel().loadPrefs();
     }
 
-    //Ignoring Test which doesn't work for a unknown reason.
-    @Ignore
     @Test
     public void optionCreateTest() {
         verifyThat(MIN_INT_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT))));
@@ -70,11 +67,9 @@ public class OptionControllerTest extends HeadlessUITest {
         clickOn("#applyButton");
     }
 
-    //Ignoring Test which doesn't work for a unknown reason.
-    @Ignore
     @Test
     public void closeOnSuccess() {
-        viewOptionViewModelViewTuple.getCodeBehind().loadPrefs();
+        viewOptionViewModelViewTuple.getViewModel().loadPrefs();
         verifyThat(MIN_INT_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT))));
         verifyThat(MAX_INT_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT))));
         verifyThat(MAX_INIT_STATE_ID, hasText(String.valueOf(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE))));
