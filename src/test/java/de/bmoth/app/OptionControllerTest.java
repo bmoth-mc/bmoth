@@ -30,9 +30,8 @@ public class OptionControllerTest extends HeadlessUITest {
         viewOptionViewModelViewTuple = FluentViewLoader.fxmlView(OptionView.class).load();
         Parent root = viewOptionViewModelViewTuple.getView();
         Scene scene = new Scene(root);
-        Stage optionStage = new Stage();
-        optionStage.setScene(scene);
-        optionStage.show();
+        stage.setScene(scene);
+        stage.show();
     }
 
     @Before
