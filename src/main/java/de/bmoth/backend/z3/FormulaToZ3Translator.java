@@ -7,7 +7,6 @@ import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
-import de.bmoth.parser.ast.types.BType;
 import de.bmoth.parser.ast.visitors.FormulaVisitor;
 import de.bmoth.preferences.BMothPreferences;
 
@@ -160,11 +159,7 @@ public class FormulaToZ3Translator {
     Z3Type getZ3Type(TypedNode node) {
         return z3TypeInference.getZ3TypeOfNode(node);
     }
-
-    Sort getZ3Sort(BType bType) {
-        return z3TypeInference.getZ3Sort(bType, z3Context);
-    }
-
+    
     Sort getZ3Sort(Z3Type z3Type) {
         return z3TypeInference.getZ3Sort(z3Type, z3Context);
     }
