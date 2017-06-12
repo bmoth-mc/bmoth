@@ -5,11 +5,12 @@ import javafx.beans.property.StringProperty;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 
 public class OptionViewModelTest {
-    OptionViewModel viewModel;
+    private OptionViewModel viewModel;
 
     @Before
     public void setup() {
@@ -23,51 +24,52 @@ public class OptionViewModelTest {
 
     @Test
     public void minIntNotNumeric() {
-        noNumericInputTest(viewModel.minInt);
+        noNumericInputTest(viewModel.getMinInt());
     }
 
     @Test
     public void maxIntNotNumeric() {
-        noNumericInputTest(viewModel.maxInt);
+        noNumericInputTest(viewModel.getMaxInt());
     }
 
     @Test
     public void maxInitStateNotNumeric() {
-        noNumericInputTest(viewModel.maxInitState);
+        noNumericInputTest(viewModel.getMaxInitState());
     }
 
     @Test
     public void maxTransNotNumeric() {
-        noNumericInputTest(viewModel.maxTrans);
+        noNumericInputTest(viewModel.getMaxTrans());
     }
 
     @Test
     public void z3TimeOutNotNumeric() {
-        noNumericInputTest(viewModel.z3Timeout);
+        noNumericInputTest(viewModel.getZ3Timeout());
     }
 
     @Test
     public void z3TimeOutTooSmall() {
-        viewModel.z3Timeout.set("-1");
+        viewModel.getZ3Timeout().set("-1");
         assertFalse(viewModel.checkPrefs());
+        assertEquals("Timout needs to be a positive Value", viewModel.getAlertText().get());
     }
 
     @Test
     public void maxInitStateTooSmall() {
-        viewModel.maxInitState.set("-1");
+        viewModel.getMaxInitState().set("-1");
         assertFalse(viewModel.checkPrefs());
     }
 
     @Test
     public void maxTransTooSmall() {
-        viewModel.maxTrans.set("-1");
+        viewModel.getMaxTrans().set("-1");
         assertFalse(viewModel.checkPrefs());
     }
 
     @Test
     public void minIntBiggerThenMaxInt() {
-        viewModel.maxInt.set("1");
-        viewModel.minInt.set("2");
+        viewModel.getMaxInt().set("1");
+        viewModel.getMinInt().set("2");
         assertFalse(viewModel.checkPrefs());
     }
 }

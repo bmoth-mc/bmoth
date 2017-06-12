@@ -35,20 +35,20 @@ public class OptionView implements FxmlView<OptionViewModel>, Initializable {
     @FXML
     TextField z3Timeout;
 
-    Alert preferenceVerificationErrorAlert;
+    private Alert preferenceVerificationErrorAlert;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         optionViewModel.loadPrefs();
-        optionViewModel.minInt.bindBidirectional(minInt.textProperty());
-        optionViewModel.maxInt.bindBidirectional(maxInt.textProperty());
-        optionViewModel.maxInitState.bindBidirectional(maxInitState.textProperty());
-        optionViewModel.maxTrans.bindBidirectional(maxTrans.textProperty());
-        optionViewModel.z3Timeout.bindBidirectional(z3Timeout.textProperty());
+        optionViewModel.getMinInt().bindBidirectional(minInt.textProperty());
+        optionViewModel.getMaxInt().bindBidirectional(maxInt.textProperty());
+        optionViewModel.getMaxInitState().bindBidirectional(maxInitState.textProperty());
+        optionViewModel.getMaxTrans().bindBidirectional(maxTrans.textProperty());
+        optionViewModel.getZ3Timeout().bindBidirectional(z3Timeout.textProperty());
 
         preferenceVerificationErrorAlert = new Alert(Alert.AlertType.ERROR);
-        optionViewModel.alertText.bind(preferenceVerificationErrorAlert.contentTextProperty());
+        optionViewModel.getAlertText().bind(preferenceVerificationErrorAlert.contentTextProperty());
     }
 
     boolean checkPrefs() {
