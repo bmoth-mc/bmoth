@@ -1,7 +1,7 @@
 # BMoth
 Model Checker for  (a subset of) classical B based on Z3
 
-# Status of Build, Tests and Dependency for Development Branch
+# Status of Build and Dependencies (Development Branch)
 [![Build Status](https://travis-ci.org/hhu-stups/bmoth.svg?branch=develop)](https://travis-ci.org/hhu-stups/bmoth)
 [![SonarQube Quality Gate](https://sonarcloud.io/api/badges/gate?key=bmoth:develop)](https://sonarcloud.io/dashboard?id=bmoth%3Adevelop)
 [![SonarQube Coverage](https://sonarcloud.io/api/badges/measure?key=bmoth:develop&metric=coverage)](https://sonarcloud.io/component_measures/metric/coverage/list?id=bmoth%3Adevelop)
