@@ -4,25 +4,29 @@ language: java
 jdk:
 - oraclejdk8
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-  - $HOME/.sonar/cache
-  - $HOME/.gradle/caches/
-  - $HOME/.gradle/wrapper/
+  - "$HOME/.sonar/cache"
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
 before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
 addons:
   sonarqube:
-    organization: "hhu-stups"
+    organization: hhu-stups
     token:
-      secure: "aKORsOj3mtb5hjETiIEVF72n+eBBaWesbxmod7E8pBk2w2vIf1en9+/00uC3C1xNCeEBpIGSvcmfXZqgHycVSctrDWI1lH9zSRYDnrHZjEOznWaCjR6lzgn7ParAoJvvqS1vGgyA6+pCtnkHBrL4WDhuhODm9k/KziuW6JAuGvLK/xF8dO/wxRtrcMf4bzcJs55cnr4bCX8FE3tQpSPnM9r7n20NEzw7vwi2TQG0rRjRrtHfWT+T7CH1qX1soym1b/TwyuraBAB6//qXqZyxp8pMPf0hXeT7sjj2SPOFqeXiPcdrNZZpqxGXFmZccnseppVZ5LU4Oyss/UDXFCx309rQafcejD0116uEZvHOammSdMNdQmmIRlWgyeQvb/Bp1CpcUj+xNocF99okZMoI4A8+ajFOnbVsUxtDzbBawLjTFbhgSqdPkFtv7rVSpe1svcoAzSCzO/NlNjiCqgDjX0STTAS7dd3trIU9nghCNFQNatzgSxmPdmTvePEiphbMTmrFsOJOwCtsdAtHA2fk3psBpmHa9P8TM1/s0oj6ReGKmVwfhLeWgfR1fBg92iNbOqIslyJ0hOFx0Qd52D4V+XLSHBbE20IrHUpbEH0mQt0I4yL1uXonnWl81kz6AKUNNER6o4ut5pQUHOqOS4I64d/8USw138AYuK0yB0qK7sQ="
+      secure: aKORsOj3mtb5hjETiIEVF72n+eBBaWesbxmod7E8pBk2w2vIf1en9+/00uC3C1xNCeEBpIGSvcmfXZqgHycVSctrDWI1lH9zSRYDnrHZjEOznWaCjR6lzgn7ParAoJvvqS1vGgyA6+pCtnkHBrL4WDhuhODm9k/KziuW6JAuGvLK/xF8dO/wxRtrcMf4bzcJs55cnr4bCX8FE3tQpSPnM9r7n20NEzw7vwi2TQG0rRjRrtHfWT+T7CH1qX1soym1b/TwyuraBAB6//qXqZyxp8pMPf0hXeT7sjj2SPOFqeXiPcdrNZZpqxGXFmZccnseppVZ5LU4Oyss/UDXFCx309rQafcejD0116uEZvHOammSdMNdQmmIRlWgyeQvb/Bp1CpcUj+xNocF99okZMoI4A8+ajFOnbVsUxtDzbBawLjTFbhgSqdPkFtv7rVSpe1svcoAzSCzO/NlNjiCqgDjX0STTAS7dd3trIU9nghCNFQNatzgSxmPdmTvePEiphbMTmrFsOJOwCtsdAtHA2fk3psBpmHa9P8TM1/s0oj6ReGKmVwfhLeWgfR1fBg92iNbOqIslyJ0hOFx0Qd52D4V+XLSHBbE20IrHUpbEH0mQt0I4yL1uXonnWl81kz6AKUNNER6o4ut5pQUHOqOS4I64d/8USw138AYuK0yB0qK7sQ=
     branches:
     - develop
 script:
-- ./gradlew check # regular unit tests
-- ./gradlew -Pheadless=true uiTest # testFX UI tests in headless mode
-- ./gradlew copyDependenciesForSonarAnalysis
+- "./gradlew check"
+- "./gradlew -Pheadless=true uiTest"
+- "./gradlew copyDependenciesForSonarAnalysis"
 - sonar-scanner
+- "./gradlew versioneye-update"
+env:
+  global:
+    secure: Mhte6dEo7j95osD1rDGoFTCN3eR2sQ2kO+KKFv+SJ1arizMmw4wX8KMFpCkClX89ONhYcVtdkBCHGbhbecPUgV+NGsIXkZZdKdf2XrzOXz+ArwqD6cQugd2DCGp5GWfDw0on3sNdhS8kyoHnWLPdqMSE+bjN5UBDkqPWo5vvRs937nBvGm+zES5YddK1bsZoHCo2lmpB/jcblyx/0UrcIHlr3yOmsahxGEVdRu013H8jisTNvD6htk+M4x+galc5F/mMgYai7J6awqWH/FEmddc/fTil8Vylic60BsiYnbO3m9OMdYE5xxj0nZUNvjM9wNHjEqMbeYo14wwLq0Ch0IZPIwPuyVZIG3y6sSoA6D/9eLa07slGA9cKukXWs3HSZ8CNgEt/lYecawzHm3RShMBj60j0bW2y5atOJbEdI/AauVp/jmDefW/E8NNKL77TGEgw/gs7pbyq3eUW34k3ZL3UnCLBnXiLZWw2WFpTyK6+npicUKhMDsAWKx5RmJa9mAys5CVtKSfH/4/b5dUxm9d8s3zLETzvmDS3TkXDkVVHmbgjBD3HYZVWPvKtztIRJ6hBxl34L2iWOq4mZleBbn3TXP4hNBCC11pvyKS0kiu+gyZrKVmfQiiPqpZeb3z/DsXnSX76pcXb8fs41h40QoXiTnJlIsfFdtIFunkvyuI=

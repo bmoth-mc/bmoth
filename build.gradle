@@ -8,6 +8,7 @@
 
 plugins {
     id "de.undercouch.download" version "3.2.0"
+    id "org.standardout.versioneye" version "1.4.0"
 }
 
 // Apply the java plugin to add support for Java
@@ -313,4 +314,8 @@ task copyDependenciesForSonarAnalysis(type: Copy) {
     from configurations.runtime
     from configurations.compile
     from configurations.testCompile
+}
+
+versioneye {
+    exclude project.configurations.findAll { !it.canBeResolved }*.name as String[]
 }
