@@ -10,10 +10,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TypeChecker implements AbstractVisitor<BType, BType> {
-
-    Set<ExpressionOperatorNode> minusNodes = new HashSet<>();
-    Set<ExpressionOperatorNode> multOrCartNodes = new HashSet<>();
-    Set<TypedNode> typedNodes = new HashSet<>();
+    private Set<ExpressionOperatorNode> minusNodes = new HashSet<>();
+    private Set<ExpressionOperatorNode> multOrCartNodes = new HashSet<>();
+    private Set<TypedNode> typedNodes = new HashSet<>();
 
     public static void typecheckMachineNode(MachineNode machineNode) {
         new TypeChecker(machineNode);
@@ -425,17 +424,17 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
         }
     }
 
-    public SetType createNewRelationType() {
+    private SetType createNewRelationType() {
         return new SetType(new CoupleType(new UntypedType(), new UntypedType()));
     }
 
-    public BType getRightTypeOfRelationType(BType s) {
+    private BType getRightTypeOfRelationType(BType s) {
         SetType setType = (SetType) s;
         CoupleType c = (CoupleType) setType.getSubType();
         return c.getRight();
     }
 
-    public BType getLeftTypeOfRelationType(BType s) {
+    private BType getLeftTypeOfRelationType(BType s) {
         SetType setType = (SetType) s;
         CoupleType c = (CoupleType) setType.getSubType();
         return c.getLeft();
