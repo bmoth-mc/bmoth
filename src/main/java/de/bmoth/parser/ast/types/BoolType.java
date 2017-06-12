@@ -1,11 +1,15 @@
 package de.bmoth.parser.ast.types;
 
-public class BoolType implements BType {
+public class BoolType extends BasicType implements BType {
 
     private static BoolType instance = new BoolType();
 
     public static BoolType getInstance() {
         return instance;
+    }
+
+    private BoolType() {
+        super("BOOL");
     }
 
     @Override
@@ -26,20 +30,4 @@ public class BoolType implements BType {
             throw new UnificationException();
         }
     }
-
-    @Override
-    public String toString() {
-        return "BOOL";
-    }
-
-    @Override
-    public boolean isUntyped() {
-        return false;
-    }
-
-    @Override
-    public boolean contains(BType other) {
-        return false;
-    }
-
 }

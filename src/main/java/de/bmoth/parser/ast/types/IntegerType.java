@@ -1,11 +1,14 @@
 package de.bmoth.parser.ast.types;
 
-public class IntegerType implements BType {
-
+public class IntegerType extends BasicType implements BType {
     private static IntegerType instance = new IntegerType();
 
     public static IntegerType getInstance() {
         return instance;
+    }
+
+    private IntegerType() {
+        super("INTEGER");
     }
 
     @Override
@@ -30,21 +33,5 @@ public class IntegerType implements BType {
         } else {
             throw new UnificationException();
         }
-
-    }
-
-    @Override
-    public String toString() {
-        return "INTEGER";
-    }
-
-    @Override
-    public boolean isUntyped() {
-        return false;
-    }
-
-    @Override
-    public boolean contains(BType other) {
-        return false;
     }
 }
