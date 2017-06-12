@@ -3,20 +3,18 @@ package de.bmoth.app;
 import de.bmoth.preferences.BMothPreferences;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.ViewTuple;
-import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.Test;
-import org.testfx.util.WaitForAsyncUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.*;
 
 
-public class OptionControllerTest extends HeadlessUITest {
+public class OptionViewTest extends HeadlessUITest {
     private static final String MIN_INT_ID = "#minInt";
     private static final String MAX_INT_ID = "#maxInt";
     private static final String MAX_INIT_STATE_ID = "#maxInitState";
@@ -91,65 +89,4 @@ public class OptionControllerTest extends HeadlessUITest {
         clickOn("#okButton");
         verifyThat(MIN_INT_ID, isNull());
     }
-
-    private void noNumericInputTest(String input) {
-        doubleClickOn(input).eraseText(10).write("a");
-        Platform.runLater(() -> assertEquals(false, viewOptionViewModelViewTuple.getCodeBehind().checkPrefs()));
-        WaitForAsyncUtils.waitForFxEvents();
-    }
-
-    @Test
-    public void minIntNotNumeric() {
-        noNumericInputTest(MIN_INT_ID);
-    }
-
-    @Test
-    public void maxIntNotNumeric() {
-        noNumericInputTest(MAX_INT_ID);
-    }
-
-    @Test
-    public void maxInitStateNotNumeric() {
-        noNumericInputTest(MAX_INIT_STATE_ID);
-    }
-
-    @Test
-    public void maxTransNotNumeric() {
-        noNumericInputTest(MAX_TRANSITIONS_ID);
-    }
-
-    @Test
-    public void z3TimeOutNotNumeric() {
-        noNumericInputTest(Z3_TIMEOUT_ID);
-    }
-
-    @Test
-    public void z3TimeOutTooSmall() {
-        doubleClickOn(Z3_TIMEOUT_ID).eraseText(3).write("-1");
-        Platform.runLater(() -> assertEquals(false, viewOptionViewModelViewTuple.getCodeBehind().checkPrefs()));
-        WaitForAsyncUtils.waitForFxEvents();
-    }
-
-    @Test
-    public void maxInitStateTooSmall() {
-        doubleClickOn(MAX_INIT_STATE_ID).eraseText(3).write("-1");
-        Platform.runLater(() -> assertEquals(false, viewOptionViewModelViewTuple.getCodeBehind().checkPrefs()));
-        WaitForAsyncUtils.waitForFxEvents();
-    }
-
-    @Test
-    public void maxTransTooSmall() {
-        doubleClickOn(MAX_TRANSITIONS_ID).eraseText(3).write("-1");
-        Platform.runLater(() -> assertEquals(false, viewOptionViewModelViewTuple.getCodeBehind().checkPrefs()));
-        WaitForAsyncUtils.waitForFxEvents();
-    }
-
-    @Test
-    public void minIntBiggerThenMaxInt() {
-        doubleClickOn(MAX_INT_ID).eraseText(3).write("1");
-        doubleClickOn(MIN_INT_ID).eraseText(3).write("2");
-        Platform.runLater(() -> assertEquals(false, viewOptionViewModelViewTuple.getCodeBehind().checkPrefs()));
-        WaitForAsyncUtils.waitForFxEvents();
-    }
-
 }

@@ -8,7 +8,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.math.NumberUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,8 +16,6 @@ import java.util.ResourceBundle;
  * Created by Julian on 09.06.2017.
  */
 public class OptionView implements FxmlView<OptionViewModel>, Initializable {
-
-    private static final String NONNUMERICWARNING = "Not Numeric or out of Integer-Range: ";
     @InjectViewModel
     OptionViewModel optionViewModel;
     @FXML
@@ -38,6 +35,8 @@ public class OptionView implements FxmlView<OptionViewModel>, Initializable {
     @FXML
     TextField z3Timeout;
 
+    Alert preferenceVerificationErrorAlert;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -47,47 +46,16 @@ public class OptionView implements FxmlView<OptionViewModel>, Initializable {
         optionViewModel.maxInitState.bindBidirectional(maxInitState.textProperty());
         optionViewModel.maxTrans.bindBidirectional(maxTrans.textProperty());
         optionViewModel.z3Timeout.bindBidirectional(z3Timeout.textProperty());
+
+        preferenceVerificationErrorAlert = new Alert(Alert.AlertType.ERROR);
+        optionViewModel.alertText.bind(preferenceVerificationErrorAlert.contentTextProperty());
     }
 
     boolean checkPrefs() {
-        if (!NumberUtils.isParsable(optionViewModel.minInt.get())) {
-            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + minInt.getId()).show();
+        if (!optionViewModel.checkPrefs()) {
+            preferenceVerificationErrorAlert.show();
             return false;
         }
-        if (!NumberUtils.isParsable(optionViewModel.maxInt.get())) {
-            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxInt.getId()).show();
-            return false;
-        }
-        if (!NumberUtils.isParsable(optionViewModel.maxInitState.get())) {
-            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxInitState.getId()).show();
-            return false;
-        }
-        if (!NumberUtils.isParsable(optionViewModel.maxTrans.get())) {
-            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + maxTrans.getId()).show();
-            return false;
-        }
-        if (!NumberUtils.isParsable(optionViewModel.z3Timeout.get())) {
-            new Alert(Alert.AlertType.ERROR, NONNUMERICWARNING + z3Timeout.getId()).show();
-            return false;
-        }
-
-        if (Integer.parseInt(optionViewModel.z3Timeout.get()) < 0) {
-            new Alert(Alert.AlertType.ERROR, "Timout needs to be a positive Value").show();
-            return false;
-        }
-        if ((Integer.parseInt(optionViewModel.minInt.get())) > Integer.parseInt(optionViewModel.maxInt.get())) {
-            new Alert(Alert.AlertType.ERROR, "MIN_INT bigger than MAX_INT").show();
-            return false;
-        }
-        if (Integer.parseInt(optionViewModel.maxInitState.get()) < 1) {
-            new Alert(Alert.AlertType.ERROR, "InitialStates needs to be bigger than 0").show();
-            return false;
-        }
-        if (Integer.parseInt(optionViewModel.maxTrans.get()) < 1) {
-            new Alert(Alert.AlertType.ERROR, "Maximum transitions needs to be bigger than 0").show();
-            return false;
-        }
-
         return true;
     }
 
