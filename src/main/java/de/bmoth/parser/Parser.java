@@ -98,19 +98,20 @@ public class Parser {
 
             inputStreamReader.close();
 
-            // remove utf-8 byte order mark
-            // replaceAll \uFEFF did not work for some reason
-            // apparently, unix like systems report a single character with the
-            // code
-            // below
-            if (!content.isEmpty() && Character.codePointAt(content, 0) == 65279) {
-                content = content.substring(1);
-            }
-            // while windows splits it up into three characters with the codes
-            // below
-            if (!content.isEmpty() && Character.codePointAt(content, 0) == 239
-                    && Character.codePointAt(content, 1) == 187 && Character.codePointAt(content, 2) == 191) {
-                content = content.substring(3);
+            if (!content.isEmpty()) {
+                // remove utf-8 byte order mark
+                // replaceAll \uFEFF did not work for some reason
+                // apparently, unix like systems report a single character with the
+                // code
+                // below
+                if (content.startsWith("\uFEFF")) {
+                    content = content.substring(1);
+                }
+                // while windows splits it up into three characters with the codes
+                // below
+                else if (content.startsWith("\u00EF\u00BB\u00BF")) {
+                    content = content.substring(3);
+                }
             }
 
             return content.replaceAll("\r\n", "\n");
