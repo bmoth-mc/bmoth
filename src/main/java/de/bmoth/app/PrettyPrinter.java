@@ -21,7 +21,7 @@ public class PrettyPrinter {
         }
     }
 
-    
+
     public String processDeclaration(FuncDecl constantDeclaration, Model model) {
         try {
             if (constantDeclaration.getRange().getSortKind() != Z3_sort_kind.Z3_ARRAY_SORT) {
@@ -44,7 +44,7 @@ public class PrettyPrinter {
         if (interpretation.getSort().getSortKind() == Z3_sort_kind.Z3_DATATYPE_SORT)
             return formatCouple(interpretation, model);
         else if (interpretation.getSort().getSortKind() == Z3_sort_kind.Z3_ARRAY_SORT)
-            return formatSet(model.getFuncInterp(interpretation.getFuncDecl()), model);
+            return interpretation.toString();
         else // constant
             return interpretation.toString();
     }

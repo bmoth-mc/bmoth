@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<?import org.fxmisc.richtext.CodeArea?>
+<VBox xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx"
+      fx:controller="de.bmoth.app.AppView" prefHeight="800" prefWidth="1200">
+    <MenuBar>
+        <Menu text="File" fx:id="fileMenu">
+            <MenuItem text="New" fx:id="newFile" onAction="#handleNew"/>
+            <MenuItem text="Open" fx:id="open" onAction="#handleOpen"/>
+            <MenuItem text="Save As" fx:id="saveAs" onAction="#handleSaveAs"/>
+            <MenuItem text="Save" fx:id="save" onAction="#handleSave"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Options" fx:id="options" onAction="#handleOptions"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Presentation" fx:id="presentation" onAction="#handlePresentation"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Exit" fx:id="exit" onAction="#handleExit"/>
+        </Menu>
+        <Menu text="Checks">
+            <MenuItem text="Custom Model Checking" fx:id="customCheck" onAction="#handleCustomCheck"/>
+            <MenuItem text="Start Model Checking" fx:id="modelCheck" onAction="#handleCheck"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Check Invariant Satisfiability" fx:id="invariantSatisfiability"
+                      onAction="#handleInvariantSatisfiability"/>
+            <MenuItem text="Check for Initial State" fx:id="initialStateExists"
+                      onAction="#handleInitialStateExists"/>
+            <MenuItem text="Cancel" fx:id="cancelModelCheck" onAction="#handelCancelModelCheck"/>
+        </Menu>
+        <Menu text="REPL" fx:id="replMenu">
+            <MenuItem text="Open REPL" fx:id="openRepl" onAction="#handleREPL"/>
+        </Menu>
+    </MenuBar>
+    <CodeArea fx:id="codeArea" prefWidth="2560" prefHeight="1440" style="-fx-font-size:12"/>
+    <TextArea fx:id="infoArea" editable="false" prefHeight="0" prefWidth="0"/>
+    <TextArea fx:id="warningArea" editable="false" prefHeight="0" prefWidth="0"/>
+</VBox>
