@@ -11,25 +11,25 @@ import java.util.Map;
 
 public class QuantifiedExpressionNode extends ExprNode {
 
-    public enum QuatifiedExpressionOperator {
+    public enum QuantifiedExpressionOperator {
         SET_COMPREHENSION, QUANTIFIED_UNION, QUANTIFIED_INTER
     }
 
-    private static final Map<Integer, QuatifiedExpressionOperator> map = new HashMap<>();
+    private static final Map<Integer, QuantifiedExpressionOperator> map = new HashMap<>();
 
     static {
-        map.put(BMoThParser.QUANTIFIED_UNION, QuatifiedExpressionOperator.QUANTIFIED_UNION);
-        map.put(BMoThParser.QUANTIFIED_INTER, QuatifiedExpressionOperator.QUANTIFIED_INTER);
+        map.put(BMoThParser.QUANTIFIED_UNION, QuantifiedExpressionOperator.QUANTIFIED_UNION);
+        map.put(BMoThParser.QUANTIFIED_INTER, QuantifiedExpressionOperator.QUANTIFIED_INTER);
 
     }
 
     private List<DeclarationNode> declarationList;
     private PredicateNode predicateNode;
     private ExprNode expressionNode;
-    private QuatifiedExpressionOperator operator;
+    private QuantifiedExpressionOperator operator;
 
     public QuantifiedExpressionNode(ExpressionContext ctx, List<DeclarationNode> declarationList,
-            PredicateNode predNode, ExprNode expressionNode, Token operator2) {
+                                    PredicateNode predNode, ExprNode expressionNode, Token operator2) {
         super(ctx);
         this.declarationList = declarationList;
         this.predicateNode = predNode;
@@ -37,7 +37,7 @@ public class QuantifiedExpressionNode extends ExprNode {
         this.expressionNode = expressionNode;
     }
 
-    private QuatifiedExpressionOperator loopUpOperator(int type) {
+    private QuantifiedExpressionOperator loopUpOperator(int type) {
         if (map.containsKey(type)) {
             return map.get(type);
         }
@@ -45,7 +45,7 @@ public class QuantifiedExpressionNode extends ExprNode {
     }
 
     public QuantifiedExpressionNode(SetComprehensionExpressionContext ctx, List<DeclarationNode> declarationList,
-            PredicateNode predNode, ExprNode expressionNode, QuatifiedExpressionOperator setComprehension) {
+                                    PredicateNode predNode, ExprNode expressionNode, QuantifiedExpressionOperator setComprehension) {
         super(ctx);
         this.declarationList = declarationList;
         this.predicateNode = predNode;
@@ -61,7 +61,7 @@ public class QuantifiedExpressionNode extends ExprNode {
         return predicateNode;
     }
 
-    public QuatifiedExpressionOperator getOperator() {
+    public QuantifiedExpressionOperator getOperator() {
         return operator;
     }
 

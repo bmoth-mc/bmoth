@@ -5,7 +5,7 @@ import de.bmoth.antlr.BMoThParser.*;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
-import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator;
+import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuantifiedExpressionOperator;
 import de.bmoth.parser.cst.BDefinition;
 import de.bmoth.parser.cst.BDefinition.KIND;
 import de.bmoth.parser.cst.FormulaAnalyser;
@@ -333,7 +333,7 @@ public class SemanticAstCreator {
             List<DeclarationNode> declarationList = createDeclarationNodeList(ctx.identifier_list().IDENTIFIER());
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             return new QuantifiedExpressionNode(ctx, declarationList, predNode, null,
-                QuatifiedExpressionOperator.SET_COMPREHENSION);
+                QuantifiedExpressionOperator.SET_COMPREHENSION);
         }
 
         @Override

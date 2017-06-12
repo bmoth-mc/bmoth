@@ -2,7 +2,6 @@ package de.bmoth.parser.ast.nodes;
 
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
-
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import static de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperato
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
 import static de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator.AND;
-import static de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuatifiedExpressionOperator.SET_COMPREHENSION;
+import static de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuantifiedExpressionOperator.SET_COMPREHENSION;
 import static de.bmoth.parser.ast.nodes.QuantifiedPredicateNode.QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -20,7 +19,7 @@ public class NodeTest {
     @Test
     public void testOperationNode() {
         MachineNode machine = Parser.getMachineAsSemanticAst(
-                "MACHINE OpNodeMachine\nVARIABLES x\nPROPERTIES 1=1\nINVARIANT x:INTEGER\nOPERATIONS\n\tset = BEGIN x := 1 END;\n\tselect = SELECT x = 1 THEN x := x END\nEND");
+            "MACHINE OpNodeMachine\nVARIABLES x\nPROPERTIES 1=1\nINVARIANT x:INTEGER\nOPERATIONS\n\tset = BEGIN x := 1 END;\n\tselect = SELECT x = 1 THEN x := x END\nEND");
         OperationNode setOperation = machine.getOperations().get(0);
         OperationNode selectOperation = machine.getOperations().get(1);
         assertEquals("set", setOperation.getName());
@@ -44,10 +43,10 @@ public class NodeTest {
     @Test
     public void testPredicateOperatorWithExprArgsNode() {
         PredicateOperatorWithExprArgsNode equalNode = (PredicateOperatorWithExprArgsNode) Parser
-                .getFormulaAsSemanticAst("x = 1").getFormula();
+            .getFormulaAsSemanticAst("x = 1").getFormula();
 
         PredicateOperatorWithExprArgsNode otherNode = (PredicateOperatorWithExprArgsNode) Parser
-                .getFormulaAsSemanticAst("x <= 1").getFormula();
+            .getFormulaAsSemanticAst("x <= 1").getFormula();
 
         assertEquals("EQUAL(x,1)", equalNode.toString());
         assertEquals("LESS_EQUAL(x,1)", otherNode.toString());
@@ -72,21 +71,21 @@ public class NodeTest {
     @Test
     public void testQuantifiedPredicateNode() {
         QuantifiedPredicateNode existsNode = (QuantifiedPredicateNode) Parser.getFormulaAsSemanticAst("#x.(x > 0)")
-                .getFormula();
+            .getFormula();
         QuantifiedPredicateNode forAllNode = (QuantifiedPredicateNode) Parser.getFormulaAsSemanticAst("!x.(x > 0)")
-                .getFormula();
+            .getFormula();
 
         assertEquals("EXISTS(x,GREATER(x,0))", existsNode.toString());
         assertEquals("FORALL(x,GREATER(x,0))", forAllNode.toString());
 
         assertEquals(EXISTENTIAL_QUANTIFICATION,
-                QuantifiedPredicateNode.QuantifiedPredicateOperator.valueOf("EXISTENTIAL_QUANTIFICATION"));
+            QuantifiedPredicateNode.QuantifiedPredicateOperator.valueOf("EXISTENTIAL_QUANTIFICATION"));
     }
 
     @Test
     public void testCastPredicateExpressionNode() {
         CastPredicateExpressionNode node = (CastPredicateExpressionNode) Parser.getFormulaAsSemanticAst("bool(FALSE)")
-                .getFormula();
+            .getFormula();
 
         assertEquals("bool(FALSE)", node.toString());
     }
@@ -94,7 +93,7 @@ public class NodeTest {
     @Test
     public void testDeclarationNode() {
         DeclarationNode node = ((IdentifierExprNode) ((PredicateOperatorWithExprArgsNode) Parser
-                .getFormulaAsSemanticAst("\n  x = 1").getFormula()).getExpressionNodes().get(0)).getDeclarationNode();
+            .getFormulaAsSemanticAst("\n  x = 1").getFormula()).getExpressionNodes().get(0)).getDeclarationNode();
         assertEquals(2, node.getLine());
         assertEquals(2, node.getPos());
     }
@@ -102,13 +101,13 @@ public class NodeTest {
     @Test
     public void testFormulaNode() {
         assertEquals(EXPRESSION_FORMULA, FormulaNode.FormulaType.valueOf("EXPRESSION_FORMULA"));
-        assertArrayEquals(new FormulaNode.FormulaType[] { EXPRESSION_FORMULA, PREDICATE_FORMULA },
-                FormulaType.values());
+        assertArrayEquals(new FormulaNode.FormulaType[]{EXPRESSION_FORMULA, PREDICATE_FORMULA},
+            FormulaType.values());
     }
 
     @Test
     public void testQuantifiedExpressionNode() {
         assertEquals(SET_COMPREHENSION,
-                QuantifiedExpressionNode.QuatifiedExpressionOperator.valueOf("SET_COMPREHENSION"));
+            QuantifiedExpressionNode.QuantifiedExpressionOperator.valueOf("SET_COMPREHENSION"));
     }
 }

@@ -258,7 +258,7 @@ public class FormulaTest {
         assertEquals(EXPRESSION_FORMULA, formulaNode.getFormulaType());
         QuantifiedExpressionNode setComprehension = (QuantifiedExpressionNode) formulaNode.getFormula();
 
-        assertEquals(QuantifiedExpressionNode.QuatifiedExpressionOperator.SET_COMPREHENSION,
+        assertEquals(QuantifiedExpressionNode.QuantifiedExpressionOperator.SET_COMPREHENSION,
             setComprehension.getOperator());
         List<DeclarationNode> declarationList = setComprehension.getDeclarationList();
         DeclarationNode a = declarationList.get(0);
