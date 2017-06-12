@@ -270,7 +270,6 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
             case COUPLE:
                 return unify(expected, new CoupleType(visitExprNode(expressionNodes.get(0), new UntypedType()),
                     visitExprNode(expressionNodes.get(1), new UntypedType())), node);
-
             case DOMAIN: {
                 SetType argument = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
                 argument = (SetType) visitExprNode(expressionNodes.get(0), argument);
@@ -290,22 +289,22 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
                 visitExprNode(expressionNodes.get(1), node.getType());
                 return node.getType();
             case DIRECT_PRODUCT: {
-            /*
-             * E ⊗ F type of result is is P(T ×(U × V)) type of E is P(T × U)
-             * type of F is P(T × V)
-             *
-             */
+                /*
+                * E ⊗ F type of result is is P(T ×(U × V)) type of E is P(T × U)
+                * type of F is P(T × V)
+                *
+                */
                 SetType found = new SetType(
                     new CoupleType(new UntypedType(), new CoupleType(new UntypedType(), new UntypedType())));
                 found = (SetType) unify(expected, found, node);
                 CoupleType c1 = (CoupleType) found.getSubType();
                 CoupleType c2 = (CoupleType) c1.getRight();
-                BType T = c1.getLeft();
-                BType U = c2.getLeft();
-                BType V = c2.getRight();
-                SetType leftArg = (SetType) visitExprNode(expressionNodes.get(0), new SetType(new CoupleType(T, U)));
-                T = ((CoupleType) leftArg.getSubType()).getLeft();
-                visitExprNode(expressionNodes.get(1), new SetType(new CoupleType(T, V)));
+                BType typeOfT = c1.getLeft();
+                BType typeOfU = c2.getLeft();
+                BType typeOfV = c2.getRight();
+                SetType leftArg = (SetType) visitExprNode(expressionNodes.get(0), new SetType(new CoupleType(typeOfT, typeOfU)));
+                typeOfT = ((CoupleType) leftArg.getSubType()).getLeft();
+                visitExprNode(expressionNodes.get(1), new SetType(new CoupleType(typeOfT, typeOfV)));
                 return node.getType();
             }
             case DOMAIN_RESTRICTION:
@@ -523,8 +522,8 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
     }
 
     private void visitConditionsAndSubstitionsNode(AbstractIfAndSelectSubstitutionsNode node) {
-        node.getConditions().stream().forEach(t -> visitPredicateNode(t, BoolType.getInstance()));
-        node.getSubstitutions().stream().forEach(t -> visitSubstitutionNode(t, null));
+        node.getConditions().forEach(t -> visitPredicateNode(t, BoolType.getInstance()));
+        node.getSubstitutions().forEach(t -> visitSubstitutionNode(t, null));
         if (node.getElseSubstitution() != null) {
             visitSubstitutionNode(node.getElseSubstitution(), null);
         }
@@ -580,7 +579,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
 
     @Override
     public BType visitBecomesSuchThatSubstitutionNode(BecomesSuchThatSubstitutionNode node, BType expected) {
-        node.getIdentifiers().stream().forEach(t -> visitIdentifierExprNode(t, new UntypedType()));
+        node.getIdentifiers().forEach(t -> visitIdentifierExprNode(t, new UntypedType()));
         visitPredicateNode(node.getPredicate(), BoolType.getInstance());
         return null;
     }
