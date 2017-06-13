@@ -104,7 +104,7 @@ dependencies {
     testRuntime 'org.testfx:openjfx-monocle:1.8.0_20'
 
     // code assert (e.g. to check for circular dependencies)
-    testCompile "guru.nidi:code-assert:0.0.+"
+    testCompile "guru.nidi:code-assert:0.0.13"
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
@@ -248,6 +248,9 @@ clean {
 }
 
 // type 'gradle test jacocoTestReport' in order to run the jacoco code coverage analysis
+jacoco {
+    toolVersion = "0.7.9"
+}
 jacocoTestReport {
     reports {
         xml.enabled false
