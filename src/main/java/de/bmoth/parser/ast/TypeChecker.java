@@ -341,19 +341,16 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
                 visitExprNode(expressionNodes.get(0), node.getType());
                 visitExprNode(expressionNodes.get(1), node.getType());
                 return node.getType();
-            case INVERSE_RELATION: {
-                SetType argType = new SetType(new CoupleType(new UntypedType(), new UntypedType()));
-                argType = (SetType) visitExprNode(expressionNodes.get(0), argType);
+            case INVERSE_RELATION:
+                SetType argType = (SetType) visitExprNode(expressionNodes.get(0), new SetType(new CoupleType(new UntypedType(), new UntypedType())));
                 CoupleType c = (CoupleType) argType.getSubType();
-                SetType found = new SetType(new CoupleType(c.getRight(), c.getLeft()));
-                return unify(expected, found, node);
-            }
+                return unify(expected, new SetType(new CoupleType(c.getRight(), c.getLeft())), node);
             case RESTRICT_FRONT:
             case RESTRICT_TAIL:
-            /*
-             * s /|\ n s \|/ n type of result is is P(Z × T) type of s is P(Z
-             * ×T) type of n is INTEGER
-             */
+                // s /|\ n s \|/ n
+                // type of result is is P(Z × T)
+                // type of s is P(Z×T)
+                // type of n is INTEGER
                 unify(expected, new SetType(new CoupleType(IntegerType.getInstance(), new UntypedType())), node);
                 visitExprNode(expressionNodes.get(0), node.getType());
                 visitExprNode(expressionNodes.get(1), IntegerType.getInstance());
