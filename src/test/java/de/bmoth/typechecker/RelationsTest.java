@@ -5,7 +5,6 @@ import org.junit.Test;
 import java.util.Map;
 
 import static de.bmoth.typechecker.TestTypechecker.getFormulaTypes;
-import static de.bmoth.typechecker.TestTypechecker.typeCheckFormulaAndGetErrorMessage;
 import static org.junit.Assert.assertEquals;
 
 public class RelationsTest {
