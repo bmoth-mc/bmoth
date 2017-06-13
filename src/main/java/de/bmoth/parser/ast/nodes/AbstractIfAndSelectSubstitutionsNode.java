@@ -59,4 +59,17 @@ public abstract class AbstractIfAndSelectSubstitutionsNode extends SubstitutionN
         this.elseSubstitution = elseSub;
     }
 
+    String prepareToString(String selectIf, String whenElsif) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(selectIf).append(" ").append(conditions.get(0)).append(" THEN ").append(substitutions.get(0));
+        for (int i = 1; i < conditions.size(); i++) {
+            sb.append(" ").append(whenElsif).append(" ").append(conditions.get(i)).append(" THEN ").append(substitutions.get(i));
+        }
+        if (null != elseSubstitution) {
+            sb.append(" ELSE ").append(elseSubstitution);
+        }
+        sb.append(" END");
+        return sb.toString();
+    }
+
 }
