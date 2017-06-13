@@ -11,7 +11,6 @@ import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.cst.CSTAnalyser;
 import de.bmoth.parser.cst.FormulaAnalyser;
 import de.bmoth.parser.cst.MachineAnalyser;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -85,9 +84,9 @@ public class Parser {
         return formulaNode;
     }
 
-    public static final String readFile(final File file) throws IOException {
+    static String readFile(final File file) throws IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file),
-                Charset.forName("UTF-8"))) {
+            Charset.forName("UTF-8"))) {
 
             final StringBuilder builder = new StringBuilder();
             final char[] buffer = new char[1024];
@@ -96,8 +95,6 @@ public class Parser {
                 builder.append(String.valueOf(buffer, 0, read));
             }
             String content = builder.toString();
-
-            inputStreamReader.close();
 
             if (!content.isEmpty()) {
                 // remove utf-8 byte order mark
