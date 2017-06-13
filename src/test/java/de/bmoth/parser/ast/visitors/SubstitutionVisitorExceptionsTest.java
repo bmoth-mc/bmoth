@@ -18,7 +18,7 @@ import java.util.Collections;
 
 public class SubstitutionVisitorExceptionsTest {
     private TerminalNode terminalNode;
-    private SubstitutionVisitor visitor;
+    private SubstitutionVisitor<Object, Object> visitor;
 
     @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandleExpr() {
@@ -28,7 +28,8 @@ public class SubstitutionVisitorExceptionsTest {
 
     @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandleExprOperator() {
-        ExpressionOperatorNode node = new ExpressionOperatorNode(null, null, ExpressionOperatorNode.ExpressionOperator.BOOL);
+        ExpressionOperatorNode node = new ExpressionOperatorNode(null, null,
+                ExpressionOperatorNode.ExpressionOperator.BOOL);
         visitor.visitExprOperatorNode(node, null);
     }
 
@@ -52,13 +53,15 @@ public class SubstitutionVisitorExceptionsTest {
 
     @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandleQuantifiedExpr() {
-        QuantifiedExpressionNode node = new QuantifiedExpressionNode(null, null, null, null, QuantifiedExpressionNode.QuantifiedExpressionOperator.SET_COMPREHENSION);
+        QuantifiedExpressionNode node = new QuantifiedExpressionNode(null, null, null, null,
+                QuantifiedExpressionNode.QuantifiedExpressionOperator.SET_COMPREHENSION);
         visitor.visitQuantifiedExpressionNode(node, null);
     }
 
     @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandlePredicate() {
-        PredicateNode node = new PredicateOperatorNode(null, PredicateOperatorNode.PredicateOperator.AND, Collections.emptyList());
+        PredicateNode node = new PredicateOperatorNode(null, PredicateOperatorNode.PredicateOperator.AND,
+                Collections.emptyList());
         visitor.visitPredicateNode(node, null);
     }
 
@@ -76,7 +79,8 @@ public class SubstitutionVisitorExceptionsTest {
 
     @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandlePredicateOperatorWithExprArgs() {
-        PredicateOperatorWithExprArgsNode node = new PredicateOperatorWithExprArgsNode(null, PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.ELEMENT_OF, null);
+        PredicateOperatorWithExprArgsNode node = new PredicateOperatorWithExprArgsNode(null,
+                PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.ELEMENT_OF, null);
         visitor.visitPredicateOperatorWithExprArgs(node, null);
     }
 
@@ -107,7 +111,7 @@ public class SubstitutionVisitorExceptionsTest {
 
     @Before
     public void init() {
-        visitor = new SubstitutionVisitor() {
+        visitor = new SubstitutionVisitor<Object, Object>() {
             @Override
             public Object visitSkipSubstitutionNode(SkipSubstitutionNode node, Object expected) {
                 return null;
@@ -144,7 +148,8 @@ public class SubstitutionVisitorExceptionsTest {
             }
 
             @Override
-            public Object visitBecomesElementOfSubstitutionNode(BecomesElementOfSubstitutionNode node, Object expected) {
+            public Object visitBecomesElementOfSubstitutionNode(BecomesElementOfSubstitutionNode node,
+                    Object expected) {
                 return null;
             }
 
@@ -256,8 +261,7 @@ public class SubstitutionVisitorExceptionsTest {
 
             @Override
             public void setParent(RuleContext parent) {
-                // TODO Auto-generated method stub
-                
+
             }
         };
     }

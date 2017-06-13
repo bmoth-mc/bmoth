@@ -16,7 +16,7 @@ import java.util.Collections;
 public class FormulaVisitorExceptionsTest {
     private SkipSubstitutionNode skip = new SkipSubstitutionNode();
     private TerminalNode terminalNode;
-    private FormulaVisitor visitor;
+    private FormulaVisitor<Object, Object> visitor;
 
     @Test(expected = AssertionError.class)
     public void formulaVisitorsDoNotHandleSelectSubstitution() {
@@ -74,7 +74,7 @@ public class FormulaVisitorExceptionsTest {
 
     @Before
     public void init() {
-        visitor = new FormulaVisitor() {
+        visitor = new FormulaVisitor<Object, Object>() {
             @Override
             public Object visitEnumerationSetNode(EnumerationSetNode node, Object expected) {
                 return null;
@@ -188,7 +188,6 @@ public class FormulaVisitorExceptionsTest {
 
             @Override
             public void setParent(RuleContext parent) {
-                // TODO Auto-generated method stub
 
             }
         };
