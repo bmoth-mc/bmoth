@@ -11,8 +11,8 @@ import static org.junit.Assert.assertEquals;
 
 public class MachinesTest {
 
-    private final String POW_INTEGER = "POW(INTEGER)";
-    private final String INTEGER = "INTEGER";
+    private static final String POW_INTEGER = "POW(INTEGER)";
+    private static final String INTEGER = "INTEGER";
 
     @Test
     public void testInteger() {

@@ -8,6 +8,8 @@ import static org.junit.Assert.assertNotNull;
 
 public class DefinitionsTest {
 
+    private static final String INTEGER = "INTEGER";
+
     @Test
     public void testExpressionDefinitionsWithoutParameters() {
         String machine = "MACHINE test \n";
@@ -16,7 +18,7 @@ public class DefinitionsTest {
         machine += "DEFINITIONS foo == 1 \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("x").toString());
+        assertEquals(INTEGER, t.getConstants().get("x").toString());
     }
 
     @Test
@@ -27,8 +29,8 @@ public class DefinitionsTest {
         machine += "DEFINITIONS foo(a) == a + 1 \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("x").toString());
-        assertEquals("INTEGER", t.getConstants().get("y").toString());
+        assertEquals(INTEGER, t.getConstants().get("x").toString());
+        assertEquals(INTEGER, t.getConstants().get("y").toString());
     }
 
     @Test
@@ -39,7 +41,7 @@ public class DefinitionsTest {
         machine += "DEFINITIONS foo == 1 = x \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("x").toString());
+        assertEquals(INTEGER, t.getConstants().get("x").toString());
     }
 
     @Test
@@ -50,7 +52,7 @@ public class DefinitionsTest {
         machine += "DEFINITIONS foo(a) == a = x \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("x").toString());
+        assertEquals(INTEGER, t.getConstants().get("x").toString());
     }
 
     @Test
@@ -61,9 +63,9 @@ public class DefinitionsTest {
         machine += "DEFINITIONS foo == bar ; bar == 2  \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("x").toString());
+        assertEquals(INTEGER, t.getConstants().get("x").toString());
     }
-    
+
     @Test
     public void testAmbigiousDefinition2() {
         String machine = "MACHINE test \n";
@@ -72,9 +74,9 @@ public class DefinitionsTest {
         machine += "DEFINITIONS foo == bar ; bar == bazz ; bazz == x = 1  \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("x").toString());
+        assertEquals(INTEGER, t.getConstants().get("x").toString());
     }
-    
+
     @Ignore
     @Test
     public void testVariablesCapturing() {
@@ -84,7 +86,7 @@ public class DefinitionsTest {
         machine += "DEFINITIONS foo(a) == !x.(x : BOOL => x = 1)  \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("x").toString());
+        assertEquals(INTEGER, t.getConstants().get("x").toString());
     }
 
     @Ignore

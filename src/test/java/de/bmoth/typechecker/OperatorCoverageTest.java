@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 public class OperatorCoverageTest {
 
-    private final String INTEGER = "INTEGER";
+    private static final String INTEGER = "INTEGER";
 
     @Test
     public void testExpressionFormula() {
