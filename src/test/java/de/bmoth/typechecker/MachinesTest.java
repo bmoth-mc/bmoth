@@ -11,11 +11,14 @@ import static org.junit.Assert.assertEquals;
 
 public class MachinesTest {
 
+    private final String POW_INTEGER = "POW(INTEGER)";
+    private final String INTEGER = "INTEGER";
+
     @Test
     public void testInteger() {
         String machine = "MACHINE test\n" + "CONSTANTS k \n" + "PROPERTIES k = INTEGER \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("POW(INTEGER)", t.getConstants().get("k"));
+        assertEquals(POW_INTEGER, t.getConstants().get("k"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -28,7 +31,7 @@ public class MachinesTest {
     public void testNatural() {
         String machine = "MACHINE test\n" + "CONSTANTS k \n" + "PROPERTIES k = NATURAL \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("POW(INTEGER)", t.getConstants().get("k"));
+        assertEquals(POW_INTEGER, t.getConstants().get("k"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -41,7 +44,7 @@ public class MachinesTest {
     public void testNatural1() {
         String machine = "MACHINE test\n" + "CONSTANTS k \n" + "PROPERTIES k = NATURAL1 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("POW(INTEGER)", t.getConstants().get("k"));
+        assertEquals(POW_INTEGER, t.getConstants().get("k"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -54,7 +57,7 @@ public class MachinesTest {
     public void testInterval() {
         String machine = "MACHINE test\n" + "CONSTANTS k \n" + "PROPERTIES k = 1..3 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("POW(INTEGER)", t.getConstants().get("k"));
+        assertEquals(POW_INTEGER, t.getConstants().get("k"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -73,8 +76,8 @@ public class MachinesTest {
     public void testGreaterThan() {
         String machine = "MACHINE test\n" + "CONSTANTS k,k2 \n" + "PROPERTIES k > k2 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("k"));
-        assertEquals("INTEGER", t.getConstants().get("k2"));
+        assertEquals(INTEGER, t.getConstants().get("k"));
+        assertEquals(INTEGER, t.getConstants().get("k2"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -87,8 +90,8 @@ public class MachinesTest {
     public void testLessThan() {
         String machine = "MACHINE test\n" + "CONSTANTS k,k2 \n" + "PROPERTIES k < k2 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("k"));
-        assertEquals("INTEGER", t.getConstants().get("k2"));
+        assertEquals(INTEGER, t.getConstants().get("k"));
+        assertEquals(INTEGER, t.getConstants().get("k2"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -101,8 +104,8 @@ public class MachinesTest {
     public void testGreaterEquals() {
         String machine = "MACHINE test\n" + "CONSTANTS k,k2 \n" + "PROPERTIES k >= k2 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("k"));
-        assertEquals("INTEGER", t.getConstants().get("k2"));
+        assertEquals(INTEGER, t.getConstants().get("k"));
+        assertEquals(INTEGER, t.getConstants().get("k2"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -115,8 +118,8 @@ public class MachinesTest {
     public void testLessEquals() {
         String machine = "MACHINE test\n" + "CONSTANTS k,k2 \n" + "PROPERTIES k <= k2 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("k"));
-        assertEquals("INTEGER", t.getConstants().get("k2"));
+        assertEquals(INTEGER, t.getConstants().get("k"));
+        assertEquals(INTEGER, t.getConstants().get("k2"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -129,9 +132,9 @@ public class MachinesTest {
     public void testAdd() {
         String machine = "MACHINE test\n" + "CONSTANTS k,k2,k3 \n" + "PROPERTIES k = k2 + k3 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("k"));
-        assertEquals("INTEGER", t.getConstants().get("k2"));
-        assertEquals("INTEGER", t.getConstants().get("k3"));
+        assertEquals(INTEGER, t.getConstants().get("k"));
+        assertEquals(INTEGER, t.getConstants().get("k2"));
+        assertEquals(INTEGER, t.getConstants().get("k3"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -144,9 +147,9 @@ public class MachinesTest {
     public void testSub() {
         String machine = "MACHINE test\n" + "CONSTANTS k,k2,k3 \n" + "PROPERTIES k = k2 + k3 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("k"));
-        assertEquals("INTEGER", t.getConstants().get("k2"));
-        assertEquals("INTEGER", t.getConstants().get("k3"));
+        assertEquals(INTEGER, t.getConstants().get("k"));
+        assertEquals(INTEGER, t.getConstants().get("k2"));
+        assertEquals(INTEGER, t.getConstants().get("k3"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -159,9 +162,9 @@ public class MachinesTest {
     public void testDivision() {
         String machine = "MACHINE test\n" + "CONSTANTS k,k2,k3 \n" + "PROPERTIES k = k2 / k3 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("k"));
-        assertEquals("INTEGER", t.getConstants().get("k2"));
-        assertEquals("INTEGER", t.getConstants().get("k3"));
+        assertEquals(INTEGER, t.getConstants().get("k"));
+        assertEquals(INTEGER, t.getConstants().get("k2"));
+        assertEquals(INTEGER, t.getConstants().get("k3"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -174,9 +177,9 @@ public class MachinesTest {
     public void testPowerOf() {
         String machine = "MACHINE test\n" + "CONSTANTS k,k2,k3 \n" + "PROPERTIES k = k2 ** k3 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("k"));
-        assertEquals("INTEGER", t.getConstants().get("k2"));
-        assertEquals("INTEGER", t.getConstants().get("k3"));
+        assertEquals(INTEGER, t.getConstants().get("k"));
+        assertEquals(INTEGER, t.getConstants().get("k2"));
+        assertEquals(INTEGER, t.getConstants().get("k3"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -189,9 +192,9 @@ public class MachinesTest {
     public void testModulo() {
         String machine = "MACHINE test\n" + "CONSTANTS k,k2,k3 \n" + "PROPERTIES k = k2 mod k3 \n" + "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getConstants().get("k"));
-        assertEquals("INTEGER", t.getConstants().get("k2"));
-        assertEquals("INTEGER", t.getConstants().get("k3"));
+        assertEquals(INTEGER, t.getConstants().get("k"));
+        assertEquals(INTEGER, t.getConstants().get("k2"));
+        assertEquals(INTEGER, t.getConstants().get("k3"));
     }
 
     @Test(expected = TypeErrorException.class)
@@ -209,7 +212,7 @@ public class MachinesTest {
         machine += "OPERATIONS foo = SELECT x < 2 THEN x := 2 END \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getVariables().get("x"));
+        assertEquals(INTEGER, t.getVariables().get("x"));
         assertEquals("BOOL", t.getVariables().get("y"));
     }
 
@@ -220,7 +223,7 @@ public class MachinesTest {
         machine += "PROPERTIES k = {x | x : INTEGER } \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("POW(INTEGER)", t.getConstants().get("k"));
+        assertEquals(POW_INTEGER, t.getConstants().get("k"));
     }
 
     @Test
@@ -235,7 +238,7 @@ public class MachinesTest {
         AnySubstitutionNode any = (AnySubstitutionNode) machineAsSemanticAst.getOperations().get(0).getSubstitution();
         DeclarationNode p = any.getParameters().get(0);
         assertEquals("p", p.getName());
-        assertEquals("INTEGER", p.getType().toString());
+        assertEquals(INTEGER, p.getType().toString());
     }
 
     @Test
@@ -247,7 +250,7 @@ public class MachinesTest {
         machine += "OPERATIONS foo = PRE x < 2 THEN x := 2 END \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getVariables().get("x"));
+        assertEquals(INTEGER, t.getVariables().get("x"));
         assertEquals("BOOL", t.getVariables().get("y"));
     }
 
@@ -259,7 +262,7 @@ public class MachinesTest {
         machine += "INITIALISATION x,y:(x = 1 & y = TRUE) \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getVariables().get("x"));
+        assertEquals(INTEGER, t.getVariables().get("x"));
         assertEquals("BOOL", t.getVariables().get("y"));
     }
 
@@ -271,9 +274,9 @@ public class MachinesTest {
         machine += "INITIALISATION a::{1} || b,c,d::INTEGER*{2}*BOOL \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getVariables().get("a"));
-        assertEquals("INTEGER", t.getVariables().get("b"));
-        assertEquals("INTEGER", t.getVariables().get("c"));
+        assertEquals(INTEGER, t.getVariables().get("a"));
+        assertEquals(INTEGER, t.getVariables().get("b"));
+        assertEquals(INTEGER, t.getVariables().get("c"));
         assertEquals("BOOL", t.getVariables().get("d"));
     }
 
@@ -285,7 +288,7 @@ public class MachinesTest {
         machine += "INITIALISATION IF 1=1 THEN a := 1 ELSE a:= 2 END \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
-        assertEquals("INTEGER", t.getVariables().get("a"));
+        assertEquals(INTEGER, t.getVariables().get("a"));
     }
 
     @Test

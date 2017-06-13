@@ -12,6 +12,8 @@ import static org.junit.Assert.assertEquals;
 
 public class OperatorCoverageTest {
 
+    private final String INTEGER = "INTEGER";
+
     @Test
     public void testExpressionFormula() {
         String formula = "x - 2 / 3";
@@ -19,7 +21,7 @@ public class OperatorCoverageTest {
         assertEquals(EXPRESSION_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER", declarationNode.getType().toString());
+        assertEquals(INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -31,8 +33,8 @@ public class OperatorCoverageTest {
         DeclarationNode node2 = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("a", node1.getName());
         assertEquals("b", node2.getName());
-        assertEquals("INTEGER", node1.getType().toString());
-        assertEquals("INTEGER", node2.getType().toString());
+        assertEquals(INTEGER, node1.getType().toString());
+        assertEquals(INTEGER, node2.getType().toString());
     }
 
     @Test(expected = TypeErrorException.class)
