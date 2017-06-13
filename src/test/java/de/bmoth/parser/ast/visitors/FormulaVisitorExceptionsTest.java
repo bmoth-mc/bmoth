@@ -62,7 +62,7 @@ public class FormulaVisitorExceptionsTest {
 
     @Test(expected = AssertionError.class)
     public void formulaVisitorsDoNotHandleConditionSubstitution() {
-        SubstitutionNode node = new ConditionSubstitutionNode(null, skip);
+        SubstitutionNode node = new ConditionSubstitutionNode(null, null, skip);
         visitor.visitSubstitutionNode(node, null);
     }
 
