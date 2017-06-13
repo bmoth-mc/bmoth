@@ -188,7 +188,7 @@ public class FormulaVisitorExceptionsTest {
 
             @Override
             public void setParent(RuleContext parent) {
-
+                // not needed in test stub
             }
         };
     }

@@ -1,11 +1,7 @@
 package de.bmoth.parser.ast.visitors;
 
 import de.bmoth.parser.ast.nodes.*;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenSource;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
@@ -29,7 +25,7 @@ public class SubstitutionVisitorExceptionsTest {
     @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandleExprOperator() {
         ExpressionOperatorNode node = new ExpressionOperatorNode(null, null,
-                ExpressionOperatorNode.ExpressionOperator.BOOL);
+            ExpressionOperatorNode.ExpressionOperator.BOOL);
         visitor.visitExprOperatorNode(node, null);
     }
 
@@ -54,14 +50,14 @@ public class SubstitutionVisitorExceptionsTest {
     @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandleQuantifiedExpr() {
         QuantifiedExpressionNode node = new QuantifiedExpressionNode(null, null, null, null,
-                QuantifiedExpressionNode.QuantifiedExpressionOperator.SET_COMPREHENSION);
+            QuantifiedExpressionNode.QuantifiedExpressionOperator.SET_COMPREHENSION);
         visitor.visitQuantifiedExpressionNode(node, null);
     }
 
     @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandlePredicate() {
         PredicateNode node = new PredicateOperatorNode(null, PredicateOperatorNode.PredicateOperator.AND,
-                Collections.emptyList());
+            Collections.emptyList());
         visitor.visitPredicateNode(node, null);
     }
 
@@ -80,7 +76,7 @@ public class SubstitutionVisitorExceptionsTest {
     @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandlePredicateOperatorWithExprArgs() {
         PredicateOperatorWithExprArgsNode node = new PredicateOperatorWithExprArgsNode(null,
-                PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.ELEMENT_OF, null);
+            PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.ELEMENT_OF, null);
         visitor.visitPredicateOperatorWithExprArgs(node, null);
     }
 
@@ -149,7 +145,7 @@ public class SubstitutionVisitorExceptionsTest {
 
             @Override
             public Object visitBecomesElementOfSubstitutionNode(BecomesElementOfSubstitutionNode node,
-                    Object expected) {
+                                                                Object expected) {
                 return null;
             }
 
@@ -261,7 +257,7 @@ public class SubstitutionVisitorExceptionsTest {
 
             @Override
             public void setParent(RuleContext parent) {
-
+                // not needed in test stub
             }
         };
     }

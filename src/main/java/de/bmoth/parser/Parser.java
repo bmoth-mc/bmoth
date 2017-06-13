@@ -116,9 +116,9 @@ public class Parser {
 
     }
 
-    public static final String readFile(final File file) throws IOException {
+    static String readFile(final File file) throws IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file),
-                Charset.forName("UTF-8"))) {
+            Charset.forName("UTF-8"))) {
 
             final StringBuilder builder = new StringBuilder();
             final char[] buffer = new char[1024];
@@ -127,8 +127,6 @@ public class Parser {
                 builder.append(String.valueOf(buffer, 0, read));
             }
             String content = builder.toString();
-
-            inputStreamReader.close();
 
             if (!content.isEmpty()) {
                 // remove utf-8 byte order mark

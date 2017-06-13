@@ -26,15 +26,6 @@ public class IfSubstitutionNode extends AbstractIfAndSelectSubstitutionsNode {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("IF ").append(conditions.get(0)).append(" THEN ").append(substitutions.get(0));
-        for (int i = 1; i < conditions.size(); i++) {
-            sb.append(" ELSIF ").append(conditions.get(i)).append(" THEN ").append(substitutions.get(i));
-        }
-        if (null != elseSubstitution) {
-            sb.append(" ELSE ").append(elseSubstitution);
-        }
-        sb.append(" END");
-        return sb.toString();
+        return prepareToString("IF", "ELSIF");
     }
 }
