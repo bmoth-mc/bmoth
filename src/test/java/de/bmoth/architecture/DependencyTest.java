@@ -14,7 +14,7 @@ import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class DependencyTest {
-    private String[] packages = new String[]{"app", "backend", "checkers", "eventbus", "modelchecker", "parser"};
+    private String[] packages = new String[] { "app", "backend", "checkers", "eventbus", "modelchecker", "parser" };
     private AnalyzerConfig config;
 
     @Before
@@ -34,13 +34,8 @@ public class DependencyTest {
     @Test
     public void dependency() {
         class ExternalPackages extends DependencyRuler {
-            DependencyRule comMicrosoftZ3,
-                comMicrosoftZ3Enumerations,
-                deBmothApp,
-                deBmothBackendZ3,
-                deBmothModelchecker,
-                deBmothCheckers_,
-                deSaxsysMvvmfx;
+            DependencyRule comMicrosoftZ3, comMicrosoftZ3Enumerations, deBmothApp, deBmothBackendZ3,
+                    deBmothModelchecker, deBmothCheckers_, deSaxsysMvvmfx;
 
             @Override
             public void defineRules() {
@@ -52,18 +47,22 @@ public class DependencyTest {
             }
         }
 
+        class InternalPackages extends DependencyRuler {
+            DependencyRule deBmothParserAst, deBmothParserAst_, deBmothParserCst, deBmothParserAstNodes,
+                    deBmothParserAstTypes, deBmothParserAstVisitors;
+
+            @Override
+            public void defineRules() {
+                deBmothParserAst.mustUse(deBmothParserAst_, deBmothParserCst);
+                deBmothParserAstNodes.mustUse(deBmothParserAstTypes);
+                deBmothParserAstVisitors.mustUse(deBmothParserAstNodes);
+            }
+        }
+
         class DeBmoth extends DependencyRuler {
             // $self is de.bmoth, added _ refers to subpackages of package
-            DependencyRule app,
-                antlr,
-                backend,
-                backend_,
-                checkers_,
-                eventbus,
-                modelchecker,
-                parser,
-                parser_,
-                preferences;
+            DependencyRule app, antlr, backend, backend_, checkers_, eventbus, modelchecker, parser, parser_,
+                    preferences, parserAst;
 
             @Override
             public void defineRules() {
@@ -76,7 +75,9 @@ public class DependencyTest {
                 modelchecker.mayUse(backend, backend_, parser_, preferences);
 
                 parser.mayUse(antlr, parser_);
-                parser_.mayUse(antlr, parser_);
+                parser_.mayUse(antlr);
+
+                parserAst.mayUse(backend);
             }
         }
 
@@ -84,10 +85,9 @@ public class DependencyTest {
         // java, javafx, com and org are ignored
         // maybe we should include com.microsoft again and check who is
         // allowed to directly speak to z3
-        DependencyRules rules = DependencyRules.denyAll()
-            .withAbsoluteRules(new ExternalPackages())
-            .withRelativeRules(new DeBmoth())
-            .withExternals("com.google.*", "java.*", "javafx.*", "org.*");
+        DependencyRules rules = DependencyRules.denyAll().withAbsoluteRules(new InternalPackages())
+                .withAbsoluteRules(new ExternalPackages()).withRelativeRules(new DeBmoth())
+                .withExternals("com.google.*", "java.*", "javafx.*", "org.*");
 
         assertThat(new ModelAnalyzer(config).analyze(), packagesMatchExactly(rules));
     }
