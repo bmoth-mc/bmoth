@@ -2,6 +2,7 @@ package de.bmoth.parser.ast.visitors;
 
 import de.bmoth.parser.ast.nodes.*;
 import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -183,6 +184,12 @@ public class FormulaVisitorExceptionsTest {
             @Override
             public String toStringTree() {
                 return null;
+            }
+
+            @Override
+            public void setParent(RuleContext parent) {
+                // TODO Auto-generated method stub
+
             }
         };
     }

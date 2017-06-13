@@ -86,8 +86,8 @@ expression_list
   ;
 
 formula
-  : predicate
-  | expression
+  : predicate EOF
+  | expression EOF
   ;
 
 predicate

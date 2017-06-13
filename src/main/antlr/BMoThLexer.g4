@@ -75,7 +75,7 @@ RIGHT_BRACKET: ']';
 
 MINUS: '-' | '\u2212';
 SET_SUBTRACTION: '\\';
-PLUS: '+' | '\u002b';
+PLUS: '+';
 SINGLE_QUOTE: '\'';
 TILDE: '~' | '∼' | '⁻' '¹';// 0x207b 0xb9;'\u223c';
 
@@ -123,7 +123,7 @@ POWER_OF: '**';
 INTERVAL: '..' | '\u2025';
 
 // predicate infix opertors
-EQUAL: '=' | '\u003d';
+EQUAL: '=';
 DOUBLE_EQUAL: EQUAL EQUAL;
 NOT_EQUAL: '/=' | '\u2260';
 COLON: ':' ;
@@ -133,9 +133,9 @@ STRICT_INCLUSION: '<<:' | '\u2282';
 NON_INCLUSION: '/<:' | '\u2288';
 STRICT_NON_INCLUSION: '/<<:' | '\u2284';
 NOT_BELONGING: '/:' | '\u2209';
-LESS: '<' | '\u003c';
+LESS: '<';
 LESS_EQUAL: LESS EQUAL | '\u2264';
-GREATER: '>' | '\u003e';
+GREATER: '>' ;
 GREATER_EQUAL: GREATER EQUAL | '\u2265';
 
 TRUE: 'TRUE';

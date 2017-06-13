@@ -3,6 +3,7 @@ package de.bmoth.parser.ast.visitors;
 import de.bmoth.parser.ast.nodes.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenSource;
 import org.antlr.v4.runtime.misc.Interval;
@@ -251,6 +252,12 @@ public class SubstitutionVisitorExceptionsTest {
             @Override
             public String toStringTree() {
                 return null;
+            }
+
+            @Override
+            public void setParent(RuleContext parent) {
+                // TODO Auto-generated method stub
+                
             }
         };
     }

@@ -12,7 +12,8 @@ import de.bmoth.parser.cst.CSTAnalyser;
 import de.bmoth.parser.cst.FormulaAnalyser;
 import de.bmoth.parser.cst.MachineAnalyser;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.File;
@@ -25,8 +26,8 @@ import java.util.List;
 public class Parser {
 
     private BMoThParser getParser(String inputString) {
-        ANTLRInputStream inputStream = new ANTLRInputStream(inputString);
-        final BMoThLexer lexer = new BMoThLexer(inputStream);
+        CodePointCharStream fromString = CharStreams.fromString(inputString);
+        final BMoThLexer lexer = new BMoThLexer(fromString);
         // create a buffer of tokens pulled from the lexer
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         BMoThParser bMoThParser = new BMoThParser(tokens);
@@ -101,13 +102,15 @@ public class Parser {
             if (!content.isEmpty()) {
                 // remove utf-8 byte order mark
                 // replaceAll \uFEFF did not work for some reason
-                // apparently, unix like systems report a single character with the
+                // apparently, unix like systems report a single character with
+                // the
                 // code
                 // below
                 if (content.startsWith("\uFEFF")) {
                     content = content.substring(1);
                 }
-                // while windows splits it up into three characters with the codes
+                // while windows splits it up into three characters with the
+                // codes
                 // below
                 else if (content.startsWith("\u00EF\u00BB\u00BF")) {
                     content = content.substring(3);

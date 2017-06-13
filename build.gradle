@@ -84,7 +84,7 @@ task uiTest(type: Test) {
 dependencies {
 
     // Antlr4 Parser Generator
-    antlr "org.antlr:antlr4:4.5.3"
+    antlr "org.antlr:antlr4:4.7"
 
     // Z3 Java Bindings
     compile files('com.microsoft.z3.jar')
