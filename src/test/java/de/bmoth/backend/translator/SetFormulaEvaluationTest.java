@@ -385,4 +385,16 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
         check(SATISFIABLE, formula);
     }
 
+    @Test
+    public void testIntervalEquality() {
+        check(SATISFIABLE, "x = 1..3");
+        check(UNSATISFIABLE, "x = 1..3 & 4 : x");
+    }
+
+    @Test
+    public void testIntegerSetEquality() {
+        check(SATISFIABLE, "x = INTEGER");
+        check(UNSATISFIABLE, "x = NATURAL & -4 : x");
+        check(SATISFIABLE, "x = NATURAL");
+    }
 }
