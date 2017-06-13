@@ -26,11 +26,10 @@ public class ParserTest {
         final File result = File.createTempFile(name, ".tmp");
         result.deleteOnExit();
 
-        try (Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(result), "UTF-8"))) {
+        try (Writer out = new OutputStreamWriter(new FileOutputStream(result), "UTF-8")) {
             for (int i : data) {
                 out.write(i);
             }
-            out.close();
         }
         return result;
     }
