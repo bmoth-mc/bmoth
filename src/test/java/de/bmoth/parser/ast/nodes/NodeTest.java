@@ -15,6 +15,30 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static de.bmoth.TestParser.*;
 public class NodeTest {
+
+    @Test
+    public void testConditionSubstitutionNode() {
+        MachineNode machine = parseMachine("MACHINE CondSubstNodeMachine\n" +
+            "VARIABLES x\n" +
+            "INVARIANT x:INTEGER\n" +
+            "INITIALISATION\n" +
+            "\tx := 1\n" +
+            "OPERATIONS\n" +
+            "\tcondOp1 = SELECT x = 1 THEN x := 2 END;\n" +
+            "\tcondOp2 = SELECT x = 25 THEN x := 5000 END\n" +
+            "END");
+
+        SelectSubstitutionNode condSub1 = (SelectSubstitutionNode) machine.getOperations().get(0).getSubstitution();
+        SelectSubstitutionNode condSub2 = (SelectSubstitutionNode) machine.getOperations().get(1).getSubstitution();
+        ConditionSubstitutionNode newCondSub = new ConditionSubstitutionNode(condSub1.getConditions().get(0), condSub2.getSubstitutions().get(0));
+
+        assertEquals("SELECT EQUAL(x,1) THEN x := 5000 END", newCondSub.toString());
+
+        newCondSub.setCondition(condSub2.getConditions().get(0));
+        newCondSub.setSubstitution(condSub1.getSubstitutions().get(0));
+        assertEquals("SELECT EQUAL(x,25) THEN x := 2 END", newCondSub.toString());
+    }
+
     @Test
     public void testOperationNode() {
         MachineNode machine = parseMachine(
