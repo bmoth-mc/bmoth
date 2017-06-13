@@ -4,10 +4,6 @@ public class ConditionSubstitutionNode extends SubstitutionNode {
     private PredicateNode condition;
     private SubstitutionNode substitution;
 
-    public enum ConditionSubstitutionKind {
-        PRECONDITION, ASSERT
-    }
-
     public ConditionSubstitutionNode(PredicateNode condition,
                                      SubstitutionNode substitution) {
         this.condition = condition;
