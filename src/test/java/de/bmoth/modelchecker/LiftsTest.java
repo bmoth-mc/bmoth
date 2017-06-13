@@ -1,67 +1,63 @@
 package de.bmoth.modelchecker;
 
 import com.microsoft.z3.Expr;
-import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static de.bmoth.TestParser.*;
 
 public class LiftsTest {
 
     private String dir = "src/test/resources/machines/lifts/";
 
     @Test
-    public void testCrashing() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "CrashingLift.mch");
+    public void testCrashing() {
+        MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "CrashingLift.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
         assertEquals("{old_floor=3, old_time=3, current_time=4, current_floor=0}", result.getLastState().toString());
     }
 
     @Test
-    public void testLowerHigher() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "LiftLowerHigher.mch");
+    public void testLowerHigher() {
+        MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "LiftLowerHigher.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
         assertEquals("{doors_open=false, moving=true, current_floor=-1}", result.getLastState().toString());
     }
 
     @Test
-    public void testInvalidPositions() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser
-            .getMachineFileAsSemanticAst(dir + "LiftStopsAtInvalidPositions.mch");
+    public void testInvalidPositions() {
+        MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "LiftStopsAtInvalidPositions.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
         assertEquals("{MAX_FLOOR=5, MIN_FLOOR=0, doors_open=false, moving=false, current_floor=1, betweenFloors=true}",
-            result.getLastState().toString());
+                result.getLastState().toString());
     }
 
     @Ignore("iseq not implemented in FormularToZ3Translator")
     @Test
-    public void testLiftDoesNotMoveTowardsFirstPressedButton() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser
-            .getMachineFileAsSemanticAst(dir + "LiftDoesNotMoveTowardsFirstPressedButton.mch");
+    public void testLiftDoesNotMoveTowardsFirstPressedButton() {
+        MachineNode simpleMachineWithViolation = parseMachineFromFile(
+                dir + "LiftDoesNotMoveTowardsFirstPressedButton.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
     }
 
     @Test
-    public void testOpenDoorWhileMoving() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "OpenDoorWhileMoving.mch");
+    public void testOpenDoorWhileMoving() {
+        MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "OpenDoorWhileMoving.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
         assertEquals("{doors_open=true, moving=true}", result.getLastState().toString());
     }
 
     @Test
-    public void testTargetAndCurrentCorrespond() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser
-            .getMachineFileAsSemanticAst(dir + "TargetAndCurrentCorrespond.mch");
+    public void testTargetAndCurrentCorrespond() {
+        MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "TargetAndCurrentCorrespond.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
         Expr targetFloor = result.getLastState().values.get("target_floor");
@@ -70,36 +66,36 @@ public class LiftsTest {
     }
 
     @Test
-    public void testMissingEmergencyCall() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "EmergencyCallFail.mch");
+    public void testMissingEmergencyCall() {
+        MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "EmergencyCallFail.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
     }
 
     @Test
-    public void testNotMoving() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "NotMoving.mch");
+    public void testNotMoving() {
+        MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "NotMoving.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
     }
 
     @Test
-    public void testAcceleration() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "AccMachine.mch");
+    public void testAcceleration() {
+        MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "AccMachine.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
     }
 
     @Test
-    public void testSlowDoors() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "SlowDoors.mch");
+    public void testSlowDoors() {
+        MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "SlowDoors.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
     }
 
     @Test
-    public void testFastDoors() throws IOException {
-        MachineNode simpleMachineWithViolation = Parser.getMachineFileAsSemanticAst(dir + "FastDoors.mch");
+    public void testFastDoors() {
+        MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "FastDoors.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
     }

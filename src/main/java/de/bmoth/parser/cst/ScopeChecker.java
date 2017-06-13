@@ -15,6 +15,19 @@ public abstract class ScopeChecker extends BMoThParserBaseVisitor<Void> {
     final LinkedList<LinkedHashMap<String, TerminalNode>> scopeTable = new LinkedList<>();
     final LinkedHashMap<TerminalNode, TerminalNode> declarationReferences = new LinkedHashMap<>();
 
+    public class ScopeCheckerVisitorException extends RuntimeException {
+        private static final long serialVersionUID = 5003348008806300117L;
+        final ScopeException scopeException;
+
+        ScopeCheckerVisitorException(ScopeException e) {
+            this.scopeException = e;
+        }
+
+        public ScopeException getScopeException() {
+            return scopeException;
+        }
+    }
+
     @Override
     public Void visitIdentifierExpression(BMoThParser.IdentifierExpressionContext ctx) {
         lookUpTerminalNode(ctx.IDENTIFIER());
@@ -111,7 +124,8 @@ public abstract class ScopeChecker extends BMoThParserBaseVisitor<Void> {
     }
 
     public void identifierNodeNotFound(TerminalNode terminalNode) {
-        throw new ScopeException("Unknown identifier: " + terminalNode.getSymbol().getText());
+        throw new ScopeCheckerVisitorException(
+                new ScopeException("Unknown identifier: " + terminalNode.getSymbol().getText()));
     }
 
 }

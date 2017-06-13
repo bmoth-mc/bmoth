@@ -3,6 +3,7 @@ package de.bmoth.parser.cst;
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.*;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
+import de.bmoth.parser.cst.ScopeChecker.ScopeCheckerVisitorException;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -10,13 +11,15 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static de.bmoth.antlr.BMoThParser.*;
 
 public class MachineAnalyser {
 
     private final StartContext parseTree;
-
+    private final MachineScopeChecker machineScopeChecker;
     final LinkedHashMap<String, TerminalNode> constantsDeclarations = new LinkedHashMap<>();
     final LinkedHashMap<String, TerminalNode> variablesDeclarations = new LinkedHashMap<>();
     final LinkedHashMap<String, TerminalNode> setsDeclarations = new LinkedHashMap<>();
@@ -36,15 +39,22 @@ public class MachineAnalyser {
     private LinkedHashMap<TerminalNode, TerminalNode> declarationReferences;
     private final Map<ParserRuleContext, BDefinition> definitionCallReplacements = new HashMap<>();
 
-    public MachineAnalyser(StartContext start) {
+    public MachineAnalyser(StartContext start) throws ScopeException {
         this.parseTree = start;
+        this.machineScopeChecker = new MachineScopeChecker();
+        try {
+            // find and store all declaration of global identifiers
+            new DeclarationFinder();
 
-        // find and store all declaration of global identifiers
-        new DeclarationFinder();
+            // check that all used identifiers are declared
+            // store a reference for each to identifier to its declaration
+            checkScope();
+        } catch (ScopeCheckerVisitorException e) {
+            final Logger logger = Logger.getLogger(e.getClass().getName());
+            logger.log(Level.SEVERE, "SCOPE_ERROR", e);
+            throw e.getScopeException();
+        }
 
-        // check that all used identifiers are declared
-        // store a reference for each to identifier to its declaration
-        checkScope();
     }
 
     public PredicateClauseContext getPropertiesClause() {
@@ -161,7 +171,8 @@ public class MachineAnalyser {
                     || MachineAnalyser.this.variablesDeclarations.containsKey(name)
                     || MachineAnalyser.this.operationsDeclarations.containsKey(name)
                     || MachineAnalyser.this.setsDeclarations.containsKey(name)) {
-                throw new ScopeException("Duplicate declaration of identifier: " + name);
+                throw machineScopeChecker.new ScopeCheckerVisitorException(
+                        new ScopeException("Duplicate declaration of identifier: " + name));
             }
         }
 
@@ -185,14 +196,16 @@ public class MachineAnalyser {
                 if (MachineAnalyser.this.invariantClause == null) {
                     MachineAnalyser.this.invariantClause = ctx;
                 } else {
-                    throw new ScopeException("Duplicate INVARIANT clause.");
+                    throw machineScopeChecker.new ScopeCheckerVisitorException(
+                            new ScopeException("Duplicate INVARIANT clause."));
                 }
                 break;
             case PROPERTIES:
                 if (MachineAnalyser.this.propertiesClause == null) {
                     MachineAnalyser.this.propertiesClause = ctx;
                 } else {
-                    throw new ScopeException("Duplicate PROPERTIES clause.");
+                    throw machineScopeChecker.new ScopeCheckerVisitorException(
+                            new ScopeException("Duplicate PROPERTIES clause."));
                 }
                 break;
             default:
@@ -206,7 +219,8 @@ public class MachineAnalyser {
             if (MachineAnalyser.this.initialisationClause == null) {
                 MachineAnalyser.this.initialisationClause = ctx;
             } else {
-                throw new ScopeException("Duplicate PROPERTIES clause.");
+                throw machineScopeChecker.new ScopeCheckerVisitorException(
+                        new ScopeException("Duplicate PROPERTIES clause."));
             }
             return null;
         }
@@ -230,13 +244,16 @@ public class MachineAnalyser {
     }
 
     private void checkScope() {
-        MachineScopeChecker scopeChecker = new MachineScopeChecker();
-        this.declarationReferences = scopeChecker.declarationReferences;
+        machineScopeChecker.check();
+        this.declarationReferences = machineScopeChecker.declarationReferences;
     }
 
     class MachineScopeChecker extends ScopeChecker {
 
         MachineScopeChecker() {
+        }
+
+        void check() {
             if (MachineAnalyser.this.propertiesClause != null) {
                 scopeTable.clear();
                 scopeTable.add(MachineAnalyser.this.setsDeclarations);
@@ -299,19 +316,22 @@ public class MachineAnalyser {
             TerminalNode declarationNode = this.declarationReferences.get(terminalNode);
             if (definitions.containsKey(declarationNode)) {
                 BDefinition bDefinition = definitions.get(declarationNode);
-                if (bDefinition.getKind() == BDefinition.KIND.SUBSTITUTION || bDefinition.getKind() == BDefinition.KIND.PREDICATE) {
-                    throw new ScopeException("Expected a EXPRESSION definition but found a " + bDefinition.getKind()
-                            + " at definition " + bDefinition.getName());
+                if (bDefinition.getKind() == BDefinition.KIND.SUBSTITUTION
+                        || bDefinition.getKind() == BDefinition.KIND.PREDICATE) {
+                    throw new ScopeCheckerVisitorException(
+                            new ScopeException("Expected a EXPRESSION definition but found a " + bDefinition.getKind()
+                                    + " at definition " + bDefinition.getName()));
                 }
                 if (bDefinition.getArity() > 0) {
                     if (ctx.parent instanceof FunctionCallExpressionContext) {
                         FunctionCallExpressionContext funcCall = (FunctionCallExpressionContext) ctx.parent;
                         if (funcCall.exprs.size() - 1 != bDefinition.getArity()) {
-                            throw new UnmatchedArgumentsQuantityException(bDefinition, funcCall.exprs.size() - 1);
+                            throw new ScopeCheckerVisitorException(
+                                    new UnmatchedArgumentsQuantityException(bDefinition, funcCall.exprs.size() - 1));
                         }
                         definitionCallReplacements.put(funcCall, bDefinition);
                     } else {
-                        throw new UnmatchedArgumentsQuantityException(bDefinition);
+                        throw new ScopeCheckerVisitorException(new UnmatchedArgumentsQuantityException(bDefinition));
                     }
                 } else {
                     definitionCallReplacements.put(ctx, bDefinition);
@@ -328,7 +348,8 @@ public class MachineAnalyser {
             if (definitions.containsKey(declarationTNode)) {
                 BDefinition bDefinition = definitions.get(declarationTNode);
                 if (ctx.exprs.size() != bDefinition.getArity()) {
-                    throw new UnmatchedArgumentsQuantityException(bDefinition, ctx.exprs.size());
+                    throw new ScopeCheckerVisitorException(
+                            new UnmatchedArgumentsQuantityException(bDefinition, ctx.exprs.size()));
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
 
@@ -345,10 +366,11 @@ public class MachineAnalyser {
             if (definitions.containsKey(declarationTNode)) {
                 BDefinition bDefinition = definitions.get(declarationTNode);
                 if (bDefinition.getArity() > 0 && null == ctx.expression_list()) {
-                    throw new UnmatchedArgumentsQuantityException(bDefinition);
+                    throw new ScopeCheckerVisitorException(new UnmatchedArgumentsQuantityException(bDefinition));
                 }
                 if (null != ctx.expression_list() && bDefinition.getArity() != ctx.expression_list().exprs.size()) {
-                    throw new UnmatchedArgumentsQuantityException(bDefinition, ctx.expression_list().exprs.size());
+                    throw new ScopeCheckerVisitorException(
+                            new UnmatchedArgumentsQuantityException(bDefinition, ctx.expression_list().exprs.size()));
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
             }
@@ -362,12 +384,14 @@ public class MachineAnalyser {
             TerminalNode declarationTNode = this.declarationReferences.get(terminalNode);
             if (definitions.containsKey(declarationTNode)) {
                 BDefinition bDefinition = definitions.get(declarationTNode);
-                if (bDefinition.getKind() == BDefinition.KIND.SUBSTITUTION || bDefinition.getKind() == BDefinition.KIND.EXPRESSION) {
-                    throw new ScopeException("Expected a PREDICATE definition but found a " + bDefinition.getKind()
-                            + " at definition " + bDefinition.getName());
+                if (bDefinition.getKind() == BDefinition.KIND.SUBSTITUTION
+                        || bDefinition.getKind() == BDefinition.KIND.EXPRESSION) {
+                    throw new ScopeCheckerVisitorException(
+                            new ScopeException("Expected a PREDICATE definition but found a " + bDefinition.getKind()
+                                    + " at definition " + bDefinition.getName()));
                 }
                 if (bDefinition.getArity() > 0) {
-                    throw new UnmatchedArgumentsQuantityException(bDefinition);
+                    throw new ScopeCheckerVisitorException(new UnmatchedArgumentsQuantityException(bDefinition));
                 }
                 definitionCallReplacements.put(ctx, bDefinition);
             }

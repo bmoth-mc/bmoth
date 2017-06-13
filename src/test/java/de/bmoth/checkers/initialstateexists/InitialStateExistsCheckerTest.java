@@ -2,11 +2,10 @@ package de.bmoth.checkers.initialstateexists;
 
 import com.microsoft.z3.Status;
 
-import de.bmoth.parser.Parser;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static de.bmoth.TestParser.*;
 
 public class InitialStateExistsCheckerTest {
     @Test
@@ -18,7 +17,7 @@ public class InitialStateExistsCheckerTest {
         machine += "END";
 
         InitialStateExistsCheckingResult res = InitialStateExistsChecker
-                .doInitialStateExistsCheck(Parser.getMachineAsSemanticAst(machine));
+                .doInitialStateExistsCheck(parseMachine(machine));
         assertEquals(Status.SATISFIABLE, res.getResult());
     }
 }

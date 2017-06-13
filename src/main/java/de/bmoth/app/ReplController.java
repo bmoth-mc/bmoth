@@ -3,6 +3,7 @@ package de.bmoth.app;
 import com.microsoft.z3.*;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.parser.Parser;
+import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -41,36 +42,56 @@ public class ReplController implements Initializable {
         String formula = predicate;
         ctx = new Context();
         s = ctx.mkSolver();
-        FormulaNode node = Parser.getFormulaAsSemanticAst(predicate);
+        FormulaNode node;
+        try {
+            node = Parser.getFormulaAsSemanticAst(predicate);
+        } catch (ParserException e) {
+            // TODO handle parser errors
+            throw new RuntimeException(e);//TODO replace this
+        }
         boolean concatFlag = false;
         if (node.getFormulaType() != PREDICATE_FORMULA) {
             formula = "x=" + formula;
-            FormulaNode concatNode = Parser.getFormulaAsSemanticAst(formula);
-            if (concatNode.getFormulaType() != PREDICATE_FORMULA) {
-                throw new IllegalArgumentException("Input can not be extended to a predicate via an additional variable.");
-            } else {
-                concatFlag = true;
-            }
-        }
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
-        s.add(constraint);
-        Status check = s.check();
-
-        if (check == Status.SATISFIABLE) {
-            Model model = s.getModel();
-            String output = new PrettyPrinter(model).getOutput();
-            if (model.toString().equals("")) {
-                return "\n" + check;
-            } else {
-                if (concatFlag) {
-                    String concatOutput = output.substring(3, output.length() - 1);
-                    return "\n" + concatOutput;
+            FormulaNode concatNode;
+            try {
+                concatNode = Parser.getFormulaAsSemanticAst(formula);
+                if (concatNode.getFormulaType() != PREDICATE_FORMULA) {
+                    throw new IllegalArgumentException("Input can not be extended to a predicate via an additional variable.");
                 } else {
-                    return "\n" + output;
+                    concatFlag = true;
                 }
+            } catch (ParserException e) {
+                // TODO handle parser errors
+                throw new RuntimeException(e);//TODO replace this
             }
-        } else {
-            return "\n" + Status.UNSATISFIABLE;
+
         }
+        BoolExpr constraint;
+        try {
+            constraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+            s.add(constraint);
+            Status check = s.check();
+
+            if (check == Status.SATISFIABLE) {
+                Model model = s.getModel();
+                String output = new PrettyPrinter(model).getOutput();
+                if (model.toString().equals("")) {
+                    return "\n" + check;
+                } else {
+                    if (concatFlag) {
+                        String concatOutput = output.substring(3, output.length() - 1);
+                        return "\n" + concatOutput;
+                    } else {
+                        return "\n" + output;
+                    }
+                }
+            } else {
+                return "\n" + Status.UNSATISFIABLE;
+            }
+        } catch (ParserException e) {
+         // TODO handle parser errors
+            throw new RuntimeException(e);//TODO replace this
+        }
+        
     }
 }

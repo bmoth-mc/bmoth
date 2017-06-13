@@ -13,7 +13,7 @@ import de.bmoth.parser.ast.nodes.TypedNode;
 import de.bmoth.parser.ast.types.BType;
 import de.bmoth.parser.ast.types.UnificationException;
 
-public class TypeErrorException extends RuntimeException {
+public class TypeErrorException extends Exception {
     private static final long serialVersionUID = -5344167922965323221L;
     private final String message;
 

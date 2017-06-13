@@ -2,7 +2,6 @@ package de.bmoth.performance;
 
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
-import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -12,7 +11,7 @@ import org.openjdk.jmh.annotations.State;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
-
+import static de.bmoth.TestParser.*;
 @State(Scope.Benchmark)
 public class ModelCheckerPerformanceTest {
 
@@ -21,7 +20,7 @@ public class ModelCheckerPerformanceTest {
     @Test
     @Benchmark
     public void testLeuschelPerformanceMachines1() throws IOException {
-        MachineNode machine = Parser.getMachineFileAsSemanticAst(dir + "/performance/CounterErr.mch");
+        MachineNode machine = parseMachine(dir + "/performance/CounterErr.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(machine);
         assertEquals(false, result.isCorrect());
     }
@@ -29,7 +28,7 @@ public class ModelCheckerPerformanceTest {
     @Test
     //@Benchmark
     public void testLeuschelPerformanceMachines2() throws IOException {
-        MachineNode machine = Parser.getMachineFileAsSemanticAst(dir + "/performance/SimpleSetIncrease.mch");
+        MachineNode machine = parseMachine(dir + "/performance/SimpleSetIncrease.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(machine);
         assertEquals(false, result.isCorrect());
     }
@@ -37,7 +36,7 @@ public class ModelCheckerPerformanceTest {
     @Test
     //@Benchmark
     public void testLeuschelPerformanceMachines3() throws IOException {
-        MachineNode machine = Parser.getMachineFileAsSemanticAst(dir + "/performance/CounterErr2.mch");
+        MachineNode machine = parseMachine(dir + "/performance/CounterErr2.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(machine);
         assertEquals(false, result.isCorrect());
     }

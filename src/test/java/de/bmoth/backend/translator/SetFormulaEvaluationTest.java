@@ -4,7 +4,6 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Status;
 import de.bmoth.TestUsingZ3;
-import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.preferences.BMothPreferences;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -31,7 +30,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     public void testSetExtensionFormulaWithSingleVarModel() {
         String formula = "{1,2} = {2,x}";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
 
@@ -45,7 +44,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     public void testSetExtensionFormulaWithSetVarModel() {
         String formula = "{1,2} = x";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
 
@@ -60,7 +59,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     public void testSetMembership() {
         String formula = "x : {3}";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
 
@@ -132,7 +131,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testSubset() {
         String formula = "{1} <: {1,2}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -141,7 +140,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testSubset2() {
         String formula = "{1} <: {3,2}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);
@@ -150,7 +149,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testStrictSubset() {
         String formula = "{1} <<: {1,2}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -159,7 +158,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testStrictSubset2() {
         String formula = "{1} <<: {1}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);
@@ -168,7 +167,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testStrictSubset3() {
         String formula = "{1} <<: {1,1}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);
@@ -177,7 +176,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testnoSubset() {
         String formula = "{1} /<: {1}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);
@@ -186,7 +185,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testnoSubset2() {
         String formula = "{1} /<: {2,3}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -195,7 +194,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testnoSubset3() {
         String formula = "{1} /<: {1,2}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);
@@ -204,7 +203,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testNoProperSubset() {
         String formula = "{1} /<<: {1}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -213,7 +212,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testNoProperSubset2() {
         String formula = "{1} /<<: {1,2}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);
@@ -222,7 +221,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testNoProperSubset3() {
         String formula = "{1} /<<: {2,3}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -231,7 +230,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testNotBelonging() {
         String formula = "1 /: {2,3}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -240,7 +239,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testNotBelonging2() {
         String formula = "{1} /: {{1}}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);
@@ -249,7 +248,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testBelonging() {
         String formula = "1 : {1}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -258,7 +257,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testBelonging2() {
         String formula = "x: {1}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -267,7 +266,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testBelonging3() {
         String formula = "1 : {2,3}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);
@@ -276,7 +275,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testIntersection() {
         String formula = "{1,2} /\\ {2,3} = {2}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -285,7 +284,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testIntersection2() {
         String formula = "{1} /\\ {2,3} = {2}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);
@@ -294,7 +293,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testUnion() {
         String formula = "{1,2} \\/ {2,3} = {2}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);
@@ -303,7 +302,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testUnion2() {
         String formula = "{1,2} \\/ {2,3} = {1,2,3}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -313,7 +312,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testDifference() {
         String formula = "{1,2}\\{2,3} = {1}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -322,7 +321,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testDifference2() {
         String formula = "{1,2}\\{3} = {1}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);
@@ -332,7 +331,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     public void testAdditionFormula() {
         String formula = "x : 2 .. 3";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
 
@@ -343,7 +342,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     public void testFailAdditionFormula() {
         String formula = "x : 2 .. 3 & x > 3";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
 
@@ -355,7 +354,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     public void testCartesianProduct() {
         String formula = "{1}*{2}={(1,2)}";
         // getting the translated z3 representation of the formula
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.SATISFIABLE, check);
@@ -364,7 +363,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     @Test
     public void testCartesianProductUnsat() {
         String formula = "{1}*{2}={(1,3)}";
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate(formula, z3Context);
+        BoolExpr constraint = translatePredicate(formula, z3Context);
         z3Solver.add(constraint);
         Status check = z3Solver.check();
         assertEquals(Status.UNSATISFIABLE, check);

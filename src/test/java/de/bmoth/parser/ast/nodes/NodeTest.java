@@ -1,6 +1,5 @@
 package de.bmoth.parser.ast.nodes;
 
-import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
 import org.junit.Test;
 
@@ -14,11 +13,11 @@ import static de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuantifiedExpre
 import static de.bmoth.parser.ast.nodes.QuantifiedPredicateNode.QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-
+import static de.bmoth.TestParser.*;
 public class NodeTest {
     @Test
     public void testOperationNode() {
-        MachineNode machine = Parser.getMachineAsSemanticAst(
+        MachineNode machine = parseMachine(
             "MACHINE OpNodeMachine\nVARIABLES x\nPROPERTIES 1=1\nINVARIANT x:INTEGER\nOPERATIONS\n\tset = BEGIN x := 1 END;\n\tselect = SELECT x = 1 THEN x := x END\nEND");
         OperationNode setOperation = machine.getOperations().get(0);
         OperationNode selectOperation = machine.getOperations().get(1);
@@ -30,9 +29,9 @@ public class NodeTest {
 
     @Test
     public void testPredicateOperatorNode() {
-        PredicateOperatorNode andNode = (PredicateOperatorNode) Parser.getFormulaAsSemanticAst("x & y").getFormula();
-        Node orNode = Parser.getFormulaAsSemanticAst("x or y").getFormula();
-        Node trueNode = Parser.getFormulaAsSemanticAst("TRUE").getFormula();
+        PredicateOperatorNode andNode = (PredicateOperatorNode) parseFormula("x & y").getFormula();
+        Node orNode = parseFormula("x or y").getFormula();
+        Node trueNode = parseFormula("TRUE").getFormula();
 
         assertEquals("AND(x,y)", andNode.toString());
         assertEquals("OR(x,y)", orNode.toString());
@@ -42,11 +41,9 @@ public class NodeTest {
 
     @Test
     public void testPredicateOperatorWithExprArgsNode() {
-        PredicateOperatorWithExprArgsNode equalNode = (PredicateOperatorWithExprArgsNode) Parser
-            .getFormulaAsSemanticAst("x = 1").getFormula();
+        PredicateOperatorWithExprArgsNode equalNode = (PredicateOperatorWithExprArgsNode) parseFormula("x = 1").getFormula();
 
-        PredicateOperatorWithExprArgsNode otherNode = (PredicateOperatorWithExprArgsNode) Parser
-            .getFormulaAsSemanticAst("x <= 1").getFormula();
+        PredicateOperatorWithExprArgsNode otherNode = (PredicateOperatorWithExprArgsNode) parseFormula("x <= 1").getFormula();
 
         assertEquals("EQUAL(x,1)", equalNode.toString());
         assertEquals("LESS_EQUAL(x,1)", otherNode.toString());
@@ -57,7 +54,7 @@ public class NodeTest {
 
     @Test
     public void testExpressionOperatorNode() {
-        ExpressionOperatorNode node = (ExpressionOperatorNode) Parser.getFormulaAsSemanticAst("1**1").getFormula();
+        ExpressionOperatorNode node = (ExpressionOperatorNode) parseFormula("1**1").getFormula();
 
         assertEquals("POWER_OF(1,1)", node.toString());
 
@@ -70,9 +67,9 @@ public class NodeTest {
 
     @Test
     public void testQuantifiedPredicateNode() {
-        QuantifiedPredicateNode existsNode = (QuantifiedPredicateNode) Parser.getFormulaAsSemanticAst("#x.(x > 0)")
+        QuantifiedPredicateNode existsNode = (QuantifiedPredicateNode) parseFormula("#x.(x > 0)")
             .getFormula();
-        QuantifiedPredicateNode forAllNode = (QuantifiedPredicateNode) Parser.getFormulaAsSemanticAst("!x.(x > 0)")
+        QuantifiedPredicateNode forAllNode = (QuantifiedPredicateNode) parseFormula("!x.(x > 0)")
             .getFormula();
 
         assertEquals("EXISTS(x,GREATER(x,0))", existsNode.toString());
@@ -84,7 +81,7 @@ public class NodeTest {
 
     @Test
     public void testCastPredicateExpressionNode() {
-        CastPredicateExpressionNode node = (CastPredicateExpressionNode) Parser.getFormulaAsSemanticAst("bool(FALSE)")
+        CastPredicateExpressionNode node = (CastPredicateExpressionNode) parseFormula("bool(FALSE)")
             .getFormula();
 
         assertEquals("bool(FALSE)", node.toString());
@@ -92,8 +89,7 @@ public class NodeTest {
 
     @Test
     public void testDeclarationNode() {
-        DeclarationNode node = ((IdentifierExprNode) ((PredicateOperatorWithExprArgsNode) Parser
-            .getFormulaAsSemanticAst("\n  x = 1").getFormula()).getExpressionNodes().get(0)).getDeclarationNode();
+        DeclarationNode node = ((IdentifierExprNode) ((PredicateOperatorWithExprArgsNode) parseFormula("\n  x = 1").getFormula()).getExpressionNodes().get(0)).getDeclarationNode();
         assertEquals(2, node.getLine());
         assertEquals(2, node.getPos());
     }

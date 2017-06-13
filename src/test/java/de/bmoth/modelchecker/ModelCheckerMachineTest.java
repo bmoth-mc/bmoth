@@ -1,9 +1,9 @@
 package de.bmoth.modelchecker;
 
-import de.bmoth.parser.Parser;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static de.bmoth.TestParser.*;
 
 public class ModelCheckerMachineTest {
 
@@ -15,7 +15,7 @@ public class ModelCheckerMachineTest {
         machine += "INITIALISATION IF 1=1 THEN a := TRUE ELSE a := FALSE END \n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(Parser.getMachineAsSemanticAst(machine));
+        ModelCheckingResult result = ModelChecker.doModelCheck(parseMachine(machine));
         assertEquals(true, result.isCorrect());
     }
 
@@ -27,7 +27,7 @@ public class ModelCheckerMachineTest {
         machine += "INITIALISATION a:= TRUE || b := TRUE \n";
         machine += "OPERATIONS foo = IF 1=2 THEN a := FALSE|| b := FALSE END \n";
         machine += "END";
-        ModelCheckingResult result = ModelChecker.doModelCheck(Parser.getMachineAsSemanticAst(machine));
+        ModelCheckingResult result = ModelChecker.doModelCheck(parseMachine(machine));
         assertEquals(true, result.isCorrect());
     }
 
@@ -38,7 +38,7 @@ public class ModelCheckerMachineTest {
         machine += "INVARIANT a = 3 & b : 4..5\n";
         machine += "INITIALISATION a :: {3} || b :: {4,5} \n";
         machine += "END";
-        ModelCheckingResult result = ModelChecker.doModelCheck(Parser.getMachineAsSemanticAst(machine));
+        ModelCheckingResult result = ModelChecker.doModelCheck(parseMachine(machine));
         assertEquals(true, result.isCorrect());
     }
 }

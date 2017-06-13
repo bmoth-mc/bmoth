@@ -5,7 +5,7 @@ import de.bmoth.eventbus.ErrorEvent;
 import de.bmoth.eventbus.EventBusProvider;
 import org.antlr.v4.runtime.CommonToken;
 
-public class ParseErrorException extends RuntimeException {
+public class ParseErrorException extends Exception {
     private static final long serialVersionUID = 2305560853973886094L;
     private final CommonToken token;
 

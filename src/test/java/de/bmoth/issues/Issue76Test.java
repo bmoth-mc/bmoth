@@ -3,7 +3,6 @@ package de.bmoth.issues;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Status;
 import de.bmoth.TestUsingZ3;
-import de.bmoth.backend.z3.FormulaToZ3Translator;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -17,8 +16,8 @@ public class Issue76Test extends TestUsingZ3 {
         String satFormula2 = "TRUE or FALSE & FALSE";
         Status check;
 
-        BoolExpr satExpr1 = FormulaToZ3Translator.translatePredicate(satFormula1, z3Context);
-        BoolExpr satExpr2 = FormulaToZ3Translator.translatePredicate(satFormula2, z3Context);
+        BoolExpr satExpr1 = translatePredicate(satFormula1, z3Context);
+        BoolExpr satExpr2 = translatePredicate(satFormula2, z3Context);
 
         z3Solver.add(satExpr1);
         check = z3Solver.check();

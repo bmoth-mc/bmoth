@@ -11,6 +11,7 @@ import de.bmoth.eventbus.EventBusProvider;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.Parser;
+import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -98,7 +99,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         codeArea.selectRange(0, 0);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
-            .subscribe(change -> codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText())));
+                .subscribe(change -> codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText())));
         codeArea.setStyleSpans(0, Highlighter.computeHighlighting(codeArea.getText()));
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
             hasChanged = true;
@@ -133,7 +134,6 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
 
         }
     }
-
 
     @FXML
     public void handleNew() {
@@ -217,7 +217,8 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
 
     @FXML
     public void handleOptions() throws IOException {
-        ViewTuple<OptionView, OptionViewModel> viewOptionViewModelViewTuple = FluentViewLoader.fxmlView(OptionView.class).load();
+        ViewTuple<OptionView, OptionViewModel> viewOptionViewModelViewTuple = FluentViewLoader
+                .fxmlView(OptionView.class).load();
         Parent root = viewOptionViewModelViewTuple.getView();
         Scene scene = new Scene(root);
         Stage optionStage = new Stage();
@@ -231,7 +232,12 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
 
             if (hasChanged || machineNode == null) {
                 handleSave();
-                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                try {
+                    machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                } catch (ParserException e) {
+                    // TODO handle parser errors
+                    throw new RuntimeException(e);// TODO replace this
+                }
                 if (!machineNode.getWarnings().isEmpty()) {
                     warningArea.setText(machineNode.getWarnings().toString());
                 }
@@ -253,11 +259,11 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
                 if (result.isCorrect()) {
                     alert.setContentText("...correct!\nNo counter-example found.");
                 } else if (result.getMessage().equals("")) {
-                    alert.setContentText("...not correct!\nCounter-example found in state " + result.getLastState().toString()
-                        + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
+                    alert.setContentText(
+                            "...not correct!\nCounter-example found in state " + result.getLastState().toString()
+                                    + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
                 } else {
-                    alert.setContentText("...Schrödinger's cat.\nSomething went wrong.\n"
-                        + result.getMessage());
+                    alert.setContentText("...Schrödinger's cat.\nSomething went wrong.\n" + result.getMessage());
                 }
                 alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
                 alert.showAndWait();
@@ -295,12 +301,18 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
             if (hasChanged || machineNode == null) {
                 handleSave();
-                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                try {
+                    machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                } catch (ParserException e) {
+                    // TODO handle ParseErrors
+                    throw new RuntimeException(e);// TODO replace this
+                }
                 if (!machineNode.getWarnings().isEmpty()) {
                     warningArea.setText(machineNode.getWarnings().toString());
                 }
             }
-            InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker.doInvariantSatisfiabilityCheck(machineNode);
+            InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker
+                    .doInvariantSatisfiabilityCheck(machineNode);
             showResultAlert(result.getResult());
         }
     }
@@ -320,18 +332,18 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     private int handleUnsavedChanges() {
         int nextStep = saveChangedDialog();
         switch (nextStep) {
-            case 0:
-                break;
-            case 1:
-                handleSave();
-                break;
-            case 2:
-                handleSaveAs();
-                break;
-            case -1:
-                break;
-            default:
-                break;
+        case 0:
+            break;
+        case 1:
+            handleSave();
+            break;
+        case 2:
+            handleSaveAs();
+            break;
+        case -1:
+            break;
+        default:
+            break;
         }
         return nextStep;
     }
@@ -339,7 +351,8 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     /**
      * Open a confirmation-alert to decide how to proceed with unsaved changes.
      *
-     * @return UserChoice as Integer: -1 = Ignore, 0 = Cancel, 1 = Save , 2 = SaveAs
+     * @return UserChoice as Integer: -1 = Ignore, 0 = Cancel, 1 = Save , 2 =
+     *         SaveAs
      */
     private int saveChangedDialog() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -356,10 +369,14 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent()) {
-            if (result.get() == buttonTypeSave) return 1;
-            if (result.get() == buttonTypeSaveAs) return 2;
-            if (result.get() == buttonTypeCancel) return 0;
-            if (result.get() == buttonTypeIgnoreChanges) return -1;
+            if (result.get() == buttonTypeSave)
+                return 1;
+            if (result.get() == buttonTypeSaveAs)
+                return 2;
+            if (result.get() == buttonTypeCancel)
+                return 0;
+            if (result.get() == buttonTypeIgnoreChanges)
+                return -1;
         }
         return 0;
     }
@@ -369,7 +386,8 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     /**
      * Save codeArea to a file.
      *
-     * @param path Save-location
+     * @param path
+     *            Save-location
      * @throws IOException
      */
     private void saveFile(String path) throws IOException {
@@ -388,10 +406,11 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
      */
     private Boolean saveFileAs() throws IOException {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_DIR)));
+        fileChooser.setInitialDirectory(
+                new File(BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_DIR)));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MCH File", "*.mch"));
         File file = fileChooser.showSaveDialog(primaryStage);
-        if (file != null) {     //add .mch ending if not added by OS
+        if (file != null) { // add .mch ending if not added by OS
             if (!file.getAbsolutePath().endsWith(".mch")) {
                 saveFile(file.getAbsolutePath() + ".mch");
             } else {
@@ -400,11 +419,13 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
             BMothPreferences.setStringPreference(BMothPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
             BMothPreferences.setStringPreference(BMothPreferences.StringPreference.LAST_DIR, file.getParent());
             return true;
-        } else return false;
+        } else
+            return false;
     }
 
     /**
-     * Ask the user which file to open into the textarea. If the file is found, openFile is called.
+     * Ask the user which file to open into the textarea. If the file is found,
+     * openFile is called.
      *
      * @return Returns the filepath as string or null if cancelled
      * @see #openFile(File)
@@ -413,7 +434,8 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Open MCH File", "*.mch"));
         fileChooser.setTitle("Choose File");
-        fileChooser.setInitialDirectory(new File(BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_DIR)));
+        fileChooser.setInitialDirectory(
+                new File(BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_DIR)));
         File file = fileChooser.showOpenDialog(primaryStage);
 
         if (file != null) {
@@ -429,7 +451,8 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     /**
      * Load a given file into the CodeArea and change the title of the stage.
      *
-     * @param file File to read from
+     * @param file
+     *            File to read from
      */
     private String openFile(File file) {
         String content = null;
@@ -449,12 +472,16 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     }
     // </editor-fold>
 
-
     public void handleInitialStateExists() {
         if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
             if (hasChanged || machineNode == null) {
                 handleSave();
-                machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                try {
+                    machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                } catch (ParserException e) {
+                    // TODO handle parser errors
+                    throw new RuntimeException(e);// TODO replace this
+                }
             }
 
             InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(machineNode);
@@ -467,17 +494,17 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         alert.setTitle("Invariant Satisfiability Checking Result");
         alert.setHeaderText("Initial state...");
         switch (status) {
-            case UNSATISFIABLE:
-                alert.setContentText("...does not exists!\nThe model is probably not correct.");
-                break;
-            case UNKNOWN:
-                alert.setContentText("...is unknown!\nThe initialization is too complex for the backend.");
-                break;
-            case SATISFIABLE:
-                alert.setContentText("...exists!");
-                break;
-            default:
-                throw new IllegalArgumentException("Unhandled result: " + status.toString());
+        case UNSATISFIABLE:
+            alert.setContentText("...does not exists!\nThe model is probably not correct.");
+            break;
+        case UNKNOWN:
+            alert.setContentText("...is unknown!\nThe initialization is too complex for the backend.");
+            break;
+        case SATISFIABLE:
+            alert.setContentText("...exists!");
+            break;
+        default:
+            throw new IllegalArgumentException("Unhandled result: " + status.toString());
         }
 
         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);

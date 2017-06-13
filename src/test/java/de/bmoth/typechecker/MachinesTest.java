@@ -1,13 +1,13 @@
 package de.bmoth.typechecker;
 
-import de.bmoth.parser.Parser;
-import de.bmoth.parser.ast.TypeErrorException;
 import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static de.bmoth.TestParser.*;
+import static de.bmoth.typechecker.TestTypechecker.*;
 
 public class MachinesTest {
 
@@ -21,10 +21,10 @@ public class MachinesTest {
         assertEquals(POW_INTEGER, t.getConstants().get("k"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testIntegerException() {
         String machine = "MACHINE test\n" + "CONSTANTS k \n" + "PROPERTIES 1 = INTEGER \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -34,10 +34,10 @@ public class MachinesTest {
         assertEquals(POW_INTEGER, t.getConstants().get("k"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testNaturalException() {
         String machine = "MACHINE test\n" + "CONSTANTS k \n" + "PROPERTIES 1 = NATURAL \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -47,10 +47,10 @@ public class MachinesTest {
         assertEquals(POW_INTEGER, t.getConstants().get("k"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testNatural1Exception() {
         String machine = "MACHINE test\n" + "CONSTANTS k \n" + "PROPERTIES 1 = NATURAL1 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -60,16 +60,16 @@ public class MachinesTest {
         assertEquals(POW_INTEGER, t.getConstants().get("k"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testIntervalException() {
         String machine = "MACHINE test\n" + "CONSTANTS k \n" + "PROPERTIES 1 = 1..3 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testIntervalException2() {
         String machine = "MACHINE test\n" + "CONSTANTS k \n" + "PROPERTIES k = TRUE..3 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -80,10 +80,10 @@ public class MachinesTest {
         assertEquals(INTEGER, t.getConstants().get("k2"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testGreaterThanException() {
         String machine = "MACHINE test\n" + "PROPERTIES TRUE > 1 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -94,10 +94,10 @@ public class MachinesTest {
         assertEquals(INTEGER, t.getConstants().get("k2"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testLessThanException() {
         String machine = "MACHINE test\n" + "PROPERTIES TRUE < 1 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -108,10 +108,10 @@ public class MachinesTest {
         assertEquals(INTEGER, t.getConstants().get("k2"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testGreaterEqualsException() {
         String machine = "MACHINE test\n" + "PROPERTIES TRUE >= 1 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -122,10 +122,10 @@ public class MachinesTest {
         assertEquals(INTEGER, t.getConstants().get("k2"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testLessEqualsException() {
         String machine = "MACHINE test\n" + "PROPERTIES TRUE <= 1 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -137,10 +137,10 @@ public class MachinesTest {
         assertEquals(INTEGER, t.getConstants().get("k3"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testAddException() {
         String machine = "MACHINE test\n" + "CONSTANTS k\n" + "PROPERTIES TRUE = 1 + 1 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -152,10 +152,10 @@ public class MachinesTest {
         assertEquals(INTEGER, t.getConstants().get("k3"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testSubException() {
         String machine = "MACHINE test\n" + "CONSTANTS k\n" + "PROPERTIES TRUE = 1 - 1 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -167,10 +167,10 @@ public class MachinesTest {
         assertEquals(INTEGER, t.getConstants().get("k3"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testDivisionException() {
         String machine = "MACHINE test\n" + "CONSTANTS k\n" + "PROPERTIES TRUE = 1 / 1 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -182,10 +182,10 @@ public class MachinesTest {
         assertEquals(INTEGER, t.getConstants().get("k3"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testPowerOfException() {
         String machine = "MACHINE test\n" + "CONSTANTS k\n" + "PROPERTIES TRUE = 1 ** 1 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -197,10 +197,10 @@ public class MachinesTest {
         assertEquals(INTEGER, t.getConstants().get("k3"));
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testModuloException() {
         String machine = "MACHINE test\n" + "CONSTANTS k\n" + "PROPERTIES TRUE = 1 mod 1 \n" + "END";
-        new TestTypechecker(machine);
+        typeCheckMachineAndGetErrorMessage(machine);
     }
 
     @Test
@@ -234,7 +234,7 @@ public class MachinesTest {
         machine += "INITIALISATION x,y:= 1,TRUE \n";
         machine += "OPERATIONS foo = ANY p WHERE 1=1 THEN x := p END \n";
         machine += "END";
-        MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machine);
+        MachineNode machineAsSemanticAst = parseMachine(machine);
         AnySubstitutionNode any = (AnySubstitutionNode) machineAsSemanticAst.getOperations().get(0).getSubstitution();
         DeclarationNode p = any.getParameters().get(0);
         assertEquals("p", p.getName());

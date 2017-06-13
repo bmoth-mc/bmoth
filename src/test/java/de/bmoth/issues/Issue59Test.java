@@ -4,16 +4,14 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
-import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
-import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
+import static de.bmoth.TestParser.*;
+import static de.bmoth.TestUsingZ3.*;
 
 public class Issue59Test {
     @Test
@@ -27,7 +25,7 @@ public class Issue59Test {
         machine += "\tIncX = SELECT x < 50 THEN x := x+1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
+        ModelCheckingResult result = new ModelChecker(parseMachine(machine)).doModelCheck();
         assertEquals(true, result.isCorrect());
     }
 
@@ -43,7 +41,7 @@ public class Issue59Test {
         machine += "\tIncX = SELECT x < 50 THEN x := x+1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
+        ModelCheckingResult result = new ModelChecker(parseMachine(machine)).doModelCheck();
         assertEquals(true, result.isCorrect());
     }
 
@@ -52,7 +50,7 @@ public class Issue59Test {
         Context ctx = new Context();
         Solver s = ctx.mkSolver();
         String formula = "x**2 = x*x & #x.({x} \\/ {1,2} = {1,2})";
-        BoolExpr combinedConstraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        BoolExpr combinedConstraint = translatePredicate(formula, ctx);
 
         s.add(combinedConstraint);
         Status check = s.check();
@@ -64,7 +62,7 @@ public class Issue59Test {
         Context ctx = new Context();
         Solver s = ctx.mkSolver();
         String formula = "x**2 = x*x";
-        BoolExpr combinedConstraint = FormulaToZ3Translator.translatePredicate(formula, ctx);
+        BoolExpr combinedConstraint = translatePredicate(formula, ctx);
 
         s.add(combinedConstraint);
         Status check = s.check();
@@ -72,8 +70,9 @@ public class Issue59Test {
     }
 
     @Test
-    public void testArithmeticLawsMachine() throws IOException {
-        MachineNode simpleMachineWithoutViolation = Parser.getMachineFileAsSemanticAst("src/test/resources/machines/OnlyInitNoViolation.mch");
+    public void testArithmeticLawsMachine() {
+        MachineNode simpleMachineWithoutViolation = parseMachineFromFile(
+                "src/test/resources/machines/OnlyInitNoViolation.mch");
         ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
         assertEquals(true, result.isCorrect());
     }

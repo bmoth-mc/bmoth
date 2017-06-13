@@ -1,14 +1,13 @@
 package de.bmoth.typechecker;
 
-import de.bmoth.parser.Parser;
-import de.bmoth.parser.ast.TypeErrorException;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import org.junit.Test;
-
+import static de.bmoth.typechecker.TestTypechecker.*;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
 import static org.junit.Assert.assertEquals;
+import static de.bmoth.TestParser.*;
 
 public class OperatorCoverageTest {
 
@@ -17,7 +16,7 @@ public class OperatorCoverageTest {
     @Test
     public void testExpressionFormula() {
         String formula = "x - 2 / 3";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        FormulaNode formulaNode = parseFormula(formula);
         assertEquals(EXPRESSION_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
@@ -27,7 +26,7 @@ public class OperatorCoverageTest {
     @Test
     public void testPredicateFormula() {
         String formula = "a * b = x & b = 1";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        FormulaNode formulaNode = parseFormula(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode node1 = formulaNode.getImplicitDeclarations().get(0);
         DeclarationNode node2 = formulaNode.getImplicitDeclarations().get(1);
@@ -37,10 +36,10 @@ public class OperatorCoverageTest {
         assertEquals(INTEGER, node2.getType().toString());
     }
 
-    @Test(expected = TypeErrorException.class)
+    @Test
     public void testPredicateFormulaError() {
         String formula = "x = 2 / 3 & b : x ";
-        Parser.getFormulaAsSemanticAst(formula);
+        typeCheckFormulaAndGetErrorMessage(formula);
     }
 
 }

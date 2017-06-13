@@ -1,12 +1,21 @@
 package de.bmoth.parser;
 
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 
 public class ParseErrorTest {
 
-    @Test(expected = ParseErrorException.class)
-    public void testParseError() {
+    @Test
+    public void testParseError() throws ParseErrorException {
         String formula = " 1  {1} ";
-        Parser.getFormulaAsSemanticAst(formula);
+        try {
+            Parser.getFormulaAsSemanticAst(formula);
+            fail("Expected type error exception.");
+        } catch (ParserException e) {
+            if(e.getException() instanceof ParserException){
+                fail("Expected type error exception.");
+            }
+        }
     }
 }
