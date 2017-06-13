@@ -1,8 +1,5 @@
 package de.bmoth.parser;
 
-import com.google.common.eventbus.EventBus;
-import de.bmoth.eventbus.ErrorEvent;
-import de.bmoth.eventbus.EventBusProvider;
 import org.antlr.v4.runtime.CommonToken;
 
 public class ParseErrorException extends Exception {
@@ -12,8 +9,6 @@ public class ParseErrorException extends Exception {
     public ParseErrorException(CommonToken token, String message) {
         super(message);
         this.token = token;
-        EventBus eventBus = EventBusProvider.getInstance().getEventBus();
-        eventBus.post(new ErrorEvent("Syntax error", toString()));
     }
 
     @Override

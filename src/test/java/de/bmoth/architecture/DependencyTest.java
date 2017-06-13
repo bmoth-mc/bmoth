@@ -75,8 +75,8 @@ public class DependencyTest {
 
                 modelchecker.mayUse(backend, backend_, parser_, preferences);
 
-                parser.mayUse(antlr, eventbus, parser_);
-                parser_.mayUse(antlr, eventbus, parser_);
+                parser.mayUse(antlr, parser_);
+                parser_.mayUse(antlr, parser_);
             }
         }
 

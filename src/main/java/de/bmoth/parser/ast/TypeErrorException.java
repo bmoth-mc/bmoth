@@ -6,9 +6,6 @@ import java.util.logging.Logger;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import com.google.common.eventbus.EventBus;
-import de.bmoth.eventbus.ErrorEvent;
-import de.bmoth.eventbus.EventBusProvider;
 import de.bmoth.parser.ast.nodes.TypedNode;
 import de.bmoth.parser.ast.types.BType;
 import de.bmoth.parser.ast.types.UnificationException;
@@ -21,22 +18,17 @@ public class TypeErrorException extends Exception {
 
     public TypeErrorException(String message) {
         this.message = message;
-        EventBus eventBus = EventBusProvider.getInstance().getEventBus();
-        eventBus.post(new ErrorEvent(TYPE_ERROR, message));
     }
 
     public TypeErrorException(BType expected, BType found, TypedNode node, UnificationException e) {
         this.message = createErrorMessage(expected, found, node);
         final Logger logger = Logger.getLogger(getClass().getName());
         logger.log(Level.SEVERE, TYPE_ERROR, e);
-        EventBus eventBus = EventBusProvider.getInstance().getEventBus();
-        eventBus.post(new ErrorEvent(TYPE_ERROR, toString()));
     }
 
     private String createErrorMessage(BType expected, BType found, TypedNode node) {
         StringBuilder sb = new StringBuilder();
         sb.append("Expected ").append(expected).append(" but found ").append(found).append(" ");
-
         int line;
         int pos;
         String text;

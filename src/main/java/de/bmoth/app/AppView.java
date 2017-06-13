@@ -1,5 +1,6 @@
 package de.bmoth.app;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.microsoft.z3.Status;
 import de.bmoth.checkers.initialstateexists.InitialStateExistsChecker;
@@ -235,8 +236,9 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
                 try {
                     machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
                 } catch (ParserException e) {
-                    // TODO handle parser errors
-                    throw new RuntimeException(e);// TODO replace this
+                    EventBus eventBus = EventBusProvider.getInstance().getEventBus();
+                    eventBus.post(new ErrorEvent("Syntax error", e.toString(), e));
+                    return;
                 }
                 if (!machineNode.getWarnings().isEmpty()) {
                     warningArea.setText(machineNode.getWarnings().toString());
@@ -258,7 +260,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
                 alert.setHeaderText("The model is...");
                 if (result.isCorrect()) {
                     alert.setContentText("...correct!\nNo counter-example found.");
-                } else if (result.getMessage().equals("")) {
+                } else if ("".equals(result.getMessage())) {
                     alert.setContentText(
                             "...not correct!\nCounter-example found in state " + result.getLastState().toString()
                                     + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
@@ -304,8 +306,9 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
                 try {
                     machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
                 } catch (ParserException e) {
-                    // TODO handle ParseErrors
-                    throw new RuntimeException(e);// TODO replace this
+                    EventBus eventBus = EventBusProvider.getInstance().getEventBus();
+                    eventBus.post(new ErrorEvent("Parse error", e.toString(), e));
+                    return;
                 }
                 if (!machineNode.getWarnings().isEmpty()) {
                     warningArea.setText(machineNode.getWarnings().toString());
@@ -479,8 +482,9 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
                 try {
                     machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
                 } catch (ParserException e) {
-                    // TODO handle parser errors
-                    throw new RuntimeException(e);// TODO replace this
+                    EventBus eventBus = EventBusProvider.getInstance().getEventBus();
+                    eventBus.post(new ErrorEvent("Parse error", e.toString(), e));
+                    return;
                 }
             }
 
