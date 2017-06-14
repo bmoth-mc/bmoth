@@ -4,6 +4,7 @@ import com.microsoft.z3.*;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
 
@@ -93,4 +94,23 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
         }
     }
 
+    private State getStateFromModel(Model model) {
+        return getStateFromModel(null, model);
+    }
+
+    private State getStateFromModel(State predecessor, Model model) {
+        HashMap<String, Expr> map = new HashMap<>();
+        for (DeclarationNode declNode : getMachineTranslator().getVariables()) {
+            Expr expr = getMachineTranslator().getPrimedVariable(declNode);
+            Expr value = model.eval(expr, true);
+            map.put(declNode.getName(), value);
+        }
+        for (DeclarationNode declarationNode : getMachineTranslator().getConstants()) {
+            Expr expr = getMachineTranslator().getVariable(declarationNode);
+            Expr value = model.eval(expr, true);
+            map.put(declarationNode.getName(), value);
+        }
+
+        return new State(predecessor, map);
+    }
 }
