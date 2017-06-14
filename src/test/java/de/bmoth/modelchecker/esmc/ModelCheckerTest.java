@@ -1,7 +1,5 @@
-package de.bmoth.modelchecker;
+package de.bmoth.modelchecker.esmc;
 
-import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
-import de.bmoth.modelchecker.esmc.ModelCheckingResult;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Ignore;
 import org.junit.Test;
