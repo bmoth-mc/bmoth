@@ -49,13 +49,14 @@ public class DependencyTest {
 
         class InternalPackages extends DependencyRuler {
             DependencyRule deBmothParserAst, deBmothParserAst_, deBmothParserCst, deBmothParserAstNodes,
-                    deBmothParserAstTypes, deBmothParserAstVisitors;
+                    deBmothParserAstNodesLtl, deBmothParserAstTypes, deBmothParserAstVisitors;
 
             @Override
             public void defineRules() {
                 deBmothParserAst.mustUse(deBmothParserAst_, deBmothParserCst);
                 deBmothParserAstNodes.mustUse(deBmothParserAstTypes);
-                deBmothParserAstVisitors.mustUse(deBmothParserAstNodes);
+                deBmothParserAstVisitors.mustUse(deBmothParserAstNodes, deBmothParserAstNodesLtl);
+                deBmothParserAstNodesLtl.mustUse(deBmothParserAstNodes);
             }
         }
 

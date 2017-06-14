@@ -29,6 +29,11 @@ import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SkipSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 
 public class ASTTransformationVisitor {
 
@@ -211,6 +216,30 @@ public class ASTTransformationVisitor {
 
         @Override
         public Node visitEnumeratedSetElementNode(EnumeratedSetElementNode node, Void expected) {
+            return modifyNode(node, expected);
+        }
+
+        @Override
+        public Node visitLTLPrefixOperatorNode(LTLPrefixOperatorNode node, Void expected) {
+            node.setLTLNode((LTLNode) visitLTLNode(node.getArgument(), expected));
+            return modifyNode(node, expected);
+        }
+
+        @Override
+        public Node visitLTLKeywordNode(LTLKeywordNode node, Void expected) {
+            return modifyNode(node, expected);
+        }
+
+        @Override
+        public Node visitLTLInfixOperatorNode(LTLInfixOperatorNode node, Void expected) {
+            node.setLeft((LTLNode) visitLTLNode(node.getLeft(), expected));
+            node.setRight((LTLNode) visitLTLNode(node.getRight(), expected));
+            return modifyNode(node, expected);
+        }
+
+        @Override
+        public Node visitLTLBPredicateNode(LTLBPredicateNode node, Void expected) {
+            node.setPredicateNode((PredicateNode) visitPredicateNode((PredicateNode) node.getPredicate(), expected));
             return modifyNode(node, expected);
         }
 

@@ -14,6 +14,11 @@ import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
 import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
 import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 
 public interface SubstitutionVisitor<R, P> extends AbstractVisitor<R, P> {
 
@@ -90,6 +95,31 @@ public interface SubstitutionVisitor<R, P> extends AbstractVisitor<R, P> {
 
     @Override
     default R visitEnumeratedSetElementNode(EnumeratedSetElementNode node, P expected) {
+        throw new AssertionError();
+    }
+
+    @Override
+    default R visitLTLNode(LTLNode node, P expected) {
+        throw new AssertionError();
+    }
+
+    @Override
+    default R visitLTLPrefixOperatorNode(LTLPrefixOperatorNode node, P expected) {
+        throw new AssertionError();
+    }
+
+    @Override
+    default R visitLTLKeywordNode(LTLKeywordNode node, P expected) {
+        throw new AssertionError();
+    }
+
+    @Override
+    default R visitLTLInfixOperatorNode(LTLInfixOperatorNode node, P expected) {
+        throw new AssertionError();
+    }
+
+    @Override
+    default R visitLTLBPredicateNode(LTLBPredicateNode node, P expected) {
         throw new AssertionError();
     }
 

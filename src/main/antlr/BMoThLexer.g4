@@ -4,6 +4,9 @@ lexer grammar BMoThLexer;
 package de.bmoth.antlr;
 }
 
+@members {
+int countBrackets = 0;
+}
 
 fragment DIGIT: ('0'..'9');
 fragment HEX_DIGIT: DIGIT | [a-fA-F];
@@ -66,8 +69,8 @@ DOUBLE_COLON: '::' | ':' '\u2208' ;  /* becomes_element_of */
 
 EQUIVALENCE: '<=>' | '\u21d4';
 IMPLIES: EQUAL GREATER | '\u21d2';
-LEFT_BRACE: '{';
-RIGHT_BRACE: '}';
+LEFT_BRACE: '{' {countBrackets++;} ;
+RIGHT_BRACE: '}' {countBrackets--;} {countBrackets>0}?;
 LEFT_PAR: '(';
 RIGHT_PAR: ')';
 LEFT_BRACKET: '[';
@@ -228,3 +231,23 @@ LINE_COMMENT
     ;
 
 WS: [ \t\r\n]+ -> skip;
+
+B_END: '}' {countBrackets--;}-> mode(LTL_MODE);
+
+mode LTL_MODE;
+
+LTL_TRUE: 'true';
+LTL_FALSE: 'false';
+LTL_IMPLIES: '=>';
+LTL_AND: '&';
+LTL_OR: 'or';
+LTL_NOT: 'not';
+LTL_LEFT_PAR: '(';
+LTL_RIGHT_PAR: ')';
+LTL_GLOBALLY: 'G';
+LTL_FINALLY: 'F';
+LTL_UNTIL: 'U';
+LTL_RELEASE: 'R';
+LTL_NEXT: 'X';
+LTL_B_START: '{' -> mode(DEFAULT_MODE) ;
+LTL_WS: [ \t\r\n]+ -> skip;

@@ -40,8 +40,8 @@ public class FormulaNode implements Node {
     public void setWarnings(List<String> warnings) {
         this.warnings = warnings;
     }
-    
-    public List<String> getWarnings(){
+
+    public List<String> getWarnings() {
         return this.warnings;
     }
 

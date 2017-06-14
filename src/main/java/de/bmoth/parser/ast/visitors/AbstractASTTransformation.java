@@ -25,6 +25,10 @@ import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SkipSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SubstitutionNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 
 public class AbstractASTTransformation implements AbstractVisitor<Node, Void> {
 
@@ -158,6 +162,30 @@ public class AbstractASTTransformation implements AbstractVisitor<Node, Void> {
     @Override
     public Node visitEnumeratedSetElementNode(EnumeratedSetElementNode node, Void expected) {
         return node;
+    }
+
+    @Override
+    public Node visitLTLPrefixOperatorNode(LTLPrefixOperatorNode node, Void expected) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Node visitLTLKeywordNode(LTLKeywordNode node, Void expected) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Node visitLTLInfixOperatorNode(LTLInfixOperatorNode node, Void expected) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Node visitLTLBPredicateNode(LTLBPredicateNode node, Void expected) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -5,6 +5,10 @@ import com.microsoft.z3.Sort;
 import com.microsoft.z3.Symbol;
 
 import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.types.*;
 import de.bmoth.parser.ast.visitors.AbstractVisitor;
 
@@ -427,6 +431,26 @@ public class Z3TypeInference {
         @Override
         public Z3Type visitEnumeratedSetElementNode(EnumeratedSetElementNode node, Void expected) {
             return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
+        }
+
+        @Override
+        public Z3Type visitLTLPrefixOperatorNode(LTLPrefixOperatorNode node, Void expected) {
+            throw new AssertionError();
+        }
+
+        @Override
+        public Z3Type visitLTLKeywordNode(LTLKeywordNode node, Void expected) {
+            throw new AssertionError();
+        }
+
+        @Override
+        public Z3Type visitLTLInfixOperatorNode(LTLInfixOperatorNode node, Void expected) {
+            throw new AssertionError();
+        }
+
+        @Override
+        public Z3Type visitLTLBPredicateNode(LTLBPredicateNode node, Void expected) {
+            throw new AssertionError();
         }
 
     }

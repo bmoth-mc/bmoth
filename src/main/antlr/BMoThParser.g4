@@ -34,12 +34,12 @@ definition_clause
   ;
 
 single_definition
-    : name=IDENTIFIER ('(' identifier_list ')')? DOUBLE_EQUAL definition_body # OrdinaryDefinition
+    : name=IDENTIFIER (LEFT_PAR identifier_list RIGHT_PAR)? DOUBLE_EQUAL definition_body # OrdinaryDefinition
     | StringLiteral  # DefinitionFile
     ;
 
 definition_body
-  : IDENTIFIER ('(' expression_list ')')?           # DefinitionAmbiguousCall
+  : IDENTIFIER (LEFT_PAR expression_list RIGHT_PAR)?           # DefinitionAmbiguousCall
   | expression                                      # DefinitionExpression
   | predicate                                       # DefinitionPredicate
   | substitution                                    # DefinitionSubstitution
@@ -91,13 +91,13 @@ formula
   ;
 
 predicate
-  : '(' predicate ')'                                                       # ParenthesesPredicate
+  : LEFT_PAR predicate RIGHT_PAR                                                       # ParenthesesPredicate
   | IDENTIFIER                                                              # PredicateIdentifier
-  | IDENTIFIER '(' exprs+=expression (',' exprs+=expression)* ')'           # PredicateDefinitionCall
+  | IDENTIFIER LEFT_PAR exprs+=expression (',' exprs+=expression)* RIGHT_PAR           # PredicateDefinitionCall
   | operator=(FOR_ANY|EXITS) quantified_variables_list
       DOT LEFT_PAR predicate RIGHT_PAR                                      # QuantifiedPredicate
   | operator=(TRUE|FALSE)                                                   # PredicateOperator
-  | operator=NOT '(' predicate ')'                                          # PredicateOperator
+  | operator=NOT LEFT_PAR predicate RIGHT_PAR                                          # PredicateOperator
   | expression operator=(EQUAL|NOT_EQUAL|COLON|ELEMENT_OF|NOT_BELONGING
       |INCLUSION|STRICT_INCLUSION|NON_INCLUSION|STRICT_NON_INCLUSION
       |LESS_EQUAL|LESS|GREATER_EQUAL|GREATER) expression                    # PredicateOperatorWithExprArgs
@@ -109,22 +109,22 @@ predicate
 expression
   : Number                                                                  # NumberExpression
   | LEFT_PAR expression RIGHT_PAR                                           # ParenthesesExpression
-  | BOOL_CAST '(' predicate ')'                                             # CastPredicateExpression
+  | BOOL_CAST LEFT_PAR predicate RIGHT_PAR                                             # CastPredicateExpression
   | IDENTIFIER                                                              # IdentifierExpression
-  | '{' '}'                                                                 # EmptySetExpression
-  | '{' expression_list '}'                                                 # SetEnumerationExpression
-  | '{' identifier_list '|' predicate '}'                                   # SetComprehensionExpression
-  | '(' exprs+=expression COMMA exprs+=expression
-      (COMMA exprs+=expression)* ')'                                        # NestedCoupleAsTupleExpression
+  | LEFT_BRACE RIGHT_BRACE                                                                 # EmptySetExpression
+  | LEFT_BRACE expression_list RIGHT_BRACE                                                 # SetEnumerationExpression
+  | LEFT_BRACE identifier_list '|' predicate RIGHT_BRACE                                   # SetComprehensionExpression
+  | LEFT_PAR exprs+=expression COMMA exprs+=expression
+      (COMMA exprs+=expression)* RIGHT_PAR                                        # NestedCoupleAsTupleExpression
   | '[' expression_list? ']'                                                # SequenceEnumerationExpression
   | operator=(NATURAL|NATURAL1|INTEGER|INT|NAT
       |MININT|MAXINT|BOOL|TRUE|FALSE)                                       # ExpressionOperator
-  | exprs+=expression '(' exprs+=expression
-      (',' exprs+=expression)* ')'                                          # FunctionCallExpression
+  | exprs+=expression LEFT_PAR exprs+=expression
+      (',' exprs+=expression)* RIGHT_PAR                                          # FunctionCallExpression
   | operator=(DOM|RAN|CARD|CONC|FIRST|FRONT|ID|ISEQ|ISEQ1
       |LAST|MAX|MIN|POW|REV|SEQ|SEQ1|TAIL
       |GENERALIZED_UNION|GENERALIZED_INTER)
-        '(' expression ')'                                                  # ExpressionOperator
+        LEFT_PAR expression RIGHT_PAR                                                  # ExpressionOperator
   | operator=(QUANTIFIED_UNION|QUANTIFIED_INTER|SIGMA|PI)
       quantified_variables_list
         DOT LEFT_PAR predicate VERTICAL_BAR expression RIGHT_PAR            # QuantifiedExpression
@@ -140,4 +140,18 @@ expression
       |DOMAIN_RESTRICTION|DOMAIN_SUBTRACTION|RANGE_RESTRICTION
       |RANGE_SUBTRACTION|INSERT_FRONT|INSERT_TAIL|UNION|INTERSECTION
       |RESTRICT_FRONT|RESTRICT_TAIL|MAPLET) expression                      # ExpressionOperator //p160
+  ;
+
+ltlStart
+  : ltlFormula EOF
+  ;
+
+ltlFormula
+  : LTL_LEFT_PAR ltlFormula LTL_RIGHT_PAR                     # LTLParentheses
+  | keyword=(LTL_TRUE|LTL_FALSE)                              # LTLKeyword
+  | operator=(LTL_GLOBALLY|LTL_FINALLY|LTL_NEXT|LTL_NOT) ltlFormula   # LTLPrefixOperator
+  | LTL_B_START predicate B_END                               # LTLBPredicate
+  | ltlFormula operator=LTL_IMPLIES               ltlFormula  # LTLInfixOperator
+  | ltlFormula operator=(LTL_UNTIL|LTL_RELEASE)   ltlFormula  # LTLInfixOperator
+  | ltlFormula operator=(LTL_AND|LTL_OR)  ltlFormula          # LTLInfixOperator
   ;
