@@ -9,7 +9,7 @@ import de.bmoth.checkers.invariantsatisfiability.InvariantSatisfiabilityChecker;
 import de.bmoth.checkers.invariantsatisfiability.InvariantSatisfiabilityCheckingResult;
 import de.bmoth.eventbus.ErrorEvent;
 import de.bmoth.eventbus.EventBusProvider;
-import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.modelchecker.ExplicitStateModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;
@@ -85,7 +85,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     private String currentFile;
     private Boolean hasChanged = false;
     private Task<ModelCheckingResult> task;
-    private ModelChecker modelChecker;
+    private ExplicitStateModelChecker modelChecker;
     private Thread modelCheckingThread;
     private MachineNode machineNode;
     private Boolean presentationMode = false;
@@ -244,12 +244,12 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
                     warningArea.setText(machineNode.getWarnings().toString());
                 }
             }
-            modelChecker = new ModelChecker(machineNode);
+            modelChecker = new ExplicitStateModelChecker(machineNode);
 
             task = new Task<ModelCheckingResult>() {
                 @Override
                 protected ModelCheckingResult call() throws Exception {
-                    return modelChecker.doModelCheck();
+                    return modelChecker.check();
                 }
             };
 

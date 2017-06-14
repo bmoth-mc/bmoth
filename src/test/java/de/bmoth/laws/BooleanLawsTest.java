@@ -1,6 +1,6 @@
 package de.bmoth.laws;
 
-import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.modelchecker.ExplicitStateModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
@@ -15,7 +15,7 @@ public class BooleanLawsTest {
     @Test
     public void testSimpleModelsWithoutOperations() throws IOException {
         MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "BoolLaws.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        ModelCheckingResult result = ExplicitStateModelChecker.check(simpleMachineWithViolation);
         assertTrue(result.isCorrect());
     }
 }

@@ -1,6 +1,6 @@
 package de.bmoth.issues;
 
-import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.modelchecker.ExplicitStateModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
@@ -16,7 +16,7 @@ public class Issue66Test {
     @Test
     public void testMachine() throws IOException {
         MachineNode theMachine = parseMachineFromFile(dir + "LargeExponent.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(theMachine);
+        ModelCheckingResult result = ExplicitStateModelChecker.check(theMachine);
         assertEquals(false, result.isCorrect());
     }
 }

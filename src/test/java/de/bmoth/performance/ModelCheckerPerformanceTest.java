@@ -1,6 +1,6 @@
 package de.bmoth.performance;
 
-import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.modelchecker.ExplicitStateModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class ModelCheckerPerformanceTest {
     @Benchmark
     public void testLeuschelPerformanceMachines1() throws IOException {
         MachineNode machine = parseMachine(dir + "/performance/CounterErr.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = ExplicitStateModelChecker.check(machine);
         assertEquals(false, result.isCorrect());
     }
 
@@ -29,7 +29,7 @@ public class ModelCheckerPerformanceTest {
     //@Benchmark
     public void testLeuschelPerformanceMachines2() throws IOException {
         MachineNode machine = parseMachine(dir + "/performance/SimpleSetIncrease.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = ExplicitStateModelChecker.check(machine);
         assertEquals(false, result.isCorrect());
     }
 
@@ -37,7 +37,7 @@ public class ModelCheckerPerformanceTest {
     //@Benchmark
     public void testLeuschelPerformanceMachines3() throws IOException {
         MachineNode machine = parseMachine(dir + "/performance/CounterErr2.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(machine);
+        ModelCheckingResult result = ExplicitStateModelChecker.check(machine);
         assertEquals(false, result.isCorrect());
     }
 }

@@ -13,12 +13,12 @@ public class ModelCheckerMachineFilesTest {
     @Test
     public void testSimpleModelsWithoutOperations() {
         MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "OnlyInitViolation.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        ModelCheckingResult result = ExplicitStateModelChecker.check(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
         assertEquals(1, result.getNumberOfDistinctStatesVisited());
 
         MachineNode simpleMachineWithoutViolation = parseMachineFromFile(dir + "OnlyInitNoViolation.mch");
-        result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
+        result = ExplicitStateModelChecker.check(simpleMachineWithoutViolation);
         assertEquals(true, result.isCorrect());
         assertEquals(1, result.getNumberOfDistinctStatesVisited());
     }
@@ -26,7 +26,7 @@ public class ModelCheckerMachineFilesTest {
     @Test
     public void testSimpleModelWithoutVariables() {
         MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "OnlyConstants.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithViolation);
+        ModelCheckingResult result = ExplicitStateModelChecker.check(simpleMachineWithViolation);
         assertEquals(true, result.isCorrect());
     }
 }
