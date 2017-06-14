@@ -290,11 +290,14 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
 
     @FXML
     public void handleCustomCheck() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("customCheck.fxml"));
-        Parent root = loader.load();
-        CustomCheckController customCheckController = loader.getController();
-        Stage customCheckStage = customCheckController.getStage(root);
-        customCheckController.setAppControllerReference(this);
+
+        ViewTuple<CustomCheckView, CustomCheckViewModel> viewCustomCheckViewModelViewTuple = FluentViewLoader
+            .fxmlView(CustomCheckView.class).load();
+        viewCustomCheckViewModelViewTuple.getCodeBehind().setAppControllerReference(this);
+        Parent root = viewCustomCheckViewModelViewTuple.getView();
+        Scene scene = new Scene(root);
+        Stage customCheckStage = new Stage();
+        customCheckStage.setScene(scene);
         customCheckStage.show();
     }
 
