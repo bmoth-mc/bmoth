@@ -35,7 +35,7 @@ public class DependencyTest {
     public void dependency() {
         class ExternalPackages extends DependencyRuler {
             DependencyRule comMicrosoftZ3, comMicrosoftZ3Enumerations, deBmothApp, deBmothBackendZ3,
-                    deBmothModelchecker, deBmothCheckers_, deSaxsysMvvmfx;
+                    deBmothModelchecker, deBmothModelchecker_, deBmothCheckers_, deSaxsysMvvmfx;
 
             @Override
             public void defineRules() {
@@ -43,6 +43,7 @@ public class DependencyTest {
                 deBmothBackendZ3.mustUse(comMicrosoftZ3);
                 deBmothBackendZ3.mayUse(comMicrosoftZ3Enumerations);
                 deBmothModelchecker.mustUse(comMicrosoftZ3);
+                deBmothModelchecker_.mustUse(comMicrosoftZ3);
                 deBmothCheckers_.mustUse(comMicrosoftZ3);
             }
         }
@@ -62,18 +63,19 @@ public class DependencyTest {
 
         class DeBmoth extends DependencyRuler {
             // $self is de.bmoth, added _ refers to subpackages of package
-            DependencyRule app, antlr, backend, backend_, checkers_, eventbus, modelchecker, parser, parser_,
+            DependencyRule app, antlr, backend, backend_, checkers_, eventbus, modelchecker, modelchecker_, parser, parser_,
                     preferences, parserAst;
 
             @Override
             public void defineRules() {
-                app.mayUse(backend_, checkers_, eventbus, modelchecker, parser, parser_, preferences);
+                app.mayUse(backend_, checkers_, eventbus, modelchecker_, parser, parser_, preferences);
 
                 backend_.mayUse(preferences, backend, parser, parser_);
 
                 checkers_.mayUse(backend, backend_, parser, parser_);
 
-                modelchecker.mayUse(backend, backend_, parser_, preferences);
+                modelchecker.mayUse(backend, backend_, parser_);
+                modelchecker_.mayUse(backend_, modelchecker, parser_, preferences);
 
                 parser.mayUse(antlr, parser_);
                 parser_.mayUse(antlr);
