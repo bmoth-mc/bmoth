@@ -1,6 +1,7 @@
 package de.bmoth.b;
 
 import de.bmoth.parser.Parser;
+import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import org.junit.Ignore;
@@ -12,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class SetOperationsTest {
 
     @Test
-    public void setSubstractionTest() {
+    public void setSubstractionTest() throws ParserException {
         String formula = "x = {2,3} - {3}";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -22,7 +23,7 @@ public class SetOperationsTest {
     }
 
     @Test
-    public void intervalTest() {
+    public void intervalTest() throws ParserException {
         String formula = "x = 2 .. 10";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -32,7 +33,7 @@ public class SetOperationsTest {
     }
 
     @Test
-    public void elementTest() {
+    public void elementTest() throws ParserException {
         String formula = "x : 4 .. 10";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -42,7 +43,7 @@ public class SetOperationsTest {
     }
 
     @Test @Ignore
-    public void choiceTest() {
+    public void choiceTest() throws ParserException {
         String formula = "x :: 4 .. 10";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -52,7 +53,7 @@ public class SetOperationsTest {
     }
 
     @Test
-    public void notElementTest() {
+    public void notElementTest() throws ParserException {
         String formula = "x /: 4 .. 10";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -62,7 +63,7 @@ public class SetOperationsTest {
     }
 
     @Test
-    public void notIncludedOrEqualTest() {
+    public void notIncludedOrEqualTest() throws ParserException {
         String formula = "x /<: 4 .. 10";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -72,7 +73,7 @@ public class SetOperationsTest {
     }
 
     @Test
-    public void notIncludedTest() {
+    public void notIncludedTest() throws ParserException {
         String formula = "x /<<: 4 .. 10";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -82,7 +83,7 @@ public class SetOperationsTest {
     }
 
     @Test
-    public void intersectionTest() {
+    public void intersectionTest() throws ParserException {
         String formula = "x = 4 .. 10 /\\ 5 .. 7";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());

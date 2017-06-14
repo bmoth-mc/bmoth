@@ -1,6 +1,7 @@
 package de.bmoth.b;
 
 import de.bmoth.parser.Parser;
+import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import org.junit.Ignore;
@@ -12,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class LogicOperationsTest {
 
     @Test
-    public void conjunctionTest() {
+    public void conjunctionTest() throws ParserException {
         String formula = "x < 3 & x > 4" ;
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -22,7 +23,7 @@ public class LogicOperationsTest {
     }
 
     @Test
-    public void disjunctionTest() {
+    public void disjunctionTest() throws ParserException {
         String formula = "x < 3 or x > 4" ;
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -32,7 +33,7 @@ public class LogicOperationsTest {
     }
 
     @Test
-    public void implicationTest() {
+    public void implicationTest() throws ParserException {
         String formula = "x < 3 => x < 4" ;
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -42,7 +43,7 @@ public class LogicOperationsTest {
     }
 
     @Test
-    public void equivalenceTest() {
+    public void equivalenceTest() throws ParserException {
         String formula = "x < y <=> y > x" ;
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -55,7 +56,7 @@ public class LogicOperationsTest {
     }
 
     @Test @Ignore
-    public void negationTest() {
+    public void negationTest() throws ParserException {
         String formula = "x = not y" ;
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         //assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -65,21 +66,21 @@ public class LogicOperationsTest {
     }
 
     @Test
-    public void universalQuantificationTest() {
+    public void universalQuantificationTest() throws ParserException {
         String formula = "!x . (x : 1 .. 10 => x > 0)" ;
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
     }
 
     @Test
-    public void existentialQuantificationTest() {
+    public void existentialQuantificationTest() throws ParserException {
         String formula = "#x . (x : 1 .. 10 => x > 0)" ;
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
     }
 
     @Test
-    public void inEqualityTest() {
+    public void inEqualityTest() throws ParserException {
         String formula = "x /= 3";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());

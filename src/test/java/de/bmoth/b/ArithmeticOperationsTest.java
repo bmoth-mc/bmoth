@@ -1,6 +1,7 @@
 package de.bmoth.b;
 
 import de.bmoth.parser.Parser;
+import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import org.junit.Test;
@@ -11,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 public class ArithmeticOperationsTest {
 
     @Test
-    public void powerTest() {
+    public void powerTest() throws ParserException {
         String formula = "x = 2 ** 3";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -21,7 +22,7 @@ public class ArithmeticOperationsTest {
     }
 
     @Test
-    public void minusTest() {
+    public void minusTest() throws ParserException {
         String formula = "x = -3";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -31,7 +32,7 @@ public class ArithmeticOperationsTest {
     }
 
     @Test
-    public void substractionTest() {
+    public void substractionTest() throws ParserException {
         String formula = "x = 2 - 3";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -41,7 +42,7 @@ public class ArithmeticOperationsTest {
     }
 
     @Test
-    public void multiplicationTest() {
+    public void multiplicationTest() throws ParserException {
         String formula = "x = 2 * 3";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -51,7 +52,7 @@ public class ArithmeticOperationsTest {
     }
 
     @Test
-    public void plusTest() {
+    public void plusTest() throws ParserException {
         String formula = "x = 2 + 3";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
@@ -61,7 +62,7 @@ public class ArithmeticOperationsTest {
     }
 
     @Test
-    public void divisionTest() {
+    public void divisionTest() throws ParserException {
         String formula = "x = 6 / 3";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
