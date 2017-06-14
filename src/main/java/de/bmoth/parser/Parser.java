@@ -4,13 +4,17 @@ import de.bmoth.antlr.BMoThLexer;
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.FormulaContext;
 import de.bmoth.antlr.BMoThParser.StartContext;
+import de.bmoth.parser.ErrorListener.VisitorException;
 import de.bmoth.parser.ast.SemanticAstCreator;
 import de.bmoth.parser.ast.TypeChecker;
+import de.bmoth.parser.ast.TypeErrorException;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.cst.CSTAnalyser;
 import de.bmoth.parser.cst.FormulaAnalyser;
 import de.bmoth.parser.cst.MachineAnalyser;
+import de.bmoth.parser.cst.ScopeException;
+
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -21,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Parser {
 
@@ -36,52 +42,78 @@ public class Parser {
         return bMoThParser;
     }
 
-    private StartContext parseMachine(String inputString) {
+    private StartContext parseMachine(String inputString) throws ParseErrorException {
         BMoThParser parser = getParser(inputString);
-        return parser.start();
+        try {
+            return parser.start();
+        } catch (VisitorException e) {
+            final Logger logger = Logger.getLogger(getClass().getName());
+            logger.log(Level.SEVERE, "PARSE_ERROR", e);
+            throw e.getParseErrorException();
+        }
     }
 
-    private FormulaContext parseFormula(String inputString) {
+    private FormulaContext parseFormula(String inputString) throws ParseErrorException {
         BMoThParser parser = getParser(inputString);
-        return parser.formula();
+        try {
+            return parser.formula();
+        } catch (VisitorException e) {
+            final Logger logger = Logger.getLogger(getClass().getName());
+            logger.log(Level.SEVERE, "PARSE_ERROR", e);
+            throw e.getParseErrorException();
+        }
     }
 
-    private MachineNode getMachineAst(StartContext start) {
+    private MachineNode getMachineAst(StartContext start) throws ScopeException {
         MachineAnalyser machineAnalyser = new MachineAnalyser(start);
         SemanticAstCreator astCreator = new SemanticAstCreator(machineAnalyser);
         return (MachineNode) astCreator.getAstNode();
     }
 
-    private FormulaNode getFormulaAst(FormulaContext formula) {
+    private FormulaNode getFormulaAst(FormulaContext formula) throws ScopeException {
         FormulaAnalyser formulaAnalyser = new FormulaAnalyser(formula);
         SemanticAstCreator astCreator = new SemanticAstCreator(formulaAnalyser);
         return (FormulaNode) astCreator.getAstNode();
     }
 
-    public static MachineNode getMachineFileAsSemanticAst(String file) throws IOException {
-        String fileContent = readFile(new File(file));
-        return getMachineAsSemanticAst(fileContent);
+    public static MachineNode getMachineFileAsSemanticAst(String file) throws ParserException {
+        try {
+            String fileContent = readFile(new File(file));
+            return getMachineAsSemanticAst(fileContent);
+        } catch (IOException e) {
+            throw new ParserException(e);
+        }
     }
 
-    public static MachineNode getMachineAsSemanticAst(String inputString) {
+    public static MachineNode getMachineAsSemanticAst(String inputString) throws ParserException {
         Parser parser = new Parser();
-        StartContext start = parser.parseMachine(inputString);
-        List<String> warnings = CSTAnalyser.analyseConcreteSyntaxTree(start);
-        MachineNode machineNode = parser.getMachineAst(start);
-        machineNode.setWarnings(warnings);
-        TypeChecker.typecheckMachineNode(machineNode);
+        try {
+            StartContext start = parser.parseMachine(inputString);
+            List<String> warnings = CSTAnalyser.analyseConcreteSyntaxTree(start);
+            MachineNode machineNode = parser.getMachineAst(start);
+            machineNode.setWarnings(warnings);
+            TypeChecker.typecheckMachineNode(machineNode);
+            return machineNode;
+        } catch (ParseErrorException | TypeErrorException | ScopeException e) {
+            throw new ParserException(e);
+        }
 
-        return machineNode;
     }
 
-    public static FormulaNode getFormulaAsSemanticAst(String inputString) {
+    public static FormulaNode getFormulaAsSemanticAst(String inputString) throws ParserException {
         Parser parser = new Parser();
-        FormulaContext formulaContext = parser.parseFormula(inputString);
-        List<String> warnings = CSTAnalyser.analyseConcreteSyntaxTree(formulaContext);
-        FormulaNode formulaNode = parser.getFormulaAst(formulaContext);
-        formulaNode.setWarnings(warnings);
-        TypeChecker.typecheckFormulaNode(formulaNode);
-        return formulaNode;
+        try {
+            FormulaContext formulaContext;
+            formulaContext = parser.parseFormula(inputString);
+            List<String> warnings = CSTAnalyser.analyseConcreteSyntaxTree(formulaContext);
+            FormulaNode formulaNode = parser.getFormulaAst(formulaContext);
+            formulaNode.setWarnings(warnings);
+            TypeChecker.typecheckFormulaNode(formulaNode);
+            return formulaNode;
+        } catch (ParseErrorException | TypeErrorException | ScopeException e) {
+            throw new ParserException(e);
+        }
+
     }
 
     static String readFile(final File file) throws IOException {

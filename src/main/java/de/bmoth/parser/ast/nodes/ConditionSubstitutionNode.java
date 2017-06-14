@@ -1,17 +1,18 @@
 package de.bmoth.parser.ast.nodes;
 
 public class ConditionSubstitutionNode extends SubstitutionNode {
+    private Kind kind;
     private PredicateNode condition;
     private SubstitutionNode substitution;
 
-    public enum ConditionSubstitutionKind {
+    public enum Kind {
         PRECONDITION, ASSERT
     }
 
-    public ConditionSubstitutionNode(PredicateNode condition,
-                                     SubstitutionNode substitution) {
+    public ConditionSubstitutionNode(Kind kind, PredicateNode condition, SubstitutionNode substitution) {
         this.condition = condition;
         this.substitution = substitution;
+        this.kind = kind;
         super.setAssignedVariables(substitution.getAssignedVariables());
     }
 
@@ -23,8 +24,13 @@ public class ConditionSubstitutionNode extends SubstitutionNode {
         return condition;
     }
 
+    public Kind getKind() {
+        return this.kind;
+    }
+
     @Override
     public String toString() {
+
         return "SELECT " + condition + " THEN " + substitution + " END";
     }
 

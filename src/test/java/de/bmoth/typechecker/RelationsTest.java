@@ -75,4 +75,25 @@ public class RelationsTest {
         assertEquals("POW(BOOL*INTEGER)", formulaTypes.get("k"));
     }
 
+    @Test
+    public void testMultOrCart() {
+        String formula = "a * b = c & c = d * e & e = 1";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("INTEGER", formulaTypes.get("a"));
+    }
+
+    @Test
+    public void testMultOrCartAndMinus() {
+        String formula = "a * b = c & c = d - e & e = 1";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("INTEGER", formulaTypes.get("a"));
+    }
+
+    @Test
+    public void testMultOrCartAndSet() {
+        String formula = "a * b = c & {} /= c  & c = {1|->TRUE}";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(INTEGER)", formulaTypes.get("a"));
+    }
+
 }

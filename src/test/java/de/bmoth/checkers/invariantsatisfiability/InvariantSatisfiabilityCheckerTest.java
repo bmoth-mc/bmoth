@@ -2,11 +2,10 @@ package de.bmoth.checkers.invariantsatisfiability;
 
 import com.microsoft.z3.Status;
 
-import de.bmoth.parser.Parser;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static de.bmoth.TestParser.*;
 
 public class InvariantSatisfiabilityCheckerTest {
     @Test
@@ -18,7 +17,7 @@ public class InvariantSatisfiabilityCheckerTest {
         machine += "END";
 
         InvariantSatisfiabilityCheckingResult res = InvariantSatisfiabilityChecker
-                .doInvariantSatisfiabilityCheck(Parser.getMachineAsSemanticAst(machine));
+                .doInvariantSatisfiabilityCheck(parseMachine(machine));
         assertEquals(Status.SATISFIABLE, res.getResult());
     }
 
@@ -31,7 +30,7 @@ public class InvariantSatisfiabilityCheckerTest {
         machine += "END";
 
         InvariantSatisfiabilityCheckingResult res = InvariantSatisfiabilityChecker
-                .doInvariantSatisfiabilityCheck(Parser.getMachineAsSemanticAst(machine));
+                .doInvariantSatisfiabilityCheck(parseMachine(machine));
         assertEquals(Status.UNSATISFIABLE, res.getResult());
     }
 }

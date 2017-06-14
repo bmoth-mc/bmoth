@@ -110,15 +110,15 @@ public class ASTTransformationVisitor {
 
         @Override
         public Node visitSelectSubstitutionNode(SelectSubstitutionNode node, Void expected) {
-            return visitConditionsAndSubstitutionsNode(node, expected);
+            return visitIfOrSelectNode(node, expected);
         }
 
         @Override
         public Node visitIfSubstitutionNode(IfSubstitutionNode node, Void expected) {
-            return visitConditionsAndSubstitutionsNode(node, expected);
+            return visitIfOrSelectNode(node, expected);
         }
 
-        private Node visitConditionsAndSubstitutionsNode(AbstractIfAndSelectSubstitutionsNode node, Void expected) {
+        private Node visitIfOrSelectNode(AbstractIfAndSelectSubstitutionsNode node, Void expected) {
             node.setConditions(node.getConditions().stream().map(t -> (PredicateNode) visitPredicateNode(t, expected))
                     .collect(Collectors.toList()));
             node.setSubstitutions(node.getSubstitutions().stream()

@@ -4,6 +4,7 @@ import com.microsoft.z3.*;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.Z3TypeInference.*;
 import de.bmoth.parser.Parser;
+import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
@@ -62,7 +63,7 @@ public class FormulaToZ3Translator {
         return "$t_" + tempVariablesCounter;
     }
 
-    private FormulaToZ3Translator(Context z3Context, String formula) {
+    private FormulaToZ3Translator(Context z3Context, String formula) throws ParserException {
         this.z3Context = z3Context;
         formulaNode = Parser.getFormulaAsSemanticAst(formula);
         this.implicitDeclarations = formulaNode.getImplicitDeclarations();
@@ -116,7 +117,7 @@ public class FormulaToZ3Translator {
         }
     }
 
-    public static BoolExpr translatePredicate(String formula, Context z3Context) {
+    public static BoolExpr translatePredicate(String formula, Context z3Context) throws ParserException {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context, formula);
 
         if (formulaToZ3Translator.formulaNode.getFormulaType() != FormulaType.PREDICATE_FORMULA) {

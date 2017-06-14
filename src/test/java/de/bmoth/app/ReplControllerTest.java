@@ -1,7 +1,6 @@
 package de.bmoth.app;
 
 import com.microsoft.z3.*;
-import de.bmoth.backend.z3.FormulaToZ3Translator;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,6 +14,7 @@ import static javafx.scene.input.KeyCode.ENTER;
 import static org.junit.Assert.assertEquals;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
+import static de.bmoth.TestUsingZ3.*;
 
 public class ReplControllerTest extends HeadlessUITest {
     private TextArea repl;
@@ -71,7 +71,7 @@ public class ReplControllerTest extends HeadlessUITest {
     public void formatCouplesInSetTest() {
         Context ctx = new Context();
         Solver s = ctx.mkSolver();
-        BoolExpr constraint = FormulaToZ3Translator.translatePredicate("x = {(1,2,3),(4,5,6)}", ctx);
+        BoolExpr constraint = translatePredicate("x = {(1,2,3),(4,5,6)}", ctx);
         s.add(constraint);
         s.check();
 

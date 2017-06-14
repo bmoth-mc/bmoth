@@ -1,6 +1,5 @@
 package de.bmoth.modelchecker;
 
-import de.bmoth.parser.Parser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -8,6 +7,7 @@ import org.junit.Test;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static de.bmoth.TestParser.*;
 
 public class ModelCheckerTest {
     @Test
@@ -24,7 +24,7 @@ public class ModelCheckerTest {
         machine += "\tEND\n";
         machine += "END";
 
-        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
+        ModelCheckingResult result = new ModelChecker(parseMachine(machine)).doModelCheck();
         assertTrue(result.isCorrect());
         assertEquals(4, result.getNumberOfDistinctStatesVisited());
     }
@@ -44,7 +44,7 @@ public class ModelCheckerTest {
         machine += "\tEND\n";
         machine += "END";
 
-        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
+        ModelCheckingResult result = new ModelChecker(parseMachine(machine)).doModelCheck();
         assertFalse(result.isCorrect());
     }
 
@@ -59,7 +59,7 @@ public class ModelCheckerTest {
         machine += "\tDec = SELECT x > 0 THEN x := x - 1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
+        ModelCheckingResult result = new ModelChecker(parseMachine(machine)).doModelCheck();
         assertTrue(result.isCorrect());
         assertEquals(3, result.getNumberOfDistinctStatesVisited());
     }
@@ -74,7 +74,7 @@ public class ModelCheckerTest {
         machine += "\tBlockSubstitution = BEGIN x := x + 1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
+        ModelCheckingResult result = new ModelChecker(parseMachine(machine)).doModelCheck();
         // the operation BlockSubstitution will finally violate the invariant
         // x<=2
         assertFalse(result.isCorrect());
@@ -91,7 +91,7 @@ public class ModelCheckerTest {
         machine += "\tinc = BEGIN x := x + 1 END\n";
         machine += "END";
 
-        MachineNode machineAsSemanticAst = Parser.getMachineAsSemanticAst(machine);
+        MachineNode machineAsSemanticAst = parseMachine(machine);
         ModelChecker modelChecker = new ModelChecker(machineAsSemanticAst);
 
         new Thread(() -> {
@@ -118,7 +118,7 @@ public class ModelCheckerTest {
         machine += "INITIALISATION x := s1 \n";
         machine += "END";
 
-        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
+        ModelCheckingResult result = new ModelChecker(parseMachine(machine)).doModelCheck();
         // the initialisation will finally violate the invariant x = s2
         assertFalse(result.isCorrect());
         assertEquals(1, result.getNumberOfDistinctStatesVisited());
@@ -133,7 +133,7 @@ public class ModelCheckerTest {
         machine += "INVARIANT x : set & y : set & x = y\n";
         machine += "INITIALISATION x :: set || y :: set \n";
         machine += "END";
-        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
+        ModelCheckingResult result = new ModelChecker(parseMachine(machine)).doModelCheck();
         // the initialisation will finally violate the invariant x = y
         assertFalse(result.isCorrect());
         assertEquals(1, result.getNumberOfDistinctStatesVisited());
@@ -147,7 +147,7 @@ public class ModelCheckerTest {
         machine += "INVARIANT x : set & y : set & x = y\n";
         machine += "INITIALISATION ANY a,b WHERE a:set & b:set THEN x,y:=a,b END\n";
         machine += "END";
-        ModelCheckingResult result = new ModelChecker(Parser.getMachineAsSemanticAst(machine)).doModelCheck();
+        ModelCheckingResult result = new ModelChecker(parseMachine(machine)).doModelCheck();
         // the initialisation will finally violate the invariant x = y
         assertFalse(result.isCorrect());
     }

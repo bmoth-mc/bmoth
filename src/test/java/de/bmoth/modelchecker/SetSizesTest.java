@@ -1,10 +1,9 @@
 package de.bmoth.modelchecker;
 
-import de.bmoth.parser.Parser;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-
+import static de.bmoth.TestParser.*;
 public class SetSizesTest {
     @Test
     public void testXEqualEnumSet() {
@@ -16,7 +15,7 @@ public class SetSizesTest {
         machine += "INITIALISATION x:=enm\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(Parser.getMachineAsSemanticAst(machine));
+        ModelCheckingResult result = ModelChecker.doModelCheck(parseMachine(machine));
         assertEquals(true, result.isCorrect());
     }
 
@@ -32,7 +31,7 @@ public class SetSizesTest {
         machine += "add = ANY new WHERE new:enm THEN x := x \\/ {new} END\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(Parser.getMachineAsSemanticAst(machine));
+        ModelCheckingResult result = ModelChecker.doModelCheck(parseMachine(machine));
         assertEquals(true, result.isCorrect());
         assertEquals(1, result.getNumberOfDistinctStatesVisited());
     }
@@ -47,7 +46,7 @@ public class SetSizesTest {
         machine += "INITIALISATION x:=def\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(Parser.getMachineAsSemanticAst(machine));
+        ModelCheckingResult result = ModelChecker.doModelCheck(parseMachine(machine));
         assertEquals(true, result.isCorrect());
     }
 
@@ -63,7 +62,7 @@ public class SetSizesTest {
         machine += "add = ANY new WHERE new:def THEN x := x \\/ {new} END\n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(Parser.getMachineAsSemanticAst(machine));
+        ModelCheckingResult result = ModelChecker.doModelCheck(parseMachine(machine));
         assertEquals(true, result.isCorrect());
         assertEquals(1, result.getNumberOfDistinctStatesVisited());
     }

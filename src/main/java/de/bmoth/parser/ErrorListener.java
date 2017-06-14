@@ -10,11 +10,24 @@ import org.antlr.v4.runtime.dfa.DFA;
 
 public class ErrorListener extends BaseErrorListener {
 
+    class VisitorException extends RuntimeException {
+        private static final long serialVersionUID = -3388334148890725470L;
+        private final ParseErrorException parseErrorException;
+
+        VisitorException(ParseErrorException parseErrorException) {
+            this.parseErrorException = parseErrorException;
+        }
+
+        public ParseErrorException getParseErrorException() {
+            return this.parseErrorException;
+        }
+    }
+
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine,
             String msg, RecognitionException e) {
         CommonToken token = (CommonToken) offendingSymbol;
-        throw new ParseErrorException(token, msg);
+        throw new VisitorException(new ParseErrorException(token, msg));
     }
 
     @Override

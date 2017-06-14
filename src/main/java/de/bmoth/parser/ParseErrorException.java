@@ -1,19 +1,14 @@
 package de.bmoth.parser;
 
-import com.google.common.eventbus.EventBus;
-import de.bmoth.eventbus.ErrorEvent;
-import de.bmoth.eventbus.EventBusProvider;
 import org.antlr.v4.runtime.CommonToken;
 
-public class ParseErrorException extends RuntimeException {
+public class ParseErrorException extends Exception {
     private static final long serialVersionUID = 2305560853973886094L;
     private final CommonToken token;
 
     public ParseErrorException(CommonToken token, String message) {
         super(message);
         this.token = token;
-        EventBus eventBus = EventBusProvider.getInstance().getEventBus();
-        eventBus.post(new ErrorEvent("Syntax error", toString()));
     }
 
     @Override
