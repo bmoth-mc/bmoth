@@ -102,7 +102,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
         for (DeclarationNode node : ltlFormulaAst.getImplicitDeclarations()) {
             node.setType(new UntypedType());
         }
-        Node formula = ltlFormulaAst.getFormula();
+        visitLTLNode(ltlFormulaAst.getFormula(), null);
 
         // check that all implicitly declared variables have a type, otherwise
         // throw an exception
