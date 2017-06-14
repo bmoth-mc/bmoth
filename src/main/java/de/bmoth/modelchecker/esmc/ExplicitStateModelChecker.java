@@ -1,8 +1,9 @@
-package de.bmoth.modelchecker;
+package de.bmoth.modelchecker.esmc;
 
 import com.microsoft.z3.*;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
+import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
 
@@ -35,7 +36,7 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
     }
 
     @Override
-    ModelCheckingResult doModelCheck() {
+    protected ModelCheckingResult doModelCheck() {
         Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
         // prepare initial states

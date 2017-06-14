@@ -1,7 +1,7 @@
 package de.bmoth.issues;
 
-import de.bmoth.modelchecker.ExplicitStateModelChecker;
-import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
+import de.bmoth.modelchecker.esmc.ModelCheckingResult;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;

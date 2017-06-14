@@ -2,6 +2,7 @@ package de.bmoth.modelchecker;
 
 import com.microsoft.z3.Expr;
 import de.bmoth.TestUsingZ3;
+import de.bmoth.modelchecker.esmc.State;
 import org.junit.Test;
 
 import java.util.HashMap;

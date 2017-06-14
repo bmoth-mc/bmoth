@@ -5,6 +5,7 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Model;
 import de.bmoth.backend.Abortable;
 import de.bmoth.backend.z3.MachineToZ3Translator;
+import de.bmoth.modelchecker.esmc.State;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
@@ -15,26 +16,9 @@ public abstract class ModelChecker<R> implements Abortable {
     private MachineToZ3Translator machineTranslator;
     private volatile boolean isAborted;
 
-    ModelChecker(MachineNode machine) {
+    protected ModelChecker(MachineNode machine) {
         this.ctx = new Context();
         this.machineTranslator = new MachineToZ3Translator(machine, ctx);
-    }
-
-    @Override
-    public void abort() {
-        isAborted = true;
-    }
-
-    boolean isAborted() {
-        return isAborted;
-    }
-
-    Context getContext() {
-        return ctx;
-    }
-
-    MachineToZ3Translator getMachineTranslator() {
-        return machineTranslator;
     }
 
     public final R check() {
@@ -42,13 +26,30 @@ public abstract class ModelChecker<R> implements Abortable {
         return doModelCheck();
     }
 
-    abstract R doModelCheck();
+    @Override
+    public void abort() {
+        isAborted = true;
+    }
 
-    State getStateFromModel(Model model) {
+    protected boolean isAborted() {
+        return isAborted;
+    }
+
+    protected Context getContext() {
+        return ctx;
+    }
+
+    protected MachineToZ3Translator getMachineTranslator() {
+        return machineTranslator;
+    }
+
+    protected abstract R doModelCheck();
+
+    protected State getStateFromModel(Model model) {
         return getStateFromModel(null, model);
     }
 
-    State getStateFromModel(State predecessor, Model model) {
+    protected State getStateFromModel(State predecessor, Model model) {
         HashMap<String, Expr> map = new HashMap<>();
         for (DeclarationNode declNode : machineTranslator.getVariables()) {
             Expr expr = machineTranslator.getPrimedVariable(declNode);
