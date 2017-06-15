@@ -23,7 +23,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -325,11 +324,12 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
 
     @FXML
     public void handleREPL() throws IOException {
+
+        ViewTuple<ReplView, ReplViewModel> viewReplViewModelViewTuple = FluentViewLoader.fxmlView(ReplView.class).load();
+        Parent root = viewReplViewModelViewTuple.getView();
+        Scene scene = new Scene(root);
         Stage replStage = new Stage();
         replStage.setTitle("REPL");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("repl.fxml"));
-        Parent root = loader.load();
-        Scene scene = new Scene(root, 500, 300);
         replStage.setScene(scene);
         replStage.show();
     }

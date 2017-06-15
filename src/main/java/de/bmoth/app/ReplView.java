@@ -5,6 +5,8 @@ import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.FormulaNode;
+import de.saxsys.mvvmfx.FxmlView;
+import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -15,7 +17,10 @@ import java.util.ResourceBundle;
 
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
 
-public class ReplController implements Initializable {
+public class ReplView implements FxmlView<ReplViewModel>, Initializable {
+
+    @InjectViewModel
+    ReplViewModel replViewModel;
     @FXML
     TextArea replText;
 
@@ -25,12 +30,14 @@ public class ReplController implements Initializable {
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 
+        replViewModel.code.bind(replText.textProperty());
+
         ctx = new Context();
         s = ctx.mkSolver();
 
         replText.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
-                String[] predicate = replText.getText().split("\n");
+                String[] predicate = replViewModel.code.get().split("\n");
                 String solution = processPredicate(predicate[predicate.length - 1]);
                 replText.appendText(solution);
             }
@@ -92,6 +99,6 @@ public class ReplController implements Initializable {
          // TODO handle parser errors
             throw new RuntimeException(e);//TODO replace this
         }
-        
+
     }
 }

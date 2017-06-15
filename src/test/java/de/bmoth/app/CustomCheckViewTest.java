@@ -2,6 +2,7 @@ package de.bmoth.app;
 
 import de.bmoth.preferences.BMothPreferences;
 import de.saxsys.mvvmfx.FluentViewLoader;
+import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.ViewTuple;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -17,7 +18,7 @@ import static org.testfx.matcher.base.NodeMatchers.isNotNull;
 import static org.testfx.matcher.base.NodeMatchers.isNull;
 
 public class CustomCheckViewTest extends HeadlessUITest {
-
+    @InjectViewModel
     ViewTuple<CustomCheckView, CustomCheckViewModel> viewCustomCheckViewModelViewTuple;
 
     @Override
@@ -46,17 +47,17 @@ public class CustomCheckViewTest extends HeadlessUITest {
         clickOn("#invariantCheck");
 
         verifyThat("#invariantCheck", isNotNull());
-        assertEquals(false, viewCustomCheckViewModelViewTuple.getViewModel().isCheckInit());
-        assertEquals(false, viewCustomCheckViewModelViewTuple.getViewModel().isCheckInvar());
-        assertEquals(false, viewCustomCheckViewModelViewTuple.getViewModel().isCheckModel());
+        assertEquals(!initB, viewCustomCheckViewModelViewTuple.getViewModel().isCheckInit());
+        assertEquals(!invarB, viewCustomCheckViewModelViewTuple.getViewModel().isCheckInvar());
+        assertEquals(!checkB, viewCustomCheckViewModelViewTuple.getViewModel().isCheckModel());
 
         Future<Void> okClick = WaitForAsyncUtils.asyncFx(() -> viewCustomCheckViewModelViewTuple.getCodeBehind().handleOk());
         WaitForAsyncUtils.waitFor(okClick);
 
         verifyThat("#invariantCheck", isNull());
-        assertEquals(false, BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.INITIAL_CHECK));
-        assertEquals(false, BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.INVARIANT_CHECK));
-        assertEquals(false, BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.MODEL_CHECK));
+        assertEquals(!initB, BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.INITIAL_CHECK));
+        assertEquals(!invarB, BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.INVARIANT_CHECK));
+        assertEquals(!checkB, BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.MODEL_CHECK));
     }
 
     @Test
