@@ -10,121 +10,11 @@ import org.junit.Test;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
 import static org.junit.Assert.assertEquals;
 
-public class SetOperationsTest {
-
-    @Test
-    public void emptySetTest() throws ParserException{
-        String formula = "x = {} & x <: NAT";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void setComprehensionTest() throws ParserException{
-        String formula = "x = {z | z : 1 .. 10 & z < 3}";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void unionTest() throws ParserException {
-        String formula = "x = 1 .. 3 \\/ {3,4,5}";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void intersectionTest() throws ParserException {
-        String formula = "x = 4 .. 10 /\\ 5 .. 7";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void differenceTest() throws ParserException {
-        String formula = "x = {2,3} - {3}";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void orderedPairTest() throws ParserException {
-        String formula = "x = 2|->3";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER*INTEGER", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void cartesianProductTest() throws ParserException  {
-        String formula = "x = {2,3} * {4,5}";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
-    }
+public class RelationTest {
 
     @Test @Ignore
-    public void powerSetTest() throws ParserException {
-        String formula = "x = POW({4,5})";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test @Ignore
-    public void nonEmptyPowerSetTest() throws ParserException {
-        String formula = "x = POW1({4,5})";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test @Ignore
-    public void finiteSubsetsTest() throws ParserException {
-        String formula = "x = FIN({4,5})";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test @Ignore
-    public void nonEmptyFiniteSubsetsTest() throws ParserException {
-        String formula = "x = FIN1({4,5})";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void cardinalityTest() throws ParserException {
-        String formula = "x = card({4,5})";
+    public void relationTest() throws ParserException {
+        String formula = "x = {1,2} <-> {10,20}";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
@@ -133,8 +23,8 @@ public class SetOperationsTest {
     }
 
     @Test
-    public void generalizedUnionTest() throws ParserException {
-        String formula = "x = union({{4,5}, {1,2}})";
+    public void domainTest() throws ParserException {
+        String formula = "x = dom({1|->2,2|->3})";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
@@ -143,70 +33,8 @@ public class SetOperationsTest {
     }
 
     @Test
-    public void generalizedIntersectionTest() throws ParserException {
-        String formula = "x = inter({{4,5}, {1,2}})";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
-    }
-
-    //TODO: number 17 and 18 of the summary
-
-    @Test
-    public void membershipTest() throws ParserException {
-        String formula = "x : 4 .. 10";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void nonMemberShipTest() throws ParserException {
-        String formula = "x /: 4 .. 10";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void subsetTest() throws ParserException {
-        String formula = "x <: 4 .. 10";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void nonSubsetTest() throws ParserException {
-        String formula = "x /<: 4 .. 10";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void properSubsetTest() throws ParserException {
-        String formula = "x <<: 4 .. 10";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
-    }
-
-    @Test
-    public void nonProperSubsetTest() throws ParserException {
-        String formula = "x /<<: 4 .. 10";
+    public void rangeTest() throws ParserException {
+        String formula = "x = ran({1|->2,2|->3})";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
@@ -215,12 +43,178 @@ public class SetOperationsTest {
     }
 
     @Test @Ignore
-    public void choiceTest() throws ParserException {
-        String formula = "x :: 4 .. 10";
+    public void forwardCompositionTest() throws ParserException {
+        String formula = "x = ({1|->2,2|->3} ; {2|->1,3|->2})";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER", declarationNode.getType().toString());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
     }
+
+    @Test @Ignore //TODO: not working in proB
+    public void backwardCompositionTest() throws ParserException {
+        String formula = "x = ({1|->2,2|->3} circ {2|->1,3|->2})";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test @Ignore
+    public void identityTest() throws ParserException {
+        String formula = "x = id({1,2})";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test
+    public void domainRestrictionTest() throws ParserException {
+        String formula = "x = {1,2}<|{1|->2,3|->4}";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test
+    public void domainSubstractionTest() throws ParserException {
+        String formula = "x = {1,2}<<|{1|->2,3|->4}";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test
+    public void rangeRestrictionTest() throws ParserException {
+        String formula = "x = {1|->2,3|->4} |> {1,2}";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test
+    public void rangeSubstractionTest() throws ParserException {
+        String formula = "x = {1|->2,3|->4} |>> {1,2}";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test
+    public void inverseTest() throws ParserException {
+        String formula = "x = {1|->2,3|->4}~";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test @Ignore
+    public void relationalImageTest() throws ParserException {
+        String formula = "x = {1|->2,1|->7,3|->4}[{1}]";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test
+    public void rightOverridingTest() throws ParserException {
+        String formula = "x = {1|->2}<+{1|->3}";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test @Ignore //TODO: not working in proB
+    public void leftOverridingTest() throws ParserException {
+        String formula = "x = {1|->2}+>{1|->3}";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test
+    public void directProductTest() throws ParserException {
+        String formula = "x = {1|->2}><{1|->3}";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*(INTEGER*INTEGER))", declarationNode.getType().toString());
+    }
+
+    @Test @Ignore
+    public void parallelProductTest() throws ParserException {
+        String formula = "x = ({1|->2}||{1|->3})";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*(INTEGER*INTEGER))", declarationNode.getType().toString());
+    }
+
+    @Test @Ignore
+    public void iterationTest() throws ParserException {
+        String formula = "x = iterate({1|->2,2|->3},2)";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test @Ignore
+    public void closureTest() throws ParserException {
+        String formula = "x = closure({1|->2, 2|->3})";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test @Ignore
+    public void projection1Test() throws ParserException {
+        String formula = "x = prj1({1,2},{3,4})";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+    @Test @Ignore
+    public void projection2Test() throws ParserException {
+        String formula = "x = prj2({1,2},{3,4})";
+        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("x", declarationNode.getName());
+        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+    }
+
+
+
+
+
+
 }
