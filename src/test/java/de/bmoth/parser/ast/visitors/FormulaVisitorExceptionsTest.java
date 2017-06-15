@@ -1,6 +1,11 @@
 package de.bmoth.parser.ast.visitors;
 
 import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
+
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.Token;
@@ -132,6 +137,26 @@ public class FormulaVisitorExceptionsTest {
 
             @Override
             public Object visitQuantifiedPredicateNode(QuantifiedPredicateNode node, Object expected) {
+                return null;
+            }
+
+            @Override
+            public Object visitLTLPrefixOperatorNode(LTLPrefixOperatorNode node, Object expected) {
+                return null;
+            }
+
+            @Override
+            public Object visitLTLKeywordNode(LTLKeywordNode node, Object expected) {
+                return null;
+            }
+
+            @Override
+            public Object visitLTLInfixOperatorNode(LTLInfixOperatorNode node, Object expected) {
+                return null;
+            }
+
+            @Override
+            public Object visitLTLBPredicateNode(LTLBPredicateNode node, Object expected) {
                 return null;
             }
         };

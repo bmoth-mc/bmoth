@@ -6,9 +6,11 @@ import de.bmoth.antlr.BMoThParserBaseVisitor;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
 import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuantifiedExpressionOperator;
+import de.bmoth.parser.ast.nodes.ltl.*;
 import de.bmoth.parser.cst.BDefinition;
 import de.bmoth.parser.cst.BDefinition.KIND;
 import de.bmoth.parser.cst.FormulaAnalyser;
+import de.bmoth.parser.cst.LTLFormulaAnalyser;
 import de.bmoth.parser.cst.MachineAnalyser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -35,24 +37,6 @@ public class SemanticAstCreator {
 
     public Node getAstNode() {
         return this.semanticNode;
-    }
-
-    public SemanticAstCreator(FormulaAnalyser formulaAnalyser) {
-        this.declarationReferences = formulaAnalyser.getDeclarationReferences();
-        this.definitionCallReplacements = new LinkedHashMap<>();
-        FormulaContext formulaContext = formulaAnalyser.getFormula();
-        FormulaNode.FormulaType type = formulaContext.expression() != null ? EXPRESSION_FORMULA : PREDICATE_FORMULA;
-        FormulaNode formulaNode = new FormulaNode(type);
-        formulaNode.setImplicitDeclarations(createDeclarationList(formulaAnalyser.getImplicitDeclarations()));
-        FormulaVisitor formulaVisitor = new FormulaVisitor();
-        Node node;
-        if (type == EXPRESSION_FORMULA) {
-            node = formulaContext.expression().accept(formulaVisitor);
-        } else {
-            node = formulaContext.predicate().accept(formulaVisitor);
-        }
-        formulaNode.setFormula(node);
-        this.semanticNode = formulaNode;
     }
 
     public SemanticAstCreator(MachineAnalyser machineAnalyser) {
@@ -94,6 +78,35 @@ public class SemanticAstCreator {
 
         this.semanticNode = machineNode;
 
+    }
+
+    public SemanticAstCreator(FormulaAnalyser formulaAnalyser) {
+        this.declarationReferences = formulaAnalyser.getDeclarationReferences();
+        this.definitionCallReplacements = new LinkedHashMap<>();
+        FormulaContext formulaContext = formulaAnalyser.getFormula();
+        FormulaNode.FormulaType type = formulaContext.expression() != null ? EXPRESSION_FORMULA : PREDICATE_FORMULA;
+        FormulaNode formulaNode = new FormulaNode(type);
+        formulaNode.setImplicitDeclarations(createDeclarationList(formulaAnalyser.getImplicitDeclarations()));
+        FormulaVisitor formulaVisitor = new FormulaVisitor();
+        Node node;
+        if (type == EXPRESSION_FORMULA) {
+            node = formulaContext.expression().accept(formulaVisitor);
+        } else {
+            node = formulaContext.predicate().accept(formulaVisitor);
+        }
+        formulaNode.setFormula(node);
+        this.semanticNode = formulaNode;
+    }
+
+    public SemanticAstCreator(LTLFormulaAnalyser formulaAnalyser) {
+        this.declarationReferences = formulaAnalyser.getDeclarationReferences();
+        this.definitionCallReplacements = new LinkedHashMap<>();
+        FormulaVisitor formulaVisitor = new FormulaVisitor();
+        LTLNode node = (LTLNode) formulaAnalyser.getLTLStartContext().ltlFormula().accept(formulaVisitor);
+        LTLFormula ltlFormula = new LTLFormula();
+        ltlFormula.setFormula(node);
+        ltlFormula.setImplicitDeclarations(createDeclarationList(formulaAnalyser.getImplicitDeclarations()));
+        this.semanticNode = ltlFormula;
     }
 
     private void addDeferredSets(List<DeferredSetContext> deferredSetContexts, MachineNode machineNode) {
@@ -520,6 +533,85 @@ public class SemanticAstCreator {
                 result.add(sub);
             }
             return new ParallelSubstitutionNode(result);
+        }
+
+        // LTL
+
+        @Override
+        public Node visitLTLPrefixOperator(BMoThParser.LTLPrefixOperatorContext ctx) {
+            LTLNode argument = (LTLNode) ctx.ltlFormula().accept(this);
+            LTLPrefixOperatorNode.Kind kind = null;
+            switch (ctx.operator.getType()) {
+            case BMoThParser.LTL_GLOBALLY:
+                kind = LTLPrefixOperatorNode.Kind.GLOBALLY;
+                break;
+            case BMoThParser.LTL_FINALLY:
+                kind = LTLPrefixOperatorNode.Kind.FINALLY;
+                break;
+            case BMoThParser.LTL_NEXT:
+                kind = LTLPrefixOperatorNode.Kind.NEXT;
+                break;
+            case BMoThParser.LTL_NOT:
+                kind = LTLPrefixOperatorNode.Kind.NOT;
+                break;
+            default:
+                throw new AssertionError();
+            }
+            return new LTLPrefixOperatorNode(kind, argument);
+        }
+
+        @Override
+        public Node visitLTLKeyword(BMoThParser.LTLKeywordContext ctx) {
+            LTLKeywordNode.Kind kind = null;
+            switch (ctx.keyword.getType()) {
+            case BMoThParser.LTL_TRUE:
+                kind = LTLKeywordNode.Kind.TRUE;
+                break;
+            case BMoThParser.LTL_FALSE:
+                kind = LTLKeywordNode.Kind.FALSE;
+                break;
+            default:
+                throw new AssertionError();
+            }
+            return new LTLKeywordNode(kind);
+        }
+
+        @Override
+        public Node visitLTLBPredicate(BMoThParser.LTLBPredicateContext ctx) {
+            PredicateNode node = (PredicateNode) ctx.predicate().accept(this);
+            return new LTLBPredicateNode(node);
+        }
+
+        @Override
+        public Node visitLTLParentheses(BMoThParser.LTLParenthesesContext ctx) {
+            return ctx.ltlFormula().accept(this);
+        }
+
+        @Override
+        public Node visitLTLInfixOperator(BMoThParser.LTLInfixOperatorContext ctx) {
+            LTLNode left = (LTLNode) ctx.ltlFormula(0).accept(this);
+            LTLNode right = (LTLNode) ctx.ltlFormula(1).accept(this);
+            LTLInfixOperatorNode.Kind kind = null;
+            switch (ctx.operator.getType()) {
+            case BMoThParser.LTL_IMPLIES:
+                kind = LTLInfixOperatorNode.Kind.IMPLICATION;
+                break;
+            case BMoThParser.LTL_UNTIL:
+                kind = LTLInfixOperatorNode.Kind.UNTIL;
+                break;
+            case BMoThParser.LTL_RELEASE:
+                kind = LTLInfixOperatorNode.Kind.RELEASE;
+                break;
+            case BMoThParser.LTL_AND:
+                kind = LTLInfixOperatorNode.Kind.AND;
+                break;
+            case BMoThParser.LTL_OR:
+                kind = LTLInfixOperatorNode.Kind.OR;
+                break;
+            default:
+                throw new AssertionError();
+            }
+            return new LTLInfixOperatorNode(kind, left, right);
         }
 
     }

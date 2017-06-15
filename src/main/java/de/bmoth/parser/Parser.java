@@ -3,6 +3,7 @@ package de.bmoth.parser;
 import de.bmoth.antlr.BMoThLexer;
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.FormulaContext;
+import de.bmoth.antlr.BMoThParser.LtlStartContext;
 import de.bmoth.antlr.BMoThParser.StartContext;
 import de.bmoth.parser.ErrorListener.VisitorException;
 import de.bmoth.parser.ast.SemanticAstCreator;
@@ -10,8 +11,10 @@ import de.bmoth.parser.ast.TypeChecker;
 import de.bmoth.parser.ast.TypeErrorException;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.cst.CSTAnalyser;
 import de.bmoth.parser.cst.FormulaAnalyser;
+import de.bmoth.parser.cst.LTLFormulaAnalyser;
 import de.bmoth.parser.cst.MachineAnalyser;
 import de.bmoth.parser.cst.ScopeException;
 
@@ -64,6 +67,26 @@ public class Parser {
         }
     }
 
+    private LtlStartContext parseLTLFormula(String inputString) throws ParseErrorException {
+        CodePointCharStream fromString = CharStreams.fromString(inputString);
+        final BMoThLexer lexer = new BMoThLexer(fromString);
+        lexer.pushMode(BMoThLexer.LTL_MODE);
+        // create a buffer of tokens pulled from the lexer
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        BMoThParser parser = new BMoThParser(tokens);
+        parser.removeErrorListeners();
+        ErrorListener errorListener = new ErrorListener();
+        parser.addErrorListener(errorListener);
+
+        try {
+            return parser.ltlStart();
+        } catch (VisitorException e) {
+            final Logger logger = Logger.getLogger(getClass().getName());
+            logger.log(Level.SEVERE, "PARSE_ERROR", e);
+            throw e.getParseErrorException();
+        }
+    }
+
     private MachineNode getMachineAst(StartContext start) throws ScopeException {
         MachineAnalyser machineAnalyser = new MachineAnalyser(start);
         SemanticAstCreator astCreator = new SemanticAstCreator(machineAnalyser);
@@ -74,6 +97,12 @@ public class Parser {
         FormulaAnalyser formulaAnalyser = new FormulaAnalyser(formula);
         SemanticAstCreator astCreator = new SemanticAstCreator(formulaAnalyser);
         return (FormulaNode) astCreator.getAstNode();
+    }
+
+    private LTLFormula getLTLFormulaAst(LtlStartContext context) throws ScopeException {
+        LTLFormulaAnalyser formulaAnalyser = new LTLFormulaAnalyser(context);
+        SemanticAstCreator astCreator = new SemanticAstCreator(formulaAnalyser);
+        return (LTLFormula) astCreator.getAstNode();
     }
 
     public static MachineNode getMachineFileAsSemanticAst(String file) throws ParserException {
@@ -113,12 +142,24 @@ public class Parser {
         } catch (ParseErrorException | TypeErrorException | ScopeException e) {
             throw new ParserException(e);
         }
+    }
 
+    public static LTLFormula getLTLFormulaAsSemanticAst(String inputString) throws ParserException {
+        Parser parser = new Parser();
+        try {
+            LtlStartContext context;
+            context = parser.parseLTLFormula(inputString);
+            LTLFormula ltlFormulaAst = parser.getLTLFormulaAst(context);
+            TypeChecker.typecheckLTLFormulaNode(ltlFormulaAst);
+            return ltlFormulaAst;
+        } catch (ParseErrorException | ScopeException | TypeErrorException e) {
+            throw new ParserException(e);
+        }
     }
 
     static String readFile(final File file) throws IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file),
-            Charset.forName("UTF-8"))) {
+                Charset.forName("UTF-8"))) {
 
             final StringBuilder builder = new StringBuilder();
             final char[] buffer = new char[1024];

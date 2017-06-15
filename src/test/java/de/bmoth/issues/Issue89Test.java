@@ -1,7 +1,7 @@
 package de.bmoth.issues;
 
-import de.bmoth.modelchecker.ModelChecker;
-import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
+import de.bmoth.modelchecker.esmc.ModelCheckingResult;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -24,7 +24,7 @@ public class Issue89Test {
         machine += "OPERATIONS\n";
         machine += "inc = BEGIN x := 2 * x END\n" + "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(parseMachine(machine));
+        ModelCheckingResult result = ExplicitStateModelChecker.check(parseMachine(machine));
         assertFalse(result.isCorrect());
         assertEquals(1, result.getNumberOfDistinctStatesVisited());
         assertEquals("{x=100000, y=4294967295}", result.getLastState().toString());

@@ -1,6 +1,11 @@
 package de.bmoth.parser.ast;
 
 import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
+import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.types.*;
 import de.bmoth.parser.ast.visitors.AbstractVisitor;
 
@@ -32,6 +37,17 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
         TypeChecker typeChecker = new TypeChecker();
         try {
             typeChecker.checkFormulaNode(formulaNode);
+        } catch (TypeCheckerVisitorException e) {
+            final Logger logger = Logger.getLogger(e.getClass().getName());
+            logger.log(Level.SEVERE, "TYPE_ERROR", e);
+            throw e.getTypeErrorException();
+        }
+    }
+
+    public static void typecheckLTLFormulaNode(LTLFormula ltlFormulaAst) throws TypeErrorException {
+        TypeChecker typeChecker = new TypeChecker();
+        try {
+            typeChecker.checkLTLFormulaNode(ltlFormulaAst);
         } catch (TypeCheckerVisitorException e) {
             final Logger logger = Logger.getLogger(e.getClass().getName());
             logger.log(Level.SEVERE, "TYPE_ERROR", e);
@@ -73,6 +89,24 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
         // check that all implicitly declared variables have a type, otherwise
         // throw an exception
         for (DeclarationNode node : formulaNode.getImplicitDeclarations()) {
+            if (node.getType().isUntyped()) {
+                throw new TypeCheckerVisitorException(
+                        new TypeErrorException("Can not infer the type of local variable '" + node.getName()
+                                + "' Current type: " + node.getType()));
+            }
+        }
+        performPostActions();
+    }
+
+    private void checkLTLFormulaNode(LTLFormula ltlFormulaAst) {
+        for (DeclarationNode node : ltlFormulaAst.getImplicitDeclarations()) {
+            node.setType(new UntypedType());
+        }
+        visitLTLNode(ltlFormulaAst.getFormula(), null);
+
+        // check that all implicitly declared variables have a type, otherwise
+        // throw an exception
+        for (DeclarationNode node : ltlFormulaAst.getImplicitDeclarations()) {
             if (node.getType().isUntyped()) {
                 throw new TypeCheckerVisitorException(
                         new TypeErrorException("Can not infer the type of local variable '" + node.getName()
@@ -639,6 +673,30 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
     @Override
     public BType visitEnumeratedSetElementNode(EnumeratedSetElementNode node, BType expected) {
         return unify(expected, node.getDeclarationNode().getType(), node);
+    }
+
+    @Override
+    public BType visitLTLPrefixOperatorNode(LTLPrefixOperatorNode node, BType expected) {
+        visitLTLNode(node.getArgument(), expected);
+        return null;
+    }
+
+    @Override
+    public BType visitLTLKeywordNode(LTLKeywordNode node, BType expected) {
+        return null;
+    }
+
+    @Override
+    public BType visitLTLInfixOperatorNode(LTLInfixOperatorNode node, BType expected) {
+        visitLTLNode(node.getLeft(), expected);
+        visitLTLNode(node.getRight(), expected);
+        return null;
+    }
+
+    @Override
+    public BType visitLTLBPredicateNode(LTLBPredicateNode node, BType expected) {
+        visitPredicateNode(node.getPredicate(), BoolType.getInstance());
+        return null;
     }
 
 }

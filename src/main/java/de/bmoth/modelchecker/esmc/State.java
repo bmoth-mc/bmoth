@@ -1,4 +1,4 @@
-package de.bmoth.modelchecker;
+package de.bmoth.modelchecker.esmc;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
@@ -39,18 +39,20 @@ public class State {
     }
 
     public BoolExpr getStateConstraint(Context context) {
-        BoolExpr result = null;
-        for (Map.Entry<String, Expr> entry : values.entrySet()) {
+        BoolExpr[] result = values.entrySet().stream().map(entry -> {
             Expr singleExpression = entry.getValue();
             Sort sort = singleExpression.getSort();
             Expr identifierExpr = context.mkConst(entry.getKey(), sort);
-            BoolExpr eq = context.mkEq(identifierExpr, singleExpression);
-            if (result == null) {
-                result = eq;
-            } else {
-                result = context.mkAnd(result, eq);
-            }
+            return context.mkEq(identifierExpr, singleExpression);
+        }).toArray(BoolExpr[]::new);
+
+        switch (result.length) {
+            case 0:
+                return null;
+            case 1:
+                return result[0];
+            default:
+                return context.mkAnd(result);
         }
-        return result;
     }
 }

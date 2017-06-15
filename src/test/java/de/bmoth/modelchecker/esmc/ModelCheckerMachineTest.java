@@ -1,5 +1,7 @@
-package de.bmoth.modelchecker;
+package de.bmoth.modelchecker.esmc;
 
+import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
+import de.bmoth.modelchecker.esmc.ModelCheckingResult;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -15,7 +17,7 @@ public class ModelCheckerMachineTest {
         machine += "INITIALISATION IF 1=1 THEN a := TRUE ELSE a := FALSE END \n";
         machine += "END";
 
-        ModelCheckingResult result = ModelChecker.doModelCheck(parseMachine(machine));
+        ModelCheckingResult result = ExplicitStateModelChecker.check(parseMachine(machine));
         assertEquals(true, result.isCorrect());
     }
 
@@ -27,7 +29,7 @@ public class ModelCheckerMachineTest {
         machine += "INITIALISATION a:= TRUE || b := TRUE \n";
         machine += "OPERATIONS foo = IF 1=2 THEN a := FALSE|| b := FALSE END \n";
         machine += "END";
-        ModelCheckingResult result = ModelChecker.doModelCheck(parseMachine(machine));
+        ModelCheckingResult result = ExplicitStateModelChecker.check(parseMachine(machine));
         assertEquals(true, result.isCorrect());
     }
 
@@ -38,7 +40,7 @@ public class ModelCheckerMachineTest {
         machine += "INVARIANT a = 3 & b : 4..5\n";
         machine += "INITIALISATION a :: {3} || b :: {4,5} \n";
         machine += "END";
-        ModelCheckingResult result = ModelChecker.doModelCheck(parseMachine(machine));
+        ModelCheckingResult result = ExplicitStateModelChecker.check(parseMachine(machine));
         assertEquals(true, result.isCorrect());
     }
 }

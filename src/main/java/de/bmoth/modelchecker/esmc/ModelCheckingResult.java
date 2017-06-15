@@ -1,4 +1,4 @@
-package de.bmoth.modelchecker;
+package de.bmoth.modelchecker.esmc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ public class ModelCheckingResult {
     private State lastState;
     private final int numberOfStatesVisited;
 
-    ModelCheckingResult(String result, int numberOfStatesVisited) {
+    public ModelCheckingResult(String result, int numberOfStatesVisited) {
         this.numberOfStatesVisited = numberOfStatesVisited;
         if (result.equals("correct")) {
             correct = true;
@@ -18,7 +18,7 @@ public class ModelCheckingResult {
         }
     }
 
-    ModelCheckingResult(State state, int numberOfStatesVisited) {
+    public ModelCheckingResult(State state, int numberOfStatesVisited) {
         this.numberOfStatesVisited = numberOfStatesVisited;
         lastState = state;
     }

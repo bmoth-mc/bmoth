@@ -4,8 +4,8 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
-import de.bmoth.modelchecker.ModelChecker;
-import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
+import de.bmoth.modelchecker.esmc.ModelCheckingResult;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
 
@@ -25,7 +25,7 @@ public class Issue59Test {
         machine += "\tIncX = SELECT x < 50 THEN x := x+1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = new ModelChecker(parseMachine(machine)).doModelCheck();
+        ModelCheckingResult result = new ExplicitStateModelChecker(parseMachine(machine)).check();
         assertEquals(true, result.isCorrect());
     }
 
@@ -41,7 +41,7 @@ public class Issue59Test {
         machine += "\tIncX = SELECT x < 50 THEN x := x+1 END\n";
         machine += "END";
 
-        ModelCheckingResult result = new ModelChecker(parseMachine(machine)).doModelCheck();
+        ModelCheckingResult result = new ExplicitStateModelChecker(parseMachine(machine)).check();
         assertEquals(true, result.isCorrect());
     }
 
@@ -73,7 +73,7 @@ public class Issue59Test {
     public void testArithmeticLawsMachine() {
         MachineNode simpleMachineWithoutViolation = parseMachineFromFile(
                 "src/test/resources/machines/OnlyInitNoViolation.mch");
-        ModelCheckingResult result = ModelChecker.doModelCheck(simpleMachineWithoutViolation);
+        ModelCheckingResult result = ExplicitStateModelChecker.check(simpleMachineWithoutViolation);
         assertEquals(true, result.isCorrect());
     }
 }
