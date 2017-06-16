@@ -7,7 +7,7 @@ import de.bmoth.parser.ast.nodes.MachineNode;
 
 import java.util.*;
 
-public class BoundedModelChecker extends ModelChecker<Boolean> {
+public class BoundedModelChecker extends ModelChecker<Map<String, Expr>> {
 
     private final int maxSteps;
     private final Solver solver;
@@ -28,7 +28,7 @@ public class BoundedModelChecker extends ModelChecker<Boolean> {
     }
 
     @Override
-    protected Boolean doModelCheck() {
+    protected Map<String, Expr> doModelCheck() {
         for (int k = 0; k < maxSteps; k++) {
             // get a clean solver
             solver.reset();
@@ -49,16 +49,16 @@ public class BoundedModelChecker extends ModelChecker<Boolean> {
             Status check = solver.check();
             if (check == Status.SATISFIABLE) {
                 // counter example found!
-                return false;
+                return getState(solver.getModel(), k);
             }
         }
 
         // no counter example found after k steps
-        return true;
+        return null;
     }
 
     private BoolExpr init(int step) {
-        return transformToStep(getMachineTranslator().getInitialValueConstraint(), step, primedVars);
+        return (BoolExpr) transformToStep(getMachineTranslator().getInitialValueConstraint(), step, primedVars);
     }
 
     private BoolExpr transition(int fromStep, int toStep) {
@@ -77,10 +77,10 @@ public class BoundedModelChecker extends ModelChecker<Boolean> {
     }
 
     private BoolExpr invariant(int step) {
-        return transformToStep(getMachineTranslator().getInvariantConstraint(), step, originalVars);
+        return (BoolExpr) transformToStep(getMachineTranslator().getInvariantConstraint(), step, originalVars);
     }
 
-    private BoolExpr transformToStep(BoolExpr original, int step, Expr[] variables) {
+    private Expr transformToStep(Expr original, int step, Expr[] variables) {
         Expr[] substitutions = Arrays.stream(variables).map(
             var -> {
                 String name = primedVarToOriginalName.containsKey(var) ? primedVarToOriginalName.get(var) : var.getFuncDecl().getName().toString();
@@ -88,6 +88,21 @@ public class BoundedModelChecker extends ModelChecker<Boolean> {
                     name + step + "'", var.getSort());
             }
         ).toArray(Expr[]::new);
-        return (BoolExpr) original.substitute(variables, substitutions);
+        return original.substitute(variables, substitutions);
+    }
+
+    private Map<String, Expr> getState(Model model, int step) {
+        HashMap<String, Expr> result = new HashMap<>();
+        for (DeclarationNode declNode : getMachineTranslator().getVariables()) {
+            Expr expr = transformToStep(getMachineTranslator().getVariable(declNode), step, originalVars);
+            Expr value = model.eval(expr, true);
+            result.put(declNode.getName(), value);
+        }
+        for (DeclarationNode declarationNode : getMachineTranslator().getConstants()) {
+            Expr expr = getMachineTranslator().getVariable(declarationNode);
+            Expr value = model.eval(expr, true);
+            result.put(declarationNode.getName(), value);
+        }
+        return result;
     }
 }

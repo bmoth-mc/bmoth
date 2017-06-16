@@ -1,12 +1,14 @@
 package de.bmoth.modelchecker.bmc;
 
+import com.microsoft.z3.Expr;
 import de.bmoth.TestParser;
 import de.bmoth.modelchecker.BoundedModelChecker;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 public class BoundedModelChekcerTest extends TestParser {
 
@@ -21,8 +23,8 @@ public class BoundedModelChekcerTest extends TestParser {
             "\tinc = BEGIN c := c + 1 END\n" +
             "END\n";
 
-        BoundedModelChecker bmc = new BoundedModelChecker(parseMachine(machine), 20);
-        assertTrue(bmc.check().booleanValue());
+        Map<String, Expr> counterExample = new BoundedModelChecker(parseMachine(machine), 20).check();
+        assertNull(counterExample);
     }
 
     @Test
@@ -38,7 +40,7 @@ public class BoundedModelChekcerTest extends TestParser {
             "\terr = PRE c > 99999 THEN b := FALSE END\n" +
             "END\n";
 
-        BoundedModelChecker bmc = new BoundedModelChecker(parseMachine(machine), 20);
-        assertFalse(bmc.check().booleanValue());
+        Map<String, Expr> counterExample = new BoundedModelChecker(parseMachine(machine), 20).check();
+        assertEquals("{b=false, c=100000}", counterExample.toString());
     }
 }
