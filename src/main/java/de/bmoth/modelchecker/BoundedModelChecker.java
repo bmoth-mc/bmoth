@@ -12,13 +12,19 @@ public class BoundedModelChecker extends ModelChecker<Boolean> {
     private final int maxSteps;
     private final Solver solver;
     private final Expr[] originalVars, primedVars;
+    private final Map<Expr, String> primedVarToOriginalName;
 
     public BoundedModelChecker(MachineNode machine, int maxSteps) {
         super(machine);
         this.maxSteps = maxSteps;
         this.solver = Z3SolverFactory.getZ3Solver(getContext());
         this.originalVars = getMachineTranslator().getVariables().stream().map(var -> getMachineTranslator().getVariable(var)).toArray(Expr[]::new);
-        this.primedVars = getMachineTranslator().getVariables().stream().map(var -> getMachineTranslator().getPrimedVariable(var)).toArray(Expr[]::new);
+        this.primedVarToOriginalName = new HashMap<Expr, String>();
+        this.primedVars = getMachineTranslator().getVariables().stream().map(var -> {
+            Expr primedVar = getMachineTranslator().getPrimedVariable(var);
+            primedVarToOriginalName.put(primedVar, var.getName());
+            return primedVar;
+        }).toArray(Expr[]::new);
     }
 
     @Override
@@ -76,8 +82,11 @@ public class BoundedModelChecker extends ModelChecker<Boolean> {
 
     private BoolExpr transformToStep(BoolExpr original, int step, Expr[] variables) {
         Expr[] substitutions = Arrays.stream(variables).map(
-            var -> getContext().mkConst(
-                var.getFuncDecl().getName().toString() + step + "'", var.getSort())
+            var -> {
+                String name = primedVarToOriginalName.containsKey(var) ? primedVarToOriginalName.get(var) : var.getFuncDecl().getName().toString();
+                return getContext().mkConst(
+                    name + step + "'", var.getSort());
+            }
         ).toArray(Expr[]::new);
         return (BoolExpr) original.substitute(variables, substitutions);
     }
