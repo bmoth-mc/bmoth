@@ -26,10 +26,10 @@ public class LTLTransformations {
         return instance;
     }
 
-    public static LTLNode transformLTLNode(LTLFormula ltlFormula) {
+    public static LTLNode transformLTLNode(LTLNode ltlNode) {
         LTLTransformations astTransformationForZ3 = LTLTransformations.getInstance();
         ASTTransformationVisitor visitor = new ASTTransformationVisitor(astTransformationForZ3.transformationList);
-        return visitor.transformLTLNode(ltlFormula.getFormula());
+        return visitor.transformLTLNode(ltlNode);
     }
 
 }

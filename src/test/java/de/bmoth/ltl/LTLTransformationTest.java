@@ -10,14 +10,13 @@ import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 
 public class LTLTransformationTest {
 
-    
     @Test
     public void testTransformationNotGloballyToFinallyNot() throws ParserException {
         String formula = "not(G { 1=1 })";
-        LTLFormula node = Parser.getLTLFormulaAsSemanticAst(formula);
-        LTLNode node1 = LTLTransformations.transformLTLNode(node);
-        System.out.println(node.getFormula());
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        System.out.println(ltlFormula.getLTLNode());
+        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         System.out.println(node1);
-        
+
     }
 }

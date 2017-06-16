@@ -17,7 +17,7 @@ public class LTLFormulaTest {
     public void testGloballyFinally() throws ParserException {
         String formula = "FG { 1=1 }";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
-        Node f1 = ltlFormula.getFormula();
+        Node f1 = ltlFormula.getLTLNode();
         assertTrue(f1 instanceof LTLPrefixOperatorNode);
         LTLPrefixOperatorNode p1 = (LTLPrefixOperatorNode) f1;
         assertEquals(LTLPrefixOperatorNode.Kind.FINALLY, p1.getKind());

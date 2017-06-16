@@ -18,7 +18,7 @@ public class LTLFormula implements Node {
         this.ltlFormula = formula;
     }
 
-    public LTLNode getFormula() {
+    public LTLNode getLTLNode() {
         return ltlFormula;
     }
 
