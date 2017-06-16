@@ -31,7 +31,7 @@ public class BoundedModelChecker extends ModelChecker<Boolean> {
             // INIT(V0)
             solver.add(init(0));
 
-            // UNION i from 1 to k T(Vi-1, Vi)
+            // CONJUNCTION i from 1 to k T(Vi-1, Vi)
             for (int i = 1; i <= k; i++) {
                 solver.add(transition(i - 1, i));
             }
@@ -39,7 +39,7 @@ public class BoundedModelChecker extends ModelChecker<Boolean> {
             // not INV(Vk)
             solver.add(getContext().mkNot(invariant(k)));
 
-            //TODO add missing UNION i from 1 to k, j from i + 1 to k (Vi != Vj)
+            //TODO add missing CONJUNCTION i from 1 to k, j from i + 1 to k (Vi != Vj)
 
             Status check = solver.check();
             if (check == Status.SATISFIABLE) {
