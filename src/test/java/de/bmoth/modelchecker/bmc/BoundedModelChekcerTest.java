@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.util.Map;
 
+import static de.bmoth.modelchecker.bmc.BoundedModelCheckingResult.Type.COUNTER_EXAMPLE_FOUND;
+import static de.bmoth.modelchecker.bmc.BoundedModelCheckingResult.Type.EXCEEDED_MAX_STEPS;
 import static org.junit.Assert.*;
 
 public class BoundedModelChekcerTest extends TestParser {
@@ -22,8 +24,8 @@ public class BoundedModelChekcerTest extends TestParser {
             "\tinc = BEGIN c := c + 1 END\n" +
             "END\n";
 
-        Map<String, Expr> counterExample = new BoundedModelChecker(parseMachine(machine), 20).check();
-        assertNull(counterExample);
+        BoundedModelCheckingResult result = new BoundedModelChecker(parseMachine(machine), 20).check();
+        assertEquals(EXCEEDED_MAX_STEPS, result.getType());
     }
 
     @Test
@@ -38,7 +40,8 @@ public class BoundedModelChekcerTest extends TestParser {
             "\terr = PRE c > 99999 THEN b := FALSE END\n" +
             "END\n";
 
-        Map<String, Expr> counterExample = new BoundedModelChecker(parseMachine(machine), 20).check();
-        assertEquals("{b=false, c=100000}", counterExample.toString());
+        BoundedModelCheckingResult result = new BoundedModelChecker(parseMachine(machine), 20).check();
+        assertEquals(COUNTER_EXAMPLE_FOUND, result.getType());
+        assertEquals("{b=false, c=100000}", result.getLastState().toString());
     }
 }

@@ -3,12 +3,13 @@ package de.bmoth.modelchecker.bmc;
 import com.microsoft.z3.*;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.modelchecker.State;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
 import java.util.*;
 
-public class BoundedModelChecker extends ModelChecker<Map<String, Expr>> {
+public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult> {
 
     private final int maxSteps;
     private final Solver solver;
@@ -29,7 +30,7 @@ public class BoundedModelChecker extends ModelChecker<Map<String, Expr>> {
     }
 
     @Override
-    protected Map<String, Expr> doModelCheck() {
+    protected BoundedModelCheckingResult doModelCheck() {
         for (int k = 0; k < maxSteps; k++) {
             // get a clean solver
             solver.reset();
@@ -50,12 +51,13 @@ public class BoundedModelChecker extends ModelChecker<Map<String, Expr>> {
             Status check = solver.check();
             if (check == Status.SATISFIABLE) {
                 // counter example found!
-                return getState(solver.getModel(), k);
+                State counterExample = getStateFromModel(solver.getModel(), k);
+                return BoundedModelCheckingResult.createCounterExampleFound(counterExample, k);
             }
         }
 
-        // no counter example found after k steps
-        return null;
+        // no counter example found after maxStep steps
+        return BoundedModelCheckingResult.createExceededMaxSteps(maxSteps);
     }
 
     private BoolExpr init(int step) {
@@ -92,18 +94,18 @@ public class BoundedModelChecker extends ModelChecker<Map<String, Expr>> {
         return original.substitute(variables, substitutions);
     }
 
-    private Map<String, Expr> getState(Model model, int step) {
-        HashMap<String, Expr> result = new HashMap<>();
+    private State getStateFromModel(Model model, int step) {
+        HashMap<String, Expr> map = new HashMap<>();
         for (DeclarationNode declNode : getMachineTranslator().getVariables()) {
             Expr expr = transformToStep(getMachineTranslator().getVariable(declNode), step, originalVars);
             Expr value = model.eval(expr, true);
-            result.put(declNode.getName(), value);
+            map.put(declNode.getName(), value);
         }
         for (DeclarationNode declarationNode : getMachineTranslator().getConstants()) {
             Expr expr = getMachineTranslator().getVariable(declarationNode);
             Expr value = model.eval(expr, true);
-            result.put(declarationNode.getName(), value);
+            map.put(declarationNode.getName(), value);
         }
-        return result;
+        return new State(null, map);
     }
 }
