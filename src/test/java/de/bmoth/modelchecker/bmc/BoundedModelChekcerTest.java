@@ -2,11 +2,9 @@ package de.bmoth.modelchecker.bmc;
 
 import com.microsoft.z3.Expr;
 import de.bmoth.TestParser;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Map;
-
 import static de.bmoth.modelchecker.bmc.BoundedModelCheckingResult.Type.COUNTER_EXAMPLE_FOUND;
 import static de.bmoth.modelchecker.bmc.BoundedModelCheckingResult.Type.EXCEEDED_MAX_STEPS;
 import static org.junit.Assert.*;
@@ -14,7 +12,6 @@ import static org.junit.Assert.*;
 public class BoundedModelChekcerTest extends TestParser {
 
     @Test
-    @Ignore
     public void test1() {
         String machine = "MACHINE infInc\n" +
             "VARIABLES c\n" +
