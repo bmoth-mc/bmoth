@@ -28,9 +28,23 @@ public class MachineToZ3Translator {
         this.z3TypeInference = new Z3TypeInference();
         z3TypeInference.visitMachineNode(machineNode);
 
+        BoolExpr initialization = null, properties = null;
+
         if (machineNode.getInitialisation() != null) {
-            this.initialisationConstraint = visitor.visitSubstitutionNode(machineNode.getInitialisation(), null);
+            initialization = visitor.visitSubstitutionNode(machineNode.getInitialisation(), null);
         }
+        if (machineNode.getProperties() != null) {
+            properties = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(), z3Context, z3TypeInference);
+        }
+
+        if (initialization != null && properties != null) {
+            this.initialisationConstraint = z3Context.mkAnd(initialization, properties);
+        } else if (initialization != null) {
+            this.initialisationConstraint = initialization;
+        } else {
+            this.initialisationConstraint = properties;
+        }
+
         if (machineNode.getInvariant() != null) {
             this.invariantConstraint = FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(), z3Context,
                     z3TypeInference);
@@ -95,16 +109,7 @@ public class MachineToZ3Translator {
     }
 
     public BoolExpr getInitialValueConstraint() {
-        PredicateNode properties = machineNode.getProperties();
-        BoolExpr prop = z3Context.mkTrue();
-        if (properties != null) {
-            prop = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(), z3Context, z3TypeInference);
-
-        }
-        if (initialisationConstraint == null) {
-            return prop;
-        }
-        return z3Context.mkAnd(initialisationConstraint, prop);
+        return initialisationConstraint;
     }
 
     public BoolExpr getInvariantConstraint() {
