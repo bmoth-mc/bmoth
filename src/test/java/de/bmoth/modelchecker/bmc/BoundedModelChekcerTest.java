@@ -28,7 +28,6 @@ public class BoundedModelChekcerTest extends TestParser {
     }
 
     @Test
-    @Ignore
     public void test2() {
         String machine = "MACHINE ebr\n" +
             "VARIABLES c, b\n" +
