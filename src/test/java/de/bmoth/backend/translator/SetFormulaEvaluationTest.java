@@ -396,4 +396,14 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
         check(UNSATISFIABLE, "x = NATURAL & -4 : x");
         check(SATISFIABLE, "x = NATURAL");
     }
+
+    @Test
+    public void testMinAndMaxOfSet() {
+        check(SATISFIABLE, "x = min({1,2,3}) & x = 1");
+        check(UNSATISFIABLE, "x = min({1,2,3}) & x = 2");
+        check(UNSATISFIABLE, "x = min({1,2,3}) & x = 3");
+        check(SATISFIABLE, "x = max({1,2,3}) & x = 3");
+        check(UNSATISFIABLE, "x = max({1,2,3}) & x = 2");
+        check(UNSATISFIABLE, "x = max({1,2,3}) & x = 1");
+    }
 }

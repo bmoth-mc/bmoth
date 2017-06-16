@@ -19,6 +19,7 @@ public class ExpressionOperatorNode extends ExprNode implements OperatorNode<Exp
         , BOOL, TRUE, FALSE, POWER_OF //
         , PLUS, MINUS, MULT, DIVIDE, MOD, INTERVAL//
         , UNARY_MINUS//
+        , MAX, MIN//
         // set operators
         , SET_ENUMERATION, EMPTY_SET, SET_SUBTRACTION, UNION, INTERSECTION//
         , GENERALIZED_UNION, GENERALIZED_INTER//
@@ -63,6 +64,9 @@ public class ExpressionOperatorNode extends ExprNode implements OperatorNode<Exp
         map.put(BMoThParser.MAPLET, ExpressionOperator.COUPLE);
         map.put(BMoThParser.DOM, ExpressionOperator.DOMAIN);
         map.put(BMoThParser.RAN, ExpressionOperator.RANGE);
+
+        map.put(BMoThParser.MIN, ExpressionOperator.MIN);
+        map.put(BMoThParser.MAX, ExpressionOperator.MAX);
 
         // relations
         map.put(BMoThParser.OVERWRITE_RELATION, ExpressionOperator.OVERWRITE_RELATION);
