@@ -62,8 +62,8 @@ public class LiftsTest {
         MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "TargetAndCurrentCorrespond.mch");
         ModelCheckingResult result = ExplicitStateModelChecker.check(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
-        Expr targetFloor = result.getLastState().values.get("target_floor");
-        Expr currentFloor = result.getLastState().values.get("current_floor");
+        Expr targetFloor = result.getLastState().getValues().get("target_floor");
+        Expr currentFloor = result.getLastState().getValues().get("current_floor");
         assertNotEquals(targetFloor.toString(), currentFloor.toString());
     }
 

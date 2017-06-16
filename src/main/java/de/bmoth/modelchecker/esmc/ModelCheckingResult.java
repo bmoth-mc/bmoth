@@ -1,5 +1,7 @@
 package de.bmoth.modelchecker.esmc;
 
+import de.bmoth.modelchecker.State;
+
 public class ModelCheckingResult {
     private Boolean correct = false;
     private String message = "";

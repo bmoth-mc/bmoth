@@ -1,4 +1,4 @@
-package de.bmoth.modelchecker.esmc;
+package de.bmoth.modelchecker;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
@@ -64,5 +64,9 @@ public class State {
             path.add(current.toString());
         }
         return path;
+    }
+
+    public Map<String, Expr> getValues() {
+        return values;
     }
 }
