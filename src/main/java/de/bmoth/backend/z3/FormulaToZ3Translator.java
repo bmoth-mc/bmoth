@@ -91,7 +91,12 @@ public class FormulaToZ3Translator {
         BoolExpr mkEq = z3Context.mkEq(variable, z3Value);
 
         // adding all additional constraints to result
-        return z3Context.mkAnd(mkEq, formulaToZ3Translator.getAccumulatedConstraints(z3Context));
+        BoolExpr accumulated = formulaToZ3Translator.getAccumulatedConstraints(z3Context);
+        if (accumulated != null) {
+            return z3Context.mkAnd(mkEq, accumulated);
+        } else {
+            return mkEq;
+        }
     }
 
     public static BoolExpr translateVariableElementOfSetExpr(String name, DeclarationNode variable, ExprNode setValue,
@@ -103,13 +108,18 @@ public class FormulaToZ3Translator {
             formulaToZ3Translator.z3TypeInference.getZ3Sort(variable, z3Context));
         BoolExpr mkEq = z3Context.mkSetMembership(variableExpr, z3Value);
 
-        return z3Context.mkAnd(mkEq, formulaToZ3Translator.getAccumulatedConstraints(z3Context));
+        BoolExpr accumulated = formulaToZ3Translator.getAccumulatedConstraints(z3Context);
+        if (accumulated != null) {
+            return z3Context.mkAnd(mkEq, accumulated);
+        } else {
+            return mkEq;
+        }
     }
 
     public BoolExpr getAccumulatedConstraints(Context z3Context) {
         switch (constraintList.size()) {
             case 0:
-                return z3Context.mkTrue();
+                return null;
             case 1:
                 return constraintList.get(0);
             default:
@@ -132,8 +142,12 @@ public class FormulaToZ3Translator {
             throw new IllegalStateException("Invalid translation. Expected BoolExpr but found " + constraint.getClass());
         }
         // adding all additional constraints to result
-        BoolExpr accumulatedConstraints = formulaToZ3Translator.getAccumulatedConstraints(z3Context);
-        return z3Context.mkAnd((BoolExpr) constraint, accumulatedConstraints);
+        BoolExpr accumulated = formulaToZ3Translator.getAccumulatedConstraints(z3Context);
+        if (accumulated != null) {
+            return z3Context.mkAnd((BoolExpr) constraint, accumulated);
+        } else {
+            return (BoolExpr) constraint;
+        }
     }
 
     public static BoolExpr translatePredicate(PredicateNode pred, Context z3Context, Z3TypeInference z3TypeInference) {
@@ -149,8 +163,12 @@ public class FormulaToZ3Translator {
 
         BoolExpr boolExpr = (BoolExpr) formulaToZ3TranslatorVisitor.visitPredicateNode(predNode, opt);
         // adding all additional constraints to result
-        BoolExpr accumulatedConstraints = formulaToZ3Translator.getAccumulatedConstraints(z3Context);
-        return z3Context.mkAnd(boolExpr, accumulatedConstraints);
+        BoolExpr accumulated = formulaToZ3Translator.getAccumulatedConstraints(z3Context);
+        if (accumulated != null) {
+            return z3Context.mkAnd(boolExpr, accumulated);
+        } else {
+            return boolExpr;
+        }
     }
 
     Sort getZ3Sort(TypedNode node) {
@@ -160,7 +178,7 @@ public class FormulaToZ3Translator {
     Z3Type getZ3Type(TypedNode node) {
         return z3TypeInference.getZ3TypeOfNode(node);
     }
-    
+
     Sort getZ3Sort(Z3Type z3Type) {
         return z3TypeInference.getZ3Sort(z3Type, z3Context);
     }
