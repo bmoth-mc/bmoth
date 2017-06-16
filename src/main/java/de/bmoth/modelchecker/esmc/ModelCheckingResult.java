@@ -1,8 +1,5 @@
 package de.bmoth.modelchecker.esmc;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ModelCheckingResult {
     private Boolean correct = false;
     private String message = "";
@@ -37,13 +34,5 @@ public class ModelCheckingResult {
 
     public State getLastState() {
         return lastState;
-    }
-
-    public static List<String> getPath(State state) {
-        List<String> path = new ArrayList<>();
-        for (State current = state.predecessor; current != null; current = current.predecessor) {
-            path.add(current.toString());
-        }
-        return path;
     }
 }

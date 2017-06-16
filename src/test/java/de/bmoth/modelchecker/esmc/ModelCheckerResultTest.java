@@ -55,7 +55,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     @Test
     public void testGetPath() {
         assertEquals("[" + secondState + ", " + thirdState.toString() + "]",
-                ModelCheckingResult.getPath(firstState).toString());
+            firstState.getPath().toString());
     }
 
     @Test

@@ -5,6 +5,8 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class State {
@@ -54,5 +56,13 @@ public class State {
             default:
                 return context.mkAnd(result);
         }
+    }
+
+    public List<String> getPath() {
+        List<String> path = new ArrayList<>();
+        for (State current = this.predecessor; current != null; current = current.predecessor) {
+            path.add(current.toString());
+        }
+        return path;
     }
 }

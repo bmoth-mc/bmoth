@@ -251,7 +251,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
                 } else if ("".equals(result.getMessage())) {
                     alert.setContentText(
                         "...not correct!\nCounter-example found in state " + result.getLastState().toString()
-                            + ".\nReversed path: " + ModelCheckingResult.getPath(result.getLastState()));
+                            + ".\nReversed path: " + result.getLastState().getPath());
                 } else {
                     alert.setContentText("...Schrödinger's cat.\nSomething went wrong.\n" + result.getMessage());
                 }
