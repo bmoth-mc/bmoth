@@ -67,7 +67,7 @@ public class ASTTransformationVisitor {
                 run = false;
                 for (AbstractASTTransformation astModifier : modifierList) {
                     if (astModifier.canHandleNode(temp)) {
-                        temp = astModifier.transformNode(node);
+                        temp = astModifier.transformNode(temp);
                         if (astModifier.hasChanged()) {
                             run = true;
                             astModifier.resetChanged();

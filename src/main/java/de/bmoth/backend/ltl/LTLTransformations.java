@@ -46,15 +46,15 @@ public class LTLTransformations {
 
         @Override
         public Node transformNode(Node oldNode) {
-            LTLPrefixOperatorNode prefixOperator = (LTLPrefixOperatorNode) oldNode;
-            if (prefixOperator.getKind() == LTLPrefixOperatorNode.Kind.NOT) {
-                LTLNode argument = prefixOperator.getArgument();
+            LTLPrefixOperatorNode notOperator = (LTLPrefixOperatorNode) oldNode;
+            if (notOperator.getKind() == LTLPrefixOperatorNode.Kind.NOT) {
+                LTLNode argument = notOperator.getArgument();
                 if (argument instanceof LTLPrefixOperatorNode) {
-                    LTLPrefixOperatorNode argumentPrfixOperator = (LTLPrefixOperatorNode) argument;
-                    if (argumentPrfixOperator.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
+                    LTLPrefixOperatorNode globallyOperator = (LTLPrefixOperatorNode) argument;
+                    if (globallyOperator.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
                         LTLPrefixOperatorNode newNot = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT,
-                                argumentPrfixOperator.getArgument());
-                        super.setChanged();
+                                globallyOperator.getArgument());
+                        setChanged();
                         return new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.FINALLY, newNot);
                     }
                 }

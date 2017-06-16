@@ -11,7 +11,7 @@ public abstract class AbstractASTTransformation {
     }
 
     protected void setChanged() {
-        changed = true;
+        this.changed = true;
     }
 
     public void resetChanged() {

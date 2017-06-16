@@ -18,4 +18,9 @@ public class LTLBPredicateNode implements LTLNode {
         this.predicate = predicate;
     }
 
+    @Override
+    public String toString() {
+        return this.predicate.toString();
+    }
+
 }

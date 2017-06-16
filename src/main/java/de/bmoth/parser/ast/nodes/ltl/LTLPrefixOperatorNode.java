@@ -1,6 +1,5 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
-
 public class LTLPrefixOperatorNode implements LTLNode {
 
     public enum Kind {
@@ -25,5 +24,10 @@ public class LTLPrefixOperatorNode implements LTLNode {
 
     public void setLTLNode(LTLNode argument) {
         this.argument = argument;
+    }
+
+    @Override
+    public String toString() {
+        return this.kind + "(" + this.argument + ")";
     }
 }

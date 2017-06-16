@@ -13,7 +13,7 @@ public class LTLTransformationTest {
     
     @Test
     public void testTransformationNotGloballyToFinallyNot() throws ParserException {
-        String formula = "G not({ 1=1 })";
+        String formula = "not(G { 1=1 })";
         LTLFormula node = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node1 = LTLTransformations.transformLTLNode(node);
         System.out.println(node.getFormula());
