@@ -43,6 +43,11 @@ public class ASTTransformationVisitor {
         this.modifierList = modifierList;
     }
 
+    public LTLNode transformLTLNode(LTLNode node) {
+        ASTVisitor astVisitor = new ASTVisitor();
+        return (LTLNode) astVisitor.visitLTLNode(node, null);
+    }
+
     public PredicateNode transformPredicate(PredicateNode node) {
         ASTVisitor astVisitor = new ASTVisitor();
         return (PredicateNode) astVisitor.visitPredicateNode(node, null);
