@@ -70,7 +70,7 @@ public class DependencyTest {
             public void defineRules() {
                 app.mayUse(backend_, checkers_, eventbus, modelchecker_, parser, parser_, preferences);
 
-                backend_.mayUse(preferences, backend, parser, parser_);
+                backend_.mayUse(preferences, backend, backend_, parser, parser_);
 
                 checkers_.mayUse(backend, backend_, parser, parser_);
 
