@@ -68,7 +68,7 @@ public class DependencyTest {
 
             @Override
             public void defineRules() {
-                app.mayUse(backend_, checkers_, eventbus, modelchecker_, parser, parser_, preferences);
+                app.mayUse(backend_, checkers_, eventbus, modelchecker, modelchecker_, parser, parser_, preferences);
 
                 backend_.mayUse(preferences, backend, backend_, parser, parser_);
 
