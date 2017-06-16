@@ -2,7 +2,6 @@ package de.bmoth.modelchecker.bmc;
 
 import com.microsoft.z3.Expr;
 import de.bmoth.TestParser;
-import de.bmoth.modelchecker.BoundedModelChecker;
 import org.junit.Ignore;
 import org.junit.Test;
 

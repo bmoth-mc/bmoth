@@ -1,7 +1,8 @@
-package de.bmoth.modelchecker;
+package de.bmoth.modelchecker.bmc;
 
 import com.microsoft.z3.*;
 import de.bmoth.backend.z3.Z3SolverFactory;
+import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
@@ -19,7 +20,7 @@ public class BoundedModelChecker extends ModelChecker<Map<String, Expr>> {
         this.maxSteps = maxSteps;
         this.solver = Z3SolverFactory.getZ3Solver(getContext());
         this.originalVars = getMachineTranslator().getVariables().stream().map(var -> getMachineTranslator().getVariable(var)).toArray(Expr[]::new);
-        this.primedVarToOriginalName = new HashMap<Expr, String>();
+        this.primedVarToOriginalName = new HashMap<>();
         this.primedVars = getMachineTranslator().getVariables().stream().map(var -> {
             Expr primedVar = getMachineTranslator().getPrimedVariable(var);
             primedVarToOriginalName.put(primedVar, var.getName());
