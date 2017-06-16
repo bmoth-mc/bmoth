@@ -22,7 +22,8 @@ public class NumbersTest {
         assertEquals("INTEGER", declarationNode.getType().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void nat1Test() throws ParserException {
         String formula = "x : NAT1";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
@@ -32,7 +33,7 @@ public class NumbersTest {
         assertEquals("INTEGER", declarationNode.getType().toString());
     }
 
-    @Test @Ignore
+    @Test
     public void minimumTest() throws ParserException {
         String formula = "x = min({1,2})";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
@@ -42,7 +43,7 @@ public class NumbersTest {
         assertEquals("INTEGER", declarationNode.getType().toString());
     }
 
-    @Test @Ignore
+    @Test
     public void maximumTest() throws ParserException {
         String formula = "x = max({1,2})";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
