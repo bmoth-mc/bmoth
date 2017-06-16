@@ -147,11 +147,11 @@ ltlStart
   ;
 
 ltlFormula
-  : LTL_LEFT_PAR ltlFormula LTL_RIGHT_PAR                     # LTLParentheses
-  | keyword=(LTL_TRUE|LTL_FALSE)                              # LTLKeyword
+  : LTL_LEFT_PAR ltlFormula LTL_RIGHT_PAR                             # LTLParentheses
+  | keyword=(LTL_TRUE|LTL_FALSE)                                      # LTLKeyword
   | operator=(LTL_GLOBALLY|LTL_FINALLY|LTL_NEXT|LTL_NOT) ltlFormula   # LTLPrefixOperator
-  | LTL_B_START predicate B_END                               # LTLBPredicate
-  | ltlFormula operator=LTL_IMPLIES               ltlFormula  # LTLInfixOperator
-  | ltlFormula operator=(LTL_UNTIL|LTL_RELEASE)   ltlFormula  # LTLInfixOperator
-  | ltlFormula operator=(LTL_AND|LTL_OR)  ltlFormula          # LTLInfixOperator
+  | LTL_B_START predicate B_END                                       # LTLBPredicate
+  | ltlFormula operator=LTL_IMPLIES               ltlFormula          # LTLInfixOperator
+  | ltlFormula operator=(LTL_UNTIL|LTL_RELEASE)   ltlFormula          # LTLInfixOperator
+  | ltlFormula operator=(LTL_AND|LTL_OR)  ltlFormula                  # LTLInfixOperator
   ;
