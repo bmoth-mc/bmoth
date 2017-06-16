@@ -1,25 +1,24 @@
 package de.bmoth.modelchecker;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Expr;
-import com.microsoft.z3.Solver;
-import com.microsoft.z3.Status;
+import com.microsoft.z3.*;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class BoundedModelChecker extends ModelChecker<Boolean> {
 
     private final int maxSteps;
     private final Solver solver;
+    private final Expr[] originalVars, primedVars;
 
     public BoundedModelChecker(MachineNode machine, int maxSteps) {
         super(machine);
         this.maxSteps = maxSteps;
         this.solver = Z3SolverFactory.getZ3Solver(getContext());
+        this.originalVars = getMachineTranslator().getVariables().stream().map(var -> getMachineTranslator().getVariable(var)).toArray(Expr[]::new);
+        this.primedVars = getMachineTranslator().getVariables().stream().map(var -> getMachineTranslator().getPrimedVariable(var)).toArray(Expr[]::new);
     }
 
     @Override
@@ -52,40 +51,34 @@ public class BoundedModelChecker extends ModelChecker<Boolean> {
         return true;
     }
 
-    private BoolExpr transformPrimedToStep(Expr original, int step) {
-        List<Expr> originalVars = new ArrayList<>();
-        List<Expr> substitutedVars = new ArrayList<>();
-        getMachineTranslator().getVariables().forEach(node -> {
-            Expr originalVar = getMachineTranslator().getPrimedVariable(node);
-            originalVars.add(originalVar);
-            substitutedVars.add(getContext().mkConst(node.getName() + step + "'", originalVar.getSort()));
-        });
-
-        return (BoolExpr) original.substitute(originalVars.toArray(new Expr[0]), substitutedVars.toArray(new Expr[0]));
-    }
-
-    private BoolExpr transformUnprimedToStep(Expr original, int step) {
-        List<Expr> originalVars = new ArrayList<>();
-        List<Expr> substitutedVars = new ArrayList<>();
-        getMachineTranslator().getVariables().forEach(node -> {
-            Expr originalVar = getMachineTranslator().getVariable(node);
-            originalVars.add(originalVar);
-            substitutedVars.add(getContext().mkConst(node.getName() + step + "'", originalVar.getSort()));
-        });
-
-        return (BoolExpr) original.substitute(originalVars.toArray(new Expr[0]), substitutedVars.toArray(new Expr[0]));
-    }
-
     private BoolExpr init(int step) {
-        return transformPrimedToStep(getMachineTranslator().getInitialValueConstraint(), step);
+        return transformToStep(getMachineTranslator().getInitialValueConstraint(), step, primedVars);
     }
 
     private BoolExpr transition(int fromStep, int toStep) {
-        BoolExpr[] transitions = getMachineTranslator().getOperationConstraints().stream().map(op -> transformPrimedToStep(transformUnprimedToStep(op, fromStep), toStep)).toArray(BoolExpr[]::new);
-        return getContext().mkOr(transitions);
+        BoolExpr[] transitions = getMachineTranslator().getOperationConstraints().stream().map(
+            op -> transformToStep(transformToStep(op, fromStep, originalVars), toStep, primedVars)
+        ).toArray(BoolExpr[]::new);
+
+        switch (transitions.length) {
+            case 0:
+                return getContext().mkTrue();
+            case 1:
+                return transitions[0];
+            default:
+                return getContext().mkOr(transitions);
+        }
     }
 
     private BoolExpr invariant(int step) {
-        return transformUnprimedToStep(getMachineTranslator().getInvariantConstraint(), step);
+        return transformToStep(getMachineTranslator().getInvariantConstraint(), step, originalVars);
+    }
+
+    private BoolExpr transformToStep(BoolExpr original, int step, Expr[] variables) {
+        Expr[] substitutions = Arrays.stream(variables).map(
+            var -> getContext().mkConst(
+                var.getFuncDecl().getName().toString() + step + "'", var.getSort())
+        ).toArray(Expr[]::new);
+        return (BoolExpr) original.substitute(variables, substitutions);
     }
 }
