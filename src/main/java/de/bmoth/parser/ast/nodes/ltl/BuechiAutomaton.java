@@ -1,5 +1,7 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 public class BuechiAutomaton {
 
     public String new_name() {
@@ -19,8 +21,13 @@ public class BuechiAutomaton {
 
     public BuechiAutomatonNode[] expand(BuechiAutomatonNode node, BuechiAutomatonNode[] nodesSet) {
         if (node.nonprocessed.length == 0) {
-            if (nodeIsInNodeSet(node, nodesSet) != null) {
+            BuechiAutomatonNode nodeInSet = nodeIsInNodeSet(node, nodesSet);
+            if (nodeInSet != null) {
+                node.incoming = ArrayUtils.addAll(node.incoming, nodeInSet.incoming);
                 return nodesSet;
+            } else {
+                return expand(new BuechiAutomatonNode(new_name(), new String[]{node.name}, node.next,
+                    new LTLFormula[]{}, new LTLFormula[]{}), nodesSet);
             }
         }
         return nodesSet;
