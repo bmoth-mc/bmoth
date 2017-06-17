@@ -4,8 +4,11 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class BuechiAutomaton {
 
+    int nodeCounter = 0;
+
     public String new_name() {
-        return "place holder";
+        nodeCounter++;
+        return "place holder" + String.valueOf(nodeCounter);
     }
 
     public BuechiAutomatonNode nodeIsInNodeSet(BuechiAutomatonNode node, BuechiAutomatonNode[] nodesSet) {
