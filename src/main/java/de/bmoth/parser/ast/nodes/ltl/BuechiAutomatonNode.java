@@ -1,17 +1,20 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
+import java.util.List;
+
 public class BuechiAutomatonNode {
 
     String name;
-    String[] incoming;
-    LTLFormula[] nonprocessed;
-    LTLFormula[] processed;
-    LTLFormula[] next;
+    List<String> incoming;
+    List<LTLFormula> unprocessed;
+    List<LTLFormula> processed;
+    List<LTLFormula> next;
 
-    public BuechiAutomatonNode(String name, String[] incoming, LTLFormula[] nonprocessed, LTLFormula[] processed, LTLFormula[] next) {
+    public BuechiAutomatonNode(String name, List<String> incoming, List<LTLFormula> unprocessed, List<LTLFormula> processed,
+                               List<LTLFormula> next) {
         this.name = name;
         this.incoming = incoming;
-        this.nonprocessed = nonprocessed;
+        this.unprocessed = unprocessed;
         this.processed = processed;
         this.next = next;
     }

@@ -1,6 +1,7 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
-import org.apache.commons.lang3.ArrayUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BuechiAutomaton {
 
@@ -23,23 +24,28 @@ public class BuechiAutomaton {
     }
 
     public BuechiAutomatonNode[] expand(BuechiAutomatonNode node, BuechiAutomatonNode[] nodesSet) {
-        if (node.nonprocessed.length == 0) {
+        if (node.unprocessed.size() == 0) {
             BuechiAutomatonNode nodeInSet = nodeIsInNodeSet(node, nodesSet);
             if (nodeInSet != null) {
-                node.incoming = ArrayUtils.addAll(node.incoming, nodeInSet.incoming);
+                node.incoming.addAll(nodeInSet.incoming);
                 return nodesSet;
             } else {
-                return expand(new BuechiAutomatonNode(new_name(), new String[]{node.name}, node.next,
-                    new LTLFormula[]{}, new LTLFormula[]{}), nodesSet);
+                List<String> incoming = new ArrayList<>();
+                incoming.add(node.name);
+                return expand(new BuechiAutomatonNode(new_name(), incoming, node.next,
+                    new ArrayList<>(), new ArrayList<>()), nodesSet);
             }
         }
         return nodesSet;
     }
 
     public BuechiAutomatonNode[] create_graph(LTLFormula formula) {
-        String[] initIncoming = {"init"};
-        BuechiAutomatonNode[] nodes_set={};
-        return expand(new BuechiAutomatonNode(new_name(), initIncoming, new LTLFormula[]{formula},
-            new LTLFormula[]{}, new LTLFormula[]{}), nodes_set);
+        List<String> initIncoming = new ArrayList<>();
+        initIncoming.add("init");
+        List<LTLFormula> unprocessed = new ArrayList<>();
+        unprocessed.add(formula);
+        BuechiAutomatonNode[] nodes_set = {};
+        return expand(new BuechiAutomatonNode(new_name(), initIncoming, unprocessed, new ArrayList<>(),
+            new ArrayList<>()), nodes_set);
     }
 }
