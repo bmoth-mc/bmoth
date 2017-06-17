@@ -38,7 +38,10 @@ public class BuechiAutomaton {
                 return expand(new BuechiAutomatonNode(new_name(), incoming, node.next,
                     new ArrayList<>(), new ArrayList<>()), nodesSet);
             }
-        } 
+        } else {
+            LTLFormula formula = node.unprocessed.get(0);
+            node.unprocessed.remove(0);
+        }
         return nodesSet;
     }
 
