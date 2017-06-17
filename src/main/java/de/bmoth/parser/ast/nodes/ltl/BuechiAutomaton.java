@@ -5,14 +5,14 @@ import java.util.List;
 
 public class BuechiAutomaton {
 
-    int nodeCounter = 0;
+    private int nodeCounter = 0;
 
     public String new_name() {
         nodeCounter++;
         return "place holder" + String.valueOf(nodeCounter);
     }
 
-    public BuechiAutomatonNode nodeIsInNodeSet(BuechiAutomatonNode node, BuechiAutomatonNode[] nodesSet) {
+    public BuechiAutomatonNode nodeIsInNodeSet(BuechiAutomatonNode node, List<BuechiAutomatonNode> nodesSet) {
         BuechiAutomatonNode foundNode = null;
         for (BuechiAutomatonNode nodeInSet: nodesSet) {
             if ((nodeInSet.processed == node.processed) && (nodeInSet.next == node.next)) {
@@ -23,7 +23,7 @@ public class BuechiAutomaton {
         return foundNode;
     }
 
-    public BuechiAutomatonNode[] expand(BuechiAutomatonNode node, BuechiAutomatonNode[] nodesSet) {
+    public List<BuechiAutomatonNode> expand(BuechiAutomatonNode node, List<BuechiAutomatonNode> nodesSet) {
         if (node.unprocessed.size() == 0) {
             BuechiAutomatonNode nodeInSet = nodeIsInNodeSet(node, nodesSet);
             if (nodeInSet != null) {
@@ -39,12 +39,12 @@ public class BuechiAutomaton {
         return nodesSet;
     }
 
-    public BuechiAutomatonNode[] create_graph(LTLFormula formula) {
+    public List<BuechiAutomatonNode> create_graph(LTLFormula formula) {
         List<String> initIncoming = new ArrayList<>();
         initIncoming.add("init");
         List<LTLFormula> unprocessed = new ArrayList<>();
         unprocessed.add(formula);
-        BuechiAutomatonNode[] nodes_set = {};
+        List<BuechiAutomatonNode> nodes_set = new ArrayList<>();
         return expand(new BuechiAutomatonNode(new_name(), initIncoming, unprocessed, new ArrayList<>(),
             new ArrayList<>()), nodes_set);
     }
