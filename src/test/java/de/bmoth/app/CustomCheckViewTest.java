@@ -18,6 +18,12 @@ import static org.testfx.matcher.base.NodeMatchers.isNotNull;
 import static org.testfx.matcher.base.NodeMatchers.isNull;
 
 public class CustomCheckViewTest extends HeadlessUITest {
+
+    private static String INITIAL_CHECK_ID = "#initialCheck";
+    private static String MODEL_CHECK_ID = "#modelCheck";
+    private static String INVARIANT_CHECK_ID = "#invariantCheck";
+
+
     @InjectViewModel
     ViewTuple<CustomCheckView, CustomCheckViewModel> viewCustomCheckViewModelViewTuple;
 
@@ -42,11 +48,11 @@ public class CustomCheckViewTest extends HeadlessUITest {
         assertEquals(invarB, viewCustomCheckViewModelViewTuple.getViewModel().isCheckInvar());
         assertEquals(checkB, viewCustomCheckViewModelViewTuple.getViewModel().isCheckModel());
 
-        clickOn("#initialCheck");
-        clickOn("#modelCheck");
-        clickOn("#invariantCheck");
+        clickOn(INITIAL_CHECK_ID);
+        clickOn(MODEL_CHECK_ID);
+        clickOn(INVARIANT_CHECK_ID);
 
-        verifyThat("#invariantCheck", isNotNull());
+        verifyThat(INVARIANT_CHECK_ID, isNotNull());
         assertEquals(!initB, viewCustomCheckViewModelViewTuple.getViewModel().isCheckInit());
         assertEquals(!invarB, viewCustomCheckViewModelViewTuple.getViewModel().isCheckInvar());
         assertEquals(!checkB, viewCustomCheckViewModelViewTuple.getViewModel().isCheckModel());
@@ -54,7 +60,7 @@ public class CustomCheckViewTest extends HeadlessUITest {
         Future<Void> okClick = WaitForAsyncUtils.asyncFx(() -> viewCustomCheckViewModelViewTuple.getCodeBehind().handleOk());
         WaitForAsyncUtils.waitFor(okClick);
 
-        verifyThat("#invariantCheck", isNull());
+        verifyThat(INVARIANT_CHECK_ID, isNull());
         assertEquals(!initB, BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.INITIAL_CHECK));
         assertEquals(!invarB, BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.INVARIANT_CHECK));
         assertEquals(!checkB, BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.MODEL_CHECK));
@@ -62,12 +68,12 @@ public class CustomCheckViewTest extends HeadlessUITest {
 
     @Test
     public void handleClose() {
-        verifyThat("#invariantCheck", isNotNull());
+        verifyThat(INVARIANT_CHECK_ID, isNotNull());
 
         Future<Void> okClick = WaitForAsyncUtils.asyncFx(() -> viewCustomCheckViewModelViewTuple.getCodeBehind().handleClose());
         WaitForAsyncUtils.waitFor(okClick);
 
-        verifyThat("#invariantCheck", isNull());
+        verifyThat(INVARIANT_CHECK_ID, isNull());
     }
 
 
