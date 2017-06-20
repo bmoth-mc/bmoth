@@ -56,14 +56,13 @@ public class LogicOperationsTest {
     }
 
     @Test
-    @Ignore
     public void negationTest() throws ParserException {
-        String formula = "x = not y";
+        String formula = "x = bool(not(3>2))";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        //assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
+        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        //assertEquals("x", declarationNode.getName());
-        //assertEquals("INTEGER", declarationNode.getType().toString());
+        assertEquals("x", declarationNode.getName());
+        assertEquals("BOOL", declarationNode.getType().toString());
     }
 
     @Test

@@ -52,16 +52,6 @@ public class RelationTest {
         assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
     }
 
-    @Test @Ignore //TODO: not working in proB
-    public void backwardCompositionTest() throws ParserException {
-        String formula = "x = ({1|->2,2|->3} circ {2|->1,3|->2})";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
-    }
-
     @Test @Ignore
     public void identityTest() throws ParserException {
         String formula = "x = id({1,2})";
@@ -142,15 +132,6 @@ public class RelationTest {
         assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
     }
 
-    @Test @Ignore //TODO: not working in proB
-    public void leftOverridingTest() throws ParserException {
-        String formula = "x = {1|->2}+>{1|->3}";
-        FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
-        DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
-        assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
-    }
 
     @Test
     public void directProductTest() throws ParserException {
@@ -211,10 +192,4 @@ public class RelationTest {
         assertEquals("x", declarationNode.getName());
         assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
     }
-
-
-
-
-
-
 }
