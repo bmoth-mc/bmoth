@@ -4,13 +4,14 @@ import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
 import static org.junit.Assert.assertEquals;
 
 public class LogicOperationsTest {
+
+    private final static String INTEGER = "INTEGER";
 
     @Test
     public void conjunctionTest() throws ParserException {
@@ -19,7 +20,7 @@ public class LogicOperationsTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER", declarationNode.getType().toString());
+        assertEquals(INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -29,7 +30,7 @@ public class LogicOperationsTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER", declarationNode.getType().toString());
+        assertEquals(INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -39,7 +40,7 @@ public class LogicOperationsTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER", declarationNode.getType().toString());
+        assertEquals(INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -49,10 +50,10 @@ public class LogicOperationsTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER", declarationNode.getType().toString());
+        assertEquals(INTEGER, declarationNode.getType().toString());
         DeclarationNode declarationNode2 = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("y", declarationNode2.getName());
-        assertEquals("INTEGER", declarationNode2.getType().toString());
+        assertEquals(INTEGER, declarationNode2.getType().toString());
     }
 
     @Test
@@ -86,7 +87,7 @@ public class LogicOperationsTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER", declarationNode.getType().toString());
+        assertEquals(INTEGER, declarationNode.getType().toString());
     }
 
 }
