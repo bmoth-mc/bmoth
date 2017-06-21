@@ -13,6 +13,8 @@ import static org.junit.Assert.*;
 
 public class SolutionFinderTest extends TestUsingZ3 {
 
+    private static final String NOT_PART_OF_SOLUTIONS = " is not part of found solutions";
+
     private SolutionFinder finder;
 
     static String z3ModelToString(Model m) {
@@ -126,7 +128,7 @@ public class SolutionFinderTest extends TestUsingZ3 {
             case "{a=5, b=3}":
                 break;
             default:
-                fail(solutionAsString + " is not part of found solutions");
+                fail(solutionAsString + NOT_PART_OF_SOLUTIONS);
             }
         }
     }
@@ -151,7 +153,7 @@ public class SolutionFinderTest extends TestUsingZ3 {
             case "{x=4}":
                 break;
             default:
-                fail(solutionAsString + " is not part of found solutions");
+                fail(solutionAsString + NOT_PART_OF_SOLUTIONS);
             }
         }
     }
@@ -175,7 +177,7 @@ public class SolutionFinderTest extends TestUsingZ3 {
             case "{x=4, y=3}":
                 break;
             default:
-                fail(solutionAsString + " is not part of found solutions");
+                fail(solutionAsString + NOT_PART_OF_SOLUTIONS);
             }
         }
     }

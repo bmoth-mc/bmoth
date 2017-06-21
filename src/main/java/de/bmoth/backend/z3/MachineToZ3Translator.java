@@ -28,7 +28,8 @@ public class MachineToZ3Translator {
         this.z3TypeInference = new Z3TypeInference();
         z3TypeInference.visitMachineNode(machineNode);
 
-        BoolExpr initialization = null, properties = null;
+        BoolExpr initialization = null;
+        BoolExpr properties = null;
 
         if (machineNode.getInitialisation() != null) {
             initialization = visitor.visitSubstitutionNode(machineNode.getInitialisation(), null);
