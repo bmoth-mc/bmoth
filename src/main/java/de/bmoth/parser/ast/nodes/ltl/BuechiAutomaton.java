@@ -2,19 +2,25 @@ package de.bmoth.parser.ast.nodes.ltl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 import static de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode.Kind.FALSE;
 
 public class BuechiAutomaton {
 
     private int nodeCounter = 0;
+    private List<BuechiAutomatonNode> nodesSet;
 
     public String new_name() {
         nodeCounter++;
         return "place holder" + String.valueOf(nodeCounter);
     }
 
-    public BuechiAutomatonNode nodeIsInNodeSet(BuechiAutomatonNode node, List<BuechiAutomatonNode> nodesSet) {
+    public BuechiAutomaton(LTLNode formula) {
+        this.nodesSet = create_graph(formula);
+    }
+
+    private BuechiAutomatonNode nodeIsInNodeSet(BuechiAutomatonNode node, List<BuechiAutomatonNode> nodesSet) {
         // Check whether the finished node is already in the list (determined by the same Old- and Next-sets).
         BuechiAutomatonNode foundNode = null;
         for (BuechiAutomatonNode nodeInSet: nodesSet) {
@@ -26,13 +32,13 @@ public class BuechiAutomaton {
         return foundNode;
     }
 
-    public List<LTLNode> new1(LTLInfixOperatorNode node) {
+    private List<LTLNode> new1(LTLInfixOperatorNode node) {
         List<LTLNode> newNodes = new ArrayList<>();
         newNodes.add(node.getLeft());
         return newNodes;
     }
 
-    public List<LTLNode> new2(LTLInfixOperatorNode node) {
+    private List<LTLNode> new2(LTLInfixOperatorNode node) {
         List<LTLNode> newNodes = new ArrayList<>();
         if (node.getKind() == LTLInfixOperatorNode.Kind.UNTIL) {
             newNodes.add(node);
@@ -41,13 +47,13 @@ public class BuechiAutomaton {
         return newNodes;
     }
 
-    public List<LTLNode> next1(LTLInfixOperatorNode node) {
+    private List<LTLNode> next1(LTLInfixOperatorNode node) {
         List<LTLNode> newNodes = new ArrayList<>();
         newNodes.add(node.getRight());
         return newNodes;
     }
 
-    public List<BuechiAutomatonNode> expand(BuechiAutomatonNode node, List<BuechiAutomatonNode> nodesSet) {
+    private List<BuechiAutomatonNode> expand(BuechiAutomatonNode node, List<BuechiAutomatonNode> nodesSet) {
         if (node.unprocessed.size() == 0) {
             // The current node is completely processed and can be added to the list (or, in case he was
             // already added before, updated).
@@ -153,7 +159,7 @@ public class BuechiAutomaton {
         return nodesSet;
     }
 
-    public List<BuechiAutomatonNode> create_graph(LTLNode formula) {
+    private List<BuechiAutomatonNode> create_graph(LTLNode formula) {
         // Initialization
         List<String> initIncoming = new ArrayList<>();
         initIncoming.add("init");
@@ -163,5 +169,20 @@ public class BuechiAutomaton {
 
         return expand(new BuechiAutomatonNode(new_name(), initIncoming, unprocessed, new ArrayList<>(),
             new ArrayList<>()), nodes_set);
+    }
+
+    public String toString() {
+        StringJoiner nodesString = new StringJoiner(", ", "(", ")");
+        for (BuechiAutomatonNode node: nodesSet) {
+            StringJoiner nodeString = new StringJoiner(" | ", "(", ")");
+            nodeString.add("Node " + node.name + ": " + node.toString());
+            StringJoiner incoming = new StringJoiner(", ", "{", "}");
+            for(String incomingNode: node.incoming) {
+                incoming.add(incomingNode);
+            }
+            nodeString.add("Incoming nodes: " + incoming.toString());
+            nodesString.add(nodeString.toString());
+        }
+        return "1";
     }
 }
