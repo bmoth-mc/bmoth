@@ -18,20 +18,20 @@ public class ConvertGloballyGloballyToGlobally extends AbstractASTTransformation
         if (globallyOperator01.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
             LTLNode argument = globallyOperator01.getArgument();
             if (argument instanceof LTLPrefixOperatorNode) {
-                LTLPrefixOperatorNode Operator02 = (LTLPrefixOperatorNode) argument;
+                LTLPrefixOperatorNode operator02 = (LTLPrefixOperatorNode) argument;
                 // case GG->G
-                if (Operator02.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
+                if (operator02.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
                     setChanged();
-                    return Operator02;
+                    return operator02;
                 }
                 // case GnG->nG
-                if (Operator02.getKind() != LTLPrefixOperatorNode.Kind.NOT) {
-                        LTLNode argument02 = Operator02.getArgument();
+                if (operator02.getKind() != LTLPrefixOperatorNode.Kind.NOT) {
+                        LTLNode argument02 = operator02.getArgument();
                         if (argument02 instanceof LTLPrefixOperatorNode) {
-                            LTLPrefixOperatorNode Operator03 = (LTLPrefixOperatorNode) argument02;
-                            if (Operator03.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
+                            LTLPrefixOperatorNode operator03 = (LTLPrefixOperatorNode) argument02;
+                            if (operator03.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
                                 setChanged();
-                                return Operator02;
+                                return operator02;
                             }
                         }
                 }
