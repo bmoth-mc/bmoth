@@ -1,5 +1,7 @@
 package de.bmoth.backend.ltl;
 
+import de.bmoth.backend.ltl.transformation.ConvertFinallyFinallyToFinally;
+import de.bmoth.backend.ltl.transformation.ConvertGloballyGloballyToGlobally;
 import de.bmoth.backend.ltl.transformation.ConvertNotGloballyToFinallyNot;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
@@ -17,6 +19,8 @@ public class LTLTransformations {
     private LTLTransformations() {
         this.transformationList = new ArrayList<>();
         transformationList.add(new ConvertNotGloballyToFinallyNot());
+        transformationList.add(new ConvertGloballyGloballyToGlobally());
+        transformationList.add(new ConvertFinallyFinallyToFinally());
     }
 
     public static LTLTransformations getInstance() {
