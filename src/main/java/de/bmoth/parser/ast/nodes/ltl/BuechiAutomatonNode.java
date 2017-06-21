@@ -6,12 +6,12 @@ public class BuechiAutomatonNode {
 
     String name;
     List<String> incoming;
-    List<LTLFormula> unprocessed;
-    List<LTLFormula> processed;
-    List<LTLFormula> next;
+    List<LTLNode> unprocessed;
+    List<LTLNode> processed;
+    List<LTLNode> next;
 
-    public BuechiAutomatonNode(String name, List<String> incoming, List<LTLFormula> unprocessed, List<LTLFormula> processed,
-                               List<LTLFormula> next) {
+    public BuechiAutomatonNode(String name, List<String> incoming, List<LTLNode> unprocessed, List<LTLNode> processed,
+                               List<LTLNode> next) {
         this.name = name;
         this.incoming = incoming;
         this.unprocessed = unprocessed;

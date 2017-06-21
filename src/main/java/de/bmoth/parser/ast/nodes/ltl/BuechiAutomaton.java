@@ -39,12 +39,12 @@ public class BuechiAutomaton {
                     new ArrayList<>(), new ArrayList<>()), nodesSet);
             }
         } else {
-            LTLFormula formula = node.unprocessed.get(0);
+            LTLNode formula = node.unprocessed.get(0);
             node.unprocessed.remove(0);
-            if (formula.getLTLNode() instanceof LTLPrefixOperatorNode) {
-                List<LTLFormula> processed = node.processed;
+            if (formula instanceof LTLPrefixOperatorNode) {
+                List<LTLNode> processed = node.processed;
                 processed.add(formula);
-                List<LTLFormula> next = node.next;
+                List<LTLNode> next = node.next;
                 // TODO: add argument to next
                 return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
                     processed, next), nodesSet);
@@ -53,11 +53,11 @@ public class BuechiAutomaton {
         return nodesSet;
     }
 
-    public List<BuechiAutomatonNode> create_graph(LTLFormula formula) {
+    public List<BuechiAutomatonNode> create_graph(LTLNode formula) {
         // Initialization
         List<String> initIncoming = new ArrayList<>();
         initIncoming.add("init");
-        List<LTLFormula> unprocessed = new ArrayList<>();
+        List<LTLNode> unprocessed = new ArrayList<>();
         unprocessed.add(formula);
         List<BuechiAutomatonNode> nodes_set = new ArrayList<>();
 
