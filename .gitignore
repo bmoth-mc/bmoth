@@ -36,3 +36,5 @@ src/main/resources/de/bmoth/App/pref.xml
 
 # ProB files
 *.prob
+
+out/
