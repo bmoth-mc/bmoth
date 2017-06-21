@@ -300,7 +300,6 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
                 this.minusNodes.add(node);
                 this.typedNodes.add(node);
                 return node.getType();
-
             case INTERVAL:
                 unify(expected, new SetType(IntegerType.getInstance()), node);
                 visitExprNode(expressionNodes.get(0), IntegerType.getInstance());
@@ -323,10 +322,11 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
             case MAXINT:
                 return unify(expected, IntegerType.getInstance(), node);
             case INTEGER:
-            case NATURAL1:
             case NATURAL:
+            case NATURAL1:
             case INT:
             case NAT:
+            case NAT1:
                 return unify(expected, new SetType(IntegerType.getInstance()), node);
             case FALSE:
             case TRUE:
@@ -397,7 +397,6 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
                 visitExprNode(expressionNodes.get(0), node.getType());
                 visitExprNode(expressionNodes.get(1), new SetType(getRightTypeOfRelationType(node.getType())));
                 return node.getType();
-
             case INSERT_FRONT:
                 // E -> s
                 unify(expected, new SetType(new CoupleType(IntegerType.getInstance(), new UntypedType())), node);
@@ -489,7 +488,6 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
             case EMPTY_SET:
                 typedNodes.add(node);
                 return unify(expected, new SetType(new UntypedType()), node);
-
             default:
                 throw new AssertionError();
         }

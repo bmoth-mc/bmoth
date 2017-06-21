@@ -4,7 +4,6 @@ import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
@@ -23,7 +22,6 @@ public class NumbersTest {
     }
 
     @Test
-    @Ignore
     public void nat1Test() throws ParserException {
         String formula = "x : NAT1";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);

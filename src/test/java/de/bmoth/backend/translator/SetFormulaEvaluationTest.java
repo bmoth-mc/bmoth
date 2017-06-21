@@ -79,6 +79,15 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
     }
 
     @Test
+    public void testNATURAL1() {
+        check(UNSATISFIABLE, "0 : NATURAL1");
+        check(SATISFIABLE, "1 : NATURAL1");
+        check(SATISFIABLE, "1000000 : NATURAL1");
+        check(UNSATISFIABLE, "-1 : NATURAL1");
+        check(UNSATISFIABLE, "-10000 : NATURAL1");
+    }
+
+    @Test
     public void testNAT() {
         BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, "10");
         check(SATISFIABLE, "0 : NAT");
@@ -87,6 +96,15 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
         check(UNSATISFIABLE, "-10000 : NAT");
         check(SATISFIABLE, "10 : INT");
         check(UNSATISFIABLE, "11 : INT");
+    }
+
+    @Test
+    public void testNAT1() {
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, "10");
+        check(UNSATISFIABLE, "0 : NAT1");
+        check(SATISFIABLE, "1 : NAT1");
+        check(UNSATISFIABLE, "-1 : NAT1");
+        check(UNSATISFIABLE, "-10000 : NAT1");
     }
 
     @Test

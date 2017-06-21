@@ -41,6 +41,7 @@ public class FormulaToZ3Translator {
     private ArrayExpr setNatural1 = null;
     private ArrayExpr setInt = null;
     private ArrayExpr setNat = null;
+    private ArrayExpr setNat1 = null;
 
     // used to generate unique identifiers
     private static int tempVariablesCounter = 0;
@@ -320,6 +321,14 @@ public class FormulaToZ3Translator {
                         constraintList.add(prepareSetQuantifier(setNat, z3Context.mkInt(0), z3Context.mkInt(maxInt)));
                     }
                     return setNat;
+                case NAT1:
+                    if (setNat1 == null) {
+                        int maxInt = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT);
+                        // node.getType() = POW(INTEGER)
+                        setNat1 = (ArrayExpr) z3Context.mkConst(ExpressionOperator.NAT1.toString(), getZ3Sort(node));
+                        constraintList.add(prepareSetQuantifier(setNat1, z3Context.mkInt(1), z3Context.mkInt(maxInt)));
+                    }
+                    return setNat1;
                 case FALSE:
                     return z3Context.mkFalse();
                 case TRUE:

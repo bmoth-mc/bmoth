@@ -117,7 +117,7 @@ expression
   | LEFT_PAR exprs+=expression COMMA exprs+=expression
       (COMMA exprs+=expression)* RIGHT_PAR                                        # NestedCoupleAsTupleExpression
   | '[' expression_list? ']'                                                # SequenceEnumerationExpression
-  | operator=(NATURAL|NATURAL1|INTEGER|INT|NAT
+  | operator=(NATURAL|NATURAL1|INTEGER|INT|NAT|NAT1
       |MININT|MAXINT|BOOL|TRUE|FALSE)                                       # ExpressionOperator
   | exprs+=expression LEFT_PAR exprs+=expression
       (',' exprs+=expression)* RIGHT_PAR                                          # FunctionCallExpression

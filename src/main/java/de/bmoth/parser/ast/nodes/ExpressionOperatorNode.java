@@ -2,20 +2,19 @@ package de.bmoth.parser.ast.nodes;
 
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.ExpressionOperatorContext;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 public class ExpressionOperatorNode extends ExprNode implements OperatorNode<ExpressionOperatorNode.ExpressionOperator> {
 
     public enum ExpressionOperator {
 
         // arithmetic
-        NATURAL, NATURAL1, INTEGER, INT, NAT, MININT, MAXINT//
+        NATURAL, NATURAL1, INTEGER, INT, NAT, NAT1, MININT, MAXINT//
         , BOOL, TRUE, FALSE, POWER_OF //
         , PLUS, MINUS, MULT, DIVIDE, MOD, INTERVAL//
         , UNARY_MINUS//
@@ -46,6 +45,7 @@ public class ExpressionOperatorNode extends ExprNode implements OperatorNode<Exp
         map.put(BMoThParser.NATURAL1, ExpressionOperator.NATURAL1);
         map.put(BMoThParser.INTEGER, ExpressionOperator.INTEGER);
         map.put(BMoThParser.NAT, ExpressionOperator.NAT);
+        map.put(BMoThParser.NAT1, ExpressionOperator.NAT1);
         map.put(BMoThParser.INT, ExpressionOperator.INT);
         map.put(BMoThParser.MININT, ExpressionOperator.MININT);
         map.put(BMoThParser.MAXINT, ExpressionOperator.MAXINT);
@@ -105,7 +105,7 @@ public class ExpressionOperatorNode extends ExprNode implements OperatorNode<Exp
     private ExpressionOperator operator;
 
     public ExpressionOperatorNode(ExpressionOperatorContext ctx, List<ExprNode> expressionNodes,
-            String operatorString) {
+                                  String operatorString) {
         super(ctx);
         this.expressionNodes = expressionNodes;
         this.operatorString = operatorString;
@@ -113,7 +113,7 @@ public class ExpressionOperatorNode extends ExprNode implements OperatorNode<Exp
     }
 
     public ExpressionOperatorNode(ParserRuleContext parseTree, List<ExprNode> expressionNodes,
-            ExpressionOperator operator) {
+                                  ExpressionOperator operator) {
         // used for set enumeration, e.g. {1,2,3}
         super(parseTree);
         this.expressionNodes = expressionNodes;
