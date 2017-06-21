@@ -13,7 +13,7 @@ public class BuechiAutomaton {
 
     public String new_name() {
         nodeCounter++;
-        return "place holder" + String.valueOf(nodeCounter);
+        return "node" + String.valueOf(nodeCounter);
     }
 
     public BuechiAutomaton(LTLNode formula) {
@@ -185,6 +185,6 @@ public class BuechiAutomaton {
             nodeString.add("Incoming nodes: " + incoming.toString());
             nodesString.add(nodeString.toString());
         }
-        return "1";
+        return nodesString.toString();
     }
 }
