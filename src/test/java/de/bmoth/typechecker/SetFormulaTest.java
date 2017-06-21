@@ -4,9 +4,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
-import static de.bmoth.TestConstants.INTEGER;
-import static de.bmoth.TestConstants.POW_INTEGER;
-import static de.bmoth.TestConstants.POW_INTEGER_INTEGER;
+import static de.bmoth.TestConstants.*;
 import static de.bmoth.typechecker.TestTypechecker.getFormulaTypes;
 import static org.junit.Assert.assertEquals;
 
@@ -54,7 +52,7 @@ public class SetFormulaTest {
         assertEquals(POW_INTEGER, formulaTypes.get("a"));
         assertEquals(INTEGER, formulaTypes.get("b"));
         assertEquals(POW_INTEGER, formulaTypes.get("c"));
-        assertEquals(POW_INTEGER_INTEGER, formulaTypes.get("d"));
+        assertEquals("POW(POW(INTEGER))", formulaTypes.get("d"));
     }
 
 }
