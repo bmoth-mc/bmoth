@@ -41,6 +41,14 @@ public class BuechiAutomaton {
         } else {
             LTLFormula formula = node.unprocessed.get(0);
             node.unprocessed.remove(0);
+            if (formula.getLTLNode() instanceof LTLPrefixOperatorNode) {
+                List<LTLFormula> processed = node.processed;
+                processed.add(formula);
+                List<LTLFormula> next = node.next;
+                // TODO: add argument to next
+                return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
+                    processed, next), nodesSet);
+            }
         }
         return nodesSet;
     }
