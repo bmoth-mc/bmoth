@@ -65,7 +65,7 @@ public class BuechiAutomaton {
             LTLNode formula = node.unprocessed.get(0);
             node.unprocessed.remove(0);
 
-            // Predicate, True, False
+            // True, False
             if (formula instanceof LTLKeywordNode) {
                 if (((LTLKeywordNode) formula).getKind() == FALSE) {
                     // Current node contains a contradiction, discard
@@ -76,15 +76,31 @@ public class BuechiAutomaton {
                 }
             } else
 
-                // Next
                 if (formula instanceof LTLPrefixOperatorNode) {
-                List<LTLNode> processed = node.processed;
-                processed.add(formula);
-                List<LTLNode> next = node.next;
-                next.add(((LTLPrefixOperatorNode) formula).getArgument());
-                return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
-                    processed, next), nodesSet);
+
+                    if (((LTLPrefixOperatorNode) formula).getKind() == LTLPrefixOperatorNode.Kind.NEXT) {
+                        // Next
+                        List<LTLNode> processed = node.processed;
+                        processed.add(formula);
+                        List<LTLNode> next = node.next;
+                        next.add(((LTLPrefixOperatorNode) formula).getArgument());
+                        return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
+                            processed, next), nodesSet);
+                    } else {
+                        // Not
+                        // TODO: Check if negative of predicate already occured -> contradiction -> boom
+//                        if (neg(formula.getArgument()) in Old) {
+//                            // Current node contains a contradiction, discard
+//                            return nodesSet;
+//                        } else {
+//                            node.processed.add(formula);
+//                            return expand(node, nodesSet);
+//                        }
+                        node.processed.add(formula);
+                        return expand(node, nodesSet);
+                    }
             } else
+
                 if (formula instanceof LTLInfixOperatorNode) {
 
                     if (((LTLInfixOperatorNode) formula).getKind() == LTLInfixOperatorNode.Kind.AND) {
