@@ -13,7 +13,8 @@ public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult
 
     private final int maxSteps;
     private final Solver solver;
-    private final Expr[] originalVars, primedVars;
+    private final Expr[] originalVars;
+    private final Expr[] primedVars;
     private final Map<Expr, String> primedVarToOriginalName;
 
     public BoundedModelChecker(MachineNode machine, int maxSteps) {

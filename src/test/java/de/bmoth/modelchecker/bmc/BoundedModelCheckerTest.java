@@ -7,7 +7,7 @@ import static de.bmoth.modelchecker.bmc.BoundedModelCheckingResult.Type.COUNTER_
 import static de.bmoth.modelchecker.bmc.BoundedModelCheckingResult.Type.EXCEEDED_MAX_STEPS;
 import static org.junit.Assert.assertEquals;
 
-public class BoundedModelChekcerTest extends TestParser {
+public class BoundedModelCheckerTest extends TestParser {
 
     @Test
     public void test1() {

@@ -12,6 +12,7 @@ public class ParserException extends Exception {
         return this.exception;
     }
 
+    @Override
     public String getMessage() {
         return exception.getMessage();
     }

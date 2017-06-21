@@ -1,10 +1,8 @@
 package de.bmoth.backend.ltl.transformation;
 
-import de.bmoth.antlr.BMoThParser;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 
 public class ConvertPhiUntilPhiUntilPsiToPhiUntilPsi extends AbstractASTTransformation{

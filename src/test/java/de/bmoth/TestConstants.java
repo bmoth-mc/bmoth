@@ -2,6 +2,8 @@ package de.bmoth;
 
 public class TestConstants {
 
+    private TestConstants() {}
+
     public static final String INTEGER = "INTEGER";
     public static final String INTEGER_INTEGER = "INTEGER*INTEGER";
     public static final String POW_INTEGER = "POW(INTEGER)";

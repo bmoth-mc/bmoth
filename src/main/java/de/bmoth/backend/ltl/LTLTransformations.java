@@ -4,7 +4,6 @@ import de.bmoth.backend.ltl.transformation.ConvertFinallyFinallyToFinally;
 import de.bmoth.backend.ltl.transformation.ConvertGloballyGloballyToGlobally;
 import de.bmoth.backend.ltl.transformation.ConvertNotGloballyToFinallyNot;
 import de.bmoth.backend.ltl.transformation.ConvertPhiUntilPhiUntilPsiToPhiUntilPsi;
-import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
