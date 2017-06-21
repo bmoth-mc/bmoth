@@ -45,7 +45,7 @@ public class BuechiAutomaton {
                 List<LTLNode> processed = node.processed;
                 processed.add(formula);
                 List<LTLNode> next = node.next;
-                // TODO: add argument to next
+                next.add(((LTLPrefixOperatorNode) formula).getArgument());
                 return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
                     processed, next), nodesSet);
             }
