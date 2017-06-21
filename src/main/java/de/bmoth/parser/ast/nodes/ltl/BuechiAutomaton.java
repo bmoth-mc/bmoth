@@ -64,8 +64,10 @@ public class BuechiAutomaton {
             } else {
                 List<String> incoming = new ArrayList<>();
                 incoming.add(node.name);
+                List<BuechiAutomatonNode> newNodesSet = new ArrayList<>(nodesSet);
+                newNodesSet.add(node);
                 return expand(new BuechiAutomatonNode(new_name(), incoming, node.next,
-                    new ArrayList<>(), new ArrayList<>()), nodesSet);
+                    new ArrayList<>(), new ArrayList<>()), newNodesSet);
             }
         } else {
             LTLNode formula = node.unprocessed.get(0);
