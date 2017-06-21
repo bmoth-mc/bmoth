@@ -18,20 +18,20 @@ public class ConvertFinallyFinallyToFinally extends AbstractASTTransformation{
         if (finallyOperator01.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
             LTLNode argument = finallyOperator01.getArgument();
             if (argument instanceof LTLPrefixOperatorNode) {
-                LTLPrefixOperatorNode Operator02 = (LTLPrefixOperatorNode) argument;
+                LTLPrefixOperatorNode operator02 = (LTLPrefixOperatorNode) argument;
                 // case FF->F
-                if (Operator02.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
+                if (operator02.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
                     setChanged();
-                    return Operator02;
+                    return operator02;
                 }
                 // case FnF->nF
-                if (Operator02.getKind() != LTLPrefixOperatorNode.Kind.NOT) {
-                        LTLNode argument02 = Operator02.getArgument();
+                if (operator02.getKind() != LTLPrefixOperatorNode.Kind.NOT) {
+                        LTLNode argument02 = operator02.getArgument();
                         if (argument02 instanceof LTLPrefixOperatorNode) {
-                            LTLPrefixOperatorNode Operator03 = (LTLPrefixOperatorNode) argument02;
-                            if (Operator03.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
+                            LTLPrefixOperatorNode operator03 = (LTLPrefixOperatorNode) argument02;
+                            if (operator03.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
                                 setChanged();
-                                return Operator02;
+                                return operator02;
                             }
                         }
                 }

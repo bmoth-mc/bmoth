@@ -3,6 +3,7 @@ package de.bmoth.backend.ltl;
 import de.bmoth.backend.ltl.transformation.ConvertFinallyFinallyToFinally;
 import de.bmoth.backend.ltl.transformation.ConvertGloballyGloballyToGlobally;
 import de.bmoth.backend.ltl.transformation.ConvertNotGloballyToFinallyNot;
+import de.bmoth.backend.ltl.transformation.ConvertPhiUntilPhiUntilPsiToPhiUntilPsi;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
@@ -21,6 +22,7 @@ public class LTLTransformations {
         transformationList.add(new ConvertNotGloballyToFinallyNot());
         transformationList.add(new ConvertGloballyGloballyToGlobally());
         transformationList.add(new ConvertFinallyFinallyToFinally());
+        transformationList.add(new ConvertPhiUntilPhiUntilPsiToPhiUntilPsi());
     }
 
     public static LTLTransformations getInstance() {
