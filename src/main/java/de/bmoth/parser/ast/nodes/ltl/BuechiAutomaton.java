@@ -53,7 +53,7 @@ public class BuechiAutomaton {
         return newNodes;
     }
 
-    private BuechiAutomatonNode handleSecondNodeInSplit(BuechiAutomatonNode node, LTLNode formula, , List<LTLNode> newProcessed) {
+    private BuechiAutomatonNode handleSecondNodeInSplit(BuechiAutomatonNode node, LTLNode formula, List<LTLNode> newProcessed) {
         // Prepare the different parts
         List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
         List<LTLNode> newUnprocessed = new1((LTLInfixOperatorNode) formula);
