@@ -12,6 +12,10 @@ import static org.junit.Assert.assertEquals;
 
 public class RelationTest {
 
+    private static final String INTEGER = "INTEGER";
+    private static final String POW_INTEGER = "POW(INTEGER)";
+    private static final String POW_INTEGER_INTEGER = "POW(INTEGER*INTEGER)";
+
     @Test @Ignore
     public void relationTest() throws ParserException {
         String formula = "x = {1,2} <-> {10,20}";
@@ -19,7 +23,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("INTEGER", declarationNode.getType().toString());
+        assertEquals(INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -29,7 +33,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -39,7 +43,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER, declarationNode.getType().toString());
     }
 
     @Test @Ignore
@@ -49,7 +53,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test @Ignore
@@ -59,7 +63,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -69,7 +73,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -79,7 +83,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -89,7 +93,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -99,7 +103,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -109,7 +113,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test @Ignore
@@ -119,7 +123,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -129,7 +133,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
 
@@ -160,7 +164,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test @Ignore
@@ -170,7 +174,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test @Ignore
@@ -180,7 +184,7 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test @Ignore
@@ -190,6 +194,6 @@ public class RelationTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
+        assertEquals(POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 }

@@ -1,18 +1,20 @@
 package de.bmoth.modelchecker.esmc;
 
-import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
-import de.bmoth.modelchecker.esmc.ModelCheckingResult;
 import org.junit.Test;
 
+import static de.bmoth.TestParser.parseMachine;
 import static org.junit.Assert.assertEquals;
-import static de.bmoth.TestParser.*;
+
 public class SetSizesTest {
+
+    private static final String MACHINE_NAME = "MACHINE test\n";
+    private static final String ONE_VARIABLE_X = "VARIABLES\nx\n";
+
     @Test
     public void testXEqualEnumSet() {
-        String machine = "MACHINE test\n";
+        String machine = MACHINE_NAME;
         machine += "SETS enm={d1,d2}\n";
-        machine += "VARIABLES\n";
-        machine += "x\n";
+        machine += ONE_VARIABLE_X;
         machine += "INVARIANT x=enm & d1:x & d2:x\n";
         machine += "INITIALISATION x:=enm\n";
         machine += "END";
@@ -23,10 +25,9 @@ public class SetSizesTest {
 
     @Test
     public void testEnumeratedSetDoesNotChangeByInserting() {
-        String machine = "MACHINE test\n";
+        String machine = MACHINE_NAME;
         machine += "SETS enm={d1,d2}\n";
-        machine += "VARIABLES\n";
-        machine += "x\n";
+        machine += ONE_VARIABLE_X;
         machine += "INVARIANT x=enm\n";
         machine += "INITIALISATION x:=enm\n";
         machine += "OPERATIONS\n";
@@ -40,10 +41,9 @@ public class SetSizesTest {
 
     @Test
     public void testXEqualDefSet() {
-        String machine = "MACHINE test\n";
+        String machine = MACHINE_NAME;
         machine += "SETS def\n";
-        machine += "VARIABLES\n";
-        machine += "x\n";
+        machine += ONE_VARIABLE_X;
         machine += "INVARIANT x=def\n";
         machine += "INITIALISATION x:=def\n";
         machine += "END";
@@ -54,10 +54,9 @@ public class SetSizesTest {
 
     @Test
     public void testDefferedSetDoesNotChangeByInserting() {
-        String machine = "MACHINE test\n";
+        String machine = MACHINE_NAME;
         machine += "SETS def\n";
-        machine += "VARIABLES\n";
-        machine += "x\n";
+        machine += ONE_VARIABLE_X;
         machine += "INVARIANT x=def\n";
         machine += "INITIALISATION x:=def\n";
         machine += "OPERATIONS\n";

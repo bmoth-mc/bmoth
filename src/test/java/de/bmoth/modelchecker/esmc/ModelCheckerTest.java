@@ -10,13 +10,20 @@ import static org.junit.Assert.assertTrue;
 import static de.bmoth.TestParser.*;
 
 public class ModelCheckerTest {
+
+    private static final String MACHINE_NAME = "MACHINE test \n";
+    private static final String SIMPLE_MACHINE_NAME = "MACHINE SimpleMachine\n";
+    private static final String OPERATIONS = "OPERATIONS\n";
+    private static final String ONE_VARIABLE_X = "VARIABLES x\n";
+    private static final String INITIALISE_X_TO_0 = "INITIALISATION x := 0\n";
+
     @Test
     public void testAnySubstitution() {
-        String machine = "MACHINE test \n";
+        String machine = MACHINE_NAME;
         machine += "VARIABLES x,y \n";
         machine += "INVARIANT x:NATURAL & y : NATURAL \n";
         machine += "INITIALISATION x,y:= 1,2 \n";
-        machine += "OPERATIONS\n";
+        machine += OPERATIONS;
         machine += "\treplaceBoth =\n";
         machine += "\t\tANY nVal \n";
         machine += "\t\tWHERE nVal:1..3\n";
@@ -31,11 +38,11 @@ public class ModelCheckerTest {
 
     @Test
     public void testAnySubstitutionWithInvariantViolation() {
-        String machine = "MACHINE test \n";
-        machine += "VARIABLES x \n";
+        String machine = MACHINE_NAME;
+        machine += ONE_VARIABLE_X;
         machine += "INVARIANT x < 4 \n";
         machine += "INITIALISATION x := 1 \n";
-        machine += "OPERATIONS\n";
+        machine += OPERATIONS;
         machine += "\treplaceX =\n";
         machine += "\t\tANY nVal \n";
         machine += "\t\tWHERE nVal > 0 & nVal < 5\n"; // should be < 4 to avoid
@@ -50,11 +57,11 @@ public class ModelCheckerTest {
 
     @Test
     public void testSimpleMachineWithOperations() {
-        String machine = "MACHINE SimpleMachine\n";
-        machine += "VARIABLES x\n";
+        String machine = SIMPLE_MACHINE_NAME;
+        machine += ONE_VARIABLE_X;
         machine += "INVARIANT x : NATURAL & x >= 0 & x <= 2\n";
-        machine += "INITIALISATION x := 0\n";
-        machine += "OPERATIONS\n";
+        machine += INITIALISE_X_TO_0;
+        machine += OPERATIONS;
         machine += "\tInc = SELECT x < 2 THEN x := x + 1 END;\n";
         machine += "\tDec = SELECT x > 0 THEN x := x - 1 END\n";
         machine += "END";
@@ -66,11 +73,11 @@ public class ModelCheckerTest {
 
     @Test
     public void testSimpleMachineWithOperations2() {
-        String machine = "MACHINE SimpleMachine\n";
-        machine += "VARIABLES x\n";
+        String machine = SIMPLE_MACHINE_NAME;
+        machine += ONE_VARIABLE_X;
         machine += "INVARIANT x : NATURAL & x >= 0 & x <= 2\n";
-        machine += "INITIALISATION x := 0\n";
-        machine += "OPERATIONS\n";
+        machine += INITIALISE_X_TO_0;
+        machine += OPERATIONS;
         machine += "\tBlockSubstitution = BEGIN x := x + 1 END\n";
         machine += "END";
 
@@ -83,11 +90,11 @@ public class ModelCheckerTest {
 
     @Test
     public void testAbort() {
-        String machine = "MACHINE SimpleMachine\n";
-        machine += "VARIABLES x\n";
+        String machine = SIMPLE_MACHINE_NAME;
+        machine += ONE_VARIABLE_X;
         machine += "INVARIANT x : INTEGER\n";
-        machine += "INITIALISATION x := 0\n";
-        machine += "OPERATIONS\n";
+        machine += INITIALISE_X_TO_0;
+        machine += OPERATIONS;
         machine += "\tinc = BEGIN x := x + 1 END\n";
         machine += "END";
 
@@ -111,9 +118,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testEnumeratedSet() {
-        String machine = "MACHINE SimpleMachine\n";
+        String machine = SIMPLE_MACHINE_NAME;
         machine += "SETS set={s1,s2,s3} \n";
-        machine += "VARIABLES x\n";
+        machine += ONE_VARIABLE_X;
         machine += "INVARIANT x: set & x = s2 \n";
         machine += "INITIALISATION x := s1 \n";
         machine += "END";
@@ -127,7 +134,7 @@ public class ModelCheckerTest {
     @Test
     @Ignore("Z3 finds an empty model for this test?!")
     public void testDeferredSet() {
-        String machine = "MACHINE SimpleMachine\n";
+        String machine = SIMPLE_MACHINE_NAME;
         machine += "SETS set\n";
         machine += "VARIABLES x,y\n";
         machine += "INVARIANT x : set & y : set & x = y\n";
@@ -141,7 +148,7 @@ public class ModelCheckerTest {
 
     @Test
     public void testDeferredSetUsingAny() {
-        String machine = "MACHINE SimpleMachine\n";
+        String machine = SIMPLE_MACHINE_NAME;
         machine += "SETS set\n";
         machine += "VARIABLES x,y\n";
         machine += "INVARIANT x : set & y : set & x = y\n";

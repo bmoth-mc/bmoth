@@ -16,7 +16,7 @@ public class RelationsTest {
     public void testFunctionCall() {
         String formula = "[4,5,6](2) = a";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("INTEGER", formulaTypes.get("a"));
+        assertEquals(INTEGER, formulaTypes.get("a"));
     }
 
     @Test
