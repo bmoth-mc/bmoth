@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 public class SequenceTest {
 
-    @Test @Ignore
+    @Test
     public void emptySequenceTest() throws ParserException {
         String formula = "x = <> & x <: NAT*NAT";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
@@ -52,7 +52,8 @@ public class SequenceTest {
         assertEquals("POW(POW(INTEGER*INTEGER))", declarationNode.getType().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void permutationsTest() throws ParserException {
         String formula = "x = perm({1,2,3})";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
@@ -112,7 +113,8 @@ public class SequenceTest {
         assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void sizeTest() throws ParserException {
         String formula = "x = size([2,3,4])";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
@@ -122,7 +124,8 @@ public class SequenceTest {
         assertEquals("INTEGER", declarationNode.getType().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void reverseTest() throws ParserException {
         String formula = "x = rev([2,3,4])";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
@@ -192,7 +195,8 @@ public class SequenceTest {
         assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void concatenationTest() throws ParserException {
         String formula = "x = conc([[1,2,3],[6,7,8]])";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);
@@ -202,7 +206,8 @@ public class SequenceTest {
         assertEquals("POW(INTEGER*INTEGER)", declarationNode.getType().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void stringTest() throws ParserException {
         String formula = "x = \"test\"";
         FormulaNode formulaNode = Parser.getFormulaAsSemanticAst(formula);

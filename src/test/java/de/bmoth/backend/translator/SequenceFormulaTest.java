@@ -12,6 +12,12 @@ public class SequenceFormulaTest extends TestUsingZ3 {
     }
 
     @Test
+    public void testEmptySequenceFormulaAlternativeNotation() {
+        check(Status.SATISFIABLE, "x = <> & x /= [1]");
+        check(Status.UNSATISFIABLE, "<> = [1]");
+    }
+
+    @Test
     public void testSimpleSequenceExtensionFormula() {
         check(Status.SATISFIABLE, "[4,5] = [4,5]");
         check(Status.SATISFIABLE, "[4,5] = [x,5]");
