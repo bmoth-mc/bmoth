@@ -28,10 +28,7 @@ public class BuechiAutomaton {
 
     public List<LTLNode> new1(LTLInfixOperatorNode node) {
         List<LTLNode> newNodes = new ArrayList<>();
-        if ((node.getKind() == LTLInfixOperatorNode.Kind.UNTIL) || (node.getKind() == LTLInfixOperatorNode.Kind.OR)) {
-            newNodes.add(node.getLeft());
-        }
-        // TODO: weak-until
+        newNodes.add(node.getLeft());
         return newNodes;
     }
 
@@ -41,16 +38,12 @@ public class BuechiAutomaton {
             newNodes.add(node);
         }
         // In case of OR an empty list is returned
-        // TODO: weak-until
         return newNodes;
     }
 
     public List<LTLNode> next1(LTLInfixOperatorNode node) {
         List<LTLNode> newNodes = new ArrayList<>();
-        if ((node.getKind() == LTLInfixOperatorNode.Kind.UNTIL) || (node.getKind() == LTLInfixOperatorNode.Kind.OR)) {
-            newNodes.add(node.getRight());
-        }
-        // TODO: weak-until
+        newNodes.add(node.getRight());
         return newNodes;
     }
 
@@ -110,7 +103,7 @@ public class BuechiAutomaton {
                             newUnprocessed, newProcessed, node.next), nodesSet);
 
                     } else {
-                        // Until, weak-until, logical or: Split the node in two
+                        // Until, logical or: Split the node in two
                         // Prepare the parts for the first new node
                         List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
                         List<LTLNode> newUnprocessed = new1((LTLInfixOperatorNode) formula);
