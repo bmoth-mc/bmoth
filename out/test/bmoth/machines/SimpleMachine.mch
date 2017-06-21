@@ -1,0 +1,11 @@
+MACHINE SimpleMachine
+VARIABLES
+  x
+INVARIANT
+  x : NATURAL 
+INITIALISATION
+  x := 1
+OPERATIONS
+  Inc = SELECT x < 10 THEN x := x + 1 END;
+  Dec = SELECT x > 1 THEN x := x -1 END
+END
