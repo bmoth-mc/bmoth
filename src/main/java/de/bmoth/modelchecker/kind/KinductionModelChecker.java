@@ -13,7 +13,8 @@ public class KinductionModelChecker extends ModelChecker<KinductionModelChecking
 
     private final int maxSteps;
     private final Solver solver;
-    private final Expr[] originalVars, primedVars;
+    private final Expr[] originalVars;
+    private final Expr[] primedVars;
     private final Map<Expr, String> primedVarToOriginalName;
 
     public KinductionModelChecker(MachineNode machine, int maxSteps) {
@@ -54,8 +55,8 @@ public class KinductionModelChecker extends ModelChecker<KinductionModelChecking
                 State counterExample = getStateFromModel(solver.getModel(), k);
                 return KinductionModelCheckingResult.createCounterExampleFound(counterExample, k);
             } else {
-            	
-            	
+
+
                 for (int i = 0; i <= k; i++) {
                     solver.add(transition(i - 1, i));
                 }

@@ -167,10 +167,10 @@ public class BuechiAutomaton {
         initIncoming.add("init");
         List<LTLNode> unprocessed = new ArrayList<>();
         unprocessed.add(formula);
-        List<BuechiAutomatonNode> nodesSet = new ArrayList<>();
+        List<BuechiAutomatonNode> nodeSet = new ArrayList<>();
 
         return expand(new BuechiAutomatonNode(newName(), initIncoming, unprocessed, new ArrayList<>(),
-            new ArrayList<>()), nodesSet);
+            new ArrayList<>()), nodeSet);
     }
 
     public String toString() {

@@ -30,7 +30,7 @@ public class SequenceTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(POW(INTEGER*INTEGER))", declarationNode.getType().toString());
+        assertEquals(POW_POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -40,7 +40,7 @@ public class SequenceTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(POW(INTEGER*INTEGER))", declarationNode.getType().toString());
+        assertEquals(POW_POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class SequenceTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(POW(INTEGER*INTEGER))", declarationNode.getType().toString());
+        assertEquals(POW_POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class SequenceTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("POW(POW(INTEGER*INTEGER))", declarationNode.getType().toString());
+        assertEquals(POW_POW_INTEGER_INTEGER, declarationNode.getType().toString());
     }
 
     @Test

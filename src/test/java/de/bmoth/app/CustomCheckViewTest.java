@@ -19,9 +19,9 @@ import static org.testfx.matcher.base.NodeMatchers.isNull;
 
 public class CustomCheckViewTest extends HeadlessUITest {
 
-    private final static String INITIAL_CHECK_ID = "#initialCheck";
-    private final static String MODEL_CHECK_ID = "#modelCheck";
-    private final static String INVARIANT_CHECK_ID = "#invariantCheck";
+    private static final String INITIAL_CHECK_ID = "#initialCheck";
+    private static final String MODEL_CHECK_ID = "#modelCheck";
+    private static final String INVARIANT_CHECK_ID = "#invariantCheck";
 
 
     @InjectViewModel
