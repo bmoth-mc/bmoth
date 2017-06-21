@@ -3,6 +3,8 @@ package de.bmoth.parser.ast.nodes.ltl;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode.Kind.FALSE;
+
 public class BuechiAutomaton {
 
     private int nodeCounter = 0;
@@ -41,14 +43,27 @@ public class BuechiAutomaton {
         } else {
             LTLNode formula = node.unprocessed.get(0);
             node.unprocessed.remove(0);
-            if (formula instanceof LTLPrefixOperatorNode) {
+
+            // Predicate, True, False
+            if (formula instanceof LTLKeywordNode) {
+                if (((LTLKeywordNode) formula).getKind() == FALSE) {
+                    // Current node contains a contradiction, discard
+                    return nodesSet;
+                } else {
+                    node.processed.add(formula);
+                    return expand(node, nodesSet);
+                }
+            } else
+
+                // Next
+                if (formula instanceof LTLPrefixOperatorNode) {
                 List<LTLNode> processed = node.processed;
                 processed.add(formula);
                 List<LTLNode> next = node.next;
                 next.add(((LTLPrefixOperatorNode) formula).getArgument());
                 return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
                     processed, next), nodesSet);
-            }
+            } 
         }
         return nodesSet;
     }
