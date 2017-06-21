@@ -92,34 +92,53 @@ public class BuechiAutomaton {
                 return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
                     processed, next), nodesSet);
             } else
-
-                // Until, weak-until, logical or: Split the node in two
                 if (formula instanceof LTLInfixOperatorNode) {
-                    // Prepare the parts for the first new node
-                    List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
-                    unprocessed.addAll(new1((LTLInfixOperatorNode) formula));
-                    unprocessed.removeAll(node.processed);
 
-                    List<LTLNode> processed = new ArrayList<>(node.processed);
-                    processed.add(formula);
+                    if (((LTLInfixOperatorNode) formula).getKind() == LTLInfixOperatorNode.Kind.AND) {
+                        // Logical and
+                        List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
+                        List<LTLNode> newUnprocessed = new ArrayList<>();
+                        newUnprocessed.add(((LTLInfixOperatorNode) formula).getLeft());
+                        newUnprocessed.add(((LTLInfixOperatorNode) formula).getRight());
+                        newUnprocessed.removeAll(node.processed);
+                        newUnprocessed.addAll(unprocessed);
 
-                    List<LTLNode> next = new ArrayList<>(node.next);
-                    next.addAll(next1((LTLInfixOperatorNode) formula));
+                        List<LTLNode> newProcessed = new ArrayList<>(node.processed);
+                        newProcessed.add(formula);
 
-                    // Create the first new node
-                    BuechiAutomatonNode node1 = new BuechiAutomatonNode(new_name(), node.incoming,
-                        unprocessed, processed, next);
+                        return expand(new BuechiAutomatonNode(node.name, node.incoming,
+                            newUnprocessed, newProcessed, node.next), nodesSet);
 
-                    // Prepare the parts for the second new node
-                    unprocessed = new ArrayList<>(node.unprocessed);
-                    unprocessed.addAll(new2((LTLInfixOperatorNode) formula));
-                    unprocessed.removeAll(node.processed);
+                    } else {
+                        // Until, weak-until, logical or: Split the node in two
+                        // Prepare the parts for the first new node
+                        List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
+                        List<LTLNode> newUnprocessed = new1((LTLInfixOperatorNode) formula);
+                        newUnprocessed.removeAll(node.processed);
+                        newUnprocessed.addAll(unprocessed);
 
-                    // Create the second new node
-                    BuechiAutomatonNode node2 = new BuechiAutomatonNode(new_name(), node.incoming,
-                        unprocessed, processed, node.next);
+                        List<LTLNode> newProcessed = new ArrayList<>(node.processed);
+                        newProcessed.add(formula);
 
-                    return expand(node2, expand(node1, nodesSet));
+                        List<LTLNode> newNext = new ArrayList<>(node.next);
+                        newNext.addAll(next1((LTLInfixOperatorNode) formula));
+
+                        // Create the first new node
+                        BuechiAutomatonNode node1 = new BuechiAutomatonNode(new_name(), node.incoming,
+                            newUnprocessed, newProcessed, newNext);
+
+                        // Prepare the parts for the second new node
+                        unprocessed = new ArrayList<>(node.unprocessed);
+                        newUnprocessed = new2((LTLInfixOperatorNode) formula);
+                        newUnprocessed.removeAll(node.processed);
+                        newUnprocessed.addAll(unprocessed);
+
+                        // Create the second new node
+                        BuechiAutomatonNode node2 = new BuechiAutomatonNode(new_name(), node.incoming,
+                            newUnprocessed, newProcessed, node.next);
+
+                        return expand(node2, expand(node1, nodesSet));
+                    }
             }
         }
         return nodesSet;
