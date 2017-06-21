@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static de.bmoth.TestConstants.*;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
 import static org.junit.Assert.*;
@@ -13,8 +14,6 @@ import static de.bmoth.typechecker.TestTypechecker.*;
 
 public class FormulaTest {
 
-    private static final String INTEGER = "INTEGER";
-    private static final String POW_INTEGER = "POW(INTEGER)";
 
     @Test
     public void testExpressionFormula() {

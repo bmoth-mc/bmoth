@@ -4,12 +4,13 @@ import org.junit.Test;
 
 import java.util.Map;
 
+import static de.bmoth.TestConstants.INTEGER;
+import static de.bmoth.TestConstants.POW_INTEGER;
+import static de.bmoth.TestConstants.POW_INTEGER_INTEGER;
 import static de.bmoth.typechecker.TestTypechecker.getFormulaTypes;
 import static org.junit.Assert.assertEquals;
 
 public class SequenceFormulaTest {
-    private static final String INTEGER = "INTEGER";
-    private static final String POW_INTEGER_INTEGER = "POW(INTEGER*INTEGER)";
 
     @Test
     public void testSequenceEnumeration() {
@@ -83,7 +84,7 @@ public class SequenceFormulaTest {
     public void testSeq() {
         String formula = "[1] : seq(a)";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("POW(INTEGER)", formulaTypes.get("a"));
+        assertEquals(POW_INTEGER, formulaTypes.get("a"));
     }
 
     @Test
@@ -118,7 +119,7 @@ public class SequenceFormulaTest {
     public void testRangeOnSequence() {
         String formula = "ran([4,5,6]) = a";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("POW(INTEGER)", formulaTypes.get("a"));
+        assertEquals(POW_INTEGER, formulaTypes.get("a"));
     }
 
 }

@@ -7,14 +7,11 @@ import de.bmoth.parser.ast.nodes.FormulaNode;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static de.bmoth.TestConstants.*;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
 import static org.junit.Assert.assertEquals;
 
 public class RelationTest {
-
-    private static final String INTEGER = "INTEGER";
-    private static final String POW_INTEGER = "POW(INTEGER)";
-    private static final String POW_INTEGER_INTEGER = "POW(INTEGER*INTEGER)";
 
     @Test @Ignore
     public void relationTest() throws ParserException {

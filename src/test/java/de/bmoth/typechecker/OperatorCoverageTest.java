@@ -3,6 +3,8 @@ package de.bmoth.typechecker;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import org.junit.Test;
+
+import static de.bmoth.TestConstants.INTEGER;
 import static de.bmoth.typechecker.TestTypechecker.*;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
@@ -10,8 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static de.bmoth.TestParser.*;
 
 public class OperatorCoverageTest {
-
-    private static final String INTEGER = "INTEGER";
 
     @Test
     public void testExpressionFormula() {

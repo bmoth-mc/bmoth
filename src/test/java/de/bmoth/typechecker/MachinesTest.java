@@ -5,19 +5,13 @@ import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
 
+import static de.bmoth.TestConstants.*;
 import static org.junit.Assert.assertEquals;
 import static de.bmoth.TestParser.*;
 import static de.bmoth.typechecker.TestTypechecker.*;
 
 public class MachinesTest {
 
-    private static final String POW_INTEGER = "POW(INTEGER)";
-    private static final String INTEGER = "INTEGER";
-
-    private static final String MACHINE_NAME = "MACHINE test\n";
-    private static final String ONE_CONSTANT = "CONSTANTS k \n";
-    private static final String TWO_CONSTANTS = "CONSTANTS k,k2 \n";
-    private static final String THREE_CONSTANTS = "CONSTANTS k,k2,k3 \n";
     private static final String VARIABLES_X_Y = "VARIABLES x,y \n";
     private static final String INVARIANT_X_Y = "INVARIANT x=1 & y : BOOL \n";
     private static final String INITIALISATION_X_1_Y_TRUE = "INITIALISATION x,y:= 1,TRUE \n";

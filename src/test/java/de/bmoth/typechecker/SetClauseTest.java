@@ -1,5 +1,8 @@
 package de.bmoth.typechecker;
 
+import static de.bmoth.TestConstants.MACHINE_NAME;
+import static de.bmoth.TestConstants.THREE_CONSTANTS;
+import static de.bmoth.TestConstants.TWO_CONSTANTS;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
@@ -8,9 +11,9 @@ public class SetClauseTest {
 
     @Test
     public void testEnumeratedSet() {
-        String machine = "MACHINE test \n";
+        String machine =MACHINE_NAME;
         machine += "SETS S1 = {a, b, c}; S2 = {d, e} \n";
-        machine += "CONSTANTS k, k2, k3 \n";
+        machine += THREE_CONSTANTS;
         machine += "PROPERTIES k = a & k2 : S2 & k3 = S1 \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);
@@ -22,9 +25,9 @@ public class SetClauseTest {
 
     @Test
     public void testDeferredSet() {
-        String machine = "MACHINE test \n";
+        String machine = MACHINE_NAME;
         machine += "SETS S1; S2 \n";
-        machine += "CONSTANTS k, k2 \n";
+        machine += TWO_CONSTANTS;
         machine += "PROPERTIES k : S1 & k2 = S2 \n";
         machine += "END";
         TestTypechecker t = new TestTypechecker(machine);

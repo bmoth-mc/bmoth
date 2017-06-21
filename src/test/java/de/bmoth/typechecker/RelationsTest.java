@@ -4,13 +4,11 @@ import org.junit.Test;
 
 import java.util.Map;
 
+import static de.bmoth.TestConstants.*;
 import static de.bmoth.typechecker.TestTypechecker.getFormulaTypes;
 import static org.junit.Assert.assertEquals;
 
 public class RelationsTest {
-    private static final String INTEGER = "INTEGER";
-    private static final String POW_INTEGER = "POW(INTEGER)";
-    private static final String POW_INTEGER_X_INTEGER = "POW(INTEGER*INTEGER)";
 
     @Test
     public void testFunctionCall() {
@@ -31,7 +29,7 @@ public class RelationsTest {
     public void testOverwriteRelation() {
         String formula = "k = {x|->2} <+ {1|->y}";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals(POW_INTEGER_X_INTEGER, formulaTypes.get("k"));
+        assertEquals(POW_INTEGER_INTEGER, formulaTypes.get("k"));
         assertEquals(INTEGER, formulaTypes.get("x"));
         assertEquals(INTEGER, formulaTypes.get("y"));
     }
@@ -40,7 +38,7 @@ public class RelationsTest {
     public void testDomainRestriction() {
         String formula = "k = x <| {1|->1}";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals(POW_INTEGER_X_INTEGER, formulaTypes.get("k"));
+        assertEquals(POW_INTEGER_INTEGER, formulaTypes.get("k"));
         assertEquals(POW_INTEGER, formulaTypes.get("x"));
     }
 
@@ -48,7 +46,7 @@ public class RelationsTest {
     public void testDomainSubstraction() {
         String formula = "k = x <<| {1|->1}";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals(POW_INTEGER_X_INTEGER, formulaTypes.get("k"));
+        assertEquals(POW_INTEGER_INTEGER, formulaTypes.get("k"));
         assertEquals(POW_INTEGER, formulaTypes.get("x"));
     }
 
@@ -56,7 +54,7 @@ public class RelationsTest {
     public void testRangeRestriction() {
         String formula = "k = {1|->1} |> x";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals(POW_INTEGER_X_INTEGER, formulaTypes.get("k"));
+        assertEquals(POW_INTEGER_INTEGER, formulaTypes.get("k"));
         assertEquals(POW_INTEGER, formulaTypes.get("x"));
     }
 
@@ -64,7 +62,7 @@ public class RelationsTest {
     public void testRangeSubstraction() {
         String formula = "k = {1|->1} |>> x";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals(POW_INTEGER_X_INTEGER, formulaTypes.get("k"));
+        assertEquals(POW_INTEGER_INTEGER, formulaTypes.get("k"));
         assertEquals(POW_INTEGER, formulaTypes.get("x"));
     }
 
@@ -79,21 +77,21 @@ public class RelationsTest {
     public void testMultOrCart() {
         String formula = "a * b = c & c = d * e & e = 1";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("INTEGER", formulaTypes.get("a"));
+        assertEquals(INTEGER, formulaTypes.get("a"));
     }
 
     @Test
     public void testMultOrCartAndMinus() {
         String formula = "a * b = c & c = d - e & e = 1";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("INTEGER", formulaTypes.get("a"));
+        assertEquals(INTEGER, formulaTypes.get("a"));
     }
 
     @Test
     public void testMultOrCartAndSet() {
         String formula = "a * b = c & {} /= c  & c = {1|->TRUE}";
         Map<String, String> formulaTypes = getFormulaTypes(formula);
-        assertEquals("POW(INTEGER)", formulaTypes.get("a"));
+        assertEquals(POW_INTEGER, formulaTypes.get("a"));
     }
 
 }

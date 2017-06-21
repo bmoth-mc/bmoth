@@ -6,12 +6,11 @@ import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import org.junit.Test;
 
+import static de.bmoth.TestConstants.*;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
 import static org.junit.Assert.assertEquals;
 
 public class LogicOperationsTest {
-
-    private final static String INTEGER = "INTEGER";
 
     @Test
     public void conjunctionTest() throws ParserException {
@@ -63,7 +62,7 @@ public class LogicOperationsTest {
         assertEquals(PREDICATE_FORMULA, formulaNode.getFormulaType());
         DeclarationNode declarationNode = formulaNode.getImplicitDeclarations().get(0);
         assertEquals("x", declarationNode.getName());
-        assertEquals("BOOL", declarationNode.getType().toString());
+        assertEquals(BOOL, declarationNode.getType().toString());
     }
 
     @Test
