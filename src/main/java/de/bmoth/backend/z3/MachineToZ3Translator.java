@@ -11,11 +11,11 @@ import de.bmoth.parser.ast.visitors.SubstitutionVisitor;
 
 import java.util.*;
 
+import static de.bmoth.backend.TranslationOptions.PRIMED_0;
+
 public class MachineToZ3Translator {
     private final MachineNode machineNode;
     private final Context z3Context;
-    private BoolExpr initialisationConstraint = null;
-    private BoolExpr invariantConstraint = null;
     private final List<BoolExpr> operationConstraints;
     private final SubstitutionToZ3TranslatorVisitor visitor;
     private final Z3TypeInference z3TypeInference;
@@ -26,30 +26,6 @@ public class MachineToZ3Translator {
         this.visitor = new SubstitutionToZ3TranslatorVisitor();
         this.z3TypeInference = new Z3TypeInference();
         z3TypeInference.visitMachineNode(machineNode);
-
-        BoolExpr initialization = null, properties = null;
-
-        if (machineNode.getInitialisation() != null) {
-            initialization = visitor.visitSubstitutionNode(machineNode.getInitialisation(), null);
-        }
-        if (machineNode.getProperties() != null) {
-            properties = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(), z3Context, z3TypeInference);
-        }
-
-        if (initialization != null && properties != null) {
-            this.initialisationConstraint = z3Context.mkAnd(initialization, properties);
-        } else if (initialization != null) {
-            this.initialisationConstraint = initialization;
-        } else {
-            this.initialisationConstraint = properties;
-        }
-
-        if (machineNode.getInvariant() != null) {
-            this.invariantConstraint = FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(), z3Context,
-                    z3TypeInference);
-        } else {
-            this.invariantConstraint = z3Context.mkTrue();
-        }
 
         this.operationConstraints = visitOperations(machineNode.getOperations());
     }
@@ -102,12 +78,41 @@ public class MachineToZ3Translator {
         return z3Context.mkConst(primedName, type);
     }
 
+    public BoolExpr getInitialValueConstraint(TranslationOptions ops) {
+        BoolExpr initialization = null, properties = null;
+
+        if (machineNode.getInitialisation() != null) {
+            initialization = visitor.visitSubstitutionNode(machineNode.getInitialisation(), new SubstitutionOptions(ops, UNPRIMED));
+        }
+        if (machineNode.getProperties() != null) {
+            properties = FormulaToZ3Translator.translatePredicate(machineNode.getProperties(), z3Context, z3TypeInference);
+        }
+
+        if (initialization != null && properties != null) {
+            return z3Context.mkAnd(initialization, properties);
+        } else if (initialization != null) {
+            return initialization;
+        } else {
+            return properties;
+        }
+    }
+
     public BoolExpr getInitialValueConstraint() {
-        return initialisationConstraint;
+        return getInitialValueConstraint(PRIMED_0);
+    }
+
+    public BoolExpr getInvariantConstraint(TranslationOptions ops) {
+        if (machineNode.getInvariant() != null) {
+            return FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(), z3Context, ops,
+                z3TypeInference);
+        } else {
+            return z3Context.mkTrue();
+        }
     }
 
     public BoolExpr getInvariantConstraint() {
-        return invariantConstraint;
+        return getInvariantConstraint(UNPRIMED);
+    }
     }
 
     class SubstitutionToZ3TranslatorVisitor implements SubstitutionVisitor<BoolExpr, TranslationOptions> {
