@@ -11,6 +11,8 @@ import de.bmoth.preferences.BMothPreferences;
 
 import java.util.*;
 
+import static de.bmoth.backend.TranslationOptions.PRIMED_0;
+
 public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult> {
     private Solver solver;
     private Solver opSolver;
@@ -102,7 +104,7 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
     private State getStateFromModel(State predecessor, Model model) {
         HashMap<String, Expr> map = new HashMap<>();
         for (DeclarationNode declNode : getMachineTranslator().getVariables()) {
-            Expr expr = getMachineTranslator().getPrimedVariable(declNode);
+            Expr expr = getMachineTranslator().getPrimedVariable(declNode, PRIMED_0);
             Expr value = model.eval(expr, true);
             map.put(declNode.getName(), value);
         }

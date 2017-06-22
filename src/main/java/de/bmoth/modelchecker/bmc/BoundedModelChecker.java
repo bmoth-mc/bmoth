@@ -9,6 +9,8 @@ import de.bmoth.parser.ast.nodes.MachineNode;
 
 import java.util.*;
 
+import static de.bmoth.backend.TranslationOptions.PRIMED_0;
+
 public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult> {
 
     private final int maxSteps;
@@ -23,7 +25,7 @@ public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult
         this.originalVars = getMachineTranslator().getVariables().stream().map(var -> getMachineTranslator().getVariable(var)).toArray(Expr[]::new);
         this.primedVarToOriginalName = new HashMap<>();
         this.primedVars = getMachineTranslator().getVariables().stream().map(var -> {
-            Expr primedVar = getMachineTranslator().getPrimedVariable(var);
+            Expr primedVar = getMachineTranslator().getPrimedVariable(var, PRIMED_0);
             primedVarToOriginalName.put(primedVar, var.getName());
             return primedVar;
         }).toArray(Expr[]::new);
