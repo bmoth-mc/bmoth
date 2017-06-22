@@ -20,12 +20,14 @@ public class MachineToZ3Translator {
     private final Context z3Context;
     private final SubstitutionToZ3TranslatorVisitor visitor;
     private final Z3TypeInference z3TypeInference;
+    private final Expr[] originalVariables;
 
     public MachineToZ3Translator(MachineNode machineNode, Context ctx) {
         this.machineNode = machineNode;
         this.z3Context = ctx;
         this.visitor = new SubstitutionToZ3TranslatorVisitor();
         this.z3TypeInference = new Z3TypeInference();
+        this.originalVariables = getVariables().stream().map(this::getVariable).toArray(Expr[]::new);
         z3TypeInference.visitMachineNode(machineNode);
 
     }
@@ -101,10 +103,25 @@ public class MachineToZ3Translator {
         return getInitialValueConstraint(PRIMED_0);
     }
 
+    private BoolExpr translatePredicate(PredicateNode predicateNode, TranslationOptions ops) {
+        BoolExpr predicate = FormulaToZ3Translator.translatePredicate(predicateNode, z3Context, ops,
+            z3TypeInference);
+        return substituteWithPrimedIfNecessary(predicate, ops);
+    }
+
+    private BoolExpr substituteWithPrimedIfNecessary(BoolExpr boolExpr, TranslationOptions ops) {
+        if (ops.isHasPrimeLevel()) {
+            Expr[] primedVariables = getVariables().stream().map(var -> getPrimedVariable(var, ops)).toArray(Expr[]::new);
+            return (BoolExpr) boolExpr.substitute(originalVariables, primedVariables);
+        } else {
+            return boolExpr;
+        }
+    }
+
     public BoolExpr getInvariantConstraint(TranslationOptions ops) {
-        if (machineNode.getInvariant() != null) {
-            return FormulaToZ3Translator.translatePredicate(machineNode.getInvariant(), z3Context, ops,
-                z3TypeInference);
+        PredicateNode invariantPredicate = machineNode.getInvariant();
+        if (invariantPredicate != null) {
+            return translatePredicate(invariantPredicate, ops);
         } else {
             return z3Context.mkTrue();
         }
@@ -149,8 +166,7 @@ public class MachineToZ3Translator {
             if (node.getConditions().size() > 1 || node.getElseSubstitution() != null) {
                 throw new AssertionError(CURRENTLY_NOT_SUPPORTED);
             }
-            BoolExpr condition = FormulaToZ3Translator.translatePredicate(node.getConditions().get(0), z3Context,
-                    z3TypeInference);
+            BoolExpr condition = translatePredicate(node.getConditions().get(0), ops.getRhs());
             BoolExpr substitution = visitSubstitutionNode(node.getSubstitutions().get(0), ops);
             return z3Context.mkAnd(condition, substitution);
         }
@@ -158,8 +174,9 @@ public class MachineToZ3Translator {
         @Override
         public BoolExpr visitSingleAssignSubstitution(SingleAssignSubstitutionNode node, SubstitutionOptions ops) {
             String name = getPrimedName(node.getIdentifier().getName(), ops.getLhs());
-            return FormulaToZ3Translator.translateVariableEqualToExpr(name, node.getValue(), z3Context,
-                    z3TypeInference);
+            BoolExpr assignment = FormulaToZ3Translator.translateVariableEqualToExpr(name, node.getValue(), z3Context,
+                z3TypeInference);
+            return substituteWithPrimedIfNecessary(assignment, ops.getRhs());
         }
 
         @Override
@@ -180,8 +197,7 @@ public class MachineToZ3Translator {
         @Override
         public BoolExpr visitConditionSubstitutionNode(ConditionSubstitutionNode node, SubstitutionOptions ops) {
             // PRE and ASSERT
-            BoolExpr condition = FormulaToZ3Translator.translatePredicate(node.getCondition(), z3Context,
-                z3TypeInference);
+            BoolExpr condition = translatePredicate(node.getCondition(), ops.getRhs());
             BoolExpr substitution = visitSubstitutionNode(node.getSubstitution(), ops);
             return z3Context.mkAnd(condition, substitution);
         }
@@ -211,8 +227,7 @@ public class MachineToZ3Translator {
                 // ELSIF THEN ...
                 throw new AssertionError(CURRENTLY_NOT_SUPPORTED);
             }
-            BoolExpr condition = FormulaToZ3Translator.translatePredicate(node.getConditions().get(0), z3Context,
-                z3TypeInference);
+            BoolExpr condition = translatePredicate(node.getConditions().get(0), ops.getRhs());
             BoolExpr substitution = visitSubstitutionNode(node.getSubstitutions().get(0), ops);
             List<BoolExpr> ifThenList = new ArrayList<>();
             ifThenList.add(condition);
