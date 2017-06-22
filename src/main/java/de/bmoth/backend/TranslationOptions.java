@@ -23,4 +23,9 @@ public class TranslationOptions {
     public boolean isHasPrimeLevel() {
         return hasPrimeLevel;
     }
+
+    @Override
+    public String toString() {
+        return hasPrimeLevel ? "primelevel " + primeLevel : "unprimed";
+    }
 }
