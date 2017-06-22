@@ -5,7 +5,7 @@ import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 
-public class ConvertPhiUntilPhiUntilPsiToPhiUntilPsi extends AbstractASTTransformation{
+public class ConvertPhiUntilPhiUntilPsiToPhiUntilPsi extends AbstractASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
@@ -23,7 +23,7 @@ public class ConvertPhiUntilPhiUntilPsiToPhiUntilPsi extends AbstractASTTransfor
                 // case U(x,U(x,y))->U(x,y)
                 if (operator02.getKind() == LTLInfixOperatorNode.Kind.UNTIL) {
                     LTLNode argument02Left = operator02.getLeft();
-                    if (argument01Left == argument02Left) {
+                    if (argument01Left.toString().equals(argument02Left.toString())) {
                         setChanged();
                         return operator02;
                     }
@@ -34,7 +34,7 @@ public class ConvertPhiUntilPhiUntilPsiToPhiUntilPsi extends AbstractASTTransfor
                 // case U(U(x,y),y)->U(x,y)
                 if (operator02.getKind() == LTLInfixOperatorNode.Kind.UNTIL) {
                     LTLNode argument02Right = operator02.getRight();
-                    if (argument01Right == argument02Right) {
+                    if (argument01Right.toString().equals(argument02Right.toString())) {
                         setChanged();
                         return operator02;
                     }

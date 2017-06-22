@@ -35,4 +35,9 @@ public class LTLInfixOperatorNode implements LTLNode {
     public void setRight(LTLNode right) {
         this.right = right;
     }
+
+    @Override
+    public String toString() {
+        return this.kind + "(" + this.left + "," + this.right + ")";
+    }
 }

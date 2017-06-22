@@ -12,10 +12,42 @@ import static org.junit.Assert.assertEquals;
 public class LTLTransformationTest {
 
     @Test
-    public void testTransformationNotGloballyToFinallyNot() throws ParserException {
+    public void testTransformation1() throws ParserException {
         String formula = "not(G { 1=1 })";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         assertEquals("FINALLY(NOT(EQUAL(1,1)))", node1.toString());
+    }
+
+    @Test
+    public void testTransformation2() throws ParserException {
+        String formula = "not(GG { 1=1 })";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        assertEquals("FINALLY(NOT(EQUAL(1,1)))", node1.toString());
+    }
+
+    @Test
+    public void testTransformation3() throws ParserException {
+        String formula = "G not(E { 1=1 })";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        assertEquals("GLOBALLY(NOT(EQUAL(1,1)))", node1.toString());
+    }
+
+    @Test
+    public void testTransformation4() throws ParserException {
+        String formula = "{1=1} U ({1=1} U {2=2})";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        assertEquals("UNTIL(EQUAL(1,1),EQUAL(2,2))", node1.toString());
+    }
+
+    @Test
+    public void testTransformation5() throws ParserException {
+        String formula = "({1=1} U {2=2}) U {2=2}";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        assertEquals("UNTIL(EQUAL(1,1),EQUAL(2,2))", node1.toString());
     }
 }
