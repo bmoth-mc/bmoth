@@ -1,6 +1,7 @@
 package de.bmoth.modelchecker.kind;
 
 import com.microsoft.z3.*;
+import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.State;
@@ -24,7 +25,7 @@ public class KinductionModelChecker extends ModelChecker<KinductionModelChecking
         this.originalVars = getMachineTranslator().getVariables().stream().map(var -> getMachineTranslator().getVariable(var)).toArray(Expr[]::new);
         this.primedVarToOriginalName = new HashMap<>();
         this.primedVars = getMachineTranslator().getVariables().stream().map(var -> {
-            Expr primedVar = getMachineTranslator().getPrimedVariable(var);
+            Expr primedVar = getMachineTranslator().getPrimedVariable(var, TranslationOptions.PRIMED_0);
             primedVarToOriginalName.put(primedVar, var.getName());
             return primedVar;
         }).toArray(Expr[]::new);
