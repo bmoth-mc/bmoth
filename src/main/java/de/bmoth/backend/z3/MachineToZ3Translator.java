@@ -5,6 +5,7 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
 
+import de.bmoth.backend.SubstitutionOptions;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.visitors.SubstitutionVisitor;
@@ -115,22 +116,10 @@ public class MachineToZ3Translator {
         return getInvariantConstraint(UNPRIMED);
     }
 
-    class SubstitutionOptions {
-        private final TranslationOptions lhs;
-        private final TranslationOptions rhs;
 
-        SubstitutionOptions(TranslationOptions lhs, TranslationOptions rhs) {
-            this.lhs = lhs;
-            this.rhs = rhs;
+
         }
 
-        public TranslationOptions getLhs() {
-            return lhs;
-        }
-
-        public TranslationOptions getRhs() {
-            return rhs;
-        }
     }
 
     class SubstitutionToZ3TranslatorVisitor implements SubstitutionVisitor<BoolExpr, SubstitutionOptions> {
