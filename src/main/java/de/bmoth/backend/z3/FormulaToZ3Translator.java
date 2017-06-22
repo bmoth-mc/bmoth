@@ -194,19 +194,9 @@ public class FormulaToZ3Translator {
 
         }
 
-        private String addPrimes(TranslationOptions ops, String name) {
-            int numOfPrimes = ops.getPrimeLevel();
-            StringBuilder nameBuilder = new StringBuilder(name);
-            while (numOfPrimes > 0) {
-                nameBuilder.append("'");
-                numOfPrimes--;
-            }
-            return nameBuilder.toString();
-        }
-
         @Override
         public Expr visitIdentifierExprNode(IdentifierExprNode node, TranslationOptions ops) {
-            return z3Context.mkConst(addPrimes(ops, node.getName()), getZ3Sort(node.getDeclarationNode()));
+            return z3Context.mkConst(node.getName(), getZ3Sort(node.getDeclarationNode()));
         }
 
         @Override
