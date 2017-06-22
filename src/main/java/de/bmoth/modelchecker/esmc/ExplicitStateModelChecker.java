@@ -55,8 +55,7 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
 
         // create joint operations constraint and permanently add to separate
         // solver
-        final BoolExpr operationsConstraint = getContext()
-            .mkOr(getMachineTranslator().getOperationConstraints().toArray(new BoolExpr[0]));
+        final BoolExpr operationsConstraint = getMachineTranslator().getCombinedOperationConstraint();
         opSolver.add(operationsConstraint);
 
         while (!isAborted() && !queue.isEmpty()) {
