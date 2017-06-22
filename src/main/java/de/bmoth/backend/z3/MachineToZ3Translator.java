@@ -1,9 +1,6 @@
 package de.bmoth.backend.z3;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Expr;
-import com.microsoft.z3.Sort;
+import com.microsoft.z3.*;
 
 import de.bmoth.backend.SubstitutionOptions;
 import de.bmoth.backend.TranslationOptions;
@@ -166,6 +163,22 @@ public class MachineToZ3Translator {
 
     public BoolExpr getCombinedOperationConstraint() {
         return getCombinedOperationConstraint(new SubstitutionOptions(PRIMED_0, UNPRIMED));
+    }
+
+    public Map<String, Expr> getVarMapFromModel(Model model, TranslationOptions ops) {
+        HashMap<String, Expr> map = new HashMap<>();
+        for (DeclarationNode declNode : getVariables()) {
+            Expr expr = getPrimedVariable(declNode, ops);
+            Expr value = model.eval(expr, true);
+            map.put(declNode.getName(), value);
+        }
+        for (DeclarationNode declarationNode : getConstants()) {
+            Expr expr = getVariable(declarationNode);
+            Expr value = model.eval(expr, true);
+            map.put(declarationNode.getName(), value);
+        }
+
+        return map;
     }
 
     class SubstitutionToZ3TranslatorVisitor implements SubstitutionVisitor<BoolExpr, SubstitutionOptions> {
