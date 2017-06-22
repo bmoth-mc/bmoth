@@ -17,8 +17,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
-import static de.bmoth.backend.TranslationOptions.PRIMED_0;
-
 public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult> {
     private Solver solver;
     private Solver opSolver;
@@ -47,14 +45,19 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
 
     @Override
     protected ModelCheckingResult doModelCheck() {
+        final int maxInitialStates = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE);
+        final int maxTransitions = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS);
+
         Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
         // prepare initial states
         BoolExpr initialValueConstraint = getMachineTranslator().getInitialValueConstraint();
 
-        Set<Model> models = finder.findSolutions(initialValueConstraint,
-            BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
-        models.stream().map(this::getStateFromModel).filter(s -> !queue.contains(s)).forEach(queue::add);
+        Set<Model> models = finder.findSolutions(initialValueConstraint, maxInitialStates);
+        models.stream()
+            .map(this::getStateFromModel)
+            .filter(state -> !queue.contains(state))
+            .forEach(queue::add);
 
         final BoolExpr invariant = getMachineTranslator().getInvariantConstraint();
         solver.add(invariant);
@@ -87,10 +90,11 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
             }
 
             // compute successors on separate finder
-            models = opFinder.findSolutions(stateConstraint,
-                BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
-            models.stream().map(model -> getStateFromModel(current, model)).filter(state -> !visited.contains(state))
-                .filter(state -> !queue.contains(state)).forEach(queue::add);
+            models = opFinder.findSolutions(stateConstraint, maxTransitions);
+            models.stream()
+                .map(model -> getStateFromModel(current, model))
+                .filter(state -> !visited.contains(state) || !queue.contains(state))
+                .forEach(queue::add);
 
             solver.pop();
         }

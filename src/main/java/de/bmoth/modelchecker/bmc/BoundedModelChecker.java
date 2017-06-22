@@ -29,7 +29,7 @@ public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult
             solver.reset();
 
             // INIT(V0)
-            solver.add(init(0));
+            solver.add(init());
 
             // CONJUNCTION i from 1 to k T(Vi-1, Vi)
             for (int i = 1; i <= k; i++) {
@@ -53,8 +53,9 @@ public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult
         return BoundedModelCheckingResult.createExceededMaxSteps(maxSteps);
     }
 
-    private BoolExpr init(int step) {
-        return getMachineTranslator().getInvariantConstraint(new TranslationOptions(step));
+    private BoolExpr init() {
+        // step is always 0 for init, so omitting var...
+        return getMachineTranslator().getInvariantConstraint(TranslationOptions.PRIMED_0);
     }
 
     private BoolExpr transition(int fromStep, int toStep) {
