@@ -16,7 +16,6 @@ public class MachineToZ3Translator {
     private final Context z3Context;
     private BoolExpr initialisationConstraint = null;
     private BoolExpr invariantConstraint = null;
-    private final HashMap<String, String> primedVariablesToVariablesMap;
     private final List<BoolExpr> operationConstraints;
     private final SubstitutionToZ3TranslatorVisitor visitor;
     private final Z3TypeInference z3TypeInference;
@@ -53,11 +52,6 @@ public class MachineToZ3Translator {
         }
 
         this.operationConstraints = visitOperations(machineNode.getOperations());
-
-        primedVariablesToVariablesMap = new HashMap<>();
-        for (DeclarationNode node : machineNode.getVariables()) {
-            primedVariablesToVariablesMap.put(getPrimedName(node.getName()), node.getName());
-        }
     }
 
     private List<BoolExpr> visitOperations(List<OperationNode> operations) {
