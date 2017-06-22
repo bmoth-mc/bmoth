@@ -18,7 +18,6 @@ import static de.bmoth.backend.TranslationOptions.UNPRIMED;
 public class MachineToZ3Translator {
     private final MachineNode machineNode;
     private final Context z3Context;
-    private final List<BoolExpr> operationConstraints;
     private final SubstitutionToZ3TranslatorVisitor visitor;
     private final Z3TypeInference z3TypeInference;
 
@@ -29,17 +28,16 @@ public class MachineToZ3Translator {
         this.z3TypeInference = new Z3TypeInference();
         z3TypeInference.visitMachineNode(machineNode);
 
-        this.operationConstraints = visitOperations(machineNode.getOperations());
     }
 
-    private List<BoolExpr> visitOperations(List<OperationNode> operations) {
-        List<BoolExpr> results = new ArrayList<>(operations.size());
+    private List<BoolExpr> visitOperations(SubstitutionOptions ops) {
+        List<BoolExpr> results = new ArrayList<>(this.machineNode.getOperations().size());
         for (OperationNode operationNode : this.machineNode.getOperations()) {
-            BoolExpr temp = visitor.visitSubstitutionNode(operationNode.getSubstitution(), new SubstitutionOptions(PRIMED_0, UNPRIMED));
+            BoolExpr temp = visitor.visitSubstitutionNode(operationNode.getSubstitution(), ops);
             // for unassigned variables add a dummy assignment, e.g. x' = x
             Set<DeclarationNode> set = new HashSet<>(this.getVariables());
             set.removeAll(operationNode.getSubstitution().getAssignedVariables());
-            List<BoolExpr> dummyAssignments = createDummyAssignment(set);
+            List<BoolExpr> dummyAssignments = createDummyAssignment(set, ops);
             dummyAssignments.add(0, temp);
             BoolExpr[] array = dummyAssignments.toArray(new BoolExpr[dummyAssignments.size()]);
             results.add(z3Context.mkAnd(array));
@@ -47,10 +45,10 @@ public class MachineToZ3Translator {
         return results;
     }
 
-    protected List<BoolExpr> createDummyAssignment(Set<DeclarationNode> unassignedVariables) {
+    protected List<BoolExpr> createDummyAssignment(Set<DeclarationNode> unassignedVariables, SubstitutionOptions ops) {
         List<BoolExpr> list = new ArrayList<>();
         for (DeclarationNode node : unassignedVariables) {
-            BoolExpr mkEq = z3Context.mkEq(getPrimedVariable(node, PRIMED_0), getVariableAsZ3Expression(node));
+            BoolExpr mkEq = z3Context.mkEq(getPrimedVariable(node, ops.getLhs()), getPrimedVariable(node, ops.getRhs()));
             list.add(mkEq);
         }
         return list;
@@ -116,6 +114,13 @@ public class MachineToZ3Translator {
         return getInvariantConstraint(UNPRIMED);
     }
 
+    public List<BoolExpr> getOperationConstraints(SubstitutionOptions ops) {
+        return visitOperations(ops);
+    }
+
+    public List<BoolExpr> getOperationConstraints() {
+        return visitOperations(new SubstitutionOptions(PRIMED_0, UNPRIMED));
+    }
 
 
         }
@@ -214,19 +219,19 @@ public class MachineToZ3Translator {
             ifThenList.add(substitution);
             Set<DeclarationNode> set = new HashSet<>(node.getAssignedVariables());
             set.removeAll(node.getSubstitutions().get(0).getAssignedVariables());
-            ifThenList.addAll(createDummyAssignment(set));
+            ifThenList.addAll(createDummyAssignment(set, ops));
             BoolExpr ifThen = z3Context.mkAnd(ifThenList.toArray(new BoolExpr[ifThenList.size()]));
 
             BoolExpr elseExpr = null;
             List<BoolExpr> elseList = new ArrayList<>();
             elseList.add(z3Context.mkNot(condition));
             if (null == node.getElseSubstitution()) {
-                elseList.addAll(createDummyAssignment(node.getAssignedVariables()));
+                elseList.addAll(createDummyAssignment(node.getAssignedVariables(), ops));
             } else {
                 elseList.add(visitSubstitutionNode(node.getElseSubstitution(), ops));
                 Set<DeclarationNode> elseDummies = new HashSet<>(node.getAssignedVariables());
                 elseDummies.removeAll(node.getElseSubstitution().getAssignedVariables());
-                elseList.addAll(createDummyAssignment(elseDummies));
+                elseList.addAll(createDummyAssignment(elseDummies, ops));
             }
             elseExpr = z3Context.mkAnd(elseList.toArray(new BoolExpr[elseList.size()]));
             return z3Context.mkOr(ifThen, elseExpr);
@@ -245,9 +250,5 @@ public class MachineToZ3Translator {
         } else {
             return name;
         }
-    }
-
-    public List<BoolExpr> getOperationConstraints() {
-        return operationConstraints;
     }
 }
