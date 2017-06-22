@@ -29,7 +29,6 @@ public class MachineToZ3Translator {
         this.z3TypeInference = new Z3TypeInference();
         this.originalVariables = getVariables().stream().map(this::getVariable).toArray(Expr[]::new);
         z3TypeInference.visitMachineNode(machineNode);
-
     }
 
     private List<BoolExpr> visitOperations(SubstitutionOptions ops) {
@@ -139,9 +138,21 @@ public class MachineToZ3Translator {
         return visitOperations(new SubstitutionOptions(PRIMED_0, UNPRIMED));
     }
 
+    public BoolExpr getCombinedOperationConstraint(SubstitutionOptions ops) {
+        BoolExpr[] operations = visitOperations(ops).toArray(new BoolExpr[0]);
 
+        switch (operations.length) {
+            case 0:
+                return z3Context.mkTrue();
+            case 1:
+                return operations[0];
+            default:
+                return z3Context.mkOr(operations);
         }
+    }
 
+    public BoolExpr getCombinedOperationConstraint() {
+        return getCombinedOperationConstraint(new SubstitutionOptions(PRIMED_0, UNPRIMED));
     }
 
     class SubstitutionToZ3TranslatorVisitor implements SubstitutionVisitor<BoolExpr, SubstitutionOptions> {
