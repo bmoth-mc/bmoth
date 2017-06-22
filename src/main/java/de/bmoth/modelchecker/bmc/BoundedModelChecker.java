@@ -1,15 +1,15 @@
 package de.bmoth.modelchecker.bmc;
 
-import com.microsoft.z3.*;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Model;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Status;
 import de.bmoth.backend.SubstitutionOptions;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.State;
-import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
-
-import java.util.*;
 
 public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult> {
 
@@ -66,18 +66,6 @@ public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult
     }
 
     private State getStateFromModel(Model model, int step) {
-        HashMap<String, Expr> map = new HashMap<>();
-        for (DeclarationNode declNode : getMachineTranslator().getVariables()) {
-            //Expr expr = transformToStep(getMachineTranslator().getVariable(declNode), step, originalVars);
-            Expr expr = getMachineTranslator().getPrimedVariable(declNode, new TranslationOptions(step));
-            Expr value = model.eval(expr, true);
-            map.put(declNode.getName(), value);
-        }
-        for (DeclarationNode declarationNode : getMachineTranslator().getConstants()) {
-            Expr expr = getMachineTranslator().getVariable(declarationNode);
-            Expr value = model.eval(expr, true);
-            map.put(declarationNode.getName(), value);
-        }
-        return new State(null, map);
+        return getStateFromModel(null, model, new TranslationOptions(step));
     }
 }

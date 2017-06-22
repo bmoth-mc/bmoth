@@ -1,15 +1,21 @@
 package de.bmoth.modelchecker.esmc;
 
-import com.microsoft.z3.*;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Model;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Status;
+import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.State;
-import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
 import static de.bmoth.backend.TranslationOptions.PRIMED_0;
 
@@ -97,22 +103,10 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
     }
 
     private State getStateFromModel(Model model) {
-        return getStateFromModel(null, model);
+        return getStateFromModel(null, model, TranslationOptions.PRIMED_0);
     }
 
     private State getStateFromModel(State predecessor, Model model) {
-        HashMap<String, Expr> map = new HashMap<>();
-        for (DeclarationNode declNode : getMachineTranslator().getVariables()) {
-            Expr expr = getMachineTranslator().getPrimedVariable(declNode, PRIMED_0);
-            Expr value = model.eval(expr, true);
-            map.put(declNode.getName(), value);
-        }
-        for (DeclarationNode declarationNode : getMachineTranslator().getConstants()) {
-            Expr expr = getMachineTranslator().getVariable(declarationNode);
-            Expr value = model.eval(expr, true);
-            map.put(declarationNode.getName(), value);
-        }
-
-        return new State(predecessor, map);
+        return getStateFromModel(predecessor, model, TranslationOptions.PRIMED_0);
     }
 }
