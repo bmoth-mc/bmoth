@@ -32,14 +32,27 @@ public class MachineToZ3Translator {
     }
 
     private List<BoolExpr> visitOperations(SubstitutionOptions ops) {
-        List<BoolExpr> results = new ArrayList<>(this.machineNode.getOperations().size());
-        for (OperationNode operationNode : this.machineNode.getOperations()) {
-            BoolExpr temp = visitor.visitSubstitutionNode(operationNode.getSubstitution(), ops);
-            // for unassigned variables add a dummy assignment, e.g. x' = x
+        List<BoolExpr> results = new ArrayList<>();
+        // if there's at least one operation...
+        if (machineNode.getOperations().size() > 0) {
+            // ... then for every operation ...
+            for (OperationNode operationNode : this.machineNode.getOperations()) {
+                // ... translate it's substitution
+                BoolExpr substitution = visitor.visitSubstitutionNode(operationNode.getSubstitution(), ops);
+
+                // for unassigned variables add a dummy assignment, e.g. x' = x
+                Set<DeclarationNode> set = new HashSet<>(this.getVariables());
+                set.removeAll(operationNode.getSubstitution().getAssignedVariables());
+                List<BoolExpr> dummyAssignments = createDummyAssignment(set, ops);
+                dummyAssignments.add(0, substitution);
+                BoolExpr[] array = dummyAssignments.toArray(new BoolExpr[dummyAssignments.size()]);
+                results.add(z3Context.mkAnd(array));
+            }
+        }
+        // if there's no operation...
+        else {
             Set<DeclarationNode> set = new HashSet<>(this.getVariables());
-            set.removeAll(operationNode.getSubstitution().getAssignedVariables());
             List<BoolExpr> dummyAssignments = createDummyAssignment(set, ops);
-            dummyAssignments.add(0, temp);
             BoolExpr[] array = dummyAssignments.toArray(new BoolExpr[dummyAssignments.size()]);
             results.add(z3Context.mkAnd(array));
         }
