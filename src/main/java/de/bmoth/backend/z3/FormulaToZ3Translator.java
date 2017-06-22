@@ -16,6 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static de.bmoth.backend.TranslationOptions.UNPRIMED;
+
 /**
  * This class translates a FormulaNode of the parser to a z3 backend node.
  **/
@@ -79,7 +81,7 @@ public class FormulaToZ3Translator {
     public static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context,
                                                         Z3TypeInference z3TypeInference) {
         ExprNode exprNode = AstTransformationsForZ3.transformExprNode(value);
-        return translateVariableEqualToExpr(name, exprNode, z3Context, new TranslationOptions(), z3TypeInference);
+        return translateVariableEqualToExpr(name, exprNode, z3Context, UNPRIMED, z3TypeInference);
     }
 
     public static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context,
@@ -137,7 +139,7 @@ public class FormulaToZ3Translator {
             .transformPredicate((PredicateNode) formulaToZ3Translator.formulaNode.getFormula());
 
         FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
-        Expr constraint = visitor.visitPredicateNode(predNode, new TranslationOptions());
+        Expr constraint = visitor.visitPredicateNode(predNode, UNPRIMED);
         if (!(constraint instanceof BoolExpr)) {
             throw new IllegalStateException("Invalid translation. Expected BoolExpr but found " + constraint.getClass());
         }
@@ -152,7 +154,7 @@ public class FormulaToZ3Translator {
 
     public static BoolExpr translatePredicate(PredicateNode pred, Context z3Context, Z3TypeInference z3TypeInference) {
         PredicateNode predNode = AstTransformationsForZ3.transformPredicate(pred);
-        return translatePredicate(predNode, z3Context, new TranslationOptions(), z3TypeInference);
+        return translatePredicate(predNode, z3Context, UNPRIMED, z3TypeInference);
     }
 
     public static BoolExpr translatePredicate(PredicateNode pred, Context z3Context, TranslationOptions opt,
