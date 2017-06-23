@@ -12,16 +12,16 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-public class ConvertPsiNotBformulaToPsiNegatedBformula extends AbstractASTTransformation{
+public class ConvertPsiNotBFormulaToPsiNegatedBFormula extends AbstractASTTransformation {
 
-	@Override
-	public boolean canHandleNode(Node node) {
-		return node instanceof LTLPrefixOperatorNode;
-	}
+    @Override
+    public boolean canHandleNode(Node node) {
+        return node instanceof LTLPrefixOperatorNode;
+    }
 
-	@Override
-	public Node transformNode(Node node) {
-		LTLPrefixOperatorNode notOperator = (LTLPrefixOperatorNode) node;
+    @Override
+    public Node transformNode(Node node) {
+        LTLPrefixOperatorNode notOperator = (LTLPrefixOperatorNode) node;
         if (notOperator.getKind() == LTLPrefixOperatorNode.Kind.NOT) {
             LTLNode argument = notOperator.getArgument();
             if (argument instanceof LTLBPredicateNode) {
@@ -33,6 +33,6 @@ public class ConvertPsiNotBformulaToPsiNegatedBformula extends AbstractASTTransf
             }
         }
         return node;
-	}
+    }
 
 }
