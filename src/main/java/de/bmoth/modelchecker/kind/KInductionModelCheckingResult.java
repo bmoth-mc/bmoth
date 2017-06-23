@@ -2,7 +2,7 @@ package de.bmoth.modelchecker.kind;
 
 import de.bmoth.modelchecker.State;
 
-public class KinductionModelCheckingResult {
+public class KInductionModelCheckingResult {
     public enum Type {
         COUNTER_EXAMPLE_FOUND,
         EXCEEDED_MAX_STEPS
@@ -12,19 +12,19 @@ public class KinductionModelCheckingResult {
     private final int steps;
     private final Type type;
 
-    private KinductionModelCheckingResult(State lastState, int steps, Type type) {
+    private KInductionModelCheckingResult(State lastState, int steps, Type type) {
         this.lastState = lastState;
         this.steps = steps;
         this.type = type;
     }
 
 
-    static KinductionModelCheckingResult createCounterExampleFound(State lastState, int steps) {
-        return new KinductionModelCheckingResult(lastState, steps, Type.COUNTER_EXAMPLE_FOUND);
+    static KInductionModelCheckingResult createCounterExampleFound(State lastState, int steps) {
+        return new KInductionModelCheckingResult(lastState, steps, Type.COUNTER_EXAMPLE_FOUND);
     }
 
-    static KinductionModelCheckingResult createExceededMaxSteps(int maxSteps) {
-        return new KinductionModelCheckingResult(null, maxSteps, Type.EXCEEDED_MAX_STEPS);
+    static KInductionModelCheckingResult createExceededMaxSteps(int maxSteps) {
+        return new KInductionModelCheckingResult(null, maxSteps, Type.EXCEEDED_MAX_STEPS);
     }
 
     public State getLastState() {

@@ -1,12 +1,12 @@
 package de.bmoth.modelchecker.kinduction;
 
 import de.bmoth.TestParser;
-import de.bmoth.modelchecker.kind.KinductionModelChecker;
-import de.bmoth.modelchecker.kind.KinductionModelCheckingResult;
+import de.bmoth.modelchecker.kind.KInductionModelChecker;
+import de.bmoth.modelchecker.kind.KInductionModelCheckingResult;
 import org.junit.Test;
 
-import static de.bmoth.modelchecker.kind.KinductionModelCheckingResult.Type.COUNTER_EXAMPLE_FOUND;
-import static de.bmoth.modelchecker.kind.KinductionModelCheckingResult.Type.EXCEEDED_MAX_STEPS;
+import static de.bmoth.modelchecker.kind.KInductionModelCheckingResult.Type.COUNTER_EXAMPLE_FOUND;
+import static de.bmoth.modelchecker.kind.KInductionModelCheckingResult.Type.EXCEEDED_MAX_STEPS;
 import static org.junit.Assert.assertEquals;
 
 public class KInductionModelCheckerTest extends TestParser {
@@ -21,7 +21,7 @@ public class KInductionModelCheckerTest extends TestParser {
             "\tinc = BEGIN c := c + 1 END\n" +
             "END\n";
 
-        KinductionModelCheckingResult result = new KinductionModelChecker(parseMachine(machine), 20).check();
+        KInductionModelCheckingResult result = new KInductionModelChecker(parseMachine(machine), 20).check();
         assertEquals(EXCEEDED_MAX_STEPS, result.getType());
     }
 
@@ -37,7 +37,7 @@ public class KInductionModelCheckerTest extends TestParser {
             "\terr = PRE c > 99999 THEN b := FALSE END\n" +
             "END\n";
 
-        KinductionModelCheckingResult result = new KinductionModelChecker(parseMachine(machine), 20).check();
+        KInductionModelCheckingResult result = new KInductionModelChecker(parseMachine(machine), 20).check();
         assertEquals(COUNTER_EXAMPLE_FOUND, result.getType());
         assertEquals("{b=false, c=100000}", result.getLastState().toString());
     }

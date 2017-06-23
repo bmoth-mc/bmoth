@@ -11,19 +11,19 @@ import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.State;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
-public class KinductionModelChecker extends ModelChecker<KinductionModelCheckingResult> {
+public class KInductionModelChecker extends ModelChecker<KInductionModelCheckingResult> {
 
     private final int maxSteps;
     private final Solver solver;
 
-    public KinductionModelChecker(MachineNode machine, int maxSteps) {
+    public KInductionModelChecker(MachineNode machine, int maxSteps) {
         super(machine);
         this.maxSteps = maxSteps;
         this.solver = Z3SolverFactory.getZ3Solver(getContext());
     }
 
     @Override
-    protected KinductionModelCheckingResult doModelCheck() {
+    protected KInductionModelCheckingResult doModelCheck() {
         for (int k = 0; k < maxSteps; k++) {
             // get a clean solver
             solver.reset();
@@ -45,7 +45,7 @@ public class KinductionModelChecker extends ModelChecker<KinductionModelChecking
             if (check == Status.SATISFIABLE) {
                 // counter example found!
                 State counterExample = getStateFromModel(solver.getModel(), k);
-                return KinductionModelCheckingResult.createCounterExampleFound(counterExample, k);
+                return KInductionModelCheckingResult.createCounterExampleFound(counterExample, k);
             } else {
 
 
@@ -60,7 +60,7 @@ public class KinductionModelChecker extends ModelChecker<KinductionModelChecking
         }
 
         // no counter example found after maxStep steps
-        return KinductionModelCheckingResult.createExceededMaxSteps(maxSteps);
+        return KInductionModelCheckingResult.createExceededMaxSteps(maxSteps);
     }
 
     private BoolExpr init(int step) {
