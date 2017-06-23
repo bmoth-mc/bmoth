@@ -3,8 +3,7 @@ package de.bmoth.modelchecker.kinduction;
 import de.bmoth.modelchecker.kind.KInductionModelCheckingResult;
 import org.junit.Test;
 
-import static de.bmoth.modelchecker.kind.KInductionModelCheckingResult.Type.COUNTER_EXAMPLE_FOUND;
-import static de.bmoth.modelchecker.kind.KInductionModelCheckingResult.Type.EXCEEDED_MAX_STEPS;
+import static de.bmoth.modelchecker.kind.KInductionModelCheckingResult.Type.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
@@ -12,7 +11,7 @@ public class KInductionModelCheckingResultTest {
     @Test
     public void testType() {
         assertArrayEquals(new KInductionModelCheckingResult.Type[]{COUNTER_EXAMPLE_FOUND,
-                EXCEEDED_MAX_STEPS},
+                EXCEEDED_MAX_STEPS, CORRECT},
             KInductionModelCheckingResult.Type.values());
 
         assertEquals(COUNTER_EXAMPLE_FOUND, KInductionModelCheckingResult.Type.valueOf("COUNTER_EXAMPLE_FOUND"));
