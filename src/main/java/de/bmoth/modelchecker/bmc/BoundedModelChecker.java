@@ -39,7 +39,8 @@ public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult
             // not INV(Vk)
             solver.add(getContext().mkNot(invariant(k)));
 
-            //TODO add missing CONJUNCTION i from 1 to k, j from i + 1 to k (Vi != Vj)
+            // CONJUNCTION i from 1 to k, j from i + 1 to k (Vi != Vj)
+            solver.add(distinctVectors(k));
 
             Status check = solver.check();
             if (check == Status.SATISFIABLE) {
@@ -64,6 +65,10 @@ public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult
 
     private BoolExpr invariant(int step) {
         return getMachineTranslator().getInvariantConstraint(new TranslationOptions(step));
+    }
+
+    private BoolExpr distinctVectors(int to) {
+        return getMachineTranslator().getDistinctVars(0, to);
     }
 
     private State getStateFromModel(Model model, int step) {

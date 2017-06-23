@@ -183,6 +183,25 @@ public class MachineToZ3Translator {
         return map;
     }
 
+    public BoolExpr getDistinctVars(int from, int to) {
+        Expr[] distinct = new Expr[to - from + 1];
+        TupleSort tuple;
+        {
+            Expr[] variables = getVariables().stream().map(this::getVariable).toArray(Expr[]::new);
+            Symbol[] symbols = Arrays.stream(variables).map(var -> var.getFuncDecl().getName()).toArray(Symbol[]::new);
+            Sort[] sorts = Arrays.stream(variables).map(Expr::getSort).toArray(Sort[]::new);
+
+            tuple = z3Context.mkTupleSort(z3Context.mkSymbol("tuple"), symbols, sorts);
+        }
+
+        for (int v = from, i = 0; v <= to; v++, i++) {
+            int finalV = v;
+            Expr[] vector = getVariables().stream().map(var -> getPrimedVariable(var, new TranslationOptions(finalV))).toArray(Expr[]::new);
+            distinct[i] = tuple.mkDecl().apply(vector);
+        }
+        return z3Context.mkDistinct(distinct);
+    }
+
     class SubstitutionToZ3TranslatorVisitor implements SubstitutionVisitor<BoolExpr, SubstitutionOptions> {
 
         private static final String CURRENTLY_NOT_SUPPORTED = "Currently not supported";
