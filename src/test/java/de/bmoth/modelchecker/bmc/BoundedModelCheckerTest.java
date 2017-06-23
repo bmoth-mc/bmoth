@@ -21,6 +21,7 @@ public class BoundedModelCheckerTest extends TestParser {
 
         BoundedModelCheckingResult result = new BoundedModelChecker(parseMachine(machine), 20).check();
         assertEquals(EXCEEDED_MAX_STEPS, result.getType());
+        assertEquals(20, result.getSteps());
     }
 
     @Test
@@ -38,5 +39,6 @@ public class BoundedModelCheckerTest extends TestParser {
         BoundedModelCheckingResult result = new BoundedModelChecker(parseMachine(machine), 20).check();
         assertEquals(COUNTER_EXAMPLE_FOUND, result.getType());
         assertEquals("{b=false, c=100000}", result.getLastState().toString());
+        assertEquals(1, result.getSteps());
     }
 }
