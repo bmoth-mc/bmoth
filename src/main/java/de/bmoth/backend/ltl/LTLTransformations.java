@@ -37,6 +37,7 @@ public class LTLTransformations {
         transformationList.add(new ConvertNextPhiUntilPsiToNextPhiUntilNextPsi());
         transformationList.add(new ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi());
         transformationList.add(new ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi());
+        transformationList.add(new ConvertNotUntil());
     }
 
     public static LTLTransformations getInstance() {
