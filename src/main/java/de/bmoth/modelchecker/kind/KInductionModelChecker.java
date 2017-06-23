@@ -64,7 +64,7 @@ public class KInductionModelChecker extends ModelChecker<KInductionModelChecking
                 Status checkStep = stepSolver.check();
 
                 if (checkStep == Status.UNSATISFIABLE)
-                    return KInductionModelCheckingResult.createVerfifiedViaInduction(k);
+                    return KInductionModelCheckingResult.createVerifiedViaInduction(k);
             }
         }
 

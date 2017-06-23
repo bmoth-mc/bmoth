@@ -21,7 +21,7 @@ public class KInductionModelCheckingResult {
         return new KInductionModelCheckingResult(null, maxSteps, Type.EXCEEDED_MAX_STEPS);
     }
 
-    public static KInductionModelCheckingResult createVerfifiedViaInduction(int step) {
+    public static KInductionModelCheckingResult createVerifiedViaInduction(int step) {
         return new KInductionModelCheckingResult(null, step, Type.VERFIED);
     }
 
@@ -42,4 +42,5 @@ public class KInductionModelCheckingResult {
         EXCEEDED_MAX_STEPS,
         VERFIED
     }
+
 }
