@@ -3,7 +3,7 @@ package de.bmoth.parser.ast.nodes.ltl;
 public class LTLInfixOperatorNode implements LTLNode {
 
     public enum Kind {
-        IMPLICATION, UNTIL, RELEASE, AND, OR
+        IMPLICATION, UNTIL, WEAK_UNTIL, RELEASE, AND, OR
     }
 
     private Kind kind;
