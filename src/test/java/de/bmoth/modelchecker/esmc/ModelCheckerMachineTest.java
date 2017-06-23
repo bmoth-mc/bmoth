@@ -1,5 +1,6 @@
 package de.bmoth.modelchecker.esmc;
 
+import de.bmoth.modelchecker.ModelCheckingResult;
 import org.junit.Test;
 
 import static de.bmoth.TestConstants.MACHINE_NAME;

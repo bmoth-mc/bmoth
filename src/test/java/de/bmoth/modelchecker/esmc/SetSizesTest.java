@@ -1,5 +1,6 @@
 package de.bmoth.modelchecker.esmc;
 
+import de.bmoth.modelchecker.ModelCheckingResult;
 import org.junit.Test;
 
 import static de.bmoth.TestParser.parseMachine;
@@ -36,7 +37,7 @@ public class SetSizesTest {
 
         ModelCheckingResult result = ExplicitStateModelChecker.check(parseMachine(machine));
         assertEquals(true, result.isCorrect());
-        assertEquals(1, result.getNumberOfDistinctStatesVisited());
+        assertEquals(1, result.getSteps());
     }
 
     @Test
@@ -65,6 +66,6 @@ public class SetSizesTest {
 
         ModelCheckingResult result = ExplicitStateModelChecker.check(parseMachine(machine));
         assertEquals(true, result.isCorrect());
-        assertEquals(1, result.getNumberOfDistinctStatesVisited());
+        assertEquals(1, result.getSteps());
     }
 }

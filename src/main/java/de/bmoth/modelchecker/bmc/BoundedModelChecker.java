@@ -8,10 +8,11 @@ import de.bmoth.backend.SubstitutionOptions;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
-public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult> {
+public class BoundedModelChecker extends ModelChecker {
 
     private final int maxSteps;
     private final Solver solver;
@@ -23,7 +24,7 @@ public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult
     }
 
     @Override
-    protected BoundedModelCheckingResult doModelCheck() {
+    protected ModelCheckingResult doModelCheck() {
         for (int k = 0; k < maxSteps; k++) {
             // get a clean solver
             solver.reset();
@@ -46,12 +47,12 @@ public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult
             if (check == Status.SATISFIABLE) {
                 // counter example found!
                 State counterExample = getStateFromModel(solver.getModel(), k);
-                return BoundedModelCheckingResult.createCounterExampleFound(counterExample, k);
+                return ModelCheckingResult.createCounterExampleFound(k, counterExample);
             }
         }
 
         // no counter example found after maxStep steps
-        return BoundedModelCheckingResult.createExceededMaxSteps(maxSteps);
+        return ModelCheckingResult.createExceededMaxSteps(maxSteps);
     }
 
     private BoolExpr init() {
