@@ -12,7 +12,7 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
-public class BoundedModelChecker extends ModelChecker<ModelCheckingResult> {
+public class BoundedModelChecker extends ModelChecker {
 
     private final int maxSteps;
     private final Solver solver;

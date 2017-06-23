@@ -7,7 +7,7 @@ import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
-public abstract class ModelChecker<R> implements Abortable {
+public abstract class ModelChecker implements Abortable {
     private Context ctx;
     private MachineToZ3Translator machineTranslator;
     private volatile boolean isAborted;
@@ -17,7 +17,7 @@ public abstract class ModelChecker<R> implements Abortable {
         this.machineTranslator = new MachineToZ3Translator(machine, ctx);
     }
 
-    public final R check() {
+    public final ModelCheckingResult check() {
         isAborted = false;
         return doModelCheck();
     }
@@ -39,7 +39,7 @@ public abstract class ModelChecker<R> implements Abortable {
         return machineTranslator;
     }
 
-    protected abstract R doModelCheck();
+    protected abstract ModelCheckingResult doModelCheck();
 
     protected State getStateFromModel(State predecessor, Model model, TranslationOptions ops) {
         return new State(predecessor, getMachineTranslator().getVarMapFromModel(model, ops));

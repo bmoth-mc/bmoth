@@ -20,7 +20,7 @@ import java.util.Set;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.*;
 
-public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult> {
+public class ExplicitStateModelChecker extends ModelChecker {
     private Solver solver;
     private Solver opSolver;
     private SolutionFinder finder;

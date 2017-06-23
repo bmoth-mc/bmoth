@@ -9,6 +9,7 @@ import de.bmoth.checkers.invariantsatisfiability.InvariantSatisfiabilityChecker;
 import de.bmoth.checkers.invariantsatisfiability.InvariantSatisfiabilityCheckingResult;
 import de.bmoth.eventbus.ErrorEvent;
 import de.bmoth.eventbus.EventBusProvider;
+import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
 import de.bmoth.parser.Parser;
@@ -84,7 +85,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     private String currentFile;
     private Boolean hasChanged = false;
     private Task<ModelCheckingResult> task;
-    private ExplicitStateModelChecker modelChecker;
+    private ModelChecker modelChecker;
     private Thread modelCheckingThread;
     private MachineNode machineNode;
     private Boolean presentationMode = false;

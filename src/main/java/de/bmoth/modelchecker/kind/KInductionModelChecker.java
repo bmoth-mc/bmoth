@@ -16,7 +16,7 @@ import static de.bmoth.modelchecker.ModelCheckingResult.createCounterExampleFoun
 import static de.bmoth.modelchecker.ModelCheckingResult.createExceededMaxSteps;
 import static de.bmoth.modelchecker.ModelCheckingResult.createVerified;
 
-public class KInductionModelChecker extends ModelChecker<ModelCheckingResult> {
+public class KInductionModelChecker extends ModelChecker {
 
     private final int maxSteps;
     private final Solver baseSolver;
