@@ -1,8 +1,8 @@
 package de.bmoth.backend;
 
 public class TranslationOptions {
-    public static TranslationOptions UNPRIMED = new TranslationOptions();
-    public static TranslationOptions PRIMED_0 = new TranslationOptions(0);
+    public static final TranslationOptions UNPRIMED = new TranslationOptions();
+    public static final TranslationOptions PRIMED_0 = new TranslationOptions(0);
 
     private int primeLevel;
     private final boolean hasPrimeLevel;
