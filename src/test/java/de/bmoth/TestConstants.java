@@ -2,10 +2,14 @@ package de.bmoth;
 
 public class TestConstants {
 
+    private TestConstants() {}
+
     public static final String INTEGER = "INTEGER";
     public static final String INTEGER_INTEGER = "INTEGER*INTEGER";
     public static final String POW_INTEGER = "POW(INTEGER)";
     public static final String POW_INTEGER_INTEGER = "POW(INTEGER*INTEGER)";
+    public static final String POW_POW_INTEGER = "POW(POW(INTEGER))";
+    public static final String POW_POW_INTEGER_INTEGER = "POW(POW(INTEGER*INTEGER))";
     public static final String BOOL = "BOOL";
 
     public static final String MACHINE_NAME = "MACHINE test\n";

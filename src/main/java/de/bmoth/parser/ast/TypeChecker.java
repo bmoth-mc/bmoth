@@ -13,6 +13,9 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class TypeChecker implements AbstractVisitor<BType, BType> {
+
+    private static final String TYPE_ERROR = "TYPE_ERROR";
+
     private Set<ExpressionOperatorNode> minusNodes = new HashSet<>();
     private Set<ExpressionOperatorNode> multOrCartNodes = new HashSet<>();
     private Set<TypedNode> typedNodes = new HashSet<>();
@@ -23,7 +26,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
             typeChecker.checkMachineNode(machineNode);
         } catch (TypeCheckerVisitorException e) {
             final Logger logger = Logger.getLogger(e.getClass().getName());
-            logger.log(Level.SEVERE, "TYPE_ERROR", e);
+            logger.log(Level.SEVERE, TYPE_ERROR, e);
             throw e.getTypeErrorException();
         }
 
@@ -35,7 +38,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
             typeChecker.checkFormulaNode(formulaNode);
         } catch (TypeCheckerVisitorException e) {
             final Logger logger = Logger.getLogger(e.getClass().getName());
-            logger.log(Level.SEVERE, "TYPE_ERROR", e);
+            logger.log(Level.SEVERE, TYPE_ERROR, e);
             throw e.getTypeErrorException();
         }
     }
@@ -46,7 +49,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
             typeChecker.checkLTLFormulaNode(ltlFormulaAst);
         } catch (TypeCheckerVisitorException e) {
             final Logger logger = Logger.getLogger(e.getClass().getName());
-            logger.log(Level.SEVERE, "TYPE_ERROR", e);
+            logger.log(Level.SEVERE, TYPE_ERROR, e);
             throw e.getTypeErrorException();
         }
     }

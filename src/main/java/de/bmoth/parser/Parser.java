@@ -12,12 +12,7 @@ import de.bmoth.parser.ast.TypeErrorException;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
-import de.bmoth.parser.cst.CSTAnalyser;
-import de.bmoth.parser.cst.FormulaAnalyser;
-import de.bmoth.parser.cst.LTLFormulaAnalyser;
-import de.bmoth.parser.cst.MachineAnalyser;
-import de.bmoth.parser.cst.ScopeException;
-
+import de.bmoth.parser.cst.*;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -32,6 +27,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Parser {
+
+    private static final String PARSE_ERROR = "PARSE_ERROR";
 
     private BMoThParser getParser(String inputString) {
         CodePointCharStream fromString = CharStreams.fromString(inputString);
@@ -51,7 +48,7 @@ public class Parser {
             return parser.start();
         } catch (VisitorException e) {
             final Logger logger = Logger.getLogger(getClass().getName());
-            logger.log(Level.SEVERE, "PARSE_ERROR", e);
+            logger.log(Level.SEVERE, PARSE_ERROR, e);
             throw e.getParseErrorException();
         }
     }
@@ -62,7 +59,7 @@ public class Parser {
             return parser.formula();
         } catch (VisitorException e) {
             final Logger logger = Logger.getLogger(getClass().getName());
-            logger.log(Level.SEVERE, "PARSE_ERROR", e);
+            logger.log(Level.SEVERE, PARSE_ERROR, e);
             throw e.getParseErrorException();
         }
     }
@@ -82,7 +79,7 @@ public class Parser {
             return parser.ltlStart();
         } catch (VisitorException e) {
             final Logger logger = Logger.getLogger(getClass().getName());
-            logger.log(Level.SEVERE, "PARSE_ERROR", e);
+            logger.log(Level.SEVERE, PARSE_ERROR, e);
             throw e.getParseErrorException();
         }
     }

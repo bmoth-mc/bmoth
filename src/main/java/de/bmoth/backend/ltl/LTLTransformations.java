@@ -1,5 +1,6 @@
 package de.bmoth.backend.ltl;
 
+<<<<<<< HEAD
 
 import de.bmoth.backend.ltl.transformation.ConvertFinallyGloballyFinallyToGloballyFinally;
 import de.bmoth.backend.ltl.transformation.ConvertGloballyFinallyGloballyToFinallyGlobally;
@@ -10,6 +11,9 @@ import de.bmoth.backend.ltl.transformation.ConvertNotGloballyToFinallyNot;
 import de.bmoth.backend.ltl.transformation.ConvertNotNextToNextNot;
 import de.bmoth.backend.ltl.transformation.ConvertPhiUntilPhiUntilPsiToPhiUntilPsi;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
+=======
+import de.bmoth.backend.ltl.transformation.*;
+>>>>>>> 0500f2415138555a9f7dcecad560111b3bd4f6cd
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
@@ -32,6 +36,9 @@ public class LTLTransformations {
         transformationList.add(new ConvertGloballyGloballyToGlobally());
         transformationList.add(new ConvertFinallyFinallyToFinally());
         transformationList.add(new ConvertPhiUntilPhiUntilPsiToPhiUntilPsi());
+        transformationList.add(new ConvertNextPhiUntilPsiToNextPhiUntilNextPsi());
+        transformationList.add(new ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi());
+        transformationList.add(new ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi());
     }
 
     public static LTLTransformations getInstance() {

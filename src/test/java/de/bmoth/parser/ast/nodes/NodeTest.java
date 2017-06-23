@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import static de.bmoth.TestParser.parseFormula;
+import static de.bmoth.TestParser.parseMachine;
 import static de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator.DOMAIN;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
@@ -13,7 +15,7 @@ import static de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuantifiedExpre
 import static de.bmoth.parser.ast.nodes.QuantifiedPredicateNode.QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static de.bmoth.TestParser.*;
+
 public class NodeTest {
 
     @Test
@@ -30,7 +32,15 @@ public class NodeTest {
 
         SelectSubstitutionNode condSub1 = (SelectSubstitutionNode) machine.getOperations().get(0).getSubstitution();
         SelectSubstitutionNode condSub2 = (SelectSubstitutionNode) machine.getOperations().get(1).getSubstitution();
-        //TODO complete test
+
+        assertEquals("[x]", condSub1.getAssignedVariables().toString());
+        assertEquals("[x]", condSub2.getAssignedVariables().toString());
+
+        assertEquals("EQUAL(x,1)", condSub1.getConditions().get(0).toString());
+        assertEquals("EQUAL(x,25)", condSub2.getConditions().get(0).toString());
+
+        assertEquals("x := 2", condSub1.getSubstitutions().get(0).toString());
+        assertEquals("x := 5000", condSub2.getSubstitutions().get(0).toString());
     }
 
     @Test

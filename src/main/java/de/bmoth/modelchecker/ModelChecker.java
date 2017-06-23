@@ -1,7 +1,9 @@
 package de.bmoth.modelchecker;
 
 import com.microsoft.z3.Context;
+import com.microsoft.z3.Model;
 import de.bmoth.backend.Abortable;
+import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
@@ -38,4 +40,8 @@ public abstract class ModelChecker<R> implements Abortable {
     }
 
     protected abstract R doModelCheck();
+
+    protected State getStateFromModel(State predecessor, Model model, TranslationOptions ops) {
+        return new State(predecessor, getMachineTranslator().getVarMapFromModel(model, ops));
+    }
 }

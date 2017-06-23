@@ -11,13 +11,13 @@ public class BuechiAutomaton {
     private int nodeCounter = 0;
     private List<BuechiAutomatonNode> nodesSet;
 
-    public String new_name() {
+    public String newName() {
         nodeCounter++;
-        return "node" + String.valueOf(nodeCounter);
+        return "node" + nodeCounter;
     }
 
     public BuechiAutomaton(LTLNode formula) {
-        this.nodesSet = create_graph(formula);
+        this.nodesSet = createGraph(formula);
     }
 
     private BuechiAutomatonNode nodeIsInNodeSet(BuechiAutomatonNode node, List<BuechiAutomatonNode> nodesSet) {
@@ -54,7 +54,7 @@ public class BuechiAutomaton {
     }
 
     private List<BuechiAutomatonNode> expand(BuechiAutomatonNode node, List<BuechiAutomatonNode> nodesSet) {
-        if (node.unprocessed.size() == 0) {
+        if (node.unprocessed.isEmpty()) {
             // The current node is completely processed and can be added to the list (or, in case he was
             // already added before, updated).
             BuechiAutomatonNode nodeInSet = nodeIsInNodeSet(node, nodesSet);
@@ -66,7 +66,7 @@ public class BuechiAutomaton {
                 incoming.add(node.name);
                 List<BuechiAutomatonNode> newNodesSet = new ArrayList<>(nodesSet);
                 newNodesSet.add(node);
-                return expand(new BuechiAutomatonNode(new_name(), incoming, node.next,
+                return expand(new BuechiAutomatonNode(newName(), incoming, node.next,
                     new ArrayList<>(), new ArrayList<>()), newNodesSet);
             }
         } else {
@@ -141,7 +141,7 @@ public class BuechiAutomaton {
                         newNext.addAll(next1((LTLInfixOperatorNode) formula));
 
                         // Create the first new node
-                        BuechiAutomatonNode node1 = new BuechiAutomatonNode(new_name(), node.incoming,
+                        BuechiAutomatonNode node1 = new BuechiAutomatonNode(newName(), node.incoming,
                             newUnprocessed, newProcessed, newNext);
 
                         // Prepare the parts for the second new node
@@ -151,7 +151,7 @@ public class BuechiAutomaton {
                         newUnprocessed.addAll(unprocessed);
 
                         // Create the second new node
-                        BuechiAutomatonNode node2 = new BuechiAutomatonNode(new_name(), node.incoming,
+                        BuechiAutomatonNode node2 = new BuechiAutomatonNode(newName(), node.incoming,
                             newUnprocessed, newProcessed, node.next);
 
                         return expand(node2, expand(node1, nodesSet));
@@ -161,16 +161,16 @@ public class BuechiAutomaton {
         return nodesSet;
     }
 
-    private List<BuechiAutomatonNode> create_graph(LTLNode formula) {
+    private List<BuechiAutomatonNode> createGraph(LTLNode formula) {
         // Initialization
         List<String> initIncoming = new ArrayList<>();
         initIncoming.add("init");
         List<LTLNode> unprocessed = new ArrayList<>();
         unprocessed.add(formula);
-        List<BuechiAutomatonNode> nodes_set = new ArrayList<>();
+        List<BuechiAutomatonNode> nodeSet = new ArrayList<>();
 
-        return expand(new BuechiAutomatonNode(new_name(), initIncoming, unprocessed, new ArrayList<>(),
-            new ArrayList<>()), nodes_set);
+        return expand(new BuechiAutomatonNode(newName(), initIncoming, unprocessed, new ArrayList<>(),
+            new ArrayList<>()), nodeSet);
     }
 
     public String toString() {

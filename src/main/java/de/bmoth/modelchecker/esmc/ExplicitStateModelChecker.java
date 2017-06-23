@@ -1,15 +1,21 @@
 package de.bmoth.modelchecker.esmc;
 
-import com.microsoft.z3.*;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Model;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Status;
+import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.State;
-import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
 public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult> {
     private Solver solver;
@@ -39,22 +45,26 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
 
     @Override
     protected ModelCheckingResult doModelCheck() {
+        final int maxInitialStates = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE);
+        final int maxTransitions = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS);
+
         Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
         // prepare initial states
         BoolExpr initialValueConstraint = getMachineTranslator().getInitialValueConstraint();
 
-        Set<Model> models = finder.findSolutions(initialValueConstraint,
-            BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE));
-        models.stream().map(this::getStateFromModel).filter(s -> !queue.contains(s)).forEach(queue::add);
+        Set<Model> models = finder.findSolutions(initialValueConstraint, maxInitialStates);
+        models.stream()
+            .map(this::getStateFromModel)
+            .filter(state -> !queue.contains(state))
+            .forEach(queue::add);
 
         final BoolExpr invariant = getMachineTranslator().getInvariantConstraint();
         solver.add(invariant);
 
         // create joint operations constraint and permanently add to separate
         // solver
-        final BoolExpr operationsConstraint = getContext()
-            .mkOr(getMachineTranslator().getOperationConstraints().toArray(new BoolExpr[0]));
+        final BoolExpr operationsConstraint = getMachineTranslator().getCombinedOperationConstraint();
         opSolver.add(operationsConstraint);
 
         while (!isAborted() && !queue.isEmpty()) {
@@ -80,10 +90,11 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
             }
 
             // compute successors on separate finder
-            models = opFinder.findSolutions(stateConstraint,
-                BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS));
-            models.stream().map(model -> getStateFromModel(current, model)).filter(state -> !visited.contains(state))
-                .filter(state -> !queue.contains(state)).forEach(queue::add);
+            models = opFinder.findSolutions(stateConstraint, maxTransitions);
+            models.stream()
+                .map(model -> getStateFromModel(current, model))
+                .filter(state -> !visited.contains(state) && !queue.contains(state))
+                .forEach(queue::add);
 
             solver.pop();
         }
@@ -96,22 +107,10 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
     }
 
     private State getStateFromModel(Model model) {
-        return getStateFromModel(null, model);
+        return getStateFromModel(null, model, TranslationOptions.PRIMED_0);
     }
 
     private State getStateFromModel(State predecessor, Model model) {
-        HashMap<String, Expr> map = new HashMap<>();
-        for (DeclarationNode declNode : getMachineTranslator().getVariables()) {
-            Expr expr = getMachineTranslator().getPrimedVariable(declNode);
-            Expr value = model.eval(expr, true);
-            map.put(declNode.getName(), value);
-        }
-        for (DeclarationNode declarationNode : getMachineTranslator().getConstants()) {
-            Expr expr = getMachineTranslator().getVariable(declarationNode);
-            Expr value = model.eval(expr, true);
-            map.put(declarationNode.getName(), value);
-        }
-
-        return new State(predecessor, map);
+        return getStateFromModel(predecessor, model, TranslationOptions.PRIMED_0);
     }
 }

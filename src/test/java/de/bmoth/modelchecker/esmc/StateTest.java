@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 
 public class StateTest extends TestUsingZ3 {
     @Test
@@ -62,5 +63,19 @@ public class StateTest extends TestUsingZ3 {
         State state = new State(null, map);
         assertEquals(state, state);
         assertNotEquals(state, new Object());
+    }
+
+    @Test
+    public void testGetStateConstraint() {
+        HashMap<String, Expr> map1 = new HashMap<>();
+
+        map1.put("x", z3Context.mkInt(11));
+        map1.put("y", z3Context.mkInt(12));
+
+        State state1 = new State(null, map1);
+        State state2 = new State(null, new HashMap<>());
+
+        assertEquals("(and (= x 11) (= y 12))", state1.getStateConstraint(z3Context).toString());
+        assertNull(state2.getStateConstraint(z3Context));
     }
 }

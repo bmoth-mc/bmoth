@@ -8,18 +8,18 @@ import de.bmoth.parser.ast.nodes.Node;
 public class LTLFormula implements Node {
 
     private List<DeclarationNode> implicitDeclarations;
-    private LTLNode ltlFormula;
+    private LTLNode ltlNode;
 
     public void setImplicitDeclarations(List<DeclarationNode> implicitDeclarations) {
         this.implicitDeclarations = implicitDeclarations;
     }
 
-    public void setFormula(LTLNode formula) {
-        this.ltlFormula = formula;
+    public void setFormula(LTLNode ltlNode) {
+        this.ltlNode = ltlNode;
     }
 
     public LTLNode getLTLNode() {
-        return ltlFormula;
+        return ltlNode;
     }
 
     public List<DeclarationNode> getImplicitDeclarations() {
