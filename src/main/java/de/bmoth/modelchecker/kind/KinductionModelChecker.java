@@ -1,34 +1,25 @@
 package de.bmoth.modelchecker.kind;
 
-import com.microsoft.z3.*;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Model;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Status;
+import de.bmoth.backend.SubstitutionOptions;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.State;
-import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
-
-import java.util.*;
 
 public class KinductionModelChecker extends ModelChecker<KinductionModelCheckingResult> {
 
     private final int maxSteps;
     private final Solver solver;
-    private final Expr[] originalVars;
-    private final Expr[] primedVars;
-    private final Map<Expr, String> primedVarToOriginalName;
 
     public KinductionModelChecker(MachineNode machine, int maxSteps) {
         super(machine);
         this.maxSteps = maxSteps;
         this.solver = Z3SolverFactory.getZ3Solver(getContext());
-        this.originalVars = getMachineTranslator().getVariables().stream().map(var -> getMachineTranslator().getVariable(var)).toArray(Expr[]::new);
-        this.primedVarToOriginalName = new HashMap<>();
-        this.primedVars = getMachineTranslator().getVariables().stream().map(var -> {
-            Expr primedVar = getMachineTranslator().getPrimedVariable(var, TranslationOptions.PRIMED_0);
-            primedVarToOriginalName.put(primedVar, var.getName());
-            return primedVar;
-        }).toArray(Expr[]::new);
     }
 
     @Override
@@ -64,7 +55,7 @@ public class KinductionModelChecker extends ModelChecker<KinductionModelChecking
                 for (int i = 0; i <= k; i++) {
                     solver.add(invariant(i));
                 }
-                solver.add(getContext().mkNot(invariant(k+1)));
+                solver.add(getContext().mkNot(invariant(k + 1)));
             }
         }
 
@@ -73,51 +64,18 @@ public class KinductionModelChecker extends ModelChecker<KinductionModelChecking
     }
 
     private BoolExpr init(int step) {
-        return (BoolExpr) transformToStep(getMachineTranslator().getInitialValueConstraint(), step, primedVars);
+        return getMachineTranslator().getInvariantConstraint(new TranslationOptions(step));
     }
 
     private BoolExpr transition(int fromStep, int toStep) {
-        BoolExpr[] transitions = getMachineTranslator().getOperationConstraints().stream().map(
-            op -> transformToStep(transformToStep(op, fromStep, originalVars), toStep, primedVars)
-        ).toArray(BoolExpr[]::new);
-
-        switch (transitions.length) {
-            case 0:
-                return getContext().mkTrue();
-            case 1:
-                return transitions[0];
-            default:
-                return getContext().mkOr(transitions);
-        }
+        return getMachineTranslator().getCombinedOperationConstraint(new SubstitutionOptions(new TranslationOptions(toStep), new TranslationOptions(fromStep)));
     }
 
     private BoolExpr invariant(int step) {
-        return (BoolExpr) transformToStep(getMachineTranslator().getInvariantConstraint(), step, originalVars);
-    }
-
-    private Expr transformToStep(Expr original, int step, Expr[] variables) {
-        Expr[] substitutions = Arrays.stream(variables).map(
-            var -> {
-                String name = primedVarToOriginalName.containsKey(var) ? primedVarToOriginalName.get(var) : var.getFuncDecl().getName().toString();
-                return getContext().mkConst(
-                    name + step + "'", var.getSort());
-            }
-        ).toArray(Expr[]::new);
-        return original.substitute(variables, substitutions);
+        return getMachineTranslator().getInvariantConstraint(new TranslationOptions(step));
     }
 
     private State getStateFromModel(Model model, int step) {
-        HashMap<String, Expr> map = new HashMap<>();
-        for (DeclarationNode declNode : getMachineTranslator().getVariables()) {
-            Expr expr = transformToStep(getMachineTranslator().getVariable(declNode), step, originalVars);
-            Expr value = model.eval(expr, true);
-            map.put(declNode.getName(), value);
-        }
-        for (DeclarationNode declarationNode : getMachineTranslator().getConstants()) {
-            Expr expr = getMachineTranslator().getVariable(declarationNode);
-            Expr value = model.eval(expr, true);
-            map.put(declarationNode.getName(), value);
-        }
-        return new State(null, map);
+        return getStateFromModel(null, model, new TranslationOptions(step));
     }
 }
