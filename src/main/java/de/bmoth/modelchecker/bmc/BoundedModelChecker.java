@@ -55,7 +55,7 @@ public class BoundedModelChecker extends ModelChecker<BoundedModelCheckingResult
 
     private BoolExpr init() {
         // step is always 0 for init, so omitting var...
-        return getMachineTranslator().getInvariantConstraint(TranslationOptions.PRIMED_0);
+        return getMachineTranslator().getInitialValueConstraint(TranslationOptions.PRIMED_0);
     }
 
     private BoolExpr transition(int fromStep, int toStep) {

@@ -14,48 +14,57 @@ import de.bmoth.parser.ast.nodes.MachineNode;
 public class KInductionModelChecker extends ModelChecker<KInductionModelCheckingResult> {
 
     private final int maxSteps;
-    private final Solver solver;
+    private final Solver baseSolver;
+    private final Solver stepSolver;
 
     public KInductionModelChecker(MachineNode machine, int maxSteps) {
         super(machine);
         this.maxSteps = maxSteps;
-        this.solver = Z3SolverFactory.getZ3Solver(getContext());
+        this.baseSolver = Z3SolverFactory.getZ3Solver(getContext());
+        this.stepSolver = Z3SolverFactory.getZ3Solver(getContext());
     }
 
     @Override
     protected KInductionModelCheckingResult doModelCheck() {
         for (int k = 0; k < maxSteps; k++) {
-            // get a clean solver
-            solver.reset();
+            // get a clean baseSolver
+            baseSolver.reset();
 
             // INIT(V0)
-            solver.add(init(0));
+            baseSolver.add(init(0));
 
             // CONJUNCTION i from 1 to k T(Vi-1, Vi)
             for (int i = 1; i <= k; i++) {
-                solver.add(transition(i - 1, i));
+                baseSolver.add(transition(i - 1, i));
             }
 
             // not INV(Vk)
-            solver.add(getContext().mkNot(invariant(k)));
+            baseSolver.add(getContext().mkNot(invariant(k)));
 
             //TODO add missing CONJUNCTION i from 1 to k, j from i + 1 to k (Vi != Vj)
 
-            Status check = solver.check();
+            Status check = baseSolver.check();
             if (check == Status.SATISFIABLE) {
                 // counter example found!
-                State counterExample = getStateFromModel(solver.getModel(), k);
+                State counterExample = getStateFromModel(baseSolver.getModel(), k);
                 return KInductionModelCheckingResult.createCounterExampleFound(counterExample, k);
             } else {
+                stepSolver.reset();
 
+                stepSolver.add();
 
                 for (int i = 0; i <= k; i++) {
-                    solver.add(transition(i - 1, i));
+                    stepSolver.add(transition(i - 1, i));
                 }
                 for (int i = 0; i <= k; i++) {
-                    solver.add(invariant(i));
+                    stepSolver.add(invariant(i));
                 }
-                solver.add(getContext().mkNot(invariant(k + 1)));
+                stepSolver.add(getContext().mkNot(invariant(k + 1)));
+
+                Status checkStep = stepSolver.check();
+
+                if (checkStep == Status.UNSATISFIABLE)
+                    return KInductionModelCheckingResult.createVerifiedViaInduction(k);
             }
         }
 
@@ -64,7 +73,7 @@ public class KInductionModelChecker extends ModelChecker<KInductionModelChecking
     }
 
     private BoolExpr init(int step) {
-        return getMachineTranslator().getInvariantConstraint(new TranslationOptions(step));
+        return getMachineTranslator().getInitialValueConstraint(TranslationOptions.PRIMED_0);
     }
 
     private BoolExpr transition(int fromStep, int toStep) {
