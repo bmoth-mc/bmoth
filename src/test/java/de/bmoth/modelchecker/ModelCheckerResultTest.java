@@ -1,9 +1,7 @@
-package de.bmoth.modelchecker.esmc;
+package de.bmoth.modelchecker;
 
 import com.microsoft.z3.Expr;
 import de.bmoth.TestUsingZ3;
-import de.bmoth.modelchecker.ModelCheckingResult;
-import de.bmoth.modelchecker.State;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,9 +15,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     State secondState;
     State thirdState;
 
-    String correct = "correct";
     String unknown = "check-sat ...";
-    String invalid = "loremIpsum";
 
     @Before
     public void init() {

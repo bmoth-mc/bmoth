@@ -8,6 +8,7 @@ import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
@@ -16,6 +17,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
+
+import static de.bmoth.modelchecker.ModelCheckingResult.*;
 
 public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult> {
     private Solver solver;
@@ -80,10 +83,9 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
             Status check = solver.check();
             switch (check) {
                 case UNKNOWN:
-                    return new ModelCheckingResult("check-sat = unknown, reason: " + solver.getReasonUnknown(),
-                        visited.size());
+                    return createUnknown(visited.size(), solver.getReasonUnknown());
                 case UNSATISFIABLE:
-                    return new ModelCheckingResult(current, visited.size());
+                    return createCounterExampleFound(visited.size(), current);
                 case SATISFIABLE:
                 default:
                     // continue
@@ -100,9 +102,9 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
         }
 
         if (isAborted()) {
-            return new ModelCheckingResult("aborted", visited.size());
+            return createAborted(visited.size());
         } else {
-            return new ModelCheckingResult("correct", visited.size());
+            return createVerified(visited.size());
         }
     }
 

@@ -8,10 +8,15 @@ import de.bmoth.backend.SubstitutionOptions;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
-public class KInductionModelChecker extends ModelChecker<KInductionModelCheckingResult> {
+import static de.bmoth.modelchecker.ModelCheckingResult.createCounterExampleFound;
+import static de.bmoth.modelchecker.ModelCheckingResult.createExceededMaxSteps;
+import static de.bmoth.modelchecker.ModelCheckingResult.createVerified;
+
+public class KInductionModelChecker extends ModelChecker<ModelCheckingResult> {
 
     private final int maxSteps;
     private final Solver baseSolver;
@@ -25,7 +30,7 @@ public class KInductionModelChecker extends ModelChecker<KInductionModelChecking
     }
 
     @Override
-    protected KInductionModelCheckingResult doModelCheck() {
+    protected ModelCheckingResult doModelCheck() {
         for (int k = 0; k < maxSteps; k++) {
             // get a clean baseSolver
             baseSolver.reset();
@@ -47,7 +52,7 @@ public class KInductionModelChecker extends ModelChecker<KInductionModelChecking
             if (check == Status.SATISFIABLE) {
                 // counter example found!
                 State counterExample = getStateFromModel(baseSolver.getModel(), k);
-                return KInductionModelCheckingResult.createCounterExampleFound(counterExample, k);
+                return createCounterExampleFound(k, counterExample);
             } else {
                 stepSolver.reset();
 
@@ -64,12 +69,12 @@ public class KInductionModelChecker extends ModelChecker<KInductionModelChecking
                 Status checkStep = stepSolver.check();
 
                 if (checkStep == Status.UNSATISFIABLE)
-                    return KInductionModelCheckingResult.createVerifiedViaInduction(k);
+                    return createVerified(k);
             }
         }
 
         // no counter example found after maxStep steps
-        return KInductionModelCheckingResult.createExceededMaxSteps(maxSteps);
+        return createExceededMaxSteps(maxSteps);
     }
 
     private BoolExpr init(int step) {

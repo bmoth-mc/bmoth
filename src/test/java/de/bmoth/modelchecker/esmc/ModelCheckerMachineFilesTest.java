@@ -1,7 +1,6 @@
 package de.bmoth.modelchecker.esmc;
 
-import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
-import de.bmoth.modelchecker.esmc.ModelCheckingResult;
+import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Test;
 
@@ -17,12 +16,12 @@ public class ModelCheckerMachineFilesTest {
         MachineNode simpleMachineWithViolation = parseMachineFromFile(dir + "OnlyInitViolation.mch");
         ModelCheckingResult result = ExplicitStateModelChecker.check(simpleMachineWithViolation);
         assertEquals(false, result.isCorrect());
-        assertEquals(1, result.getNumberOfDistinctStatesVisited());
+        assertEquals(1, result.getSteps());
 
         MachineNode simpleMachineWithoutViolation = parseMachineFromFile(dir + "OnlyInitNoViolation.mch");
         result = ExplicitStateModelChecker.check(simpleMachineWithoutViolation);
         assertEquals(true, result.isCorrect());
-        assertEquals(1, result.getNumberOfDistinctStatesVisited());
+        assertEquals(1, result.getSteps());
     }
 
     @Test

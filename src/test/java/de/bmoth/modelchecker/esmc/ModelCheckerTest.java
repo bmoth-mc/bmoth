@@ -1,9 +1,11 @@
 package de.bmoth.modelchecker.esmc;
 
+import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static de.bmoth.modelchecker.ModelCheckingResult.Type.ABORTED;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -33,7 +35,7 @@ public class ModelCheckerTest {
 
         ModelCheckingResult result = new ExplicitStateModelChecker(parseMachine(machine)).check();
         assertTrue(result.isCorrect());
-        assertEquals(4, result.getNumberOfDistinctStatesVisited());
+        assertEquals(4, result.getSteps());
     }
 
     @Test
@@ -68,7 +70,7 @@ public class ModelCheckerTest {
 
         ModelCheckingResult result = new ExplicitStateModelChecker(parseMachine(machine)).check();
         assertTrue(result.isCorrect());
-        assertEquals(3, result.getNumberOfDistinctStatesVisited());
+        assertEquals(3, result.getSteps());
     }
 
     @Test
@@ -85,7 +87,7 @@ public class ModelCheckerTest {
         // the operation BlockSubstitution will finally violate the invariant
         // x<=2
         assertFalse(result.isCorrect());
-        assertEquals(4, result.getNumberOfDistinctStatesVisited());
+        assertEquals(4, result.getSteps());
     }
 
     @Test
@@ -113,7 +115,7 @@ public class ModelCheckerTest {
         ModelCheckingResult result = modelChecker.check();
 
         assertFalse(result.isCorrect());
-        assertEquals("aborted", result.getMessage());
+        assertEquals(ABORTED, result.getType());
     }
 
     @Test
@@ -128,7 +130,7 @@ public class ModelCheckerTest {
         ModelCheckingResult result = new ExplicitStateModelChecker(parseMachine(machine)).check();
         // the initialisation will finally violate the invariant x = s2
         assertFalse(result.isCorrect());
-        assertEquals(1, result.getNumberOfDistinctStatesVisited());
+        assertEquals(1, result.getSteps());
     }
 
     @Test
@@ -143,7 +145,7 @@ public class ModelCheckerTest {
         ModelCheckingResult result = new ExplicitStateModelChecker(parseMachine(machine)).check();
         // the initialisation will finally violate the invariant x = y
         assertFalse(result.isCorrect());
-        assertEquals(1, result.getNumberOfDistinctStatesVisited());
+        assertEquals(1, result.getSteps());
     }
 
     @Test
