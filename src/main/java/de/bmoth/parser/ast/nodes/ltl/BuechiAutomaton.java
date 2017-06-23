@@ -107,9 +107,8 @@ public class BuechiAutomaton {
                     return expand(node, nodesSet);
                 }
             } else
-
+                // Next, Not
                 if (formula instanceof LTLPrefixOperatorNode) {
-
                     if (((LTLPrefixOperatorNode) formula).getKind() == LTLPrefixOperatorNode.Kind.NEXT) {
                         // Next
                         List<LTLNode> processed = new ArrayList<>(node.processed);
@@ -121,20 +120,12 @@ public class BuechiAutomaton {
                     } else {
                         // Not
                         // TODO: Check if negative of predicate already occured -> contradiction -> boom
-//                        if (neg(formula.getArgument()) in Old) {
-//                            // Current node contains a contradiction, discard
-//                            return nodesSet;
-//                        } else {
-//                            node.processed.add(formula);
-//                            return expand(node, nodesSet);
-//                        }
                         node.processed.add(formula);
                         return expand(node, nodesSet);
                     }
             } else
-
+                // And, Or, Until
                 if (formula instanceof LTLInfixOperatorNode) {
-
                     if (((LTLInfixOperatorNode) formula).getKind() == LTLInfixOperatorNode.Kind.AND) {
                         // Logical and
                         List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
