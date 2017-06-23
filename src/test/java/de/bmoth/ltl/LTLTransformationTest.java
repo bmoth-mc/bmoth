@@ -104,4 +104,13 @@ public class LTLTransformationTest {
 
         assertTrue(node1PO.getArgument() instanceof LTLBPredicateNode);
     }
+    @Ignore
+    @Test
+    public void testTransformationOfNotUntil() throws ParserException {
+        String formula = "not( { 1=1 } U {2=1})";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        assertEquals("FINALLY(NOT(EQUAL(1,1)))", node1.toString());
+    }
+    
 }
