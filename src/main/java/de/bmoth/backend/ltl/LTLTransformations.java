@@ -2,22 +2,13 @@ package de.bmoth.backend.ltl;
 
 
 
-import de.bmoth.backend.ltl.transformation.ConvertFinallyGloballyFinallyToGloballyFinally;
-import de.bmoth.backend.ltl.transformation.ConvertGloballyFinallyGloballyToFinallyGlobally;
-import de.bmoth.backend.ltl.transformation.ConvertNotFinallyToGloballyNot;
-import de.bmoth.backend.ltl.transformation.ConvertFinallyFinallyToFinally;
-import de.bmoth.backend.ltl.transformation.ConvertGloballyGloballyToGlobally;
-import de.bmoth.backend.ltl.transformation.ConvertNotGloballyToFinallyNot;
-import de.bmoth.backend.ltl.transformation.ConvertNotNextToNextNot;
-import de.bmoth.backend.ltl.transformation.ConvertPhiUntilPhiUntilPsiToPhiUntilPsi;
-import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.bmoth.backend.ltl.transformation.*;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class LTLTransformations {
     private static LTLTransformations instance;
@@ -39,6 +30,8 @@ public class LTLTransformations {
         transformationList.add(new ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi());
         transformationList.add(new ConvertNotUntil());
         transformationList.add(new ConvertNotWeakUntil());
+        transformationList.add(new ConvertFinallyPhiToTrueUntilPhi());
+        transformationList.add(new ConvertGloballyPhiToPhiWeakUntilFalse());
     }
 
     public static LTLTransformations getInstance() {
