@@ -1,9 +1,5 @@
 package de.bmoth.ltl;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.Node;
@@ -11,6 +7,10 @@ import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class LTLFormulaTest {
     @Test
@@ -40,6 +40,18 @@ public class LTLFormulaTest {
     @Test
     public void testAnd() throws ParserException {
         String formula = " { 1=1 } & {1=1}";
+        Parser.getLTLFormulaAsSemanticAst(formula);
+    }
+
+    @Test
+    public void testUntil() throws ParserException {
+        String formula = " { 1=1 } U {1=1}";
+        Parser.getLTLFormulaAsSemanticAst(formula);
+    }
+
+    @Test
+    public void testWeakUntil() throws ParserException {
+        String formula = " { 1=1 } W {1=1}";
         Parser.getLTLFormulaAsSemanticAst(formula);
     }
 

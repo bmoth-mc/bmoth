@@ -22,7 +22,7 @@ public class LTLTransformationTest {
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         assertEquals("FINALLY(NOT(EQUAL(1,1)))", node1.toString());
     }
-<<<<<<< HEAD
+
     
     @Test
     public void testTransformationNotFinallyToGloballyNot() throws ParserException{
@@ -54,7 +54,7 @@ public class LTLTransformationTest {
     	LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         assertEquals("FINALLY(GLOBALLY(EQUAL(0,1)))", node1.toString());
-=======
+    }
 
     @Test
     public void testTransformation2() throws ParserException {
@@ -86,7 +86,6 @@ public class LTLTransformationTest {
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         assertEquals("UNTIL(EQUAL(1,1),EQUAL(2,2))", node1.toString());
->>>>>>> 0500f2415138555a9f7dcecad560111b3bd4f6cd
     }
 
     @Test
