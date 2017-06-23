@@ -2,12 +2,14 @@ package de.bmoth.modelchecker.esmc;
 
 import com.microsoft.z3.Expr;
 import de.bmoth.TestUsingZ3;
+import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
 
+import static de.bmoth.modelchecker.ModelCheckingResult.Type.*;
 import static org.junit.Assert.*;
 
 public class ModelCheckerResultTest extends TestUsingZ3 {
@@ -36,9 +38,9 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     @Test
     public void testIsCorrect() {
-        ModelCheckingResult resultCorrect = new ModelCheckingResult(correct, 0);
-        ModelCheckingResult resultIncorrectUnknown = new ModelCheckingResult(unknown, 0);
-        ModelCheckingResult resultIncorrectPath = new ModelCheckingResult(firstState, 0);
+        ModelCheckingResult resultCorrect = ModelCheckingResult.createVerified(0);
+        ModelCheckingResult resultIncorrectUnknown = ModelCheckingResult.createUnknown(0, unknown);
+        ModelCheckingResult resultIncorrectPath = ModelCheckingResult.createCounterExampleFound(0, firstState);
 
         assertTrue(resultCorrect.isCorrect());
         assertFalse(resultIncorrectUnknown.isCorrect());
@@ -47,7 +49,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     @Test
     public void testGetLastState() {
-        ModelCheckingResult resultIncorrectPath = new ModelCheckingResult(firstState, 0);
+        ModelCheckingResult resultIncorrectPath = ModelCheckingResult.createCounterExampleFound(0, firstState);
         assertEquals(firstState, resultIncorrectPath.getLastState());
     }
 
@@ -59,10 +61,19 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     @Test
     public void testGetMessage() {
-        ModelCheckingResult resultIncorrectUnknown = new ModelCheckingResult(unknown, 0);
-        ModelCheckingResult resultIncorrectInvaild = new ModelCheckingResult(invalid, 0);
+        ModelCheckingResult resultIncorrectUnknown = ModelCheckingResult.createUnknown(0, unknown);
 
-        assertEquals(unknown, resultIncorrectUnknown.getMessage());
-        assertEquals("", resultIncorrectInvaild.getMessage());
+        assertEquals(ModelCheckingResult.Type.UNKNOWN, resultIncorrectUnknown.getType());
+        assertEquals(unknown, resultIncorrectUnknown.getReason());
+    }
+
+    @Test
+    public void testType() {
+        assertArrayEquals(new ModelCheckingResult.Type[]{COUNTER_EXAMPLE_FOUND,
+                EXCEEDED_MAX_STEPS, VERIFIED, ABORTED, UNKNOWN},
+            ModelCheckingResult.Type.values());
+
+        assertEquals(COUNTER_EXAMPLE_FOUND, ModelCheckingResult.Type.valueOf("COUNTER_EXAMPLE_FOUND"));
+        assertEquals(EXCEEDED_MAX_STEPS, ModelCheckingResult.Type.valueOf("EXCEEDED_MAX_STEPS"));
     }
 }
