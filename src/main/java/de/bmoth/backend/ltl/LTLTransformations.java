@@ -38,6 +38,7 @@ public class LTLTransformations {
         transformationList.add(new ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi());
         transformationList.add(new ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi());
         transformationList.add(new ConvertNotUntil());
+        transformationList.add(new ConvertNotWeakUntil());
     }
 
     public static LTLTransformations getInstance() {

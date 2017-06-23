@@ -110,7 +110,16 @@ public class LTLTransformationTest {
         String formula = "not( { 1=1 } U {2=1})";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("FINALLY(NOT(EQUAL(1,1)))", node1.toString());
+        assertEquals("", node1.toString());
+    }
+    
+    @Ignore
+    @Test
+    public void testTransformationOfNotWeakUntil() throws ParserException {
+        String formula = "not( { 1=1 } W {2=1})";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        assertEquals("", node1.toString());
     }
     
 }
