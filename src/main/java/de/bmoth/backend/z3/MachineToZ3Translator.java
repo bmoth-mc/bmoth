@@ -31,7 +31,7 @@ public class MachineToZ3Translator {
     private List<BoolExpr> visitOperations(SubstitutionOptions ops) {
         List<BoolExpr> results = new ArrayList<>();
         // if there's at least one operation...
-        if (machineNode.getOperations().size() > 0) {
+        if (!machineNode.getOperations().isEmpty()) {
             // ... then for every operation ...
             for (OperationNode operationNode : this.machineNode.getOperations()) {
                 // ... translate it's substitution
@@ -48,6 +48,7 @@ public class MachineToZ3Translator {
         }
         // if there's no operation...
         else {
+            // ... add dummy assignments for all variables
             Set<DeclarationNode> set = new HashSet<>(this.getVariables());
             List<BoolExpr> dummyAssignments = createDummyAssignment(set, ops);
             BoolExpr[] array = dummyAssignments.toArray(new BoolExpr[dummyAssignments.size()]);
@@ -90,7 +91,8 @@ public class MachineToZ3Translator {
     }
 
     public BoolExpr getInitialValueConstraint(TranslationOptions ops) {
-        BoolExpr initialization = null, properties = null;
+        BoolExpr initialization = null;
+        BoolExpr properties = null;
 
         if (machineNode.getInitialisation() != null) {
             initialization = visitor.visitSubstitutionNode(machineNode.getInitialisation(), new SubstitutionOptions(ops, UNPRIMED));
