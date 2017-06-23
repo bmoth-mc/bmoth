@@ -93,7 +93,7 @@ public class ExplicitStateModelChecker extends ModelChecker<ModelCheckingResult>
             models = opFinder.findSolutions(stateConstraint, maxTransitions);
             models.stream()
                 .map(model -> getStateFromModel(current, model))
-                .filter(state -> !visited.contains(state) || !queue.contains(state))
+                .filter(state -> !visited.contains(state) && !queue.contains(state))
                 .forEach(queue::add);
 
             solver.pop();
