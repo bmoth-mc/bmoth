@@ -1,13 +1,16 @@
 package de.bmoth;
 
-import static org.junit.Assert.fail;
-
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
+import static org.junit.Assert.fail;
+
 public class TestParser {
+    protected TestParser() {
+
+    }
 
     public static FormulaNode parseFormula(String formula) {
         try {

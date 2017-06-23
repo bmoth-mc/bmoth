@@ -605,6 +605,9 @@ public class SemanticAstCreator {
                 case BMoThParser.LTL_UNTIL:
                     kind = LTLInfixOperatorNode.Kind.UNTIL;
                     break;
+                case BMoThParser.LTL_WEAK_UNTIL:
+                    kind = LTLInfixOperatorNode.Kind.WEAK_UNTIL;
+                    break;
                 case BMoThParser.LTL_RELEASE:
                     kind = LTLInfixOperatorNode.Kind.RELEASE;
                     break;
