@@ -3,10 +3,10 @@ package de.bmoth.modelchecker.kinduction;
 import de.bmoth.TestParser;
 import de.bmoth.modelchecker.kind.KInductionModelChecker;
 import de.bmoth.modelchecker.kind.KInductionModelCheckingResult;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import static de.bmoth.modelchecker.kind.KInductionModelCheckingResult.Type.COUNTER_EXAMPLE_FOUND;
-import static de.bmoth.modelchecker.kind.KInductionModelCheckingResult.Type.EXCEEDED_MAX_STEPS;
+import static de.bmoth.modelchecker.kind.KInductionModelCheckingResult.Type.*;
 import static org.junit.Assert.assertEquals;
 
 public class KInductionModelCheckerTest extends TestParser {
@@ -42,5 +42,20 @@ public class KInductionModelCheckerTest extends TestParser {
         assertEquals(COUNTER_EXAMPLE_FOUND, result.getType());
         assertEquals("{b=false, c=100000}", result.getLastState().toString());
         assertEquals(1, result.getSteps());
+    }
+
+    @Test
+    @Ignore
+    public void testCounterCorrect() {
+        String machine = "MACHINE ebr\n" +
+            "VARIABLES c\n" +
+            "INVARIANT c : INTEGER\n" +
+            "INITIALISATION c := 0\n" +
+            "OPERATIONS\n" +
+            "\tinc = c := c + 1\n" +
+            "END\n";
+
+        KInductionModelCheckingResult result = new KInductionModelChecker(parseMachine(machine), 20).check();
+        assertEquals(CORRECT, result.getType());
     }
 }

@@ -5,7 +5,8 @@ import de.bmoth.modelchecker.State;
 public class KInductionModelCheckingResult {
     public enum Type {
         COUNTER_EXAMPLE_FOUND,
-        EXCEEDED_MAX_STEPS
+        EXCEEDED_MAX_STEPS,
+        CORRECT
     }
 
     private final State lastState;
