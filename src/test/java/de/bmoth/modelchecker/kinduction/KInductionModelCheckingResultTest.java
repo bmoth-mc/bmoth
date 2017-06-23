@@ -11,7 +11,7 @@ public class KInductionModelCheckingResultTest {
     @Test
     public void testType() {
         assertArrayEquals(new KInductionModelCheckingResult.Type[]{COUNTER_EXAMPLE_FOUND,
-                EXCEEDED_MAX_STEPS, CORRECT},
+                EXCEEDED_MAX_STEPS, VERFIED},
             KInductionModelCheckingResult.Type.values());
 
         assertEquals(COUNTER_EXAMPLE_FOUND, KInductionModelCheckingResult.Type.valueOf("COUNTER_EXAMPLE_FOUND"));

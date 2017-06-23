@@ -56,6 +56,6 @@ public class KInductionModelCheckerTest extends TestParser {
             "END\n";
 
         KInductionModelCheckingResult result = new KInductionModelChecker(parseMachine(machine), 20).check();
-        assertEquals(CORRECT, result.getType());
+        assertEquals(VERFIED, result.getType());
     }
 }
