@@ -67,7 +67,16 @@ public class ExplicitStateModelChecker extends ModelChecker {
 
         // create joint operations constraint and permanently add to separate
         // solver
+        /* TODO: don't create one big constraint
+         * Problems:
+         *  - How does the solvers work? (push, pop)
+         *  - How does the finders work?
+         *  - How does the computation of the successors works?
+         */
+
+
         final BoolExpr operationsConstraint = getMachineTranslator().getCombinedOperationConstraint();
+        // getMachineTranslator().getOperationConstraints(); --> create opSolver for each constraint
         opSolver.add(operationsConstraint);
 
         while (!isAborted() && !queue.isEmpty()) {
