@@ -26,7 +26,7 @@ public class LTLTransformationTest extends TestParser {
     }
 
     @Test
-    public void testNotGloballyToFinallyNot() throws ParserException {
+    public void testNotGloballyToFinallyNot() {
         LTLFormula ltlFormula = parseLtlFormula("not(G { 1=1 })");
         LTLNode node = (LTLNode) new ConvertNotGloballyToFinallyNot().transformNode(ltlFormula.getLTLNode());
         assertEquals("FINALLY(NOT(EQUAL(1,1)))", node.toString());
