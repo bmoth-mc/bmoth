@@ -52,14 +52,13 @@ public class LTLTransformationTest extends TestParser {
         assertEquals("GLOBALLY(FINALLY(EQUAL(0,1)))", node.toString());
     }
 
-    @Ignore
     @Test
-    public void testTransformationGFGtoFG() throws ParserException{
-    	String formula = "G (F (G {0=1}))";
-    	LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
-        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("FINALLY(GLOBALLY(EQUAL(0,1)))", node1.toString());
+    public void testTransformationGFGtoFG() {
+        LTLFormula ltlFormula = parseLtlFormula("G (F (G {0=1}))");
+        LTLNode node = (LTLNode) new ConvertGloballyFinallyGloballyToFinallyGlobally().transformNode(ltlFormula.getLTLNode());
+        assertEquals("FINALLY(GLOBALLY(EQUAL(0,1)))", node.toString());
     }
+
     @Ignore
     @Test
     public void testTransformation2() throws ParserException {
