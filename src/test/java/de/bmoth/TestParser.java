@@ -4,6 +4,7 @@ import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,6 +15,15 @@ import static org.junit.Assert.fail;
 public class TestParser {
     protected TestParser() {
 
+    }
+
+    public static LTLFormula parseLtlFormula(String formula) {
+        try {
+            return Parser.getLTLFormulaAsSemanticAst(formula);
+        } catch (ParserException e) {
+            fail(e.getMessage());
+            return null;
+        }
     }
 
     public static FormulaNode parseFormula(String formula) {
