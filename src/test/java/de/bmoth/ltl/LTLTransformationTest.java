@@ -74,6 +74,7 @@ public class LTLTransformationTest {
     }
 
     @Test
+    @Ignore
     public void testTransformation4() throws ParserException {
         String formula = "{1=1} U ({1=1} U {2=2})";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
@@ -82,6 +83,7 @@ public class LTLTransformationTest {
     }
 
     @Test
+    @Ignore
     public void testTransformation5() throws ParserException {
         String formula = "({1=1} U {2=2}) U {2=2}";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
