@@ -47,6 +47,7 @@ public class TestParser {
         private String name = "";
         private String sets = "";
         private String variables = "";
+        private String properties = "";
         private String invariant = "";
         private String initialization = "";
         private List<String> operations = new ArrayList<>();
@@ -85,11 +86,14 @@ public class TestParser {
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("MACHINE ").append(name).append("\n");
-            if(!sets.isEmpty()){
+            if (!sets.isEmpty()) {
                 sb.append("SETS ").append(sets).append("\n");
             }
             if (!variables.isEmpty()) {
                 sb.append("VARIABLES ").append(variables).append("\n");
+            }
+            if (!properties.isEmpty()) {
+                sb.append("PROPERTIES ").append(properties).append("\n");
             }
             if (!invariant.isEmpty()) {
                 sb.append("INVARIANT ").append(invariant).append("\n");
@@ -111,6 +115,11 @@ public class TestParser {
 
         public MachineBuilder setSets(String sets) {
             this.sets = sets;
+            return this;
+        }
+
+        public MachineBuilder setProperties(String properties) {
+            this.properties = properties;
             return this;
         }
     }
