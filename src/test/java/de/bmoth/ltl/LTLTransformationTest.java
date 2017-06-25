@@ -11,6 +11,7 @@ import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -59,6 +60,25 @@ public class LTLTransformationTest extends TestParser {
 
         LTLNode newNode = (LTLNode) transformation.transformNode(node);
         assertEquals("FINALLY(NOT(EQUAL(1,1)))", newNode.toString());
+    }
+
+    @Test
+    public void testPhiUntilPhiUntilPsiToPhiUntilPsi() {
+        LTLNode node1 = parseLtlFormula("{3=3} U ( {3=3} U {2=2} )").getLTLNode();
+        LTLNode node2 = parseLtlFormula("( {1=1} U {2=2} ) U {2=2}").getLTLNode();
+        LTLNode node3 = parseLtlFormula("( {1=1} U {2=2} ) U {3=3}").getLTLNode();
+
+        AbstractASTTransformation transformation = new ConvertPhiUntilPhiUntilPsiToPhiUntilPsi();
+
+        assertTrue(transformation.canHandleNode(node1));
+        assertTrue(transformation.canHandleNode(node2));
+        assertFalse(transformation.canHandleNode(node3));
+
+        LTLNode newNode1 = (LTLNode) transformation.transformNode(node1);
+        LTLNode newNode2 = (LTLNode) transformation.transformNode(node2);
+
+        assertEquals("UNTIL(EQUAL(3,3),EQUAL(2,2))", newNode1.toString());
+        assertEquals("UNTIL(EQUAL(1,1),EQUAL(2,2))", newNode2.toString());
     }
 
     @Test
