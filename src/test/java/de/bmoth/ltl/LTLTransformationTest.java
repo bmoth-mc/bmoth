@@ -2,10 +2,7 @@ package de.bmoth.ltl;
 
 import de.bmoth.TestParser;
 import de.bmoth.backend.ltl.LTLTransformations;
-import de.bmoth.backend.ltl.transformation.ConvertFinallyFinallyToFinally;
-import de.bmoth.backend.ltl.transformation.ConvertNotFinallyToGloballyNot;
-import de.bmoth.backend.ltl.transformation.ConvertNotGloballyToFinallyNot;
-import de.bmoth.backend.ltl.transformation.ConvertNotNextToNextNot;
+import de.bmoth.backend.ltl.transformation.*;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
@@ -48,14 +45,13 @@ public class LTLTransformationTest extends TestParser {
         assertEquals("NEXT(NOT(EQUAL(0,1)))", node.toString());
     }
 
-    @Ignore
     @Test
-    public void testTransformationFGFtoGF() throws ParserException{
-    	String formula = "F(G (F {0=1}))";
-    	LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
-        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("GLOBALLY(FINALLY(EQUAL(0,1)))", node1.toString());
+    public void testTransformationFGFtoGF() {
+        LTLFormula ltlFormula = parseLtlFormula("F(G (F {0=1}))");
+        LTLNode node = (LTLNode) new ConvertFinallyGloballyFinallyToGloballyFinally().transformNode(ltlFormula.getLTLNode());
+        assertEquals("GLOBALLY(FINALLY(EQUAL(0,1)))", node.toString());
     }
+
     @Ignore
     @Test
     public void testTransformationGFGtoFG() throws ParserException{
