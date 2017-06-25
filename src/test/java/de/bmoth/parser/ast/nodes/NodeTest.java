@@ -1,12 +1,11 @@
 package de.bmoth.parser.ast.nodes;
 
+import de.bmoth.TestParser;
 import de.bmoth.parser.ast.nodes.FormulaNode.FormulaType;
 import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static de.bmoth.TestParser.parseFormula;
-import static de.bmoth.TestParser.parseMachine;
 import static de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator.DOMAIN;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
@@ -16,19 +15,18 @@ import static de.bmoth.parser.ast.nodes.QuantifiedPredicateNode.QuantifiedPredic
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-public class NodeTest {
+public class NodeTest extends TestParser {
 
     @Test
     public void testConditionSubstitutionNode() {
-        MachineNode machine = parseMachine("MACHINE CondSubstNodeMachine\n" +
-            "VARIABLES x\n" +
-            "INVARIANT x:INTEGER\n" +
-            "INITIALISATION\n" +
-            "\tx := 1\n" +
-            "OPERATIONS\n" +
-            "\tcondOp1 = SELECT x = 1 THEN x := 2 END;\n" +
-            "\tcondOp2 = SELECT x = 25 THEN x := 5000 END\n" +
-            "END");
+        MachineNode machine = new MachineBuilder()
+            .setName("CondSubstNodeMachine")
+            .setVariables("x")
+            .setInvariant("x : INTEGER")
+            .setInitialization("x := 1")
+            .addOperation("condOp1 = SELECT x = 1 THEN x := 2 END")
+            .addOperation("condOp2 = SELECT x = 25 THEN x := 5000 END")
+            .build();
 
         SelectSubstitutionNode condSub1 = (SelectSubstitutionNode) machine.getOperations().get(0).getSubstitution();
         SelectSubstitutionNode condSub2 = (SelectSubstitutionNode) machine.getOperations().get(1).getSubstitution();
@@ -45,8 +43,15 @@ public class NodeTest {
 
     @Test
     public void testOperationNode() {
-        MachineNode machine = parseMachine(
-            "MACHINE OpNodeMachine\nVARIABLES x\nPROPERTIES 1=1\nINVARIANT x:INTEGER\nOPERATIONS\n\tset = BEGIN x := 1 END;\n\tselect = SELECT x = 1 THEN x := x END\nEND");
+        MachineNode machine = new MachineBuilder()
+            .setName("OpNodeMachine")
+            .setVariables("x")
+            .setProperties("1 = 1")
+            .setInvariant("x : INTEGER")
+            .addOperation("set = BEGIN x := 1 END")
+            .addOperation("select = SELECT x = 1 THEN x := x END")
+            .build();
+
         OperationNode setOperation = machine.getOperations().get(0);
         OperationNode selectOperation = machine.getOperations().get(1);
         assertEquals("set", setOperation.getName());
