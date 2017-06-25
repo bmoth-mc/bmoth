@@ -115,14 +115,22 @@ public class BuechiAutomaton {
                     node.processed.add(subNode);
                     return expand(node, nodesSet);
             } else
-                // Next
+                // Next, Not
                 if (subNode instanceof LTLPrefixOperatorNode) {
-                    List<LTLNode> processed = new ArrayList<>(node.processed);
-                    processed.add(subNode);
-                    List<LTLNode> next = node.next;
-                    next.add(((LTLPrefixOperatorNode) subNode).getArgument());
-                    return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
-                        processed, next), nodesSet);
+                    if (((LTLPrefixOperatorNode) subNode).getKind() == LTLPrefixOperatorNode.Kind.NEXT) {
+                        // Next
+                        List<LTLNode> processed = new ArrayList<>(node.processed);
+                        processed.add(subNode);
+                        List<LTLNode> next = node.next;
+                        next.add(((LTLPrefixOperatorNode) subNode).getArgument());
+                        return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
+                            processed, next), nodesSet);
+                    } else {
+                        // Not
+                        // TODO: Check if negative of predicate already occured -> contradiction -> boom
+                        node.processed.add(subNode);
+                        return expand(node, nodesSet);
+                    }
             } else
                 // And, Or, Until
                 if (subNode instanceof LTLInfixOperatorNode) {
@@ -169,7 +177,7 @@ public class BuechiAutomaton {
         StringJoiner nodesString = new StringJoiner(",\n\n", "(", ")");
         for (BuechiAutomatonNode node: finalNodeSet) {
             StringJoiner nodeString = new StringJoiner("\n| ", "(", ")");
-            StringJoiner processed = new StringJoiner(", ", "(", ")");
+            StringJoiner processed = new StringJoiner("; ", "(", ")");
             for (LTLNode subNode : node.processed) {
                 processed.add(subNode.toString());
             }
