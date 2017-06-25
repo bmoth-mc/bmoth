@@ -76,17 +76,15 @@ public class LTLTransformationTest extends TestParser {
     }
 
     @Test
-    public void testTransformation4() throws ParserException {
-        String formula = "{1=1} U ({1=1} U {2=2})";
-        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+    public void testTransformation4() {
+        LTLFormula ltlFormula = parseLtlFormula("{1=1} U ({1=1} U {2=2})");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         assertEquals("UNTIL(EQUAL(1,1),EQUAL(2,2))", node1.toString());
     }
 
     @Test
-    public void testTransformation5() throws ParserException {
-        String formula = "({1=1} U {2=2}) U {2=2}";
-        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+    public void testTransformation5() {
+        LTLFormula ltlFormula = parseLtlFormula("({1=1} U {2=2}) U {2=2}");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         assertEquals("UNTIL(EQUAL(1,1),EQUAL(2,2))", node1.toString());
     }
