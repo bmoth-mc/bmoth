@@ -18,6 +18,31 @@ import static org.junit.Assert.assertEquals;
 public class NodeTest extends TestParser {
 
     @Test
+    public void testAnySubstitutionNode() {
+        MachineNode machine = new MachineBuilder()
+            .setName("AnySubstitutionMachine")
+            .setVariables("a")
+            .setInvariant("a : INTEGER")
+            .setInitialization("a := 0")
+            .addOperation("anyUp = ANY x WHERE x > 0 THEN a := x END")
+            .addOperation("anyDown = ANY x WHERE x < 0 THEN a := x END")
+            .build();
+
+        AnySubstitutionNode anyUp = (AnySubstitutionNode) machine.getOperations().get(0).getSubstitution();
+        AnySubstitutionNode anyDown = (AnySubstitutionNode) machine.getOperations().get(1).getSubstitution();
+        AnySubstitutionNode assembleAnyUp = new AnySubstitutionNode(anyUp.getParameters(), anyDown.getWherePredicate(), anyDown.getThenSubstitution());
+
+
+        assertEquals("ANY [x] WHERE GREATER(x,0) THEN a := x END", anyUp.toString());
+        assertEquals("ANY [x] WHERE LESS(x,0) THEN a := x END", anyDown.toString());
+
+        assembleAnyUp.setPredicate(anyUp.getWherePredicate());
+        assembleAnyUp.setSubstitution(anyUp.getThenSubstitution());
+
+        assertEquals(anyUp.toString(), assembleAnyUp.toString());
+    }
+
+    @Test
     public void testConditionSubstitutionNode() {
         MachineNode machine = new MachineBuilder()
             .setName("CondSubstNodeMachine")
