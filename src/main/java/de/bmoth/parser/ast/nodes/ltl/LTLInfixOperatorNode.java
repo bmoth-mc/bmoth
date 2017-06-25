@@ -38,6 +38,6 @@ public class LTLInfixOperatorNode implements LTLNode {
 
     @Override
     public String toString() {
-        return this.kind + "(" + this.left + ", " + this.right + ")";
+        return this.kind + "(" + this.left + "," + this.right + ")";
     }
 }
