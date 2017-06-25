@@ -67,12 +67,14 @@ public class LTLTransformationTest extends TestParser {
         LTLNode node1 = parseLtlFormula("{3=3} U ( {3=3} U {2=2} )").getLTLNode();
         LTLNode node2 = parseLtlFormula("( {1=1} U {2=2} ) U {2=2}").getLTLNode();
         LTLNode node3 = parseLtlFormula("( {1=1} U {2=2} ) U {3=3}").getLTLNode();
+        LTLNode node4 = parseLtlFormula("{3=3} U ( {5=5} U {2=2} )").getLTLNode();
 
         AbstractASTTransformation transformation = new ConvertPhiUntilPhiUntilPsiToPhiUntilPsi();
 
         assertTrue(transformation.canHandleNode(node1));
         assertTrue(transformation.canHandleNode(node2));
         assertFalse(transformation.canHandleNode(node3));
+        assertFalse(transformation.canHandleNode(node4));
 
         LTLNode newNode1 = (LTLNode) transformation.transformNode(node1);
         LTLNode newNode2 = (LTLNode) transformation.transformNode(node2);
