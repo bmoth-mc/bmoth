@@ -120,20 +120,18 @@ public class LTLTransformationTest extends TestParser {
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         assertEquals("", node1.toString());
     }
-    @Ignore
+
     @Test
-    public void testTransformationOfGlobally() throws ParserException {
-        String formula = "G { 1=1 }";
-        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+    public void testTransformationOfGlobally() {
+        LTLFormula ltlFormula = parseLtlFormula("G { 1=1 }");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("WEAK_UNTIL(EQUAL(1,1), FALSE)", node1.toString());
+        assertEquals("WEAK_UNTIL(EQUAL(1,1),FALSE)", node1.toString());
     }
-    @Ignore
+
     @Test
-    public void testTransformationOfFinally() throws ParserException {
-        String formula = "F { 1=1 }";
-        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+    public void testTransformationOfFinally() {
+        LTLFormula ltlFormula = parseLtlFormula("F { 1=1 }");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("UNTIL(TRUE, EQUAL(1,1))", node1.toString());
+        assertEquals("UNTIL(TRUE,EQUAL(1,1))", node1.toString());
     }
 }
