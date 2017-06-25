@@ -109,22 +109,20 @@ public class BuechiAutomaton {
                     return expand(node, nodesSet);
                 }
             } else
-                // Next, Not
+                // B predicate
+                if (subNode instanceof LTLBPredicateNode) {
+                    // TODO: Check if negation of predicate already occured -> contradiction -> boom
+                    node.processed.add(subNode);
+                    return expand(node, nodesSet);
+            } else
+                // Next
                 if (subNode instanceof LTLPrefixOperatorNode) {
-                    if (((LTLPrefixOperatorNode) subNode).getKind() == LTLPrefixOperatorNode.Kind.NEXT) {
-                        // Next
-                        List<LTLNode> processed = new ArrayList<>(node.processed);
-                        processed.add(subNode);
-                        List<LTLNode> next = node.next;
-                        next.add(((LTLPrefixOperatorNode) subNode).getArgument());
-                        return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
-                            processed, next), nodesSet);
-                    } else {
-                        // Not
-                        // TODO: Check if negative of predicate already occured -> contradiction -> boom
-                        node.processed.add(subNode);
-                        return expand(node, nodesSet);
-                    }
+                    List<LTLNode> processed = new ArrayList<>(node.processed);
+                    processed.add(subNode);
+                    List<LTLNode> next = node.next;
+                    next.add(((LTLPrefixOperatorNode) subNode).getArgument());
+                    return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
+                        processed, next), nodesSet);
             } else
                 // And, Or, Until
                 if (subNode instanceof LTLInfixOperatorNode) {
