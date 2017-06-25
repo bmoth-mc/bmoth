@@ -36,4 +36,8 @@ public class AnySubstitutionNode extends SubstitutionNode {
         this.thenSubstitution = substitutionNode;
     }
 
+    @Override
+    public String toString() {
+        return "ANY " + parameters + " WHERE " + wherePredicate + " THEN " + thenSubstitution + " END";
+    }
 }
