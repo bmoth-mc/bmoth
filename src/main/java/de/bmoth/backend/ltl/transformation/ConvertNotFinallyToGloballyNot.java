@@ -3,31 +3,25 @@ package de.bmoth.backend.ltl.transformation;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.LTLASTTransformation;
 
-public class ConvertNotFinallyToGloballyNot extends AbstractASTTransformation{
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.*;
 
-	@Override
-	public boolean canHandleNode(Node node) {
-		return node instanceof LTLPrefixOperatorNode;
-	}
+public class ConvertNotFinallyToGloballyNot extends LTLASTTransformation {
 
-	@Override
-	public Node transformNode(Node oldNode) {
-		LTLPrefixOperatorNode notOperator = (LTLPrefixOperatorNode) oldNode;
-        if (notOperator.getKind() == LTLPrefixOperatorNode.Kind.NOT) {
-            LTLNode argument = notOperator.getArgument();
-            if (argument instanceof LTLPrefixOperatorNode) {
-                LTLPrefixOperatorNode finallyOperator = (LTLPrefixOperatorNode) argument;
-                if (finallyOperator.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
-                    LTLPrefixOperatorNode newNot = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT,
-                            finallyOperator.getArgument());
-                    setChanged();
-                    return new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.GLOBALLY, newNot);
-                }
-            }
-        }
-        return oldNode;
-	}
+    @Override
+    public boolean canHandleNode(Node node) {
+        return isOperator(node, NOT) && contains(node, FINALLY);
+    }
+
+    @Override
+    public Node transformNode(Node node) {
+        LTLPrefixOperatorNode not = (LTLPrefixOperatorNode) node;
+        LTLPrefixOperatorNode innerFinally = (LTLPrefixOperatorNode) not.getArgument();
+        LTLNode inner = innerFinally.getArgument();
+
+        setChanged();
+        return new LTLPrefixOperatorNode(GLOBALLY, new LTLPrefixOperatorNode(NOT, inner));
+    }
 
 }
