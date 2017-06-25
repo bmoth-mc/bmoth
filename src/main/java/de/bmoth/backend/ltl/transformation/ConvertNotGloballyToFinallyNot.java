@@ -3,30 +3,24 @@ package de.bmoth.backend.ltl.transformation;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.LTLASTTransformation;
 
-public class ConvertNotGloballyToFinallyNot extends AbstractASTTransformation{
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.*;
+
+public class ConvertNotGloballyToFinallyNot extends LTLASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
-        return node instanceof LTLPrefixOperatorNode;
+        return isOperator(node, NOT) && contains(node, GLOBALLY);
     }
 
     @Override
-    public Node transformNode(Node oldNode) {
-        LTLPrefixOperatorNode notOperator = (LTLPrefixOperatorNode) oldNode;
-        if (notOperator.getKind() == LTLPrefixOperatorNode.Kind.NOT) {
-            LTLNode argument = notOperator.getArgument();
-            if (argument instanceof LTLPrefixOperatorNode) {
-                LTLPrefixOperatorNode globallyOperator = (LTLPrefixOperatorNode) argument;
-                if (globallyOperator.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
-                    LTLPrefixOperatorNode newNot = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT,
-                            globallyOperator.getArgument());
-                    setChanged();
-                    return new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.FINALLY, newNot);
-                }
-            }
-        }
-        return oldNode;
+    public Node transformNode(Node node) {
+        LTLPrefixOperatorNode not = (LTLPrefixOperatorNode) node;
+        LTLPrefixOperatorNode globally = (LTLPrefixOperatorNode) not.getArgument();
+        LTLNode inner = globally.getArgument();
+
+        setChanged();
+        return new LTLPrefixOperatorNode(FINALLY, new LTLPrefixOperatorNode(NOT, inner));
     }
 }
