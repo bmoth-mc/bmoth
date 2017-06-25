@@ -3,40 +3,38 @@ package de.bmoth.backend.ltl.transformation;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.LTLASTTransformation;
 
-public class ConvertFinallyFinallyToFinally extends AbstractASTTransformation{
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.FINALLY;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NOT;
+
+public class ConvertFinallyFinallyToFinally extends LTLASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
-        return node instanceof LTLPrefixOperatorNode;
+        return isOperator(node, FINALLY) && (contains(node, FINALLY) || contains(node, NOT, FINALLY));
     }
 
     @Override
-    public Node transformNode(Node oldNode) {
-        LTLPrefixOperatorNode finallyOperator01 = (LTLPrefixOperatorNode) oldNode;
-        if (finallyOperator01.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
-            LTLNode argument = finallyOperator01.getArgument();
-            if (argument instanceof LTLPrefixOperatorNode) {
-                LTLPrefixOperatorNode operator02 = (LTLPrefixOperatorNode) argument;
-                // case FF->F
-                if (operator02.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
-                    setChanged();
-                    return operator02;
-                }
-                // case FnF->nF
-                if (operator02.getKind() != LTLPrefixOperatorNode.Kind.NOT) {
-                        LTLNode argument02 = operator02.getArgument();
-                        if (argument02 instanceof LTLPrefixOperatorNode) {
-                            LTLPrefixOperatorNode operator03 = (LTLPrefixOperatorNode) argument02;
-                            if (operator03.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
-                                setChanged();
-                                return operator02;
-                            }
-                        }
-                }
-            }
+    public Node transformNode(Node node) {
+        LTLPrefixOperatorNode outerFinally = (LTLPrefixOperatorNode) node;
+
+        setChanged();
+
+        // case FF->F
+        if (contains(outerFinally, FINALLY)) {
+            LTLPrefixOperatorNode innerFinally = (LTLPrefixOperatorNode) outerFinally.getArgument();
+            LTLNode inner = innerFinally.getArgument();
+
+            return new LTLPrefixOperatorNode(FINALLY, inner);
         }
-        return oldNode;
+        // case FnF->nF
+        else {
+            LTLPrefixOperatorNode not = (LTLPrefixOperatorNode) outerFinally.getArgument();
+            LTLPrefixOperatorNode innerFinally = (LTLPrefixOperatorNode) not.getArgument();
+            LTLNode inner = innerFinally.getArgument();
+
+            return new LTLPrefixOperatorNode(NOT, new LTLPrefixOperatorNode(FINALLY, inner));
+        }
     }
 }

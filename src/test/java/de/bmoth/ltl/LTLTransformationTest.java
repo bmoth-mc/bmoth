@@ -18,9 +18,19 @@ public class LTLTransformationTest extends TestParser {
 
     @Test
     public void testFinallyFinallyToFinally() {
-        LTLFormula ltlFormula = parseLtlFormula("F( F( { 1 = 1 } ) )");
-        LTLNode node = (LTLNode) new ConvertFinallyFinallyToFinally().transformNode(ltlFormula.getLTLNode());
-        assertEquals("FINALLY(EQUAL(1,1))", node.toString());
+        LTLNode node1 = parseLtlFormula("F( F( { 1 = 1 } ) )").getLTLNode();
+        LTLNode node2 = parseLtlFormula("F( not( F( { 1 = 1 } ) ) )").getLTLNode();
+
+        AbstractASTTransformation transformation = new ConvertFinallyFinallyToFinally();
+
+        assertTrue(transformation.canHandleNode(node1));
+        assertTrue(transformation.canHandleNode(node2));
+
+        LTLNode newNode1 = (LTLNode) new ConvertFinallyFinallyToFinally().transformNode(node1);
+        LTLNode newNode2 = (LTLNode) new ConvertFinallyFinallyToFinally().transformNode(node2);
+
+        assertEquals("FINALLY(EQUAL(1,1))", newNode1.toString());
+        assertEquals("NOT(FINALLY(EQUAL(1,1)))", newNode2.toString());
     }
 
     @Test
