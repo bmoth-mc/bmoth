@@ -3,8 +3,6 @@ package de.bmoth.ltl;
 import de.bmoth.TestParser;
 import de.bmoth.backend.ltl.LTLTransformations;
 import de.bmoth.backend.ltl.transformation.*;
-import de.bmoth.parser.Parser;
-import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
