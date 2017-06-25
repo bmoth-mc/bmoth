@@ -168,10 +168,14 @@ public class BuechiAutomaton {
     }
 
     public String toString() {
-        StringJoiner nodesString = new StringJoiner(", ", "(", ")");
+        StringJoiner nodesString = new StringJoiner(",\n\n", "(", ")");
         for (BuechiAutomatonNode node: finalNodeSet) {
-            StringJoiner nodeString = new StringJoiner(" | ", "(", ")");
-            nodeString.add("Node " + node.name + ": " + node.toString());
+            StringJoiner nodeString = new StringJoiner("\n| ", "(", ")");
+            StringJoiner processed = new StringJoiner(", ", "(", ")");
+            for (LTLNode subNode : node.processed) {
+                processed.add(subNode.toString());
+            }
+            nodeString.add(node.name + ": " + processed.toString());
             StringJoiner incoming = new StringJoiner(", ", "{", "}");
             for(String incomingNode: node.incoming) {
                 incoming.add(incomingNode);
