@@ -24,6 +24,23 @@ public class LTLTransformationTest extends TestParser {
     }
 
     @Test
+    public void testGloballyGloballyToGlobally() {
+        LTLNode node1 = parseLtlFormula("G( G( { 1 = 1 } ) )").getLTLNode();
+        LTLNode node2 = parseLtlFormula("G( not( G( { 1 = 1 } ) ) )").getLTLNode();
+
+        AbstractASTTransformation transformation = new ConvertGloballyGloballyToGlobally();
+
+        assertTrue(transformation.canHandleNode(node1));
+        assertTrue(transformation.canHandleNode(node2));
+
+        LTLNode newNode1 = (LTLNode) transformation.transformNode(node1);
+        LTLNode newNode2 = (LTLNode) transformation.transformNode(node2);
+
+        assertEquals("GLOBALLY(EQUAL(1,1))", newNode1.toString());
+        assertEquals("NOT(GLOBALLY(EQUAL(1,1)))", newNode2.toString());
+    }
+
+    @Test
     public void testNotGloballyToFinallyNot() {
         LTLNode node = parseLtlFormula("not(G { 1=1 })").getLTLNode();
         AbstractASTTransformation transformation = new ConvertNotGloballyToFinallyNot();
