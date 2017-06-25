@@ -7,6 +7,7 @@ import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
+import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -24,9 +25,13 @@ public class LTLTransformationTest extends TestParser {
 
     @Test
     public void testNotGloballyToFinallyNot() {
-        LTLFormula ltlFormula = parseLtlFormula("not(G { 1=1 })");
-        LTLNode node = (LTLNode) new ConvertNotGloballyToFinallyNot().transformNode(ltlFormula.getLTLNode());
-        assertEquals("FINALLY(NOT(EQUAL(1,1)))", node.toString());
+        LTLNode node = parseLtlFormula("not(G { 1=1 })").getLTLNode();
+        AbstractASTTransformation transformation = new ConvertNotGloballyToFinallyNot();
+
+        assertTrue(transformation.canHandleNode(node));
+
+        LTLNode newNode = (LTLNode) transformation.transformNode(node);
+        assertEquals("FINALLY(NOT(EQUAL(1,1)))", newNode.toString());
     }
 
     @Test
