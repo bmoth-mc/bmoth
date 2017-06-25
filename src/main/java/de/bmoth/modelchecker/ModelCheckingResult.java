@@ -22,23 +22,23 @@ public class ModelCheckingResult {
         this.reason = reason;
     }
 
-    static public ModelCheckingResult createVerified(int steps) {
+    public static ModelCheckingResult createVerified(int steps) {
         return new ModelCheckingResult(null, steps, Type.VERIFIED, null);
     }
 
-    static public ModelCheckingResult createAborted(int steps) {
+    public static ModelCheckingResult createAborted(int steps) {
         return new ModelCheckingResult(null, steps, Type.ABORTED, null);
     }
 
-    static public ModelCheckingResult createUnknown(int steps, String reason) {
+    public static ModelCheckingResult createUnknown(int steps, String reason) {
         return new ModelCheckingResult(null, steps, Type.UNKNOWN, reason);
     }
 
-    static public ModelCheckingResult createCounterExampleFound(int steps, State lastState) {
+    public static ModelCheckingResult createCounterExampleFound(int steps, State lastState) {
         return new ModelCheckingResult(lastState, steps, Type.COUNTER_EXAMPLE_FOUND, null);
     }
 
-    static public ModelCheckingResult createExceededMaxSteps(int maxSteps) {
+    public static ModelCheckingResult createExceededMaxSteps(int maxSteps) {
         return new ModelCheckingResult(null, maxSteps, Type.EXCEEDED_MAX_STEPS, null);
     }
 
