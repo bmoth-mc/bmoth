@@ -3,6 +3,7 @@ package de.bmoth.ltl;
 import de.bmoth.TestParser;
 import de.bmoth.backend.ltl.LTLTransformations;
 import de.bmoth.backend.ltl.transformation.ConvertFinallyFinallyToFinally;
+import de.bmoth.backend.ltl.transformation.ConvertNotGloballyToFinallyNot;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
@@ -24,13 +25,11 @@ public class LTLTransformationTest extends TestParser {
         assertEquals("FINALLY(EQUAL(1,1))", node.toString());
     }
 
-    @Ignore
     @Test
-    public void testTransformation1() throws ParserException {
-        String formula = "not(G { 1=1 })";
-        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
-        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("FINALLY(NOT(EQUAL(1,1)))", node1.toString());
+    public void testNotGloballyToFinallyNot() throws ParserException {
+        LTLFormula ltlFormula = parseLtlFormula("not(G { 1=1 })");
+        LTLNode node = (LTLNode) new ConvertNotGloballyToFinallyNot().transformNode(ltlFormula.getLTLNode());
+        assertEquals("FINALLY(NOT(EQUAL(1,1)))", node.toString());
     }
 
     @Ignore
