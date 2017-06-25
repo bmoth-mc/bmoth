@@ -59,11 +59,11 @@ public class ModelCheckerTest extends TestParser {
     public void testSimpleMachineWithOperations() {
         machine = builder
             .setName("SimpleMachineWithOperations")
-            .setVariables("x")
-            .setInvariant("x : NATURAL & x >= 0 & x <= 2")
-            .setInitialization("x := 0")
-            .addOperation("Inc = SELECT x < 2 THEN x := x + 1 END")
-            .addOperation("Dec = SELECT x > 0 THEN x := x - 1 END")
+            .setVariables("y")
+            .setInvariant("y : NATURAL & y >= 0 & y <= 2")
+            .setInitialization("y := 0")
+            .addOperation("Inc = SELECT y < 2 THEN y := y + 1 END")
+            .addOperation("Dec = SELECT y > 0 THEN y := y - 1 END")
             .build();
 
         result = new ExplicitStateModelChecker(machine).check();
@@ -75,10 +75,10 @@ public class ModelCheckerTest extends TestParser {
     public void testSimpleMachineWithOperations2() {
         machine = builder
             .setName("SimpleMachineWithOperations2")
-            .setVariables("x")
-            .setInvariant("x : NATURAL & x >= 0 & x <= 2")
-            .setInitialization("x := 0")
-            .addOperation("BlockSubstitution = BEGIN x := x + 1 END")
+            .setVariables("z")
+            .setInvariant("z : NATURAL & z >= 0 & z <= 2")
+            .setInitialization("z := 0")
+            .addOperation("BlockSubstitution = BEGIN z := z + 1 END")
             .build();
 
         result = new ExplicitStateModelChecker(machine).check();
