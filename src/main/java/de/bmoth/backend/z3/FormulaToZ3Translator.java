@@ -35,9 +35,9 @@ public class FormulaToZ3Translator {
     // Additionally, a constraint axiomatizing this identifier will be added to
     // this list.
 
-    List<DeclarationNode> implicitDeclarations;
-    FormulaNode formulaNode;
-    final Z3TypeInference z3TypeInference;
+    private List<DeclarationNode> implicitDeclarations;
+    private FormulaNode formulaNode;
+    private final Z3TypeInference z3TypeInference;
 
     private FuncDecl pow = null;
 
@@ -63,7 +63,7 @@ public class FormulaToZ3Translator {
         return list;
     }
 
-    protected static String createFreshTemporaryVariable() {
+    private static String createFreshTemporaryVariable() {
         tempVariablesCounter++;
         return "$t_" + tempVariablesCounter;
     }
