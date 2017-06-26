@@ -7,7 +7,6 @@ import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertFalse;
@@ -114,20 +113,18 @@ public class LTLTransformationTest extends TestParser {
         assertEquals("FINALLY(GLOBALLY(EQUAL(0,1)))", node.toString());
     }
 
-    @Ignore
     @Test
     public void testTransformation2() {
         LTLFormula ltlFormula = parseLtlFormula("not(GG { 1=1 })");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("FINALLY(NOT(EQUAL(1,1)))", node1.toString());
+        assertEquals("UNTIL(AND(WEAK_UNTIL(EQUAL(1,1),FALSE),NOT(FALSE)),AND(NOT(WEAK_UNTIL(EQUAL(1,1),FALSE)),NOT(FALSE)))", node1.toString());
     }
 
-    @Ignore
     @Test
     public void testTransformation3() {
         LTLFormula ltlFormula = parseLtlFormula("G not(E { 1=1 })");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("GLOBALLY(NOT(EQUAL(1,1)))", node1.toString());
+        assertEquals("WEAK_UNTIL(NOT(EQUAL(1,1)),FALSE)", node1.toString());
     }
 
     @Test
