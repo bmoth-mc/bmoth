@@ -153,6 +153,20 @@ public class LTLTransformationTest extends TestParser {
     }
 
     @Test
+    public void testTransformation7() {
+        LTLFormula ltlFormula = parseLtlFormula("X {1<3} U {3>1}");
+        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        assertEquals("UNTIL(NEXT(LESS(1,3)),GREATER(3,1))", node1.toString());
+    }
+
+    @Test
+    public void testTransformation8() {
+        LTLFormula ltlFormula = parseLtlFormula("X ({1<3} U {3>1})");
+        LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        assertEquals("UNTIL(NEXT(LESS(1,3)),NEXT(GREATER(3,1)))", node1.toString());
+    }
+
+    @Test
     public void testTransformationOfNotUntil() {
         LTLFormula ltlFormula = parseLtlFormula("not( { 1=1 } U {2=1})");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
