@@ -12,9 +12,7 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
-import static de.bmoth.modelchecker.ModelCheckingResult.createCounterExampleFound;
-import static de.bmoth.modelchecker.ModelCheckingResult.createExceededMaxSteps;
-import static de.bmoth.modelchecker.ModelCheckingResult.createVerified;
+import static de.bmoth.modelchecker.ModelCheckingResult.*;
 
 public class KInductionModelChecker extends ModelChecker {
 
@@ -36,7 +34,7 @@ public class KInductionModelChecker extends ModelChecker {
             baseSolver.reset();
 
             // INIT(V0)
-            baseSolver.add(init(0));
+            baseSolver.add(init());
 
             // CONJUNCTION i from 1 to k T(Vi-1, Vi)
             for (int i = 1; i <= k; i++) {
@@ -77,7 +75,7 @@ public class KInductionModelChecker extends ModelChecker {
         return createExceededMaxSteps(maxSteps);
     }
 
-    private BoolExpr init(int step) {
+    private BoolExpr init() {
         return getMachineTranslator().getInitialValueConstraint(TranslationOptions.PRIMED_0);
     }
 
