@@ -6,7 +6,6 @@ import de.bmoth.backend.ltl.transformation.*;
 import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -146,35 +145,28 @@ public class LTLTransformationTest extends TestParser {
     }
 
     @Test
-    @Ignore
     public void testTransformation6() {
-        LTLFormula ltlFormula = parseLtlFormula("not(G { 1=1 })");
+        LTLFormula ltlFormula = parseLtlFormula("not({ 1=1 })");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
 
-        assertEquals("FINALLY(NOT(EQUAL(1,1)))", node1.toString());
+        assertEquals("NOT(EQUAL(1,1))", node1.toString());
 
         // check if we have the B not, not the LTL not
-        assertTrue(node1 instanceof LTLPrefixOperatorNode);
-        LTLPrefixOperatorNode node1PO = (LTLPrefixOperatorNode) node1;
-        assertEquals(LTLPrefixOperatorNode.Kind.FINALLY, node1PO.getKind());
-
-        assertTrue(node1PO.getArgument() instanceof LTLBPredicateNode);
+        assertTrue(node1 instanceof LTLBPredicateNode);
     }
 
-    @Ignore
     @Test
     public void testTransformationOfNotUntil() {
         LTLFormula ltlFormula = parseLtlFormula("not( { 1=1 } U {2=1})");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("", node1.toString());
+        assertEquals("WEAK_UNTIL(AND(EQUAL(1,1),NOT(EQUAL(2,1))),AND(NOT(EQUAL(1,1)),NOT(EQUAL(2,1))))", node1.toString());
     }
 
-    @Ignore
     @Test
     public void testTransformationOfNotWeakUntil() {
         LTLFormula ltlFormula = parseLtlFormula("not( { 1=1 } W {2=1})");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("", node1.toString());
+        assertEquals("UNTIL(AND(EQUAL(1,1),NOT(EQUAL(2,1))),AND(NOT(EQUAL(1,1)),NOT(EQUAL(2,1))))", node1.toString());
     }
 
     @Test
