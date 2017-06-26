@@ -129,16 +129,16 @@ public class LTLTransformationTest extends TestParser {
 
     @Test
     public void testTransformation4() {
-        LTLFormula ltlFormula = parseLtlFormula("{1=1} U ({1=1} U {2=2})");
+        LTLFormula ltlFormula = parseLtlFormula("{2=1} U ({1=3} U {5=5})");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("UNTIL(EQUAL(1,1),EQUAL(2,2))", node1.toString());
+        assertEquals("UNTIL(EQUAL(2,1),UNTIL(EQUAL(1,3),EQUAL(5,5)))", node1.toString());
     }
 
     @Test
     public void testTransformation5() {
-        LTLFormula ltlFormula = parseLtlFormula("({1=1} U {2=2}) U {2=2}");
+        LTLFormula ltlFormula = parseLtlFormula("({1:dom([1,2,3])} U {2 /: ran([1])}) U {2<17}");
         LTLNode node1 = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("UNTIL(EQUAL(1,1),EQUAL(2,2))", node1.toString());
+        assertEquals("UNTIL(UNTIL(ELEMENT_OF(1,DOMAIN(SEQ_ENUMERATION(1,2,3))),NOT_BELONGING(2,RANGE(SEQ_ENUMERATION(1)))),LESS(2,17))", node1.toString());
     }
 
     @Test
