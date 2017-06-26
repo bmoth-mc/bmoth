@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static de.bmoth.backend.TranslationOptions.UNPRIMED;
+import static de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator.MAX;
+import static de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator.MIN;
 
 /**
  * This class translates a FormulaNode of the parser to a z3 backend node.
@@ -526,38 +528,35 @@ public class FormulaToZ3Translator {
                     return z3Context.mkInt(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INT));
                 case MININT:
                     return z3Context.mkInt(BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MIN_INT));
-                case MIN: {
-                    ArithExpr minReplacingConstant = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
-                    ArithExpr member = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
-
-                    BoolExpr memberInSet = z3Context.mkSetMembership(member, (ArrayExpr) arguments.get(0));
-                    BoolExpr implication = z3Context.mkImplies(memberInSet, z3Context.mkGe(member, minReplacingConstant));
-
-                    Quantifier allLargerThan = z3Context.mkForall(new Expr[]{member}, implication, 1, null, null, null, null);
-                    Quantifier equalToOne = z3Context.mkExists(new Expr[]{member}, z3Context.mkEq(member, minReplacingConstant), 1, null, null, null, null);
-
-                    constraintList.add(allLargerThan);
-                    constraintList.add(equalToOne);
-                    return minReplacingConstant;
-                }
-                case MAX: {
-                    ArithExpr maxReplacingConstant = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
-                    ArithExpr member = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
-
-                    BoolExpr memberInSet = z3Context.mkSetMembership(member, (ArrayExpr) arguments.get(0));
-                    BoolExpr implication = z3Context.mkImplies(memberInSet, z3Context.mkLe(member, maxReplacingConstant));
-
-                    Quantifier allLargerThan = z3Context.mkForall(new Expr[]{member}, implication, 1, null, null, null, null);
-                    Quantifier equalToOne = z3Context.mkExists(new Expr[]{member}, z3Context.mkEq(member, maxReplacingConstant), 1, null, null, null, null);
-
-                    constraintList.add(allLargerThan);
-                    constraintList.add(equalToOne);
-                    return maxReplacingConstant;
-                }
+                case MIN:
+                    return translateMinAndMax(MIN, node, arguments);
+                case MAX:
+                    return translateMinAndMax(MAX, node, arguments);
                 default:
                     break;
             }
             throw new OperatorNotImplementedError(node);
+        }
+
+        private Expr translateMinAndMax(ExpressionOperator minOrMax, ExpressionOperatorNode node, List<Expr> arguments) {
+            ArithExpr replacingConstant = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
+            ArithExpr member = (ArithExpr) z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
+
+            BoolExpr memberInSet = z3Context.mkSetMembership(member, (ArrayExpr) arguments.get(0));
+            BoolExpr sort;
+            if (minOrMax == MAX) {
+                sort = z3Context.mkLe(member, replacingConstant);
+            } else {
+                sort = z3Context.mkGe(member, replacingConstant);
+            }
+            BoolExpr implication = z3Context.mkImplies(memberInSet, sort);
+
+            Quantifier allSorted = z3Context.mkForall(new Expr[]{member}, implication, 1, null, null, null, null);
+            Quantifier equalToOne = z3Context.mkExists(new Expr[]{member}, z3Context.mkEq(member, replacingConstant), 1, null, null, null, null);
+
+            constraintList.add(allSorted);
+            constraintList.add(equalToOne);
+            return replacingConstant;
         }
 
         private Expr translateGeneralizedUnion(ExpressionOperatorNode node, List<Expr> arguments) {
