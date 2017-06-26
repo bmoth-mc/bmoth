@@ -63,7 +63,6 @@ public class LTLFormulaTest {
     }
 
     @Test
-    @Ignore
     public void testSet2() throws ParserException {
         String formula = " {1<3} U { 1 : {1} }";
         Parser.getLTLFormulaAsSemanticAst(formula);

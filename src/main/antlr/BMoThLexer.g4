@@ -5,7 +5,7 @@ package de.bmoth.antlr;
 }
 
 @members {
-int countBrackets = 0;
+int curlyBracketsCount = 0;
 }
 
 fragment DIGIT: ('0'..'9');
@@ -69,8 +69,8 @@ DOUBLE_COLON: '::' | ':' '\u2208' ;  /* becomes_element_of */
 
 EQUIVALENCE: '<=>' | '\u21d4';
 IMPLIES: EQUAL GREATER | '\u21d2';
-LEFT_BRACE: '{' {countBrackets++;} ;
-RIGHT_BRACE: '}' {countBrackets--;} {countBrackets>0}?;
+LEFT_BRACE: '{' {curlyBracketsCount++;} ;
+RIGHT_BRACE: '}' {curlyBracketsCount--;} {curlyBracketsCount>0}?;
 LEFT_PAR: '(';
 RIGHT_PAR: ')';
 LEFT_BRACKET: '[';
@@ -233,7 +233,7 @@ LINE_COMMENT
 
 WS: [ \t\r\n]+ -> skip;
 
-B_END: '}' {countBrackets--;}-> mode(LTL_MODE);
+B_END: '}' {curlyBracketsCount=0;} -> mode(LTL_MODE); // reset brackets counter
 
 mode LTL_MODE;
 
@@ -251,5 +251,5 @@ LTL_UNTIL: 'U';
 LTL_WEAK_UNTIL: 'W';
 LTL_RELEASE: 'R';
 LTL_NEXT: 'X';
-LTL_B_START: '{' -> mode(DEFAULT_MODE) ;
+LTL_B_START: '{' {curlyBracketsCount=0;} -> mode(DEFAULT_MODE) ; // reset brackets counter
 LTL_WS: [ \t\r\n]+ -> skip;
