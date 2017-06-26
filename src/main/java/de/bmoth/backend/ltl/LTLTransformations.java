@@ -9,9 +9,13 @@ import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LTLTransformations {
-    final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    private final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    private final Logger logger = Logger.getLogger(getClass().getName());
+
     private final List<AbstractASTTransformation> transformationList;
 
     private static LTLTransformations instance;
@@ -24,15 +28,10 @@ public class LTLTransformations {
                 if (info.getName().startsWith("de.bmoth.backend.ltl.transformation")) {
                     final Class<?> clazz = info.load();
                     transformationList.add((AbstractASTTransformation) clazz.newInstance());
-                    // do something with your clazz
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+        } catch (IOException | InstantiationException | IllegalAccessException e) {
+            logger.log(Level.SEVERE, "Error loading LTL transformation rules", e);
         }
     }
 
