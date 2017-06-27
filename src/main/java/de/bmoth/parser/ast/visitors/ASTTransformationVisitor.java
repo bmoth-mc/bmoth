@@ -1,39 +1,10 @@
 package de.bmoth.parser.ast.visitors;
 
+import de.bmoth.parser.ast.nodes.*;
+import de.bmoth.parser.ast.nodes.ltl.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
-
-import de.bmoth.parser.ast.nodes.AbstractIfAndSelectSubstitutionsNode;
-import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
-import de.bmoth.parser.ast.nodes.BecomesElementOfSubstitutionNode;
-import de.bmoth.parser.ast.nodes.BecomesSuchThatSubstitutionNode;
-import de.bmoth.parser.ast.nodes.CastPredicateExpressionNode;
-import de.bmoth.parser.ast.nodes.ConditionSubstitutionNode;
-import de.bmoth.parser.ast.nodes.DeferredSetNode;
-import de.bmoth.parser.ast.nodes.EnumeratedSetElementNode;
-import de.bmoth.parser.ast.nodes.EnumerationSetNode;
-import de.bmoth.parser.ast.nodes.ExprNode;
-import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
-import de.bmoth.parser.ast.nodes.IdentifierExprNode;
-import de.bmoth.parser.ast.nodes.IdentifierPredicateNode;
-import de.bmoth.parser.ast.nodes.IfSubstitutionNode;
-import de.bmoth.parser.ast.nodes.Node;
-import de.bmoth.parser.ast.nodes.NumberNode;
-import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
-import de.bmoth.parser.ast.nodes.PredicateNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
-import de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode;
-import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode;
-import de.bmoth.parser.ast.nodes.QuantifiedPredicateNode;
-import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SkipSubstitutionNode;
-import de.bmoth.parser.ast.nodes.SubstitutionNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 
 public class ASTTransformationVisitor {
 
@@ -62,27 +33,25 @@ public class ASTTransformationVisitor {
 
         private Node modifyNode(Node node) {
             Node temp = node;
-            boolean run = true;
-            while (run) {
-                run = false;
-                for (AbstractASTTransformation astModifier : modifierList) {
-                    if (astModifier.canHandleNode(temp)) {
-                        temp = astModifier.transformNode(temp);
-                        if (astModifier.hasChanged()) {
-                            run = true;
-                            astModifier.resetChanged();
-                        }
+
+            for (AbstractASTTransformation astModifier : modifierList) {
+                if (astModifier.canHandleNode(temp)) {
+                    temp = astModifier.transformNode(temp);
+                    if (astModifier.hasChanged()) {
+                        astModifier.resetChanged();
+                        return visitNode(temp, null);
                     }
                 }
             }
+
             return temp;
         }
 
         @Override
         public Node visitPredicateOperatorNode(PredicateOperatorNode node, Void expected) {
             List<PredicateNode> list = node.getPredicateArguments().stream()
-                    .map(predNode -> (PredicateNode) visitPredicateNode(predNode, expected))
-                    .collect(Collectors.toList());
+                .map(predNode -> (PredicateNode) visitPredicateNode(predNode, expected))
+                .collect(Collectors.toList());
             node.setPredicateList(list);
             return modifyNode(node);
         }
@@ -90,7 +59,7 @@ public class ASTTransformationVisitor {
         @Override
         public Node visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, Void expected) {
             final List<ExprNode> argumentList = node.getExpressionNodes().stream()
-                    .map(exprNode -> (ExprNode) visitExprNode(exprNode, expected)).collect(Collectors.toList());
+                .map(exprNode -> (ExprNode) visitExprNode(exprNode, expected)).collect(Collectors.toList());
             node.setArgumentsList(argumentList);
             return modifyNode(node);
         }
@@ -98,7 +67,7 @@ public class ASTTransformationVisitor {
         @Override
         public Node visitExprOperatorNode(ExpressionOperatorNode node, Void expected) {
             final List<ExprNode> arguments = node.getExpressionNodes().stream()
-                    .map(exprNode -> (ExprNode) visitExprNode(exprNode, expected)).collect(Collectors.toList());
+                .map(exprNode -> (ExprNode) visitExprNode(exprNode, expected)).collect(Collectors.toList());
             node.setExpressionList(arguments);
             return modifyNode(node);
         }
@@ -132,12 +101,12 @@ public class ASTTransformationVisitor {
 
         private Node visitIfOrSelectNode(AbstractIfAndSelectSubstitutionsNode node, Void expected) {
             node.setConditions(node.getConditions().stream().map(t -> (PredicateNode) visitPredicateNode(t, expected))
-                    .collect(Collectors.toList()));
+                .collect(Collectors.toList()));
             node.setSubstitutions(node.getSubstitutions().stream()
-                    .map(t -> (SubstitutionNode) visitSubstitutionNode(t, expected)).collect(Collectors.toList()));
+                .map(t -> (SubstitutionNode) visitSubstitutionNode(t, expected)).collect(Collectors.toList()));
             if (null != node.getElseSubstitution()) {
                 SubstitutionNode elseSub = (SubstitutionNode) visitSubstitutionNode(node.getElseSubstitution(),
-                        expected);
+                    expected);
                 node.setElseSubstitution(elseSub);
             }
             return modifyNode(node);
@@ -166,7 +135,7 @@ public class ASTTransformationVisitor {
         @Override
         public Node visitParallelSubstitutionNode(ParallelSubstitutionNode node, Void expected) {
             List<SubstitutionNode> substitutions = node.getSubstitutions().stream()
-                    .map(sub -> (SubstitutionNode) visitSubstitutionNode(node, expected)).collect(Collectors.toList());
+                .map(sub -> (SubstitutionNode) visitSubstitutionNode(node, expected)).collect(Collectors.toList());
             node.setSubstitutions(substitutions);
             return modifyNode(node);
         }

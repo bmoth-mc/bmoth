@@ -3,7 +3,6 @@ package de.bmoth.parser.ast;
 import de.bmoth.backend.z3.AstTransformationsForZ3;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.PredicateNode;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.bmoth.TestParser.parseFormula;
@@ -19,12 +18,11 @@ public class ASTTransformationTest {
     }
 
     @Test
-    @Ignore
     public void testElementOfCombinedWithMultipleUnions() {
         String formula = "a : {1} \\/ b \\/ c";
         FormulaNode formulaNode = parseFormula(formula);
         PredicateNode op = AstTransformationsForZ3.transformPredicate((PredicateNode) formulaNode.getFormula());
-        assertEquals("OR(ELEMENT_OF(a,SET_ENUMERATION(1)),ELEMENT_OF(a,b))", op.toString());
+        assertEquals("OR(OR(ELEMENT_OF(a,SET_ENUMERATION(1)),ELEMENT_OF(a,b)),ELEMENT_OF(a,c))", op.toString());
     }
 
     @Test
@@ -36,12 +34,11 @@ public class ASTTransformationTest {
     }
 
     @Test
-    @Ignore
     public void testElementOfCombinedWithMultipleIntersections() {
         String formula = "a : {1} /\\ b /\\ c";
         FormulaNode formulaNode = parseFormula(formula);
         PredicateNode op = AstTransformationsForZ3.transformPredicate((PredicateNode) formulaNode.getFormula());
-        assertEquals("AND(ELEMENT_OF(a,SET_ENUMERATION(1)),ELEMENT_OF(a,b))", op.toString());
+        assertEquals("AND(AND(ELEMENT_OF(a,SET_ENUMERATION(1)),ELEMENT_OF(a,b)),ELEMENT_OF(a,c))", op.toString());
     }
 
     @Test
