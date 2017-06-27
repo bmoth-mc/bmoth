@@ -1,9 +1,6 @@
 package de.bmoth.modelchecker.esmc;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Model;
-import com.microsoft.z3.Solver;
-import com.microsoft.z3.Status;
+import com.microsoft.z3.*;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
@@ -12,26 +9,25 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
+import jdk.nashorn.internal.codegen.CompilerConstants;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.*;
 
 public class ExplicitStateModelChecker extends ModelChecker {
     private Solver solver;
-    private Solver opSolver;
     private SolutionFinder finder;
-    private SolutionFinder opFinder;
+    private HashMap<SolutionFinder, Context> opFinder;
 
     public ExplicitStateModelChecker(MachineNode machine) {
         super(machine);
         this.solver = Z3SolverFactory.getZ3Solver(getContext());
-        this.opSolver = Z3SolverFactory.getZ3Solver(getContext());
         this.finder = new SolutionFinder(solver, getContext());
-        this.opFinder = new SolutionFinder(opSolver, getContext());
     }
 
     public static ModelCheckingResult check(MachineNode machine) {
@@ -43,7 +39,9 @@ public class ExplicitStateModelChecker extends ModelChecker {
     public void abort() {
         super.abort();
         finder.abort();
-        opFinder.abort();
+        for(SolutionFinder finder : opFinder.keySet()) {
+            finder.abort();
+        }
     }
 
     @Override
@@ -75,9 +73,16 @@ public class ExplicitStateModelChecker extends ModelChecker {
          */
 
 
-        final BoolExpr operationsConstraint = getMachineTranslator().getCombinedOperationConstraint();
-        // getMachineTranslator().getOperationConstraints(); --> create opSolver for each constraint
-        opSolver.add(operationsConstraint);
+        //final BoolExpr operationsConstraint = getMachineTranslator().getCombinedOperationConstraint();
+        List<BoolExpr> operationConstraints = getMachineTranslator().getOperationConstraints();
+        opFinder = new HashMap<>(operationConstraints.size());
+        for(BoolExpr operationConstraint : operationConstraints) {
+            Context ctx = new Context();
+            Solver operationSolver = Z3SolverFactory.getZ3Solver(ctx);
+            SolutionFinder operationFinder = new SolutionFinder(operationSolver, ctx);
+            operationSolver.add((BoolExpr) operationConstraint.translate(ctx));
+            opFinder.put(operationFinder, ctx);
+        }
 
         while (!isAborted() && !queue.isEmpty()) {
             solver.push();
@@ -100,12 +105,33 @@ public class ExplicitStateModelChecker extends ModelChecker {
                     // continue
             }
 
-            // compute successors on separate finder
-            models = opFinder.findSolutions(stateConstraint, maxTransitions);
+            // compute successors on separate finder (parralel)
+            List<Callable<Void>> callables= new ArrayList<>(opFinder.size());
+            ExecutorService execService = Executors.newCachedThreadPool();
+            for (SolutionFinder opFinder : this.opFinder.keySet()) {
+                Callable<Void> call = () -> {
+                    Set<Model> successors = opFinder.findSolutions((BoolExpr)stateConstraint.translate(getContext(opFinder)), maxTransitions);
+                    models.stream()
+                        .map(model -> getStateFromModel(current, model))
+                        .filter(state -> !visited.contains(state) && !queue.contains(state))
+                        .forEach(queue::add);
+                    return null;
+                };
+                callables.add(call);
+            }
+            try {
+                execService.invokeAll(callables);
+                execService.shutdown();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+            /*models = opFinder.findSolutions(stateConstraint, maxTransitions);
             models.stream()
                 .map(model -> getStateFromModel(current, model))
                 .filter(state -> !visited.contains(state) && !queue.contains(state))
-                .forEach(queue::add);
+                .forEach(queue::add);*/
 
             solver.pop();
         }
@@ -115,6 +141,10 @@ public class ExplicitStateModelChecker extends ModelChecker {
         } else {
             return createVerified(visited.size());
         }
+    }
+
+    private Context getContext(SolutionFinder opFinder) {
+        return this.opFinder.get(opFinder);
     }
 
     private State getStateFromModel(Model model) {

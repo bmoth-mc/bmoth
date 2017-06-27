@@ -42,7 +42,7 @@ public class State {
 
     public BoolExpr getStateConstraint(Context context) {
         BoolExpr[] result = values.entrySet().stream().map(entry -> {
-            Expr singleExpression = entry.getValue();
+            Expr singleExpression = entry.getValue().translate(context);
             Sort sort = singleExpression.getSort();
             Expr identifierExpr = context.mkConst(entry.getKey(), sort);
             return context.mkEq(identifierExpr, singleExpression);
