@@ -18,14 +18,16 @@ public class ConvertNotRelease extends LTLASTTransformation{
 		LTLPrefixOperatorNode notOperator = (LTLPrefixOperatorNode) oldNode;
         if (notOperator.getKind() == LTLPrefixOperatorNode.Kind.NOT) {
             LTLNode argument = notOperator.getArgument();
-            LTLInfixOperatorNode releaseOperator = (LTLInfixOperatorNode) argument;
-            if(releaseOperator.getKind() == LTLInfixOperatorNode.Kind.RELEASE){
-            	LTLNode left=releaseOperator.getLeft();
-            	LTLNode right = releaseOperator.getRight();
-            	LTLNode notLeft = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT,left);
-            	LTLNode notRight = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT, right);
-            	setChanged();
-            	return new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.UNTIL, notLeft, notRight);
+            if(argument instanceof LTLInfixOperatorNode ){
+                LTLInfixOperatorNode releaseOperator = (LTLInfixOperatorNode) argument;
+                if(releaseOperator.getKind() == LTLInfixOperatorNode.Kind.RELEASE){
+                    LTLNode left=releaseOperator.getLeft();
+                    LTLNode right = releaseOperator.getRight();
+                    LTLNode notLeft = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT,left);
+                    LTLNode notRight = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT, right);
+                    setChanged();
+                    return new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.UNTIL, notLeft, notRight);
+                }
             }
         }
 		return oldNode;
