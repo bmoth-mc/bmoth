@@ -44,8 +44,6 @@ public class KInductionModelChecker extends ModelChecker {
             // not INV(Vk)
             baseSolver.add(getContext().mkNot(invariant(k)));
 
-            //TODO add missing CONJUNCTION i from 1 to k, j from i + 1 to k (Vi != Vj)
-
             Status check = baseSolver.check();
             if (check == Status.SATISFIABLE) {
                 // counter example found!
@@ -55,6 +53,8 @@ public class KInductionModelChecker extends ModelChecker {
                 stepSolver.reset();
 
                 stepSolver.add();
+                // CONJUNCTION i from 1 to k, j from i + 1 to k (Vi != Vj)
+                stepSolver.add(distinctVectors(k));
 
                 for (int i = 0; i <= k; i++) {
                     stepSolver.add(transition(i - 1, i));
@@ -85,6 +85,10 @@ public class KInductionModelChecker extends ModelChecker {
 
     private BoolExpr invariant(int step) {
         return getMachineTranslator().getInvariantConstraint(new TranslationOptions(step));
+    }
+
+    private BoolExpr distinctVectors(int to) {
+        return getMachineTranslator().getDistinctVars(0, to);
     }
 
     private State getStateFromModel(Model model, int step) {

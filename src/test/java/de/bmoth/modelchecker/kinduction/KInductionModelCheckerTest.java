@@ -55,32 +55,6 @@ public class KInductionModelCheckerTest extends TestParser {
         assertEquals(2, result.getSteps());
     }
 
-    @Test
-    public void test3() {
-        machine = builder
-            .setName("ebr")
-            .setVariables("a")
-            .setInvariant("a : INTEGER & a < 15")
-            .setInitialization("a := 1")
-            .addOperation("inc = BEGIN a := a + 1 END")
-            .build();
-        result = new KInductionModelChecker(machine, 20).check();
-        assertEquals(COUNTER_EXAMPLE_FOUND, result.getType());
-    }
-
-    @Test
-    public void test4() {
-        machine = builder
-            .setName("ebr")
-            .setVariables("a")
-            .setInvariant("a : INTEGER & a < 25")
-            .setInitialization("a := 1")
-            .addOperation("inc = BEGIN a := a + 1 END")
-            .build();
-        result = new KInductionModelChecker(machine, 20).check();
-        assertEquals(EXCEEDED_MAX_STEPS, result.getType());
-    }
-
 
     @Test
     public void testCounterCorrect() {
