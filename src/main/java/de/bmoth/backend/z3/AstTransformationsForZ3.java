@@ -35,7 +35,7 @@ public class AstTransformationsForZ3 {
         }
     }
 
-    public static AstTransformationsForZ3 getInstance() {
+    private static AstTransformationsForZ3 getInstance() {
         if (null == instance) {
             instance = new AstTransformationsForZ3();
         }

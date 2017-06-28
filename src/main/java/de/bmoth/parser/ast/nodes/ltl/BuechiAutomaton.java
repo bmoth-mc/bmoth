@@ -36,22 +36,30 @@ public class BuechiAutomaton {
 
     private List<LTLNode> new1(LTLInfixOperatorNode node) {
         List<LTLNode> newNodes = new ArrayList<>();
-        newNodes.add(node.getLeft());
+        if (node.getKind() == LTLInfixOperatorNode.Kind.RELEASE) {
+            newNodes.add(node.getRight());
+        } else {
+            // Until, or
+            newNodes.add(node.getLeft());
+        }
         return newNodes;
     }
 
     private List<LTLNode> new2(LTLInfixOperatorNode node) {
         List<LTLNode> newNodes = new ArrayList<>();
-        if (node.getKind() == LTLInfixOperatorNode.Kind.UNTIL) {
-            newNodes.add(node);
+        newNodes.add(node.getRight());
+        if (node.getKind() == LTLInfixOperatorNode.Kind.RELEASE) {
+            newNodes.add(node.getLeft());
         }
-        // In case of OR an empty list is returned
         return newNodes;
     }
 
     private List<LTLNode> next1(LTLInfixOperatorNode node) {
         List<LTLNode> newNodes = new ArrayList<>();
-        newNodes.add(node.getRight());
+        if (node.getKind() == LTLInfixOperatorNode.Kind.UNTIL || node.getKind() == LTLInfixOperatorNode.Kind.RELEASE) {
+            newNodes.add(node);
+        }
+        // In case of or an empty list is returned
         return newNodes;
     }
 
@@ -132,10 +140,10 @@ public class BuechiAutomaton {
                         return expand(node, nodesSet);
                     }
             } else
-                // And, Or, Until
+                // And, Or, Until, Weak-Until
                 if (subNode instanceof LTLInfixOperatorNode) {
                     if (((LTLInfixOperatorNode) subNode).getKind() == LTLInfixOperatorNode.Kind.AND) {
-                        // Logical and
+                        // And
                         List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
                         List<LTLNode> newUnprocessed = new ArrayList<>();
                         newUnprocessed.add(((LTLInfixOperatorNode) subNode).getLeft());
@@ -150,7 +158,7 @@ public class BuechiAutomaton {
                             newUnprocessed, newProcessed, node.next), nodesSet);
 
                     } else {
-                        // Until, logical or: Split the node in two
+                        // Until, Weak-until, Or: Split the node in two
                         List<LTLNode> newProcessed = new ArrayList<>(node.processed);
                         newProcessed.add(subNode);
                         return expand(handleFirstNodeInSplit(node, subNode, newProcessed),

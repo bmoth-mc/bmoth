@@ -5,7 +5,6 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.kind.KInductionModelChecker;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.Type.*;
@@ -56,8 +55,8 @@ public class KInductionModelCheckerTest extends TestParser {
         assertEquals(2, result.getSteps());
     }
 
+
     @Test
-    @Ignore
     public void testCounterCorrect() {
         machine = builder
             .setName("ebr")
