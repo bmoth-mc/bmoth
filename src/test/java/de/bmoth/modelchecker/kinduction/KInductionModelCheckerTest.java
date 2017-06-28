@@ -5,7 +5,6 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.kind.KInductionModelChecker;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.Type.*;
@@ -57,7 +56,33 @@ public class KInductionModelCheckerTest extends TestParser {
     }
 
     @Test
-    @Ignore
+    public void test3() {
+        machine = builder
+            .setName("ebr")
+            .setVariables("a")
+            .setInvariant("a : INTEGER & a < 15")
+            .setInitialization("a := 1")
+            .addOperation("inc = BEGIN a := a + 1 END")
+            .build();
+        result = new KInductionModelChecker(machine, 20).check();
+        assertEquals(COUNTER_EXAMPLE_FOUND, result.getType());
+    }
+
+    @Test
+    public void test4() {
+        machine = builder
+            .setName("ebr")
+            .setVariables("a")
+            .setInvariant("a : INTEGER & a < 25")
+            .setInitialization("a := 1")
+            .addOperation("inc = BEGIN a := a + 1 END")
+            .build();
+        result = new KInductionModelChecker(machine, 20).check();
+        assertEquals(EXCEEDED_MAX_STEPS, result.getType());
+    }
+
+
+    @Test
     public void testCounterCorrect() {
         machine = builder
             .setName("ebr")
