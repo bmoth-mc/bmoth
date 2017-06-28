@@ -1,9 +1,9 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
-import java.util.List;
-
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.Node;
+
+import java.util.List;
 
 public class LTLFormula implements Node {
 
@@ -26,4 +26,14 @@ public class LTLFormula implements Node {
         return implicitDeclarations;
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        LTLFormula that = (LTLFormula) other;
+        return this.ltlNode.equalAst(that.ltlNode)
+            && new ListAstEquals<DeclarationNode>().equalAst(this.implicitDeclarations, that.implicitDeclarations);
+    }
 }

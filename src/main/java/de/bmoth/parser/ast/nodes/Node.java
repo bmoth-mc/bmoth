@@ -7,12 +7,10 @@ public interface Node {
         return this == that || that != null && this.getClass() == that.getClass();
     }
 
-    default boolean equalAst(Node other) {
-        return false;
-    }
+    boolean equalAst(Node other);
 
     class ListAstEquals<T extends Node> {
-        boolean equalAst(List<T> first, List<T> second) {
+        public boolean equalAst(List<T> first, List<T> second) {
             if (first.size() != second.size()) {
                 return false;
             }
