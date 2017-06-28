@@ -9,7 +9,6 @@ import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class ConvertPsiNotBformulaToPsiNegatedBformula extends AbstractASTTransformation{
