@@ -16,9 +16,9 @@ public class LTLTransformations {
     private final ClassLoader loader = Thread.currentThread().getContextClassLoader();
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    private final List<AbstractASTTransformation> transformationList;
-
     private static LTLTransformations instance;
+
+    private final List<AbstractASTTransformation> transformationList;
 
     private LTLTransformations() {
         this.transformationList = new ArrayList<>();

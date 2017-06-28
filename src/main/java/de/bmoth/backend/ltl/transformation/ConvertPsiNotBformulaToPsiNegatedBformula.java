@@ -9,18 +9,19 @@ import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
-public class ConvertPsiNotBFormulaToPsiNegatedBFormula extends AbstractASTTransformation {
+public class ConvertPsiNotBformulaToPsiNegatedBformula extends AbstractASTTransformation{
 
-    @Override
-    public boolean canHandleNode(Node node) {
-        return node instanceof LTLPrefixOperatorNode;
-    }
+	@Override
+	public boolean canHandleNode(Node node) {
+		return node instanceof LTLPrefixOperatorNode;
+	}
 
-    @Override
-    public Node transformNode(Node node) {
-        LTLPrefixOperatorNode notOperator = (LTLPrefixOperatorNode) node;
+	@Override
+	public Node transformNode(Node node) {
+		LTLPrefixOperatorNode notOperator = (LTLPrefixOperatorNode) node;
         if (notOperator.getKind() == LTLPrefixOperatorNode.Kind.NOT) {
             LTLNode argument = notOperator.getArgument();
             if (argument instanceof LTLBPredicateNode) {
@@ -32,6 +33,6 @@ public class ConvertPsiNotBFormulaToPsiNegatedBFormula extends AbstractASTTransf
             }
         }
         return node;
-    }
+	}
 
 }
