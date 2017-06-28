@@ -30,4 +30,15 @@ public class BecomesSuchThatSubstitutionNode extends SubstitutionNode {
     public String toString() {
         return identifiers.stream().map(Object::toString).collect(Collectors.joining(",")) + " :( " + predicate + ")";
     }
+
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        BecomesSuchThatSubstitutionNode that = (BecomesSuchThatSubstitutionNode) other;
+        return this.predicate.equalAst(that.predicate)
+            && new ListAstEquals<IdentifierExprNode>().equalAst(this.identifiers, that.identifiers);
+    }
 }

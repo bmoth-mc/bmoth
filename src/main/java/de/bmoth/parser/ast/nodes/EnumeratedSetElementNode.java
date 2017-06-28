@@ -28,4 +28,15 @@ public class EnumeratedSetElementNode extends ExprNode {
         return declarationNode;
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        EnumeratedSetElementNode that = (EnumeratedSetElementNode) other;
+        return this.elementName.equals(that.elementName)
+            && this.declarationNode.equalAst(that.declarationNode)
+            && this.enumeratedSetDeclarationNode.equalAst(that.enumeratedSetDeclarationNode);
+    }
 }

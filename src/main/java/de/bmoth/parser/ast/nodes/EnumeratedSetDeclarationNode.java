@@ -23,4 +23,15 @@ public class EnumeratedSetDeclarationNode implements Node {
     public List<String> getElementsAsStrings() {
         return elements.stream().map(DeclarationNode::getName).collect(Collectors.toList());
     }
+
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        EnumeratedSetDeclarationNode that = (EnumeratedSetDeclarationNode) other;
+        return this.setDeclaration.equalAst(that.setDeclaration)
+            && new ListAstEquals<DeclarationNode>().equalAst(this.elements, that.elements);
+    }
 }

@@ -13,14 +13,4 @@ public abstract class SubstitutionNode implements Node {
     public void setAssignedVariables(Set<DeclarationNode> assignedVariables) {
         this.assignedVariables = assignedVariables;
     }
-
-    @Override
-    public boolean equalAst(Node other) {
-        if (!sameClass(other)) {
-            return false;
-        }
-
-        SubstitutionNode that = (SubstitutionNode) other;
-        return new ListAstEquals<DeclarationNode>().equalAst(new ArrayList<>(this.assignedVariables), new ArrayList<>(that.assignedVariables));
-    }
 }

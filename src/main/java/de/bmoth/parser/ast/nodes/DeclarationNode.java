@@ -30,4 +30,12 @@ public class DeclarationNode extends TypedNode {
         return terminalNode.getSymbol().getCharPositionInLine();
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        return this.name.equals(((DeclarationNode) other).name);
+    }
 }

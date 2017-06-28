@@ -20,4 +20,13 @@ public class LTLKeywordNode implements LTLNode {
         return this.kind.toString();
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        return this.kind.equals(((LTLKeywordNode) other).kind);
+    }
+
 }

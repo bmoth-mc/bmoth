@@ -40,4 +40,16 @@ public class LTLInfixOperatorNode implements LTLNode {
     public String toString() {
         return this.kind + "(" + this.left + "," + this.right + ")";
     }
+
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        LTLInfixOperatorNode that = (LTLInfixOperatorNode) other;
+        return this.kind.equals(that.kind)
+            && this.left.equalAst(that.left)
+            && this.right.equalAst(that.right);
+    }
 }

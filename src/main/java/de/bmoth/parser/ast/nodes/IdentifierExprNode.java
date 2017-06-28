@@ -28,4 +28,14 @@ public class IdentifierExprNode extends ExprNode {
         return name;
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        IdentifierExprNode that = (IdentifierExprNode) other;
+        return this.name.equals(that.name)
+            && this.declarationNode.equalAst(that.declarationNode);
+    }
 }

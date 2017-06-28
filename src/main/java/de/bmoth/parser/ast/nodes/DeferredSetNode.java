@@ -12,13 +12,23 @@ public class DeferredSetNode extends ExprNode {
         this.declarationNode = declNode;
         this.name = name;
     }
-    
-    public String getName(){
+
+    public String getName() {
         return name;
     }
-    
-    public DeclarationNode getDeclarationNode(){
+
+    public DeclarationNode getDeclarationNode() {
         return this.declarationNode;
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        DeferredSetNode that = (DeferredSetNode) other;
+        return this.name.equals(that.name)
+            && this.declarationNode.equalAst(that.declarationNode);
+    }
 }

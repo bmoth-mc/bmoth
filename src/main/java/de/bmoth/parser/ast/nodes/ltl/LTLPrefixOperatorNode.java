@@ -30,4 +30,15 @@ public class LTLPrefixOperatorNode implements LTLNode {
     public String toString() {
         return this.kind + "(" + this.argument + ")";
     }
+
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        LTLPrefixOperatorNode that = (LTLPrefixOperatorNode) other;
+        return this.kind.equals(that.kind)
+            && this.argument.equalAst(that.argument);
+    }
 }
