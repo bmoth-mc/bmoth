@@ -14,6 +14,7 @@ import static de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuantifiedExpre
 import static de.bmoth.parser.ast.nodes.QuantifiedPredicateNode.QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class NodeTest extends TestParser {
 
@@ -40,6 +41,8 @@ public class NodeTest extends TestParser {
         assembleAnyUp.setSubstitution(anyUp.getThenSubstitution());
 
         assertEquals(anyUp.toString(), assembleAnyUp.toString());
+
+        assertTrue(anyUp.equalAst(assembleAnyUp));
     }
 
     @Test

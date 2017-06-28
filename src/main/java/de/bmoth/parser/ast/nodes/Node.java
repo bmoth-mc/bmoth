@@ -17,7 +17,7 @@ public interface Node {
 
             // relies on same ordering of elements, e.g. x+1 != 1+x
             for (int i = 0; i < first.size(); i++) {
-                if (first.get(i).equalAst(second.get(i))) {
+                if (!first.get(i).equalAst(second.get(i))) {
                     return false;
                 }
             }
