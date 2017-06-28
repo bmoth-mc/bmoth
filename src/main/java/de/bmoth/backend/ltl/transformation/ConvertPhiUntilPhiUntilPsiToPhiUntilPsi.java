@@ -3,44 +3,48 @@ package de.bmoth.backend.ltl.transformation;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.LTLASTTransformation;
 
-public class ConvertPhiUntilPhiUntilPsiToPhiUntilPsi extends AbstractASTTransformation {
+import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.UNTIL;
+
+public class ConvertPhiUntilPhiUntilPsiToPhiUntilPsi extends LTLASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
-        return node instanceof LTLInfixOperatorNode;
+        return isOperator(node, UNTIL) &&
+            (containsLeft(node, UNTIL)
+                && rightChild(leftChild(node)).toString().equals(
+                rightChild(node).toString())
+
+                ||
+                containsRight(node, UNTIL)
+                    && leftChild(rightChild(node)).toString().equals(
+                    leftChild(node).toString())
+            );
+
     }
 
     @Override
-    public Node transformNode(Node oldNode) {
-        LTLInfixOperatorNode untilOperator01 = (LTLInfixOperatorNode) oldNode;
-        if (untilOperator01.getKind() == LTLInfixOperatorNode.Kind.UNTIL) {
-            LTLNode argument01Left = untilOperator01.getLeft();
-            LTLNode argument01Right = untilOperator01.getRight();
-            if (argument01Right instanceof LTLInfixOperatorNode) {
-                LTLInfixOperatorNode operator02 = (LTLInfixOperatorNode) argument01Right;
-                // case U(x,U(x,y))->U(x,y)
-                if (operator02.getKind() == LTLInfixOperatorNode.Kind.UNTIL) {
-                    LTLNode argument02Left = operator02.getLeft();
-                    if (argument01Left.toString().equals(argument02Left.toString())) {
-                        setChanged();
-                        return operator02;
-                    }
-                }
-            }
-            if (argument01Left instanceof LTLInfixOperatorNode) {
-                LTLInfixOperatorNode operator02 = (LTLInfixOperatorNode) argument01Left;
-                // case U(U(x,y),y)->U(x,y)
-                if (operator02.getKind() == LTLInfixOperatorNode.Kind.UNTIL) {
-                    LTLNode argument02Right = operator02.getRight();
-                    if (argument01Right.toString().equals(argument02Right.toString())) {
-                        setChanged();
-                        return operator02;
-                    }
-                }
-            }
+    public Node transformNode(Node node) {
+        LTLInfixOperatorNode outerUntil = (LTLInfixOperatorNode) node;
+        LTLNode originalLeft = outerUntil.getLeft();
+        LTLNode originalRight = outerUntil.getRight();
+
+        setChanged();
+
+        // case U(U(x,y),y)->U(x,y)
+        if (isOperator(originalLeft, UNTIL)) {
+            LTLInfixOperatorNode innerUntil = (LTLInfixOperatorNode) originalLeft;
+            LTLNode newLeft = innerUntil.getLeft();
+
+            return new LTLInfixOperatorNode(UNTIL, newLeft, originalRight);
         }
-        return oldNode;
+        // case U(x,U(x,y))->U(x,y)
+        else {
+            LTLInfixOperatorNode innerUntil = (LTLInfixOperatorNode) originalRight;
+            LTLNode newRight = innerUntil.getRight();
+
+            return new LTLInfixOperatorNode(UNTIL, originalLeft, newRight);
+        }
     }
 }

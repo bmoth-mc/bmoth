@@ -16,4 +16,8 @@ public class LTLKeywordNode implements LTLNode {
         return this.kind;
     }
 
+    public String toString() {
+        return this.kind.toString();
+    }
+
 }

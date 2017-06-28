@@ -18,6 +18,7 @@ public class MachineToZ3Translator {
     private final SubstitutionToZ3TranslatorVisitor visitor;
     private final Z3TypeInference z3TypeInference;
     private final Expr[] originalVariables;
+    private TupleSort tuple;
 
     public MachineToZ3Translator(MachineNode machineNode, Context ctx) {
         this.machineNode = machineNode;
@@ -181,6 +182,24 @@ public class MachineToZ3Translator {
         }
 
         return map;
+    }
+
+    public BoolExpr getDistinctVars(int from, int to) {
+        if (tuple == null) {
+            Expr[] variables = getVariables().stream().map(this::getVariable).toArray(Expr[]::new);
+            Symbol[] symbols = Arrays.stream(variables).map(var -> var.getFuncDecl().getName()).toArray(Symbol[]::new);
+            Sort[] sorts = Arrays.stream(variables).map(Expr::getSort).toArray(Sort[]::new);
+
+            tuple = z3Context.mkTupleSort(z3Context.mkSymbol("tuple"), symbols, sorts);
+        }
+
+        Expr[] distinct = new Expr[to - from + 1];
+        for (int v = from, i = 0; v <= to; v++, i++) {
+            int finalV = v;
+            Expr[] vector = getVariables().stream().map(var -> getPrimedVariable(var, new TranslationOptions(finalV))).toArray(Expr[]::new);
+            distinct[i] = tuple.mkDecl().apply(vector);
+        }
+        return z3Context.mkDistinct(distinct);
     }
 
     class SubstitutionToZ3TranslatorVisitor implements SubstitutionVisitor<BoolExpr, SubstitutionOptions> {

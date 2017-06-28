@@ -1,70 +1,82 @@
 package de.bmoth.modelchecker.esmc;
 
+import de.bmoth.TestParser;
+import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.parser.ast.nodes.MachineNode;
+import org.junit.Before;
 import org.junit.Test;
 
-import static de.bmoth.TestParser.parseMachine;
 import static org.junit.Assert.assertEquals;
 
-public class SetSizesTest {
+public class SetSizesTest extends TestParser {
 
-    private static final String MACHINE_NAME = "MACHINE test\n";
-    private static final String ONE_VARIABLE_X = "VARIABLES\nx\n";
+    private MachineBuilder builder;
+    private MachineNode machine;
+    private ModelCheckingResult result;
+
+    @Before
+    public void init() {
+        builder = new MachineBuilder();
+        machine = null;
+    }
 
     @Test
     public void testXEqualEnumSet() {
-        String machine = MACHINE_NAME;
-        machine += "SETS enm={d1,d2}\n";
-        machine += ONE_VARIABLE_X;
-        machine += "INVARIANT x=enm & d1:x & d2:x\n";
-        machine += "INITIALISATION x:=enm\n";
-        machine += "END";
+        machine = builder
+            .setName("XEqualEnumSet")
+            .setSets("enm={d1,d2}")
+            .setVariables("x")
+            .setInvariant("x=enm & d1:x & d2:x")
+            .setInitialization("x:=enm")
+            .build();
 
-        ModelCheckingResult result = ExplicitStateModelChecker.check(parseMachine(machine));
+        result = ExplicitStateModelChecker.check(machine);
         assertEquals(true, result.isCorrect());
     }
 
     @Test
     public void testEnumeratedSetDoesNotChangeByInserting() {
-        String machine = MACHINE_NAME;
-        machine += "SETS enm={d1,d2}\n";
-        machine += ONE_VARIABLE_X;
-        machine += "INVARIANT x=enm\n";
-        machine += "INITIALISATION x:=enm\n";
-        machine += "OPERATIONS\n";
-        machine += "add = ANY new WHERE new:enm THEN x := x \\/ {new} END\n";
-        machine += "END";
+        machine = builder
+            .setName("EnumSetDoesNotChangeByInserting")
+            .setSets("enm={d1,d2}")
+            .setVariables("x")
+            .setInvariant("x=enm")
+            .setInitialization("x:=enm")
+            .addOperation("add = ANY new WHERE new:enm THEN x := x \\/ {new} END")
+            .build();
 
-        ModelCheckingResult result = ExplicitStateModelChecker.check(parseMachine(machine));
+        result = ExplicitStateModelChecker.check(machine);
         assertEquals(true, result.isCorrect());
-        assertEquals(1, result.getNumberOfDistinctStatesVisited());
+        assertEquals(1, result.getSteps());
     }
 
     @Test
     public void testXEqualDefSet() {
-        String machine = MACHINE_NAME;
-        machine += "SETS def\n";
-        machine += ONE_VARIABLE_X;
-        machine += "INVARIANT x=def\n";
-        machine += "INITIALISATION x:=def\n";
-        machine += "END";
+        machine = builder
+            .setName("XEqualDefSet")
+            .setSets("def")
+            .setVariables("x")
+            .setInvariant("x=def")
+            .setInitialization("x:=def")
+            .build();
 
-        ModelCheckingResult result = ExplicitStateModelChecker.check(parseMachine(machine));
+        result = ExplicitStateModelChecker.check(machine);
         assertEquals(true, result.isCorrect());
     }
 
     @Test
-    public void testDefferedSetDoesNotChangeByInserting() {
-        String machine = MACHINE_NAME;
-        machine += "SETS def\n";
-        machine += ONE_VARIABLE_X;
-        machine += "INVARIANT x=def\n";
-        machine += "INITIALISATION x:=def\n";
-        machine += "OPERATIONS\n";
-        machine += "add = ANY new WHERE new:def THEN x := x \\/ {new} END\n";
-        machine += "END";
+    public void testDeferredSetDoesNotChangeByInserting() {
+        machine = builder
+            .setName("DeferredSetDoesNotChangeByInserting")
+            .setSets("def")
+            .setVariables("x")
+            .setInvariant("x=def")
+            .setInitialization("x:=def")
+            .addOperation("add = ANY new WHERE new:def THEN x := x \\/ {new} END")
+            .build();
 
-        ModelCheckingResult result = ExplicitStateModelChecker.check(parseMachine(machine));
+        result = ExplicitStateModelChecker.check(machine);
         assertEquals(true, result.isCorrect());
-        assertEquals(1, result.getNumberOfDistinctStatesVisited());
+        assertEquals(1, result.getSteps());
     }
 }

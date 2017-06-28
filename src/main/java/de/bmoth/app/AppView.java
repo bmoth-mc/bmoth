@@ -9,8 +9,9 @@ import de.bmoth.checkers.invariantsatisfiability.InvariantSatisfiabilityChecker;
 import de.bmoth.checkers.invariantsatisfiability.InvariantSatisfiabilityCheckingResult;
 import de.bmoth.eventbus.ErrorEvent;
 import de.bmoth.eventbus.EventBusProvider;
+import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
-import de.bmoth.modelchecker.esmc.ModelCheckingResult;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.MachineNode;
@@ -84,7 +85,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     private String currentFile;
     private Boolean hasChanged = false;
     private Task<ModelCheckingResult> task;
-    private ExplicitStateModelChecker modelChecker;
+    private ModelChecker modelChecker;
     private Thread modelCheckingThread;
     private MachineNode machineNode;
     private Boolean presentationMode = false;
@@ -245,16 +246,34 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
                 ModelCheckingResult result = task.getValue();
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Model Checking Result");
-                alert.setHeaderText("The model is...");
-                if (result.isCorrect()) {
-                    alert.setContentText("...correct!\nNo counter-example found.");
-                } else if ("".equals(result.getMessage())) {
-                    alert.setContentText(
-                        "...not correct!\nCounter-example found in state " + result.getLastState().toString()
-                            + ".\nReversed path: " + result.getLastState().getPath());
-                } else {
-                    alert.setContentText("...Schrödinger's cat.\nSomething went wrong.\n" + result.getMessage());
+
+                switch (result.getType()) {
+                    case VERIFIED:
+                        alert.setHeaderText("The model is...");
+                        alert.setContentText("...correct!\nNo counter-example found.");
+                        break;
+                    case EXCEEDED_MAX_STEPS:
+                        alert.setHeaderText("The model is...");
+                        alert.setContentText("...correct for " + result.getSteps() + " steps!\n(Warning: Exceeded max steps)");
+                        break;
+                    case COUNTER_EXAMPLE_FOUND:
+                        alert.setHeaderText("The model is...");
+                        alert.setContentText(
+                            "...not correct!\nCounter-example found in state " + result.getLastState().toString()
+                                + ".\nReversed path: " + result.getLastState().getPath());
+                        break;
+                    case UNKNOWN:
+                        alert.setHeaderText("Model checking result unknown...");
+                        alert.setContentText(
+                            "... reason: " + result.getReason());
+                        break;
+                    case ABORTED:
+                        alert.setHeaderText("Model checking aborted...");
+                        alert.setContentText(
+                            "... after " + result.getSteps() + " steps");
+                        break;
                 }
+
                 alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
                 alert.showAndWait();
             });
