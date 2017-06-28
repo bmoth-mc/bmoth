@@ -87,4 +87,16 @@ public class PredicateOperatorNode extends PredicateNode implements OperatorNode
     public void setPredicateList(List<PredicateNode> list) {
         this.predicateArguments = list;
     }
+
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        PredicateOperatorNode that = (PredicateOperatorNode) other;
+        return this.operator.equals(that.operator)
+            && new ListAstEquals<PredicateNode>().equalAst(this.predicateArguments, that.predicateArguments);
+
+    }
 }

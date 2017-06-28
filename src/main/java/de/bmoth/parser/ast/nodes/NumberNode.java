@@ -21,4 +21,10 @@ public class NumberNode extends ExprNode {
     public String toString() {
         return String.valueOf(value);
     }
+
+    @Override
+    public boolean equalAst(Node other) {
+        return sameClass(other)
+            && this.value.equals(((NumberNode) other).value);
+    }
 }

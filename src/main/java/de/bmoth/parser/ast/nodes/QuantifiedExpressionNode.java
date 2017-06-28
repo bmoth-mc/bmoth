@@ -77,4 +77,17 @@ public class QuantifiedExpressionNode extends ExprNode {
         this.predicateNode = node;
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        QuantifiedExpressionNode that = (QuantifiedExpressionNode) other;
+        return this.operator.equals(that.operator)
+            && this.expressionNode.equalAst(that.expressionNode)
+            && this.predicateNode.equalAst(that.predicateNode)
+            && new ListAstEquals<DeclarationNode>().equalAst(this.declarationList, that.declarationList);
+
+    }
 }

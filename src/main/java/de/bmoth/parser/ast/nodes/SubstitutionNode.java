@@ -1,5 +1,6 @@
 package de.bmoth.parser.ast.nodes;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public abstract class SubstitutionNode implements Node {
@@ -13,4 +14,13 @@ public abstract class SubstitutionNode implements Node {
         this.assignedVariables = assignedVariables;
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        SubstitutionNode that = (SubstitutionNode) other;
+        return new ListAstEquals<DeclarationNode>().equalAst(new ArrayList<>(this.assignedVariables), new ArrayList<>(that.assignedVariables));
+    }
 }

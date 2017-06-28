@@ -94,4 +94,9 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode implements 
         this.expressionNodes = argumentList;
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        return sameClass(other)
+            && new ListAstEquals<ExprNode>().equalAst(expressionNodes, ((PredicateOperatorWithExprArgsNode) other).expressionNodes);
+    }
 }

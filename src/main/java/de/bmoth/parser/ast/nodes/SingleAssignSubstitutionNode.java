@@ -32,4 +32,15 @@ public class SingleAssignSubstitutionNode extends SubstitutionNode {
     public void setValue(ExprNode value) {
         this.value = value;
     }
+
+    @Override
+    public boolean equalAst(Node other) {
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        SingleAssignSubstitutionNode that = (SingleAssignSubstitutionNode) other;
+        return this.identifier.equalAst(that.identifier)
+            && this.value.equalAst(that.value);
+    }
 }
