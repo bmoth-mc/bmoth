@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ConvertElementOfUnionToMultipleElementOfs extends AbstractASTTransformation {
+public class ConvertElementOfIntersectionToMultipleElementOfs extends AbstractASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
@@ -21,7 +21,7 @@ public class ConvertElementOfUnionToMultipleElementOfs extends AbstractASTTransf
             ExprNode left = node.getExpressionNodes().get(0);
             ExprNode right = node.getExpressionNodes().get(1);
             if (right instanceof ExpressionOperatorNode
-                && ((ExpressionOperatorNode) right).getOperator() == ExpressionOperatorNode.ExpressionOperator.UNION) {
+                && ((ExpressionOperatorNode) right).getOperator() == ExpressionOperatorNode.ExpressionOperator.INTERSECTION) {
                 List<PredicateNode> predicateArguments = new ArrayList<>();
                 ExpressionOperatorNode union = (ExpressionOperatorNode) right;
                 for (ExprNode set : union.getExpressionNodes()) {
@@ -30,7 +30,7 @@ public class ConvertElementOfUnionToMultipleElementOfs extends AbstractASTTransf
                     predicateArguments.add(predicateOperatorWithExprArgsNode);
                 }
                 setChanged();
-                return new PredicateOperatorNode(node.getParseTree(), PredicateOperatorNode.PredicateOperator.OR, predicateArguments);
+                return new PredicateOperatorNode(node.getParseTree(), PredicateOperatorNode.PredicateOperator.AND, predicateArguments);
             }
         }
         return node;
