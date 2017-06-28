@@ -1,4 +1,4 @@
-package de.bmoth.parser.ast;
+package de.bmoth.parser.ast.transformations;
 
 import de.bmoth.backend.z3.AstTransformationsForZ3;
 import de.bmoth.parser.ast.nodes.FormulaNode;
