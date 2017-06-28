@@ -54,27 +54,38 @@ public class SemanticAstCreator {
 
         if (null != machineAnalyser.getPropertiesClause()) {
             PredicateNode pred = (PredicateNode) machineAnalyser.getPropertiesClause().predicate()
-                .accept(formulaVisitor);
+                    .accept(formulaVisitor);
             machineNode.setProperties(pred);
         }
 
         if (null != machineAnalyser.getInvariantClause()) {
             PredicateNode pred = (PredicateNode) machineAnalyser.getInvariantClause().predicate()
-                .accept(formulaVisitor);
+                    .accept(formulaVisitor);
             machineNode.setInvariant(pred);
         }
 
         if (null != machineAnalyser.getInitialisationClause()) {
             SubstitutionNode substitution = (SubstitutionNode) machineAnalyser.getInitialisationClause().substitution()
-                .accept(formulaVisitor);
+                    .accept(formulaVisitor);
             machineNode.setInitialisation(substitution);
         }
 
+        LinkedHashMap<String, LtlStartContext> ltlFormulaMap = machineAnalyser.getLTLFormulaMap();
+        for (Entry<String, LtlStartContext> entry : ltlFormulaMap.entrySet()) {
+            String name = entry.getKey();
+            LtlStartContext value = entry.getValue();
+            LTLNode ltlNode = (LTLNode) value.accept(formulaVisitor);
+            LTLFormula ltlFormula = new LTLFormula();
+            ltlFormula.setName(name);
+            ltlFormula.setFormula(ltlNode);
+            machineNode.addLTLFormula(ltlFormula);
+        }
+
         machineNode
-            .setOperations(machineAnalyser.getOperations().stream()
-                .map(op -> new OperationNode(op.IDENTIFIER().getText(),
-                    (SubstitutionNode) op.substitution().accept(formulaVisitor)))
-                .collect(Collectors.toList()));
+                .setOperations(machineAnalyser.getOperations().stream()
+                        .map(op -> new OperationNode(op.IDENTIFIER().getText(),
+                                (SubstitutionNode) op.substitution().accept(formulaVisitor)))
+                        .collect(Collectors.toList()));
 
         this.semanticNode = machineNode;
 
@@ -156,9 +167,9 @@ public class SemanticAstCreator {
             DeclarationNode setDeclNode = new DeclarationNode(enumeratedSetContext.IDENTIFIER(), token.getText());
             declarationMap.put(enumeratedSetContext.IDENTIFIER(), setDeclNode);
             List<DeclarationNode> declarationList = createDeclarationNodeList(
-                enumeratedSetContext.identifier_list().IDENTIFIER());
+                    enumeratedSetContext.identifier_list().IDENTIFIER());
             EnumeratedSetDeclarationNode enumerationSet = new EnumeratedSetDeclarationNode(setDeclNode,
-                declarationList);
+                    declarationList);
             enumerations.put(enumeratedSetContext, enumerationSet);
             machineNode.addSetEnumeration(enumerationSet);
         }
@@ -176,11 +187,10 @@ public class SemanticAstCreator {
         @Override
         public Node visitQuantifiedPredicate(BMoThParser.QuantifiedPredicateContext ctx) {
             List<DeclarationNode> declarationList = createDeclarationNodeList(
-                ctx.quantified_variables_list().identifier_list().IDENTIFIER());
+                    ctx.quantified_variables_list().identifier_list().IDENTIFIER());
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             return new QuantifiedPredicateNode(ctx, declarationList, predNode);
         }
-
 
         @Override
         public Node visitEmptySequenceExpression(BMoThParser.EmptySequenceExpressionContext ctx) {
@@ -193,7 +203,7 @@ public class SemanticAstCreator {
                 return new ExpressionOperatorNode(ctx, new ArrayList<>(), ExpressionOperator.EMPTY_SEQUENCE);
             } else {
                 return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
-                    ExpressionOperator.SEQ_ENUMERATION);
+                        ExpressionOperator.SEQ_ENUMERATION);
             }
         }
 
@@ -204,7 +214,7 @@ public class SemanticAstCreator {
                 return replaceByDefinitionBody(ctx, definitionCallReplacements.get(ctx));
             } else {
                 return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression()),
-                    ExpressionOperator.FUNCTION_CALL);
+                        ExpressionOperator.FUNCTION_CALL);
             }
         }
 
@@ -215,11 +225,11 @@ public class SemanticAstCreator {
         }
 
         private ExprNode handleExpressionIdentifier(ParserRuleContext ctx, TerminalNode terminalNode,
-                                                    TerminalNode declNode) {
+                TerminalNode declNode) {
             if (definitionCallReplacements.containsKey(ctx)) {
                 currentKind = KIND.EXPRESSION;
                 return (ExprNode) definitionCallReplacements.get(ctx).getDefinitionContext().definition_body()
-                    .accept(this);
+                        .accept(this);
             } else if (argumentReplacement.containsKey(declNode)) {
                 ExpressionContext expressionContext = argumentReplacement.get(declNode);
                 return (ExprNode) expressionContext.accept(this);
@@ -233,7 +243,7 @@ public class SemanticAstCreator {
                 EnumeratedSetDeclarationNode enumeratedSetDeclarationNode = enumerations.get(declNode.getParent());
                 DeclarationNode declarationNode = declarationMap.get(declNode);
                 return new EnumeratedSetElementNode(terminalNode, enumeratedSetDeclarationNode, terminalNode.getText(),
-                    declarationNode);
+                        declarationNode);
             } else {
                 return createIdentifierExprNode(terminalNode);
             }
@@ -302,7 +312,7 @@ public class SemanticAstCreator {
             for (int i = 1; i < ctx.exprs.size(); i++) {
                 ExpressionContext value = ctx.exprs.get(i);
                 TerminalNode terminalNode = bDefinition.getDefinitionContext().identifier_list().IDENTIFIER()
-                    .get(i - 1);
+                        .get(i - 1);
                 argumentReplacement.put(terminalNode, value);
             }
             return bDefinition.getDefinitionContext().definition_body().accept(this);
@@ -317,7 +327,7 @@ public class SemanticAstCreator {
                 argumentReplacement.put(terminalNode, value);
             }
             DefinitionPredicateContext defContext = (DefinitionPredicateContext) bDefinition.getDefinitionContext()
-                .definition_body();
+                    .definition_body();
             return (PredicateNode) defContext.predicate().accept(this);
         }
 
@@ -341,7 +351,7 @@ public class SemanticAstCreator {
         @Override
         public Node visitQuantifiedExpression(BMoThParser.QuantifiedExpressionContext ctx) {
             List<DeclarationNode> declarationList = createDeclarationNodeList(
-                ctx.quantified_variables_list().identifier_list().IDENTIFIER());
+                    ctx.quantified_variables_list().identifier_list().IDENTIFIER());
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             ExprNode exprNode = (ExprNode) ctx.expression().accept(this);
             return new QuantifiedExpressionNode(ctx, declarationList, predNode, exprNode, ctx.operator);
@@ -352,7 +362,7 @@ public class SemanticAstCreator {
             List<DeclarationNode> declarationList = createDeclarationNodeList(ctx.identifier_list().IDENTIFIER());
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
             return new QuantifiedExpressionNode(ctx, declarationList, predNode, null,
-                QuantifiedExpressionOperator.SET_COMPREHENSION);
+                    QuantifiedExpressionOperator.SET_COMPREHENSION);
         }
 
         @Override
@@ -377,7 +387,7 @@ public class SemanticAstCreator {
         @Override
         public ExprNode visitSetEnumerationExpression(BMoThParser.SetEnumerationExpressionContext ctx) {
             return new ExpressionOperatorNode(ctx, createExprNodeList(ctx.expression_list().expression()),
-                ExpressionOperator.SET_ENUMERATION);
+                    ExpressionOperator.SET_ENUMERATION);
         }
 
         @Override
@@ -427,14 +437,14 @@ public class SemanticAstCreator {
         @Override
         public SubstitutionNode visitAssignSubstitution(BMoThParser.AssignSubstitutionContext ctx) {
             List<IdentifierExprNode> idents = ctx.identifier_list().IDENTIFIER().stream()
-                .map(this::createIdentifierExprNode).collect(Collectors.toList());
+                    .map(this::createIdentifierExprNode).collect(Collectors.toList());
 
             List<ExprNode> expressions = ctx.expression_list().exprs.stream().map(t -> (ExprNode) t.accept(this))
-                .collect(Collectors.toList());
+                    .collect(Collectors.toList());
 
             List<SubstitutionNode> sublist = IntStream.range(0, idents.size())
-                .mapToObj(t -> new SingleAssignSubstitutionNode(idents.get(t), expressions.get(t)))
-                .collect(Collectors.toList());
+                    .mapToObj(t -> new SingleAssignSubstitutionNode(idents.get(t), expressions.get(t)))
+                    .collect(Collectors.toList());
             if (sublist.size() == 1) {
                 return sublist.get(0);
             } else {
@@ -445,7 +455,7 @@ public class SemanticAstCreator {
         @Override
         public SubstitutionNode visitBecomesElementOfSubstitution(BMoThParser.BecomesElementOfSubstitutionContext ctx) {
             List<IdentifierExprNode> idents = ctx.identifier_list().IDENTIFIER().stream()
-                .map(this::createIdentifierExprNode).collect(Collectors.toList());
+                    .map(this::createIdentifierExprNode).collect(Collectors.toList());
             ExprNode expression = (ExprNode) ctx.expression().accept(this);
             return new BecomesElementOfSubstitutionNode(idents, expression);
         }
@@ -453,7 +463,7 @@ public class SemanticAstCreator {
         @Override
         public SubstitutionNode visitBecomesSuchThatSubstitution(BMoThParser.BecomesSuchThatSubstitutionContext ctx) {
             List<IdentifierExprNode> idents = ctx.identifier_list().IDENTIFIER().stream()
-                .map(this::createIdentifierExprNode).collect(Collectors.toList());
+                    .map(this::createIdentifierExprNode).collect(Collectors.toList());
             PredicateNode predicate = (PredicateNode) ctx.predicate().accept(this);
             return new BecomesSuchThatSubstitutionNode(idents, predicate);
         }
@@ -469,9 +479,9 @@ public class SemanticAstCreator {
         @Override
         public SelectSubstitutionNode visitSelectSubstitution(BMoThParser.SelectSubstitutionContext ctx) {
             List<PredicateNode> predNodes = ctx.preds.stream().map(t -> (PredicateNode) t.accept(this))
-                .collect(Collectors.toList());
+                    .collect(Collectors.toList());
             List<SubstitutionNode> subNodes = ctx.subs.stream().map(t -> (SubstitutionNode) t.accept(this))
-                .collect(Collectors.toList());
+                    .collect(Collectors.toList());
             SubstitutionNode elseSubNode = null;
             if (ctx.elseSub != null) {
                 elseSubNode = (SubstitutionNode) ctx.elseSub.accept(this);
@@ -482,9 +492,9 @@ public class SemanticAstCreator {
         @Override
         public SubstitutionNode visitIfSubstitution(BMoThParser.IfSubstitutionContext ctx) {
             List<PredicateNode> predNodes = ctx.preds.stream().map(t -> (PredicateNode) t.accept(this))
-                .collect(Collectors.toList());
+                    .collect(Collectors.toList());
             List<SubstitutionNode> subNodes = ctx.subs.stream().map(t -> (SubstitutionNode) t.accept(this))
-                .collect(Collectors.toList());
+                    .collect(Collectors.toList());
             SubstitutionNode elseSubNode = null;
             if (ctx.elseSub != null) {
                 elseSubNode = (SubstitutionNode) ctx.elseSub.accept(this);
@@ -510,7 +520,7 @@ public class SemanticAstCreator {
             DeclarationNode declarationNode = declarationMap.get(declNode);
             if (declarationNode == null) {
                 throw new AssertionError("Can not find declaration node of identifier '" + token.getText() + "' Line "
-                    + token.getLine() + " Pos " + token.getCharPositionInLine());
+                        + token.getLine() + " Pos " + token.getCharPositionInLine());
             }
             return new IdentifierExprNode(terminalNode, declarationNode);
         }
@@ -544,24 +554,29 @@ public class SemanticAstCreator {
         // LTL
 
         @Override
+        public LTLNode visitLtlStart(BMoThParser.LtlStartContext ctx) {
+            return (LTLNode) ctx.ltlFormula().accept(this);
+        }
+
+        @Override
         public Node visitLTLPrefixOperator(BMoThParser.LTLPrefixOperatorContext ctx) {
             LTLNode argument = (LTLNode) ctx.ltlFormula().accept(this);
             LTLPrefixOperatorNode.Kind kind = null;
             switch (ctx.operator.getType()) {
-                case BMoThParser.LTL_GLOBALLY:
-                    kind = LTLPrefixOperatorNode.Kind.GLOBALLY;
-                    break;
-                case BMoThParser.LTL_FINALLY:
-                    kind = LTLPrefixOperatorNode.Kind.FINALLY;
-                    break;
-                case BMoThParser.LTL_NEXT:
-                    kind = LTLPrefixOperatorNode.Kind.NEXT;
-                    break;
-                case BMoThParser.LTL_NOT:
-                    kind = LTLPrefixOperatorNode.Kind.NOT;
-                    break;
-                default:
-                    throw new AssertionError();
+            case BMoThParser.LTL_GLOBALLY:
+                kind = LTLPrefixOperatorNode.Kind.GLOBALLY;
+                break;
+            case BMoThParser.LTL_FINALLY:
+                kind = LTLPrefixOperatorNode.Kind.FINALLY;
+                break;
+            case BMoThParser.LTL_NEXT:
+                kind = LTLPrefixOperatorNode.Kind.NEXT;
+                break;
+            case BMoThParser.LTL_NOT:
+                kind = LTLPrefixOperatorNode.Kind.NOT;
+                break;
+            default:
+                throw new AssertionError();
             }
             return new LTLPrefixOperatorNode(kind, argument);
         }
@@ -570,14 +585,14 @@ public class SemanticAstCreator {
         public Node visitLTLKeyword(BMoThParser.LTLKeywordContext ctx) {
             LTLKeywordNode.Kind kind = null;
             switch (ctx.keyword.getType()) {
-                case BMoThParser.LTL_TRUE:
-                    kind = LTLKeywordNode.Kind.TRUE;
-                    break;
-                case BMoThParser.LTL_FALSE:
-                    kind = LTLKeywordNode.Kind.FALSE;
-                    break;
-                default:
-                    throw new AssertionError();
+            case BMoThParser.LTL_TRUE:
+                kind = LTLKeywordNode.Kind.TRUE;
+                break;
+            case BMoThParser.LTL_FALSE:
+                kind = LTLKeywordNode.Kind.FALSE;
+                break;
+            default:
+                throw new AssertionError();
             }
             return new LTLKeywordNode(kind);
         }
@@ -599,26 +614,26 @@ public class SemanticAstCreator {
             LTLNode right = (LTLNode) ctx.ltlFormula(1).accept(this);
             LTLInfixOperatorNode.Kind kind = null;
             switch (ctx.operator.getType()) {
-                case BMoThParser.LTL_IMPLIES:
-                    kind = LTLInfixOperatorNode.Kind.IMPLICATION;
-                    break;
-                case BMoThParser.LTL_UNTIL:
-                    kind = LTLInfixOperatorNode.Kind.UNTIL;
-                    break;
-                case BMoThParser.LTL_WEAK_UNTIL:
-                    kind = LTLInfixOperatorNode.Kind.WEAK_UNTIL;
-                    break;
-                case BMoThParser.LTL_RELEASE:
-                    kind = LTLInfixOperatorNode.Kind.RELEASE;
-                    break;
-                case BMoThParser.LTL_AND:
-                    kind = LTLInfixOperatorNode.Kind.AND;
-                    break;
-                case BMoThParser.LTL_OR:
-                    kind = LTLInfixOperatorNode.Kind.OR;
-                    break;
-                default:
-                    throw new AssertionError();
+            case BMoThParser.LTL_IMPLIES:
+                kind = LTLInfixOperatorNode.Kind.IMPLICATION;
+                break;
+            case BMoThParser.LTL_UNTIL:
+                kind = LTLInfixOperatorNode.Kind.UNTIL;
+                break;
+            case BMoThParser.LTL_WEAK_UNTIL:
+                kind = LTLInfixOperatorNode.Kind.WEAK_UNTIL;
+                break;
+            case BMoThParser.LTL_RELEASE:
+                kind = LTLInfixOperatorNode.Kind.RELEASE;
+                break;
+            case BMoThParser.LTL_AND:
+                kind = LTLInfixOperatorNode.Kind.AND;
+                break;
+            case BMoThParser.LTL_OR:
+                kind = LTLInfixOperatorNode.Kind.OR;
+                break;
+            default:
+                throw new AssertionError();
             }
             return new LTLInfixOperatorNode(kind, left, right);
         }

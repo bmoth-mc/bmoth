@@ -3,6 +3,8 @@ package de.bmoth.parser.cst;
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.*;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
+import de.bmoth.parser.ParseErrorException;
+import de.bmoth.parser.Parser;
 import de.bmoth.parser.cst.ScopeChecker.ScopeCheckerVisitorException;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -38,8 +40,10 @@ public class MachineAnalyser {
 
     private LinkedHashMap<TerminalNode, TerminalNode> declarationReferences;
     private final Map<ParserRuleContext, BDefinition> definitionCallReplacements = new HashMap<>();
+    final LinkedHashMap<String, StringExpressionContext> unparsedLTLFormulas = new LinkedHashMap<>();
+    final LinkedHashMap<String, LtlStartContext> ltlFormulas = new LinkedHashMap<>();
 
-    public MachineAnalyser(StartContext start) throws ScopeException {
+    public MachineAnalyser(StartContext start) throws ScopeException, ParseErrorException {
         this.parseTree = start;
         this.machineScopeChecker = new MachineScopeChecker();
         try {
@@ -57,6 +61,10 @@ public class MachineAnalyser {
 
     }
 
+    public LinkedHashMap<String, LtlStartContext> getLTLFormulaMap() {
+        return this.ltlFormulas;
+    }
+    
     public PredicateClauseContext getPropertiesClause() {
         return this.propertiesClause;
     }
@@ -127,6 +135,17 @@ public class MachineAnalyser {
             BDefinition.KIND kind = null;
             if (ctx.definition_body() instanceof DefinitionExpressionContext) {
                 kind = BDefinition.KIND.EXPRESSION;
+                if (name.startsWith("ASSERT_LTL_")) {
+                    Definition_bodyContext definition_body = ctx.definition_body();
+                    if (definition_body instanceof DefinitionExpressionContext
+                            && ((DefinitionExpressionContext) definition_body)
+                                    .expression() instanceof StringExpressionContext) {
+                        StringExpressionContext sCtx = (StringExpressionContext) ((DefinitionExpressionContext) definition_body)
+                                .expression();
+                        unparsedLTLFormulas.put(name, sCtx);
+
+                    }
+                }
             } else if (ctx.definition_body() instanceof DefinitionPredicateContext) {
                 kind = BDefinition.KIND.PREDICATE;
             } else if (ctx.definition_body() instanceof DefinitionSubstitutionContext) {
@@ -243,7 +262,7 @@ public class MachineAnalyser {
         return this.declarationReferences;
     }
 
-    private void checkScope() {
+    private void checkScope() throws ParseErrorException {
         machineScopeChecker.check();
         this.declarationReferences = machineScopeChecker.declarationReferences;
     }
@@ -253,7 +272,7 @@ public class MachineAnalyser {
         MachineScopeChecker() {
         }
 
-        void check() {
+        void check() throws ParseErrorException {
             if (MachineAnalyser.this.propertiesClause != null) {
                 scopeTable.clear();
                 scopeTable.add(MachineAnalyser.this.setsDeclarations);
@@ -305,6 +324,27 @@ public class MachineAnalyser {
                 }
                 scopeTable.add(localIdentifiers);
                 bDef.getDefinitionContext().definition_body().accept(this);
+                scopeTable.clear();
+            }
+
+            for (Entry<String, StringExpressionContext> entry : unparsedLTLFormulas.entrySet()) {
+                String name = entry.getKey();
+                StringExpressionContext value = entry.getValue();
+                String string = value.getText();
+                if(string.startsWith("\"")){
+                    string = string.substring(1, string.length()-1);
+                }else{
+                    string = string.substring(3, string.length()-3);
+                }
+                scopeTable.clear();
+                scopeTable.add(MachineAnalyser.this.setsDeclarations);
+                scopeTable.add(MachineAnalyser.this.constantsDeclarations);
+                scopeTable.add(MachineAnalyser.this.variablesDeclarations);
+                scopeTable.add(MachineAnalyser.this.definitionsDeclarations);
+                
+                LtlStartContext ltlStart = Parser.getLTLFormulaAsCST(string);
+                ltlFormulas.put(name, ltlStart);
+                ltlStart.accept(this);
                 scopeTable.clear();
             }
         }
@@ -399,5 +439,6 @@ public class MachineAnalyser {
         }
 
     }
+
 
 }

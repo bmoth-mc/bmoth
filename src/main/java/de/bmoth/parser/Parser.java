@@ -13,6 +13,7 @@ import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.cst.*;
+
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -82,9 +83,15 @@ public class Parser {
             logger.log(Level.SEVERE, PARSE_ERROR, e);
             throw e.getParseErrorException();
         }
+
     }
 
-    private MachineNode getMachineAst(StartContext start) throws ScopeException {
+    public static LtlStartContext getLTLFormulaAsCST(String string) throws ParseErrorException {
+        Parser parser = new Parser();
+        return parser.parseLTLFormula(string);
+    }
+
+    private MachineNode getMachineAst(StartContext start) throws ScopeException, ParseErrorException {
         MachineAnalyser machineAnalyser = new MachineAnalyser(start);
         SemanticAstCreator astCreator = new SemanticAstCreator(machineAnalyser);
         return (MachineNode) astCreator.getAstNode();

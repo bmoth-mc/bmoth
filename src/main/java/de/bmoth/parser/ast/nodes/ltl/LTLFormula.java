@@ -9,6 +9,7 @@ public class LTLFormula implements Node {
 
     private List<DeclarationNode> implicitDeclarations;
     private LTLNode ltlNode;
+    private String name;
 
     public void setImplicitDeclarations(List<DeclarationNode> implicitDeclarations) {
         this.implicitDeclarations = implicitDeclarations;
@@ -24,6 +25,14 @@ public class LTLFormula implements Node {
 
     public List<DeclarationNode> getImplicitDeclarations() {
         return implicitDeclarations;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

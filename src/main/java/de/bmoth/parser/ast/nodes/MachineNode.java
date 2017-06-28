@@ -2,6 +2,8 @@ package de.bmoth.parser.ast.nodes;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,7 @@ public class MachineNode implements Node {
     private final List<String> warnings = new ArrayList<>();
     private final List<EnumeratedSetDeclarationNode> setEnumerations = new ArrayList<>();
     private final List<DeclarationNode> deferredSets = new ArrayList<>();
+    private final List<LTLFormula> ltlFormulas = new ArrayList<>();
 
     public List<DeclarationNode> getVariables() {
         return variables;
@@ -35,6 +38,10 @@ public class MachineNode implements Node {
 
     public void setConstants(List<DeclarationNode> constants) {
         this.constants = constants;
+    }
+
+    public void addLTLFormula(LTLFormula ltlFormula) {
+        this.ltlFormulas.add(ltlFormula);
     }
 
     public SubstitutionNode getInitialisation() {
@@ -82,7 +89,7 @@ public class MachineNode implements Node {
     }
 
     public List<EnumeratedSetDeclarationNode> getEnumaratedSets() {
-        return this.setEnumerations;
+        return new ArrayList<>(this.setEnumerations);
     }
 
     public void addDeferredSet(DeclarationNode setDeclNode) {
@@ -90,7 +97,11 @@ public class MachineNode implements Node {
     }
 
     public List<DeclarationNode> getDeferredSets() {
-        return this.deferredSets;
+        return new ArrayList<>(this.deferredSets);
+    }
+
+    public ArrayList<LTLFormula> getLTLFormulas() {
+        return new ArrayList<>(this.ltlFormulas);
     }
 
 }

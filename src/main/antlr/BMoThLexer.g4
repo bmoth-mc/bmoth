@@ -235,6 +235,8 @@ WS: [ \t\r\n]+ -> skip;
 
 B_END: '}' {curlyBracketsCount=0;} -> mode(LTL_MODE); // reset brackets counter
 
+ErrorCharacter : . ;
+
 mode LTL_MODE;
 
 LTL_TRUE: 'true';
@@ -253,3 +255,4 @@ LTL_RELEASE: 'R';
 LTL_NEXT: 'X';
 LTL_B_START: '{' {curlyBracketsCount=0;} -> mode(DEFAULT_MODE) ; // reset brackets counter
 LTL_WS: [ \t\r\n]+ -> skip;
+LTL_ErrorCharacter : . ;
