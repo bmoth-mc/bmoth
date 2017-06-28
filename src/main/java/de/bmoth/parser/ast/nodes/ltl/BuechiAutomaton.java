@@ -25,10 +25,15 @@ public class BuechiAutomaton {
         // Check whether the finished node is already in the list (determined by the same Old- and Next-sets).
         BuechiAutomatonNode foundNode = null;
         for (BuechiAutomatonNode nodeInSet: nodesSet) {
-            if (new HashSet<>(nodeInSet.processed).equals(new HashSet<>(node.processed))
-                && new HashSet<>(nodeInSet.next).equals(new HashSet<>(node.next))) {
-                foundNode = nodeInSet;
-                break;
+            HashSet<LTLNode> setProcessed = new HashSet<>(nodeInSet.processed);
+            HashSet<LTLNode> nodeProcessed = new HashSet<>(node.processed);
+            HashSet<LTLNode> setNext = new HashSet<>(nodeInSet.next);
+            HashSet<LTLNode> nodeNext = new HashSet<>(node.next);
+            if (setProcessed.equals(nodeProcessed)){
+                if (setNext.equals(nodeNext)) {
+                    foundNode = nodeInSet;
+                    break;
+                }
             }
         }
         return foundNode;
@@ -63,12 +68,11 @@ public class BuechiAutomaton {
         return newNodes;
     }
 
-    private BuechiAutomatonNode handleSecondNodeInSplit(BuechiAutomatonNode node, LTLNode subNode, List<LTLNode> newProcessed) {
+    private BuechiAutomatonNode handleFirstNodeInSplit(BuechiAutomatonNode node, LTLNode subNode, List<LTLNode> newProcessed) {
         // Prepare the different parts
-        List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
         List<LTLNode> newUnprocessed = new1((LTLInfixOperatorNode) subNode);
         newUnprocessed.removeAll(node.processed);
-        newUnprocessed.addAll(unprocessed);
+        newUnprocessed.addAll(node.unprocessed);
         List<LTLNode> newNext = new ArrayList<>(node.next);
         newNext.addAll(next1((LTLInfixOperatorNode) subNode));
 
@@ -76,12 +80,11 @@ public class BuechiAutomaton {
             newUnprocessed, newProcessed, newNext);
     }
 
-    private BuechiAutomatonNode handleFirstNodeInSplit(BuechiAutomatonNode node, LTLNode subNode, List<LTLNode> newProcessed) {
+    private BuechiAutomatonNode handleSecondNodeInSplit(BuechiAutomatonNode node, LTLNode subNode, List<LTLNode> newProcessed) {
         // Prepare the different parts
-        List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
         List<LTLNode> newUnprocessed = new2((LTLInfixOperatorNode) subNode);
         newUnprocessed.removeAll(node.processed);
-        newUnprocessed.addAll(unprocessed);
+        newUnprocessed.addAll(node.unprocessed);
 
         return new BuechiAutomatonNode(newName(), node.incoming,
             newUnprocessed, newProcessed, node.next);
@@ -93,7 +96,7 @@ public class BuechiAutomaton {
             // already added before, updated).
             BuechiAutomatonNode nodeInSet = nodeIsInNodeSet(node, nodesSet);
             if (nodeInSet != null) {
-                node.incoming.addAll(nodeInSet.incoming);
+                nodeInSet.incoming.addAll(node.incoming);
                 return nodesSet;
             } else {
                 List<String> incoming = new ArrayList<>();
@@ -161,8 +164,8 @@ public class BuechiAutomaton {
                         // Until, Weak-until, Or: Split the node in two
                         List<LTLNode> newProcessed = new ArrayList<>(node.processed);
                         newProcessed.add(subNode);
-                        return expand(handleFirstNodeInSplit(node, subNode, newProcessed),
-                            expand(handleSecondNodeInSplit(node, subNode, newProcessed), nodesSet));
+                        return expand(handleSecondNodeInSplit(node, subNode, newProcessed),
+                            expand(handleFirstNodeInSplit(node, subNode, newProcessed), nodesSet));
                     }
             }
         }
@@ -175,10 +178,8 @@ public class BuechiAutomaton {
         initIncoming.add("init");
         List<LTLNode> unprocessed = new ArrayList<>();
         unprocessed.add(node);
-        List<BuechiAutomatonNode> nodeSet = new ArrayList<>();
-
         return expand(new BuechiAutomatonNode(newName(), initIncoming, unprocessed, new ArrayList<>(),
-            new ArrayList<>()), nodeSet);
+            new ArrayList<>()), new ArrayList<>());
     }
 
     public String toString() {
