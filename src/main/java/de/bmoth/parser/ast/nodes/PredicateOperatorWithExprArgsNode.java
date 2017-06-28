@@ -96,7 +96,12 @@ public class PredicateOperatorWithExprArgsNode extends PredicateNode implements 
 
     @Override
     public boolean equalAst(Node other) {
-        return sameClass(other)
-            && new ListAstEquals<ExprNode>().equalAst(expressionNodes, ((PredicateOperatorWithExprArgsNode) other).expressionNodes);
+        if (!sameClass(other)) {
+            return false;
+        }
+
+        PredicateOperatorWithExprArgsNode that = (PredicateOperatorWithExprArgsNode) other;
+        return this.operator.equals(that.operator)
+            && new ListAstEquals<ExprNode>().equalAst(expressionNodes, that.expressionNodes);
     }
 }

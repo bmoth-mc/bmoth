@@ -12,9 +12,7 @@ import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMUL
 import static de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator.AND;
 import static de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuantifiedExpressionOperator.SET_COMPREHENSION;
 import static de.bmoth.parser.ast.nodes.QuantifiedPredicateNode.QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class NodeTest extends TestParser {
 
@@ -37,6 +35,7 @@ public class NodeTest extends TestParser {
         assertEquals("ANY [x] WHERE GREATER(x,0) THEN a := x END", anyUp.toString());
         assertEquals("ANY [x] WHERE LESS(x,0) THEN a := x END", anyDown.toString());
 
+        assertFalse(anyUp.equalAst(assembleAnyUp));
         assembleAnyUp.setPredicate(anyUp.getWherePredicate());
         assembleAnyUp.setSubstitution(anyUp.getThenSubstitution());
 
