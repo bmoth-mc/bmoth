@@ -95,6 +95,23 @@ public class LTLTransformationTest extends TestParser {
     }
 
     @Test
+    public void testWeakToRelease() {
+        LTLNode node1 = parseLtlFormula("{12=12} W {13=13}").getLTLNode();
+        LTLNode node2 = parseLtlFormula("{12=12} R {13=13}").getLTLNode();
+
+        AbstractASTTransformation transformation = new ConvertWeakToRelease();
+
+        assertTrue(transformation.canHandleNode(node1));
+        assertFalse(transformation.canHandleNode(node2));
+
+        LTLNode newNode1 = (LTLNode) transformation.transformNode(node1);
+
+        assertEquals("RELEASE(EQUAL(13,13),OR(EQUAL(12,12),EQUAL(13,13)))", newNode1.toString());
+
+
+    }
+
+    @Test
     public void testTransformationNotFinallyToGloballyNot() {
         LTLNode node = parseLtlFormula("not (F {2=1})").getLTLNode();
         AbstractASTTransformation transformation = new ConvertNotFinallyToGloballyNot();
