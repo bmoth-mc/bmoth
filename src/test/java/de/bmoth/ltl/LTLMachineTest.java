@@ -1,42 +1,32 @@
 package de.bmoth.ltl;
 
-import static de.bmoth.TestConstants.MACHINE_NAME;
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-
-import org.junit.Test;
-
-import de.bmoth.parser.Parser;
-import de.bmoth.parser.ParserException;
+import de.bmoth.TestParser;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
+import org.junit.Test;
 
-public class LTLMachineTest {
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+public class LTLMachineTest extends TestParser {
 
     @Test
     public void testSimpleLTLTestMachine() {
-        String machine = MACHINE_NAME;
-        machine += "DEFINITIONS ASSERT_LTL_1 == \"F({x=7})\"  ";
-        machine += "VARIABLES x \n";
-        machine += "INVARIANT x : 1..10 \n";
-        machine += "INITIALISATION x := 1\n";
-        machine += "OPERATIONS foo = SELECT x < 5 THEN x := x + 1 END\n";
-        machine += "END";
-        MachineNode machineAST = getMachineAST(machine);
-        ArrayList<LTLFormula> ltlFormulas = machineAST.getLTLFormulas();
+        MachineNode machine = new MachineBuilder()
+            .setName("SimpleLTLTestMachine")
+            .setDefinitions("ASSERT_LTL_1 == \"F({x=7})\"")
+            .setVariables("x")
+            .setInvariant("x : 1..10")
+            .setInitialization("x := 1")
+            .addOperation("foo = SELECT x < 5 THEN x := x + 1 END")
+            .build();
+
+        assertNotNull(machine);
+        List<LTLFormula> ltlFormulas = machine.getLTLFormulas();
         LTLFormula ltl1 = ltlFormulas.get(0);
         assertEquals("ASSERT_LTL_1", ltl1.getName());
-        System.out.println(ltl1.getLTLNode());
-    }
-
-    private MachineNode getMachineAST(String machine) {
-        try {
-            return Parser.getMachineAsSemanticAst(machine);
-        } catch (ParserException e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-            return null;
-        }
     }
 }
