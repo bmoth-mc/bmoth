@@ -61,10 +61,10 @@ public class MachineAnalyser {
 
     }
 
-    public LinkedHashMap<String, LtlStartContext> getLTLFormulaMap() {
+    public Map<String, LtlStartContext> getLTLFormulaMap() {
         return this.ltlFormulas;
     }
-    
+
     public PredicateClauseContext getPropertiesClause() {
         return this.propertiesClause;
     }
@@ -136,11 +136,11 @@ public class MachineAnalyser {
             if (ctx.definition_body() instanceof DefinitionExpressionContext) {
                 kind = BDefinition.KIND.EXPRESSION;
                 if (name.startsWith("ASSERT_LTL_")) {
-                    Definition_bodyContext definition_body = ctx.definition_body();
-                    if (definition_body instanceof DefinitionExpressionContext
-                            && ((DefinitionExpressionContext) definition_body)
+                    Definition_bodyContext definitionBody = ctx.definition_body();
+                    if (definitionBody instanceof DefinitionExpressionContext
+                            && ((DefinitionExpressionContext) definitionBody)
                                     .expression() instanceof StringExpressionContext) {
-                        StringExpressionContext sCtx = (StringExpressionContext) ((DefinitionExpressionContext) definition_body)
+                        StringExpressionContext sCtx = (StringExpressionContext) ((DefinitionExpressionContext) definitionBody)
                                 .expression();
                         unparsedLTLFormulas.put(name, sCtx);
 

@@ -70,7 +70,7 @@ public class SemanticAstCreator {
             machineNode.setInitialisation(substitution);
         }
 
-        LinkedHashMap<String, LtlStartContext> ltlFormulaMap = machineAnalyser.getLTLFormulaMap();
+        Map<String, LtlStartContext> ltlFormulaMap = machineAnalyser.getLTLFormulaMap();
         for (Entry<String, LtlStartContext> entry : ltlFormulaMap.entrySet()) {
             String name = entry.getKey();
             LtlStartContext value = entry.getValue();
