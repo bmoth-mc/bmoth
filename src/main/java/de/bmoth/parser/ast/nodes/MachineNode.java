@@ -100,7 +100,7 @@ public class MachineNode implements Node {
         return new ArrayList<>(this.deferredSets);
     }
 
-    public ArrayList<LTLFormula> getLTLFormulas() {
+    public List<LTLFormula> getLTLFormulas() {
         return new ArrayList<>(this.ltlFormulas);
     }
 
