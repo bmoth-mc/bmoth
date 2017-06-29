@@ -1,5 +1,6 @@
 package de.bmoth.parser.ast.visitors;
 
+import de.bmoth.antlr.BMoThParser;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
@@ -86,9 +87,60 @@ public class SubstitutionVisitorExceptionsTest {
     }
 
     @Test(expected = AssertionError.class)
-    @Ignore("nullpointer exception, how to construct quantified predicate note properly?")
     public void substitutionVisitorsDoNotHandleQuantifiedPredicate() {
-        QuantifiedPredicateNode node = new QuantifiedPredicateNode(null, null, null);
+        BMoThParser.QuantifiedPredicateContext ctx = new BMoThParser.QuantifiedPredicateContext(new BMoThParser.PredicateContext());
+        ctx.operator = new Token() {
+            @Override
+            public String getText() {
+                return null;
+            }
+
+            @Override
+            public int getType() {
+                return 0;
+            }
+
+            @Override
+            public int getLine() {
+                return 0;
+            }
+
+            @Override
+            public int getCharPositionInLine() {
+                return 0;
+            }
+
+            @Override
+            public int getChannel() {
+                return 0;
+            }
+
+            @Override
+            public int getTokenIndex() {
+                return 0;
+            }
+
+            @Override
+            public int getStartIndex() {
+                return 0;
+            }
+
+            @Override
+            public int getStopIndex() {
+                return 0;
+            }
+
+            @Override
+            public TokenSource getTokenSource() {
+                return null;
+            }
+
+            @Override
+            public CharStream getInputStream() {
+                return null;
+            }
+        };
+        QuantifiedPredicateNode node = new QuantifiedPredicateNode(ctx, null, null);
         visitor.visitQuantifiedPredicateNode(node, null);
     }
 
