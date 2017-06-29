@@ -3,11 +3,12 @@ package de.bmoth.backend.ltl.transformation;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import de.bmoth.parser.ast.visitors.LTLASTTransformation;
+import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 
+import static de.bmoth.backend.ltl.LTLTransformationUtil.*;
 import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.UNTIL;
 
-public class ConvertPhiUntilPhiUntilPsiToPhiUntilPsi extends LTLASTTransformation {
+public class ConvertPhiUntilPhiUntilPsiToPhiUntilPsi extends AbstractASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
