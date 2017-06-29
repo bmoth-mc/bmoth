@@ -46,8 +46,14 @@ public class DependencyTest {
     @Test
     public void dependency() {
         class ExternalPackages extends DependencyRuler {
-            DependencyRule comMicrosoftZ3, comMicrosoftZ3Enumerations, deBmothApp, deBmothBackendZ3,
-                    deBmothModelchecker, deBmothModelchecker_, deBmothCheckers_, deSaxsysMvvmfx;
+            private DependencyRule comMicrosoftZ3;
+            private DependencyRule comMicrosoftZ3Enumerations;
+            private DependencyRule deBmothApp;
+            private DependencyRule deBmothBackendZ3;
+            private DependencyRule deBmothModelchecker;
+            private DependencyRule deBmothModelchecker_;
+            private DependencyRule deBmothCheckers_;
+            private DependencyRule deSaxsysMvvmfx;
 
             @Override
             public void defineRules() {
@@ -61,8 +67,14 @@ public class DependencyTest {
         }
 
         class InternalPackages extends DependencyRuler {
-            DependencyRule deBmothParser, deBmothParserAst, deBmothParserAst_, deBmothParserCst, deBmothParserAstNodes,
-                    deBmothParserAstNodesLtl, deBmothParserAstTypes, deBmothParserAstVisitors;
+            private DependencyRule deBmothParser;
+            private DependencyRule deBmothParserAst;
+            private DependencyRule deBmothParserAst_;
+            private DependencyRule deBmothParserCst;
+            private DependencyRule deBmothParserAstNodes;
+            private DependencyRule deBmothParserAstNodesLtl;
+            private DependencyRule deBmothParserAstTypes;
+            private DependencyRule deBmothParserAstVisitors;
 
             @Override
             public void defineRules() {
@@ -76,8 +88,18 @@ public class DependencyTest {
 
         class DeBmoth extends DependencyRuler {
             // $self is de.bmoth, added _ refers to subpackages of package
-            DependencyRule app, antlr, backend, backend_, checkers_, eventbus, modelchecker, modelchecker_, parser,
-                    parser_, preferences, parserAst;
+            private DependencyRule app;
+            private DependencyRule antlr;
+            private DependencyRule backend;
+            private DependencyRule backend_;
+            private DependencyRule checkers_;
+            private DependencyRule eventbus;
+            private DependencyRule modelchecker;
+            private DependencyRule modelchecker_;
+            private DependencyRule parser;
+            private DependencyRule parser_;
+            private DependencyRule preferences;
+            private DependencyRule parserAst;
 
             @Override
             public void defineRules() {
