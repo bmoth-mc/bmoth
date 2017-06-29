@@ -32,6 +32,14 @@ public abstract class LTLASTTransformation extends AbstractASTTransformation {
         return isOperator(node.getArgument(), operator);
     }
 
+    protected boolean contains(Node node, LTLInfixOperatorNode.Kind operator) {
+        return node instanceof LTLPrefixOperatorNode && contains((LTLPrefixOperatorNode) node, operator);
+    }
+
+    protected boolean contains(LTLPrefixOperatorNode node, LTLInfixOperatorNode.Kind operator) {
+        return isOperator(node.getArgument(), operator);
+    }
+
     protected boolean contains(Node node, LTLPrefixOperatorNode.Kind operator1, LTLPrefixOperatorNode.Kind operator2) {
         return node instanceof LTLPrefixOperatorNode && contains((LTLPrefixOperatorNode) node, operator1, operator2);
     }
