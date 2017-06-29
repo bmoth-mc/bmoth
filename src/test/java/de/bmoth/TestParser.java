@@ -55,6 +55,7 @@ public class TestParser {
 
     public class MachineBuilder {
         private String name = "";
+        private String definitions = "";
         private String sets = "";
         private String variables = "";
         private String properties = "";
@@ -96,6 +97,9 @@ public class TestParser {
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("MACHINE ").append(name).append("\n");
+            if (!definitions.isEmpty()) {
+                sb.append("DEFINITIONS ").append(definitions).append("\n");
+            }
             if (!sets.isEmpty()) {
                 sb.append("SETS ").append(sets).append("\n");
             }
@@ -130,6 +134,11 @@ public class TestParser {
 
         public MachineBuilder setProperties(String properties) {
             this.properties = properties;
+            return this;
+        }
+
+        public MachineBuilder setDefinitions(String definitions) {
+            this.definitions = definitions;
             return this;
         }
     }
