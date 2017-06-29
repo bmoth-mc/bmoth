@@ -80,6 +80,21 @@ public class LTLTransformationTest extends TestParser {
     }
 
     @Test
+    public void testNotRelease() {
+        LTLNode node1 = parseLtlFormula("not( {23=23} R {24=24} )").getLTLNode();
+        LTLNode node2 = parseLtlFormula("not( {23=23} U {24=24} )").getLTLNode();
+
+        AbstractASTTransformation transformation = new ConvertNotRelease();
+
+        assertTrue(transformation.canHandleNode(node1));
+        assertFalse(transformation.canHandleNode(node2));
+
+        LTLNode newNode1 = (LTLNode) transformation.transformNode(node1);
+
+        assertEquals("UNTIL(NOT(EQUAL(23,23)),NOT(EQUAL(24,24)))", newNode1.toString());
+    }
+
+    @Test
     public void testTransformationNotFinallyToGloballyNot() {
         LTLNode node = parseLtlFormula("not (F {2=1})").getLTLNode();
         AbstractASTTransformation transformation = new ConvertNotFinallyToGloballyNot();

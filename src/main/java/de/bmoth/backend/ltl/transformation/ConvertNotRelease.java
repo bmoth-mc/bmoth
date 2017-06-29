@@ -6,31 +6,27 @@ import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.LTLASTTransformation;
 
-public class ConvertNotRelease extends LTLASTTransformation{
+import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.RELEASE;
+import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.UNTIL;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NOT;
 
-	@Override
-	public boolean canHandleNode(Node node) {
-		return node instanceof LTLPrefixOperatorNode;
-	}
+public class ConvertNotRelease extends LTLASTTransformation {
 
-	@Override
-	public Node transformNode(Node oldNode) {
-		LTLPrefixOperatorNode notOperator = (LTLPrefixOperatorNode) oldNode;
-        if (notOperator.getKind() == LTLPrefixOperatorNode.Kind.NOT) {
-            LTLNode argument = notOperator.getArgument();
-            if(argument instanceof LTLInfixOperatorNode ){
-                LTLInfixOperatorNode releaseOperator = (LTLInfixOperatorNode) argument;
-                if(releaseOperator.getKind() == LTLInfixOperatorNode.Kind.RELEASE){
-                    LTLNode left=releaseOperator.getLeft();
-                    LTLNode right = releaseOperator.getRight();
-                    LTLNode notLeft = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT,left);
-                    LTLNode notRight = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT, right);
-                    setChanged();
-                    return new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.UNTIL, notLeft, notRight);
-                }
-            }
-        }
-		return oldNode;
-	}
+    @Override
+    public boolean canHandleNode(Node node) {
+        return isOperator(node, NOT) && contains(node, RELEASE);
+    }
+
+    @Override
+    public Node transformNode(Node node) {
+        LTLPrefixOperatorNode not = (LTLPrefixOperatorNode) node;
+        LTLInfixOperatorNode release = (LTLInfixOperatorNode) not.getArgument();
+        LTLNode innerLeft = release.getLeft();
+        LTLNode innerRight = release.getRight();
+
+        setChanged();
+
+        return new LTLInfixOperatorNode(UNTIL, new LTLPrefixOperatorNode(NOT, innerLeft), new LTLPrefixOperatorNode(NOT, innerRight));
+    }
 
 }
