@@ -2,7 +2,7 @@ package de.bmoth.parser.ast.visitors;
 
 import de.bmoth.parser.ast.nodes.ltl.*;
 
-public interface LTLVisitorAdapter<R, P> extends AbstractVisitor<R, P> {
+public interface FormulaAndSubstitutionVisitor<R, P> extends AbstractVisitor<R, P> {
     @Override
     default R visitLTLNode(LTLNode node, P expected) {
         throw new AssertionError();

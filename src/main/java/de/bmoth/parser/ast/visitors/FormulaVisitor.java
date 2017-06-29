@@ -10,7 +10,7 @@ import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SkipSubstitutionNode;
 
-public interface FormulaVisitor<R, P> extends LTLVisitorAdapter<R, P> {
+public interface FormulaVisitor<R, P> extends FormulaAndSubstitutionVisitor<R, P> {
 
     @Override
     default R visitSelectSubstitutionNode(SelectSubstitutionNode node, P expected) {

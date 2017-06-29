@@ -2,7 +2,7 @@ package de.bmoth.parser.ast.visitors;
 
 import de.bmoth.parser.ast.nodes.*;
 
-public interface SubstitutionVisitor<R, P> extends LTLVisitorAdapter<R, P> {
+public interface SubstitutionVisitor<R, P> extends FormulaAndSubstitutionVisitor<R, P> {
 
     /*
      * Expressions
