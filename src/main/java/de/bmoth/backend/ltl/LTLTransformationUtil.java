@@ -7,6 +7,9 @@ import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 
 public class LTLTransformationUtil {
+    private LTLTransformationUtil() {
+    }
+    
     public static boolean isOperator(Node node, LTLPrefixOperatorNode.Kind operator) {
         return node instanceof LTLPrefixOperatorNode && isOperator((LTLPrefixOperatorNode) node, operator);
     }
