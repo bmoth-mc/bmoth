@@ -144,6 +144,23 @@ GREATER_EQUAL: GREATER EQUAL | '\u2265';
 TRUE: 'TRUE';
 FALSE: 'FALSE';
 
+//expression_p125
+SET_RELATION: '<->' | '↔';//'\u2194';
+PARTIAL_FUNCTION: '+->'| '⇸';//'\u21f8';
+TOTAL_FUNCTION: '-->' | '→' | MINUS MINUS GREATER; //'\u2192';
+TOTAL_INJECTION: '>->' | '↣'; //'\u21a3';
+PARTIAL_INJECTION: '>+>' | '⤔'; //'\u2914';
+TOTAL_SURJECTION: '-->>' | '↠'; //'\u21a0';
+PARTIAL_SURJECTION: '+->>' | '⤀'; //'\u2900';
+TOTAL_BIJECTION: '>->>' | '⤖'; //'\u2916';
+PARTIAL_BIJECTION: '>+>>' ;
+
+// Extensions
+TOTAL_RELATION: '<<->';
+SURJECTION_RELATION: '<->>' ; //surjection_relation = lt minus gt gt | 0xe101;
+TOTAL_SURJECTION_RELATION: '<<->>'; //{normal} total_surjection_relation = lt lt minus gt gt | 0xe102;
+
+
 
 // expression prefix operators with one parameter
 DOM: 'dom';

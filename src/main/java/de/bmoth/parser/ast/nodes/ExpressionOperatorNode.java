@@ -26,7 +26,7 @@ public class ExpressionOperatorNode extends ExprNode implements OperatorNode<Exp
         , DOMAIN, RANGE, CARTESIAN_PRODUCT//
         , CARD, DOMAIN_RESTRICTION, OVERWRITE_RELATION, DIRECT_PRODUCT//
         , DOMAIN_SUBTRACTION, RANGE_RESTRICTION, RANGE_SUBTRATION//
-        , INVERSE_RELATION
+        , INVERSE_RELATION, SET_RELATION
         // function
         , FUNCTION_CALL
         // sequence operators
@@ -77,6 +77,7 @@ public class ExpressionOperatorNode extends ExprNode implements OperatorNode<Exp
         map.put(BMoThParser.RANGE_RESTRICTION, ExpressionOperator.RANGE_RESTRICTION);
         map.put(BMoThParser.RANGE_SUBTRACTION, ExpressionOperator.RANGE_SUBTRATION);
         map.put(BMoThParser.TILDE, ExpressionOperator.INVERSE_RELATION);
+        map.put(BMoThParser.SET_RELATION, ExpressionOperator.SET_RELATION);
 
         // sets
         map.put(BMoThParser.GENERALIZED_UNION, ExpressionOperator.GENERALIZED_UNION);
