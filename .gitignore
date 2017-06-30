@@ -10,6 +10,9 @@ build/
 .classpath
 gradle/wrapper/gradle-wrapper.properties
 
+# Antlr generated files
+*.tokens
+
 # downloaded libraries
 libs/
 python/
