@@ -3,7 +3,6 @@ package de.bmoth.ltl;
 import de.bmoth.TestParser;
 import de.bmoth.backend.ltl.LTLTransformations;
 import de.bmoth.parser.ast.nodes.ltl.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NEXT;
@@ -12,20 +11,18 @@ import static org.junit.Assert.assertTrue;
 
 public class LTLNormalizationTest extends TestParser {
     @Test
-    @Ignore
     public void testNormalization1() {
         LTLFormula ltlFormula = parseLtlFormula("not(GG { 1=1 })");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("NOT(RELEASE(FALSE,OR(RELEASE(FALSE,OR(EQUAL(1,1),FALSE)),FALSE)))", node.toString());
+        assertEquals("UNTIL(NOT(FALSE),NOT(OR(RELEASE(FALSE,OR(EQUAL(1,1),FALSE)),FALSE)))", node.toString());
         assertTrue(isNormalized(node));
     }
 
     @Test
-    @Ignore
     public void testNormalization2() {
-        LTLFormula ltlFormula = parseLtlFormula("G not(E { 1=1 })");
+        LTLFormula ltlFormula = parseLtlFormula("G not(F { 1=1 })");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("RELEASE(FALSE,OR(NOT(EQUAL(1,1)),FALSE)", node.toString());
+        assertEquals("RELEASE(FALSE,OR(RELEASE(AND(NOT(TRUE),NOT(EQUAL(1,1))),OR(AND(TRUE,NOT(EQUAL(1,1))),AND(NOT(TRUE),NOT(EQUAL(1,1))))),FALSE))", node.toString());
         assertTrue(isNormalized(node));
     }
 
@@ -82,20 +79,18 @@ public class LTLNormalizationTest extends TestParser {
     }
 
     @Test
-    @Ignore
     public void testNormalization9() {
         LTLFormula ltlFormula = parseLtlFormula("not( { 1=1 } W {2=1})");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("NOT(RELEASE(EQUAL(2,1),OR(EQUAL(1,1),EQUAL(2,1))))", node.toString());
+        assertEquals("UNTIL(NOT(EQUAL(2,1)),NOT(OR(EQUAL(1,1),EQUAL(2,1))))", node.toString());
         assertTrue(isNormalized(node));
     }
 
     @Test
-    @Ignore
     public void testNormalization10() {
         LTLFormula ltlFormula = parseLtlFormula("G { 1=1 }");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("RELEASE(FALSE,EQUAL(1,1))", node.toString());
+        assertEquals("RELEASE(FALSE,OR(EQUAL(1,1),FALSE))", node.toString());
         assertTrue(isNormalized(node));
     }
 
