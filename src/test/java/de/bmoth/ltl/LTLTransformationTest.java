@@ -168,4 +168,25 @@ public class LTLTransformationTest extends TestParser {
         LTLNode node = (LTLNode) new ConvertGloballyFinallyGloballyToFinallyGlobally().transformNode(ltlFormula.getLTLNode());
         assertEquals("FINALLY(GLOBALLY(EQUAL(0,1)))", node.toString());
     }
+
+    @Test
+    public void testRemoveTrueOr() {
+        LTLFormula ltlFormula = parseLtlFormula("{0=1} or true");
+        LTLNode node = (LTLNode) new RemoveTrueOr().transformNode(ltlFormula.getLTLNode());
+        assertEquals("TRUE", node.toString());
+    }
+
+    @Test
+    public void testRemoveFalseAnd() {
+        LTLFormula ltlFormula = parseLtlFormula("{0=1} & false");
+        LTLNode node = (LTLNode) new RemoveFalseAnd().transformNode(ltlFormula.getLTLNode());
+        assertEquals("FALSE", node.toString());
+    }
+
+    @Test
+    public void testConvertNotWeakUntil() {
+        LTLFormula ltlFormula = parseLtlFormula("not({0=1} W false)");
+        LTLNode node = (LTLNode) new ConvertNotWeakUntil().transformNode(ltlFormula.getLTLNode());
+        assertEquals("UNTIL(AND(EQUAL(0,1),NOT(FALSE)),AND(NOT(EQUAL(0,1)),NOT(FALSE)))", node.toString());
+    }
 }
