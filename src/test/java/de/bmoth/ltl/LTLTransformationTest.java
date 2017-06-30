@@ -174,12 +174,18 @@ public class LTLTransformationTest extends TestParser {
         LTLFormula ltlFormula = parseLtlFormula("{0=1} or true");
         LTLNode node = (LTLNode) new RemoveTrueOr().transformNode(ltlFormula.getLTLNode());
         assertEquals("TRUE", node.toString());
+        ltlFormula = parseLtlFormula("true or {0=1}");
+        node = (LTLNode) new RemoveTrueOr().transformNode(ltlFormula.getLTLNode());
+        assertEquals("TRUE", node.toString());
     }
 
     @Test
     public void testRemoveFalseAnd() {
         LTLFormula ltlFormula = parseLtlFormula("{0=1} & false");
         LTLNode node = (LTLNode) new RemoveFalseAnd().transformNode(ltlFormula.getLTLNode());
+        assertEquals("FALSE", node.toString());
+        ltlFormula = parseLtlFormula("false & {0=1}");
+        node = (LTLNode) new RemoveFalseAnd().transformNode(ltlFormula.getLTLNode());
         assertEquals("FALSE", node.toString());
     }
 
