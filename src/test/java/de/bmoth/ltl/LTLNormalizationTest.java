@@ -14,7 +14,7 @@ public class LTLNormalizationTest extends TestParser {
     public void testNormalization1() {
         LTLFormula ltlFormula = parseLtlFormula("not(GG { 1=1 })");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("UNTIL(NOT(FALSE),NOT(OR(RELEASE(FALSE,OR(EQUAL(1,1),FALSE)),FALSE)))", node.toString());
+        assertEquals("UNTIL(TRUE,NOT(EQUAL(1,1)))", node.toString());
         assertTrue(isNormalized(node));
     }
 
@@ -22,7 +22,7 @@ public class LTLNormalizationTest extends TestParser {
     public void testNormalization2() {
         LTLFormula ltlFormula = parseLtlFormula("G not(F { 1=1 })");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("RELEASE(FALSE,OR(RELEASE(AND(NOT(TRUE),NOT(EQUAL(1,1))),OR(AND(TRUE,NOT(EQUAL(1,1))),AND(NOT(TRUE),NOT(EQUAL(1,1))))),FALSE))", node.toString());
+        assertEquals("RELEASE(FALSE,RELEASE(FALSE,NOT(EQUAL(1,1))))", node.toString());
         assertTrue(isNormalized(node));
     }
 
@@ -82,7 +82,7 @@ public class LTLNormalizationTest extends TestParser {
     public void testNormalization9() {
         LTLFormula ltlFormula = parseLtlFormula("not( { 1=1 } W {2=1})");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("UNTIL(NOT(EQUAL(2,1)),NOT(OR(EQUAL(1,1),EQUAL(2,1))))", node.toString());
+        assertEquals("UNTIL(NOT(EQUAL(2,1)),AND(NOT(EQUAL(1,1)),NOT(EQUAL(2,1))))", node.toString());
         assertTrue(isNormalized(node));
     }
 
@@ -90,7 +90,7 @@ public class LTLNormalizationTest extends TestParser {
     public void testNormalization10() {
         LTLFormula ltlFormula = parseLtlFormula("G { 1=1 }");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("RELEASE(FALSE,OR(EQUAL(1,1),FALSE))", node.toString());
+        assertEquals("RELEASE(FALSE,EQUAL(1,1))", node.toString());
         assertTrue(isNormalized(node));
     }
 
