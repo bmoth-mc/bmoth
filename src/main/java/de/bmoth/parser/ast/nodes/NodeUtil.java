@@ -3,6 +3,9 @@ package de.bmoth.parser.ast.nodes;
 import java.util.List;
 
 public class NodeUtil {
+    private NodeUtil() {
+    }
+
     public static boolean isSameClass(Node node1, Node node2) {
         return node1 == node2
             || (node1 != null

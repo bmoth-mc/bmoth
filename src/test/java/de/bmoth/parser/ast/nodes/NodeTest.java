@@ -285,7 +285,7 @@ public class NodeTest extends TestParser {
 
             @Override
             public void setParent(RuleContext parent) {
-
+                throw new UnsupportedOperationException();
             }
 
             @Override
