@@ -31,4 +31,14 @@ public class BecomesElementOfSubstitutionNode extends SubstitutionNode {
         return identifiers.stream().map(Object::toString).collect(Collectors.joining(",")) + " :( " + expression + ")";
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        if (!NodeUtil.isSameClass(this, other)) {
+            return false;
+        }
+
+        BecomesElementOfSubstitutionNode that = (BecomesElementOfSubstitutionNode) other;
+        return this.expression.equalAst(that.expression)
+            && NodeUtil.equalAst(this.identifiers, that.identifiers);
+    }
 }

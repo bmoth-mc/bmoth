@@ -102,6 +102,7 @@ public class ExpressionOperatorNode extends ExprNode implements OperatorNode<Exp
     }
 
     private List<ExprNode> expressionNodes;
+
     private String operatorString;
     private ExpressionOperator operator;
 
@@ -174,6 +175,17 @@ public class ExpressionOperatorNode extends ExprNode implements OperatorNode<Exp
 
     public void setExpressionList(List<ExprNode> list) {
         this.expressionNodes = list;
+    }
+
+    @Override
+    public boolean equalAst(Node other) {
+        if (!NodeUtil.isSameClass(this, other)) {
+            return false;
+        }
+
+        ExpressionOperatorNode that = (ExpressionOperatorNode) other;
+        return this.operator.equals(that.operator)
+            && NodeUtil.equalAst(this.expressionNodes, that.expressionNodes);
     }
 
 }

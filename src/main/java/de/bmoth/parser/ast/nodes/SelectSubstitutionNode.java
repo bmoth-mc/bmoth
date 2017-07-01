@@ -14,4 +14,15 @@ public class SelectSubstitutionNode extends AbstractIfAndSelectSubstitutionsNode
         return prepareToString("SELECT", "WHEN");
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        if (!NodeUtil.isSameClass(this, other)) {
+            return false;
+        }
+
+        SelectSubstitutionNode that = (SelectSubstitutionNode) other;
+        return NodeUtil.equalAst(this.getConditions(), that.getConditions())
+            && NodeUtil.equalAst(this.getSubstitutions(), that.getSubstitutions())
+            && this.getElseSubstitution().equalAst(that.getElseSubstitution());
+    }
 }

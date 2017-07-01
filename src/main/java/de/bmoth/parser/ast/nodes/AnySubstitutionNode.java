@@ -40,4 +40,16 @@ public class AnySubstitutionNode extends SubstitutionNode {
     public String toString() {
         return "ANY " + parameters + " WHERE " + wherePredicate + " THEN " + thenSubstitution + " END";
     }
+
+    @Override
+    public boolean equalAst(Node other) {
+        if (!NodeUtil.isSameClass(this, other)) {
+            return false;
+        }
+
+        AnySubstitutionNode that = (AnySubstitutionNode) other;
+        return NodeUtil.equalAst(this.parameters, that.parameters)
+            && this.wherePredicate.equalAst(that.wherePredicate)
+            && this.thenSubstitution.equalAst(that.thenSubstitution);
+    }
 }

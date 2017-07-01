@@ -1,5 +1,8 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
+import de.bmoth.parser.ast.nodes.Node;
+import de.bmoth.parser.ast.nodes.NodeUtil;
+
 public class LTLPrefixOperatorNode implements LTLNode {
 
     public enum Kind {
@@ -29,5 +32,16 @@ public class LTLPrefixOperatorNode implements LTLNode {
     @Override
     public String toString() {
         return this.kind + "(" + this.argument + ")";
+    }
+
+    @Override
+    public boolean equalAst(Node other) {
+        if (!NodeUtil.isSameClass(this, other)) {
+            return false;
+        }
+
+        LTLPrefixOperatorNode that = (LTLPrefixOperatorNode) other;
+        return this.kind.equals(that.kind)
+            && this.argument.equalAst(that.argument);
     }
 }

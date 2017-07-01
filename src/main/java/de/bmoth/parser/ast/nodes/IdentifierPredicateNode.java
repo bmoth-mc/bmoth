@@ -28,4 +28,14 @@ public class IdentifierPredicateNode extends PredicateNode {
         return name;
     }
 
+    @Override
+    public boolean equalAst(Node other) {
+        if (!NodeUtil.isSameClass(this, other)) {
+            return false;
+        }
+
+        IdentifierPredicateNode that = (IdentifierPredicateNode) other;
+        return this.name.equals(that.name)
+            && this.declarationNode.equalAst(that.declarationNode);
+    }
 }

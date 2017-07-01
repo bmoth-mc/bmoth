@@ -26,4 +26,10 @@ public class CastPredicateExpressionNode extends ExprNode {
     public void setArg(PredicateNode arg) {
         this.predicate = arg;
     }
+
+    @Override
+    public boolean equalAst(Node other) {
+        return NodeUtil.isSameClass(this, other)
+            && this.predicate.equalAst(((CastPredicateExpressionNode) other).predicate);
+    }
 }
