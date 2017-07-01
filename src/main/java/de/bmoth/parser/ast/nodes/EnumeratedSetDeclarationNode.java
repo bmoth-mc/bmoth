@@ -26,12 +26,12 @@ public class EnumeratedSetDeclarationNode implements Node {
 
     @Override
     public boolean equalAst(Node other) {
-        if (!sameClass(other)) {
+        if (!NodeUtil.isSameClass(this, other)) {
             return false;
         }
 
         EnumeratedSetDeclarationNode that = (EnumeratedSetDeclarationNode) other;
         return this.setDeclaration.equalAst(that.setDeclaration)
-            && new ListAstEquals<DeclarationNode>().equalAst(this.elements, that.elements);
+            && NodeUtil.equalAst(this.elements, that.elements);
     }
 }

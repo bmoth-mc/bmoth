@@ -95,17 +95,16 @@ public class MachineNode implements Node {
 
     @Override
     public boolean equalAst(Node other) {
-        if (!sameClass(other)) {
+        if (!NodeUtil.isSameClass(this, other)) {
             return false;
         }
 
         MachineNode that = (MachineNode) other;
-        ListAstEquals<DeclarationNode> declarationListEquals = new ListAstEquals<>();
-        return new ListAstEquals<EnumeratedSetDeclarationNode>().equalAst(this.setEnumerations, that.setEnumerations)
-            && declarationListEquals.equalAst(this.deferredSets, that.deferredSets)
-            && declarationListEquals.equalAst(this.constants, that.constants)
-            && declarationListEquals.equalAst(this.variables, that.variables)
-            && new ListAstEquals<OperationNode>().equalAst(this.operations, that.operations)
+        return NodeUtil.equalAst(this.setEnumerations, that.setEnumerations)
+            && NodeUtil.equalAst(this.deferredSets, that.deferredSets)
+            && NodeUtil.equalAst(this.constants, that.constants)
+            && NodeUtil.equalAst(this.variables, that.variables)
+            && NodeUtil.equalAst(this.operations, that.operations)
             && this.properties.equalAst(that.properties)
             && this.initialisation.equalAst(that.initialisation)
             && this.invariant.equalAst(that.invariant);

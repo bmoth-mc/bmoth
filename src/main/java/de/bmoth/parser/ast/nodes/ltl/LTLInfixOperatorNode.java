@@ -1,6 +1,7 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
 import de.bmoth.parser.ast.nodes.Node;
+import de.bmoth.parser.ast.nodes.NodeUtil;
 
 public class LTLInfixOperatorNode implements LTLNode {
 
@@ -45,7 +46,7 @@ public class LTLInfixOperatorNode implements LTLNode {
 
     @Override
     public boolean equalAst(Node other) {
-        if (!sameClass(other)) {
+        if (!NodeUtil.isSameClass(this, other)) {
             return false;
         }
 

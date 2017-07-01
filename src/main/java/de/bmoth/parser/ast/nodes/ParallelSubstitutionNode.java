@@ -27,8 +27,8 @@ public class ParallelSubstitutionNode extends SubstitutionNode {
 
     @Override
     public boolean equalAst(Node other) {
-        return sameClass(other)
-            && new ListAstEquals<SubstitutionNode>().equalAst(substitutions, ((ParallelSubstitutionNode) other).substitutions);
+        return NodeUtil.isSameClass(this, other)
+            && NodeUtil.equalAst(substitutions, ((ParallelSubstitutionNode) other).substitutions);
 
     }
 }

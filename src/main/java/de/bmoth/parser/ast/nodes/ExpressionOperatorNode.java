@@ -178,13 +178,13 @@ public class ExpressionOperatorNode extends ExprNode implements OperatorNode<Exp
 
     @Override
     public boolean equalAst(Node other) {
-        if (!sameClass(other)) {
+        if (!NodeUtil.isSameClass(this, other)) {
             return false;
         }
 
         ExpressionOperatorNode that = (ExpressionOperatorNode) other;
         return this.operator.equals(that.operator)
-            && new ListAstEquals<ExprNode>().equalAst(this.expressionNodes, that.expressionNodes);
+            && NodeUtil.equalAst(this.expressionNodes, that.expressionNodes);
     }
 
 }

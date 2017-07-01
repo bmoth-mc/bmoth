@@ -79,7 +79,7 @@ public class QuantifiedExpressionNode extends ExprNode {
 
     @Override
     public boolean equalAst(Node other) {
-        if (!sameClass(other)) {
+        if (!NodeUtil.isSameClass(this, other)) {
             return false;
         }
 
@@ -87,7 +87,7 @@ public class QuantifiedExpressionNode extends ExprNode {
         return this.operator.equals(that.operator)
             && this.expressionNode.equalAst(that.expressionNode)
             && this.predicateNode.equalAst(that.predicateNode)
-            && new ListAstEquals<DeclarationNode>().equalAst(this.declarationList, that.declarationList);
+            && NodeUtil.equalAst(this.declarationList, that.declarationList);
 
     }
 }

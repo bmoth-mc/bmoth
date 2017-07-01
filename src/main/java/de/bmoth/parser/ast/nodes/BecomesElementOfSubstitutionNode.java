@@ -33,12 +33,12 @@ public class BecomesElementOfSubstitutionNode extends SubstitutionNode {
 
     @Override
     public boolean equalAst(Node other) {
-        if (!sameClass(other)) {
+        if (!NodeUtil.isSameClass(this, other)) {
             return false;
         }
 
         BecomesElementOfSubstitutionNode that = (BecomesElementOfSubstitutionNode) other;
         return this.expression.equalAst(that.expression)
-            && new ListAstEquals<IdentifierExprNode>().equalAst(this.identifiers, that.identifiers);
+            && NodeUtil.equalAst(this.identifiers, that.identifiers);
     }
 }

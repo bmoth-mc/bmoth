@@ -10,6 +10,6 @@ public class SkipSubstitutionNode extends SubstitutionNode {
 
     @Override
     public boolean equalAst(Node other) {
-        return sameClass(other);
+        return NodeUtil.isSameClass(this, other);
     }
 }

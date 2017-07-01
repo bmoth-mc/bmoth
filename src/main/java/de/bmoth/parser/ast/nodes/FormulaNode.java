@@ -47,14 +47,14 @@ public class FormulaNode implements Node {
 
     @Override
     public boolean equalAst(Node other) {
-        if (!sameClass(other)) {
+        if (!NodeUtil.isSameClass(this, other)) {
             return false;
         }
 
         FormulaNode that = (FormulaNode) other;
         return this.type.equals(that.type)
             && this.formula.equalAst(that.formula)
-            && new ListAstEquals<DeclarationNode>().equalAst(this.implicitDeclarations, that.implicitDeclarations);
+            && NodeUtil.equalAst(this.implicitDeclarations, that.implicitDeclarations);
     }
 
 }

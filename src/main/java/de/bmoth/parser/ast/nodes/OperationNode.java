@@ -36,7 +36,7 @@ public class OperationNode implements Node {
 
     @Override
     public boolean equalAst(Node other) {
-        if (!sameClass(other)) {
+        if (!NodeUtil.isSameClass(this, other)) {
             return false;
         }
         OperationNode that = (OperationNode) other;

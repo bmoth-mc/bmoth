@@ -43,12 +43,12 @@ public class AnySubstitutionNode extends SubstitutionNode {
 
     @Override
     public boolean equalAst(Node other) {
-        if (!sameClass(other)) {
+        if (!NodeUtil.isSameClass(this, other)) {
             return false;
         }
 
         AnySubstitutionNode that = (AnySubstitutionNode) other;
-        return new ListAstEquals<DeclarationNode>().equalAst(this.parameters, that.parameters)
+        return NodeUtil.equalAst(this.parameters, that.parameters)
             && this.wherePredicate.equalAst(that.wherePredicate)
             && this.thenSubstitution.equalAst(that.thenSubstitution);
     }

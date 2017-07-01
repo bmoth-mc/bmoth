@@ -35,7 +35,7 @@ public class SingleAssignSubstitutionNode extends SubstitutionNode {
 
     @Override
     public boolean equalAst(Node other) {
-        if (!sameClass(other)) {
+        if (!NodeUtil.isSameClass(this, other)) {
             return false;
         }
 

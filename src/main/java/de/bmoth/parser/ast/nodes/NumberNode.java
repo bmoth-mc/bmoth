@@ -24,7 +24,7 @@ public class NumberNode extends ExprNode {
 
     @Override
     public boolean equalAst(Node other) {
-        return sameClass(other)
+        return NodeUtil.isSameClass(this, other)
             && this.value.equals(((NumberNode) other).value);
     }
 }
