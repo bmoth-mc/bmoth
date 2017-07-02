@@ -86,6 +86,11 @@ public class FormulaAndSubstitutionVisitorExceptionsTest {
             }
 
             @Override
+            public Object visitSetComprehensionNode(SetComprehensionNode node, Object expected) {
+                return null;
+            }
+
+            @Override
             public Object visitIdentifierPredicateNode(IdentifierPredicateNode node, Object expected) {
                 return null;
             }

@@ -23,7 +23,7 @@ import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMU
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
 import static de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator.AND;
 import static de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.GREATER_EQUAL;
-import static de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuantifiedExpressionOperator.SET_COMPREHENSION;
+import static de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuantifiedExpressionOperator.QUANTIFIED_INTER;
 import static de.bmoth.parser.ast.nodes.QuantifiedPredicateNode.QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION;
 import static org.junit.Assert.*;
 
@@ -196,8 +196,8 @@ public class NodeTest extends TestParser {
 
     @Test
     public void testQuantifiedExpressionNode() {
-        assertEquals(SET_COMPREHENSION,
-            QuantifiedExpressionNode.QuantifiedExpressionOperator.valueOf("SET_COMPREHENSION"));
+        assertEquals(QUANTIFIED_INTER,
+            QuantifiedExpressionNode.QuantifiedExpressionOperator.valueOf("QUANTIFIED_INTER"));
     }
 
     @Test

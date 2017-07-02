@@ -3,7 +3,6 @@ package de.bmoth.backend.z3;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Sort;
 import com.microsoft.z3.Symbol;
-
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
@@ -151,12 +150,12 @@ public class Z3TypeInference {
     public Sort getZ3Sort(Z3Type t, Context z3Context) {
         if (t instanceof Z3BasicType) {
             switch (((Z3BasicType) t).kind) {
-            case INTEGER:
-                return z3Context.getIntSort();
-            case BOOL:
-                return z3Context.getBoolSort();
-            default:
-                break;
+                case INTEGER:
+                    return z3Context.getIntSort();
+                case BOOL:
+                    return z3Context.getBoolSort();
+                default:
+                    break;
             }
 
         } else if (t instanceof Z3SetType) {
@@ -170,7 +169,7 @@ public class Z3TypeInference {
             subSorts[0] = left;
             subSorts[1] = right;
             return z3Context.mkTupleSort(z3Context.mkSymbol("couple"),
-                    new Symbol[] { z3Context.mkSymbol("left"), z3Context.mkSymbol("right") }, subSorts);
+                new Symbol[]{z3Context.mkSymbol("left"), z3Context.mkSymbol("right")}, subSorts);
         } else if (t instanceof Z3SequenceType) {
             Sort subSort = getZ3Sort(((Z3SequenceType) t).subtype, z3Context);
             Sort intType = z3Context.getIntSort();
@@ -178,7 +177,7 @@ public class Z3TypeInference {
             subSorts[0] = z3Context.mkArraySort(intType, subSort);
             subSorts[1] = intType;
             return z3Context.mkTupleSort(z3Context.mkSymbol("sequence"),
-                    new Symbol[] { z3Context.mkSymbol("array"), z3Context.mkSymbol("size") }, subSorts);
+                new Symbol[]{z3Context.mkSymbol("array"), z3Context.mkSymbol("size")}, subSorts);
         } else if (t instanceof Z3DeferredType) {
             return z3Context.mkUninterpretedSort(((Z3DeferredType) t).name);
         } else if (t instanceof Z3EnumeratedSetType) {
@@ -252,23 +251,23 @@ public class Z3TypeInference {
             List<ExprNode> arguments = node.getExpressionNodes();
             arguments.forEach(e -> visitExprNode(e, expected));
             switch (node.getOperator()) {
-            case FRONT:
-            case TAIL:
-            case CONCAT:
-            case INSERT_TAIL:
-            case RESTRICT_FRONT:
-            case RESTRICT_TAIL:
-                return setZ3Type(node, getZ3TypeOfNode(arguments.get(0)));
-            case INSERT_FRONT:
-                return setZ3Type(node, getZ3TypeOfNode(arguments.get(1)));
-            case SEQ_ENUMERATION:
-                return setZ3Type(node, new Z3SequenceType(getZ3TypeOfNode(arguments.get(0))));
-            case EMPTY_SEQUENCE:
-                de.bmoth.parser.ast.types.SetType setType = (de.bmoth.parser.ast.types.SetType) node.getType();
-                de.bmoth.parser.ast.types.CoupleType c = (de.bmoth.parser.ast.types.CoupleType) setType.getSubType();
-                return setZ3Type(node, new Z3SequenceType(convertBTypeToZ3Type(c.getRight())));
-            default:
-                return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
+                case FRONT:
+                case TAIL:
+                case CONCAT:
+                case INSERT_TAIL:
+                case RESTRICT_FRONT:
+                case RESTRICT_TAIL:
+                    return setZ3Type(node, getZ3TypeOfNode(arguments.get(0)));
+                case INSERT_FRONT:
+                    return setZ3Type(node, getZ3TypeOfNode(arguments.get(1)));
+                case SEQ_ENUMERATION:
+                    return setZ3Type(node, new Z3SequenceType(getZ3TypeOfNode(arguments.get(0))));
+                case EMPTY_SEQUENCE:
+                    de.bmoth.parser.ast.types.SetType setType = (de.bmoth.parser.ast.types.SetType) node.getType();
+                    de.bmoth.parser.ast.types.CoupleType c = (de.bmoth.parser.ast.types.CoupleType) setType.getSubType();
+                    return setZ3Type(node, new Z3SequenceType(convertBTypeToZ3Type(c.getRight())));
+                default:
+                    return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
             }
         }
 
@@ -290,9 +289,13 @@ public class Z3TypeInference {
         @Override
         public Z3Type visitQuantifiedExpressionNode(QuantifiedExpressionNode node, Void expected) {
             AbstractVisitor.super.visitPredicateNode(node.getPredicateNode(), expected);
-            if (node.getExpressionNode() != null) {
-                visitExprNode(node.getExpressionNode(), expected);
-            }
+            visitExprNode(node.getExpressionNode(), expected);
+            return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
+        }
+
+        @Override
+        public Z3Type visitSetComprehensionNode(SetComprehensionNode node, Void expected) {
+            AbstractVisitor.super.visitPredicateNode(node.getPredicateNode(), expected);
             return setZ3Type(node, convertBTypeToZ3Type(node.getType()));
         }
 
@@ -311,21 +314,21 @@ public class Z3TypeInference {
         public Z3Type visitPredicateOperatorWithExprArgs(PredicateOperatorWithExprArgsNode node, Void expected) {
             List<ExprNode> arguments = node.getExpressionNodes();
             switch (node.getOperator()) {
-            case EQUAL:
-            case NOT_EQUAL:
-                ExprNode left = arguments.get(0);
-                ExprNode right = arguments.get(1);
-                if (left instanceof IdentifierExprNode) {
-                    return updateDeclarationType(((IdentifierExprNode) left).getDeclarationNode(),
+                case EQUAL:
+                case NOT_EQUAL:
+                    ExprNode left = arguments.get(0);
+                    ExprNode right = arguments.get(1);
+                    if (left instanceof IdentifierExprNode) {
+                        return updateDeclarationType(((IdentifierExprNode) left).getDeclarationNode(),
                             visitExprNode(right, expected));
-                } else if (right instanceof IdentifierExprNode) {
-                    return updateDeclarationType(((IdentifierExprNode) right).getDeclarationNode(),
+                    } else if (right instanceof IdentifierExprNode) {
+                        return updateDeclarationType(((IdentifierExprNode) right).getDeclarationNode(),
                             visitExprNode(left, expected));
-                } else {
+                    } else {
+                        break;
+                    }
+                default:
                     break;
-                }
-            default:
-                break;
             }
             arguments.forEach(a -> visitExprNode(a, expected));
             return setZ3Type(node, convertBTypeToZ3Type(node.getType()));

@@ -149,10 +149,15 @@ public class ASTTransformationVisitor {
         public Node visitQuantifiedExpressionNode(QuantifiedExpressionNode node, Void expected) {
             PredicateNode visitPredicateNode = (PredicateNode) visitPredicateNode(node.getPredicateNode(), expected);
             node.setPredicate(visitPredicateNode);
-            if (node.getExpressionNode() != null) {
-                ExprNode expr = (ExprNode) visitExprNode(node.getExpressionNode(), expected);
-                node.setExpr(expr);
-            }
+            ExprNode expr = (ExprNode) visitExprNode(node.getExpressionNode(), expected);
+            node.setExpr(expr);
+            return modifyNode(node);
+        }
+
+        @Override
+        public Node visitSetComprehensionNode(SetComprehensionNode node, Void expected) {
+            PredicateNode visitPredicateNode = (PredicateNode) visitPredicateNode(node.getPredicateNode(), expected);
+            node.setPredicate(visitPredicateNode);
             return modifyNode(node);
         }
 

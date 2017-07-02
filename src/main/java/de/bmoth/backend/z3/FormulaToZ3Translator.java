@@ -688,35 +688,6 @@ public class FormulaToZ3Translator {
         @Override
         public Expr visitQuantifiedExpressionNode(QuantifiedExpressionNode node, TranslationOptions opt) {
             switch (node.getOperator()) {
-                case SET_COMPREHENSION: {
-                    // {e| P}
-                    // return T
-                    // !(e).(e : T <=> P )
-                    Expr comprehensionPredicate = visitPredicateNode(node.getPredicateNode(), opt);
-                    Expr elementInComprehension = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
-
-                    Expr[] boundVariables = new Expr[node.getDeclarationList().size()];
-                    for (int i = 0; i < boundVariables.length; i++) {
-                        DeclarationNode decl = node.getDeclarationList().get(i);
-                        Expr e = z3Context.mkConst(decl.getName(), getZ3Sort(decl));
-                        boundVariables[i] = e;
-                    }
-                    Expr tuple = null;
-                    if (boundVariables.length > 1) {
-                        Z3SetType setType = (Z3SetType) getZ3Type(node);
-                        TupleSort tupleSort = (TupleSort) getZ3Sort(setType.getSubtype());
-                        tuple = tupleSort.mkDecl().apply(boundVariables);
-                    } else {
-                        tuple = boundVariables[0];
-                    }
-
-                    BoolExpr a = z3Context.mkSetMembership(tuple, (ArrayExpr) elementInComprehension);
-                    // a <=> P
-                    BoolExpr body = z3Context.mkEq(a, comprehensionPredicate);
-                    Quantifier q = z3Context.mkForall(boundVariables, body, boundVariables.length, null, null, null, null);
-                    constraintList.add(q);
-                    return elementInComprehension;
-                }
                 case QUANTIFIED_INTER:
                 case QUANTIFIED_UNION:
                     break;
@@ -724,6 +695,37 @@ public class FormulaToZ3Translator {
                     break;
             }
             throw new AssertionError("Implement: " + node.getClass());
+        }
+
+        @Override
+        public Expr visitSetComprehensionNode(SetComprehensionNode node, TranslationOptions opt) {
+            // {e| P}
+            // return T
+            // !(e).(e : T <=> P )
+            Expr comprehensionPredicate = visitPredicateNode(node.getPredicateNode(), opt);
+            Expr elementInComprehension = z3Context.mkConst(createFreshTemporaryVariable(), getZ3Sort(node));
+
+            Expr[] boundVariables = new Expr[node.getDeclarationList().size()];
+            for (int i = 0; i < boundVariables.length; i++) {
+                DeclarationNode decl = node.getDeclarationList().get(i);
+                Expr e = z3Context.mkConst(decl.getName(), getZ3Sort(decl));
+                boundVariables[i] = e;
+            }
+            Expr tuple = null;
+            if (boundVariables.length > 1) {
+                Z3SetType setType = (Z3SetType) getZ3Type(node);
+                TupleSort tupleSort = (TupleSort) getZ3Sort(setType.getSubtype());
+                tuple = tupleSort.mkDecl().apply(boundVariables);
+            } else {
+                tuple = boundVariables[0];
+            }
+
+            BoolExpr a = z3Context.mkSetMembership(tuple, (ArrayExpr) elementInComprehension);
+            // a <=> P
+            BoolExpr body = z3Context.mkEq(a, comprehensionPredicate);
+            Quantifier q = z3Context.mkForall(boundVariables, body, boundVariables.length, null, null, null, null);
+            constraintList.add(q);
+            return elementInComprehension;
         }
 
         @Override

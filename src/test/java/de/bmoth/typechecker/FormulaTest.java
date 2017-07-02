@@ -5,12 +5,13 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static de.bmoth.TestConstants.*;
+import static de.bmoth.TestConstants.INTEGER;
+import static de.bmoth.TestConstants.POW_INTEGER;
+import static de.bmoth.TestParser.parseFormula;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
-import static org.junit.Assert.*;
-import static de.bmoth.TestParser.*;
-import static de.bmoth.typechecker.TestTypechecker.*;
+import static de.bmoth.typechecker.TestTypechecker.typeCheckFormulaAndGetErrorMessage;
+import static org.junit.Assert.assertEquals;
 
 public class FormulaTest {
 
@@ -255,10 +256,8 @@ public class FormulaTest {
         String formula = "{a,b,c | a = b & b = c & c = 1 }";
         FormulaNode formulaNode = parseFormula(formula);
         assertEquals(EXPRESSION_FORMULA, formulaNode.getFormulaType());
-        QuantifiedExpressionNode setComprehension = (QuantifiedExpressionNode) formulaNode.getFormula();
-
-        assertEquals(QuantifiedExpressionNode.QuantifiedExpressionOperator.SET_COMPREHENSION,
-                setComprehension.getOperator());
+        SetComprehensionNode setComprehension = (SetComprehensionNode) formulaNode.getFormula();
+        
         List<DeclarationNode> declarationList = setComprehension.getDeclarationList();
         DeclarationNode a = declarationList.get(0);
         DeclarationNode b = declarationList.get(1);
@@ -282,7 +281,7 @@ public class FormulaTest {
         QuantifiedPredicateNode quantification = (QuantifiedPredicateNode) formulaNode.getFormula();
 
         assertEquals(QuantifiedPredicateNode.QuantifiedPredicateOperator.UNIVERSAL_QUANTIFICATION,
-                quantification.getOperator());
+            quantification.getOperator());
         List<DeclarationNode> declarationList = quantification.getDeclarationList();
         DeclarationNode x = declarationList.get(0);
         DeclarationNode y = declarationList.get(1);
@@ -300,7 +299,7 @@ public class FormulaTest {
         QuantifiedPredicateNode quantification = (QuantifiedPredicateNode) formulaNode.getFormula();
 
         assertEquals(QuantifiedPredicateNode.QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION,
-                quantification.getOperator());
+            quantification.getOperator());
         List<DeclarationNode> declarationList = quantification.getDeclarationList();
         DeclarationNode x = declarationList.get(0);
         DeclarationNode y = declarationList.get(1);

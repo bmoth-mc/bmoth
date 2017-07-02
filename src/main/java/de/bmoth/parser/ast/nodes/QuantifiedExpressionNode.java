@@ -2,17 +2,16 @@ package de.bmoth.parser.ast.nodes;
 
 import de.bmoth.antlr.BMoThParser;
 import de.bmoth.antlr.BMoThParser.ExpressionContext;
-import de.bmoth.antlr.BMoThParser.SetComprehensionExpressionContext;
 import org.antlr.v4.runtime.Token;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class QuantifiedExpressionNode extends ExprNode {
+public class QuantifiedExpressionNode extends SetComprehensionNode {
 
     public enum QuantifiedExpressionOperator {
-        SET_COMPREHENSION, QUANTIFIED_UNION, QUANTIFIED_INTER
+        QUANTIFIED_UNION, QUANTIFIED_INTER
     }
 
     private static final Map<Integer, QuantifiedExpressionOperator> map = new HashMap<>();
@@ -23,18 +22,24 @@ public class QuantifiedExpressionNode extends ExprNode {
 
     }
 
-    private List<DeclarationNode> declarationList;
-    private PredicateNode predicateNode;
-    private ExprNode expressionNode;
     private QuantifiedExpressionOperator operator;
+    private ExprNode expressionNode;
+
+    public ExprNode getExpressionNode() {
+        return expressionNode;
+    }
+
+
+    public void setExpr(ExprNode expr) {
+        this.expressionNode = expr;
+    }
+
 
     public QuantifiedExpressionNode(ExpressionContext ctx, List<DeclarationNode> declarationList,
                                     PredicateNode predNode, ExprNode expressionNode, Token operator2) {
-        super(ctx);
-        this.declarationList = declarationList;
-        this.predicateNode = predNode;
-        this.operator = loopUpOperator(operator2.getType());
+        super(ctx, declarationList, predNode);
         this.expressionNode = expressionNode;
+        this.operator = loopUpOperator(operator2.getType());
     }
 
     private QuantifiedExpressionOperator loopUpOperator(int type) {
@@ -44,37 +49,8 @@ public class QuantifiedExpressionNode extends ExprNode {
         throw new AssertionError("Operator not implemented");
     }
 
-    public QuantifiedExpressionNode(SetComprehensionExpressionContext ctx, List<DeclarationNode> declarationList,
-                                    PredicateNode predNode, ExprNode expressionNode, QuantifiedExpressionOperator setComprehension) {
-        super(ctx);
-        this.declarationList = declarationList;
-        this.predicateNode = predNode;
-        this.operator = setComprehension;
-        this.expressionNode = expressionNode;
-    }
-
-    public List<DeclarationNode> getDeclarationList() {
-        return declarationList;
-    }
-
-    public PredicateNode getPredicateNode() {
-        return predicateNode;
-    }
-
     public QuantifiedExpressionOperator getOperator() {
         return operator;
-    }
-
-    public ExprNode getExpressionNode() {
-        return expressionNode;
-    }
-
-    public void setExpr(ExprNode expr) {
-        this.expressionNode = expr;
-    }
-
-    public void setPredicate(PredicateNode node) {
-        this.predicateNode = node;
     }
 
     @Override
@@ -85,9 +61,9 @@ public class QuantifiedExpressionNode extends ExprNode {
 
         QuantifiedExpressionNode that = (QuantifiedExpressionNode) other;
         return this.operator.equals(that.operator)
+            && getExpressionNode().equalAst(that.getExpressionNode())
             && this.expressionNode.equalAst(that.expressionNode)
-            && this.predicateNode.equalAst(that.predicateNode)
-            && NodeUtil.equalAst(this.declarationList, that.declarationList);
+            && NodeUtil.equalAst(getDeclarationList(), that.getDeclarationList());
 
     }
 }

@@ -37,6 +37,11 @@ public interface SubstitutionVisitor<R, P> extends FormulaAndSubstitutionVisitor
         throw new AssertionError();
     }
 
+    @Override
+    default R visitSetComprehensionNode(SetComprehensionNode node, P expected) {
+        throw new AssertionError();
+    }
+
     /*
      * Predicates
      */

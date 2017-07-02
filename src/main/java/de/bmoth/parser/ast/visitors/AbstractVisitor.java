@@ -29,6 +29,8 @@ public interface AbstractVisitor<R, P> {
             return visitNumberNode((NumberNode) node, expected);
         } else if (node instanceof QuantifiedExpressionNode) {
             return visitQuantifiedExpressionNode((QuantifiedExpressionNode) node, expected);
+        } else if (node instanceof SetComprehensionNode) {
+            return visitSetComprehensionNode((SetComprehensionNode) node, expected);
         } else if (node instanceof CastPredicateExpressionNode) {
             return visitCastPredicateExpressionNode((CastPredicateExpressionNode) node, expected);
         } else if (node instanceof EnumeratedSetElementNode) {
@@ -56,6 +58,9 @@ public interface AbstractVisitor<R, P> {
     R visitNumberNode(NumberNode node, P expected);
 
     R visitQuantifiedExpressionNode(QuantifiedExpressionNode node, P expected);
+
+    R visitSetComprehensionNode(SetComprehensionNode node, P expected);
+
 
     /*
      * Predicates
