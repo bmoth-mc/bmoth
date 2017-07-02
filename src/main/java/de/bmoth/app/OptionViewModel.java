@@ -24,11 +24,11 @@ public class OptionViewModel implements ViewModel {
     }
 
     void savePrefs() {
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MIN_INT, getMinInt().get());
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, getMaxInt().get());
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE, getMaxInitState().get());
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS, getMaxTrans().get());
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT, getZ3Timeout().get());
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MIN_INT, Integer.parseInt(getMinInt().get()));
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, Integer.parseInt(getMaxInt().get()));
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE, Integer.parseInt(getMaxInitState().get()));
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS, Integer.parseInt(getMaxTrans().get()));
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.Z3_TIMEOUT, Integer.parseInt(getZ3Timeout().get()));
     }
 
     public boolean checkPrefs() {

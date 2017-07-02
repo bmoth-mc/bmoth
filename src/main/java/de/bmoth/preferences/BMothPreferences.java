@@ -23,12 +23,8 @@ public class BMothPreferences {
         return prefs.getInt(p.toString(), p.defaultValue);
     }
 
-    public static void setIntPreference(IntPreference p, String val) {
-        prefs.put(p.toString(), val);
-    }
-
-    public static void setIntPreference(IntPreference p, Integer val) {
-        prefs.put(p.toString(), val.toString());
+    public static void setIntPreference(IntPreference p, int val) {
+        prefs.put(p.toString(), String.valueOf(val));
     }
 
     public enum StringPreference {
