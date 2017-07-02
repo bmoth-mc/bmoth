@@ -4,8 +4,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 public class DeferredSetNode extends ExprNode {
 
-    DeclarationNode declarationNode;
-    String name;
+    private DeclarationNode declarationNode;
+    private String name;
 
     public DeferredSetNode(ParseTree parseTree, DeclarationNode declNode, String name) {
         super(parseTree);
