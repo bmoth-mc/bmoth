@@ -25,8 +25,8 @@ public class LTLTransformationTest extends TestParser {
         assertTrue(transformation.canHandleNode(node2));
         assertFalse(transformation.canHandleNode(nodeFailNotFinally));
 
-        LTLNode newNode1 = (LTLNode) new ConvertFinallyFinallyToFinally().transformNode(node1);
-        LTLNode newNode2 = (LTLNode) new ConvertFinallyFinallyToFinally().transformNode(node2);
+        LTLNode newNode1 = (LTLNode) transformation.transformNode(node1);
+        LTLNode newNode2 = (LTLNode) transformation.transformNode(node2);
 
         assertEquals("FINALLY(EQUAL(1,1))", newNode1.toString());
         assertEquals("NOT(FINALLY(EQUAL(1,1)))", newNode2.toString());
