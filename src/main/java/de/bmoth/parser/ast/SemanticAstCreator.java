@@ -239,7 +239,7 @@ public class SemanticAstCreator {
                 DeclarationNode declarationNode = declarationMap.get(declNode);
                 return new DeferredSetNode(terminalNode, declarationNode, terminalNode.getText());
             } else if (declNode.getParent().getParent() instanceof EnumeratedSetContext) {
-                EnumeratedSetDeclarationNode enumeratedSetDeclarationNode = enumerations.get(declNode.getParent());
+                EnumeratedSetDeclarationNode enumeratedSetDeclarationNode = enumerations.get(declNode.getParent().getParent());
                 DeclarationNode declarationNode = declarationMap.get(declNode);
                 return new EnumeratedSetElementNode(terminalNode, enumeratedSetDeclarationNode, terminalNode.getText(),
                     declarationNode);
