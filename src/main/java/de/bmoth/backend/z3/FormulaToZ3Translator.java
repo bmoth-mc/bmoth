@@ -687,13 +687,6 @@ public class FormulaToZ3Translator {
 
         @Override
         public Expr visitQuantifiedExpressionNode(QuantifiedExpressionNode node, TranslationOptions opt) {
-            switch (node.getOperator()) {
-                case QUANTIFIED_INTER:
-                case QUANTIFIED_UNION:
-                    break;
-                default:
-                    break;
-            }
             throw new AssertionError("Implement: " + node.getClass());
         }
 
