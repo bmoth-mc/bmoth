@@ -17,8 +17,6 @@ public class RemoveFalseAnd extends AbstractASTTransformation {
 
     @Override
     public Node transformNode(Node node) {
-        setChanged();
-
         return new LTLKeywordNode(FALSE);
     }
 }

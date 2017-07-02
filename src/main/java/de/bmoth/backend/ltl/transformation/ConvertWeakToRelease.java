@@ -20,8 +20,6 @@ public class ConvertWeakToRelease extends AbstractASTTransformation {
         LTLInfixOperatorNode weakOperator = (LTLInfixOperatorNode) oldNode;
         LTLNode innerLeft = weakOperator.getLeft();
         LTLNode innerRight = weakOperator.getRight();
-
-        setChanged();
         return new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.RELEASE, innerRight, new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.OR, innerLeft, innerRight));
     }
 }

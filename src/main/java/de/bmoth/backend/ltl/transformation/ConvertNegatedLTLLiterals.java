@@ -20,8 +20,6 @@ public class ConvertNegatedLTLLiterals extends AbstractASTTransformation {
 
     @Override
     public Node transformNode(Node node) {
-        setChanged();
-
         LTLPrefixOperatorNode notNode = (LTLPrefixOperatorNode) node;
 
         if (contains(notNode, FALSE)) {

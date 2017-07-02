@@ -6,7 +6,7 @@ import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 
-public class ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi extends AbstractASTTransformation{
+public class ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi extends AbstractASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
@@ -25,7 +25,6 @@ public class ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi extends Abstrac
                     LTLPrefixOperatorNode newNextRight = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.GLOBALLY, andOperator.getRight());
                     andOperator.setLeft(newNextLeft);
                     andOperator.setRight(newNextRight);
-                    setChanged();
                     return andOperator;
                 }
             }

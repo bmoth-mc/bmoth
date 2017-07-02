@@ -17,8 +17,6 @@ public class RemoveFalseFromOr extends AbstractASTTransformation {
 
     @Override
     public Node transformNode(Node node) {
-        setChanged();
-
         LTLInfixOperatorNode andNode = (LTLInfixOperatorNode) node;
 
         if (isOperator(andNode.getLeft(), FALSE)) {

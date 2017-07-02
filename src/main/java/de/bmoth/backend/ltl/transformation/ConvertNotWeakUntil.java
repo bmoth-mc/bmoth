@@ -27,7 +27,6 @@ public class ConvertNotWeakUntil extends AbstractASTTransformation {
                     LTLInfixOperatorNode weakUntilsLeftAndNotWeakUntilsRight = new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.AND, weakUntilsLeft, notWeakUntilsRight);
                     LTLPrefixOperatorNode notWeakUntilsLeft = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT, weakUntilsLeft);
                     LTLInfixOperatorNode notWeakUntilsLeftAndNotWeakUntilsRight = new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.AND, notWeakUntilsLeft, notWeakUntilsRight);
-                    setChanged();
                     return new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.UNTIL, weakUntilsLeftAndNotWeakUntilsRight, notWeakUntilsLeftAndNotWeakUntilsRight);
                 }
             }

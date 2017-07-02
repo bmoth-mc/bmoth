@@ -26,7 +26,6 @@ public class ConstantFolding extends AbstractASTTransformation {
         if (right instanceof NumberNode && left instanceof NumberNode) {
             BigInteger leftValue = ((NumberNode) left).getValue();
             BigInteger rightValue = ((NumberNode) right).getValue();
-            setChanged();
             switch (node.getOperator()) {
                 case PLUS:
                     return new NumberNode(node.getParseTree(), leftValue.add(rightValue));
@@ -37,12 +36,9 @@ public class ConstantFolding extends AbstractASTTransformation {
                 case DIVIDE:
                     if (!rightValue.equals(BigInteger.ZERO)) {
                         return new NumberNode(node.getParseTree(), leftValue.divide(rightValue));
-                    } else {
-                        resetChanged();
-                        return node;
                     }
+                    break;
                 default:
-                    resetChanged();
                     return node;
             }
         }

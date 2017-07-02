@@ -6,7 +6,7 @@ import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 
-public class ConvertNextPhiUntilPsiToNextPhiUntilNextPsi extends AbstractASTTransformation{
+public class ConvertNextPhiUntilPsiToNextPhiUntilNextPsi extends AbstractASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
@@ -25,7 +25,6 @@ public class ConvertNextPhiUntilPsiToNextPhiUntilNextPsi extends AbstractASTTran
                     LTLPrefixOperatorNode newNextRight = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NEXT, untilOperator.getRight());
                     untilOperator.setLeft(newNextLeft);
                     untilOperator.setRight(newNextRight);
-                    setChanged();
                     return untilOperator;
                 }
             }

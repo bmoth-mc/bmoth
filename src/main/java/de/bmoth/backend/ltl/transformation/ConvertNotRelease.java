@@ -25,9 +25,7 @@ public class ConvertNotRelease extends AbstractASTTransformation {
         LTLInfixOperatorNode release = (LTLInfixOperatorNode) not.getArgument();
         LTLNode innerLeft = release.getLeft();
         LTLNode innerRight = release.getRight();
-
-        setChanged();
-
+        
         return new LTLInfixOperatorNode(UNTIL, new LTLPrefixOperatorNode(NOT, innerLeft), new LTLPrefixOperatorNode(NOT, innerRight));
     }
 

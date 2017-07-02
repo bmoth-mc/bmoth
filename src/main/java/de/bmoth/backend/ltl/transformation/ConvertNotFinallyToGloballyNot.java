@@ -5,7 +5,8 @@ import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
 
-import static de.bmoth.backend.ltl.LTLTransformationUtil.*;
+import static de.bmoth.backend.ltl.LTLTransformationUtil.contains;
+import static de.bmoth.backend.ltl.LTLTransformationUtil.isOperator;
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.*;
 
 public class ConvertNotFinallyToGloballyNot extends AbstractASTTransformation {
@@ -21,7 +22,6 @@ public class ConvertNotFinallyToGloballyNot extends AbstractASTTransformation {
         LTLPrefixOperatorNode innerFinally = (LTLPrefixOperatorNode) not.getArgument();
         LTLNode inner = innerFinally.getArgument();
 
-        setChanged();
         return new LTLPrefixOperatorNode(GLOBALLY, new LTLPrefixOperatorNode(NOT, inner));
     }
 

@@ -32,19 +32,15 @@ public class ASTTransformationVisitor {
     private class ASTVisitor implements AbstractVisitor<Node, Void> {
 
         private Node modifyNode(Node node) {
-            Node temp = node;
-
             for (AbstractASTTransformation astModifier : modifierList) {
-                if (astModifier.canHandleNode(temp)) {
-                    temp = astModifier.transformNode(temp);
-                    if (astModifier.hasChanged()) {
-                        astModifier.resetChanged();
+                if (astModifier.canHandleNode(node)) {
+                    Node temp = astModifier.transformNode(node);
+                    if (!temp.equalAst(node)) {
                         return visitNode(temp, null);
                     }
                 }
             }
-
-            return temp;
+            return node;
         }
 
         @Override

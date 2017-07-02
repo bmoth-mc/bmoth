@@ -20,9 +20,7 @@ public class ConvertFinallyFinallyToFinally extends AbstractASTTransformation {
     @Override
     public Node transformNode(Node node) {
         LTLPrefixOperatorNode outerFinally = (LTLPrefixOperatorNode) node;
-
-        setChanged();
-
+        
         // case FF->F
         if (contains(outerFinally, FINALLY)) {
             LTLPrefixOperatorNode innerFinally = (LTLPrefixOperatorNode) outerFinally.getArgument();

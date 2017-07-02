@@ -30,9 +30,7 @@ public class ConvertPhiUntilPhiUntilPsiToPhiUntilPsi extends AbstractASTTransfor
         LTLInfixOperatorNode outerUntil = (LTLInfixOperatorNode) node;
         LTLNode originalLeft = outerUntil.getLeft();
         LTLNode originalRight = outerUntil.getRight();
-
-        setChanged();
-
+        
         // case U(U(x,y),y)->U(x,y)
         if (isOperator(originalLeft, UNTIL)) {
             LTLInfixOperatorNode innerUntil = (LTLInfixOperatorNode) originalLeft;

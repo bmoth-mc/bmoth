@@ -22,7 +22,6 @@ public class ConvertNotGloballyToFinallyNot extends AbstractASTTransformation {
         LTLPrefixOperatorNode globally = (LTLPrefixOperatorNode) not.getArgument();
         LTLNode inner = globally.getArgument();
 
-        setChanged();
         return new LTLPrefixOperatorNode(FINALLY, new LTLPrefixOperatorNode(NOT, inner));
     }
 }

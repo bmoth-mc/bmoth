@@ -29,7 +29,6 @@ public class ConvertMemberOfIntervalToLeqAndGeq extends AbstractASTTransformatio
                 PredicateNode leqRightBound = new PredicateOperatorWithExprArgsNode(leftBound.getParseTree(),
                     PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.LESS_EQUAL, Arrays.asList(left, rightBound));
 
-                setChanged();
                 return new PredicateOperatorNode(node.getParseTree(), PredicateOperatorNode.PredicateOperator.AND,
                     Arrays.asList(geqLeftBound, leqRightBound));
             }

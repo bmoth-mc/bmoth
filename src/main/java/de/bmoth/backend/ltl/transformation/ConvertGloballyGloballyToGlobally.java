@@ -20,9 +20,7 @@ public class ConvertGloballyGloballyToGlobally extends AbstractASTTransformation
     @Override
     public Node transformNode(Node node) {
         LTLPrefixOperatorNode outerGlobally = (LTLPrefixOperatorNode) node;
-
-        setChanged();
-
+        
         // case GG->G
         if (contains(outerGlobally, GLOBALLY)) {
             LTLPrefixOperatorNode innerGlobally = (LTLPrefixOperatorNode) outerGlobally.getArgument();

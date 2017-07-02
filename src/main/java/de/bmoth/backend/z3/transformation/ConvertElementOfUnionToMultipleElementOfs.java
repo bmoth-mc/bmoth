@@ -29,7 +29,6 @@ public class ConvertElementOfUnionToMultipleElementOfs extends AbstractASTTransf
                         set.getParseTree(), PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.ELEMENT_OF, Arrays.asList(left, set));
                     predicateArguments.add(predicateOperatorWithExprArgsNode);
                 }
-                setChanged();
                 return new PredicateOperatorNode(node.getParseTree(), PredicateOperatorNode.PredicateOperator.OR, predicateArguments);
             }
         }

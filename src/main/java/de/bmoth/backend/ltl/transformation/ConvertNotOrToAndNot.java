@@ -22,9 +22,7 @@ public class ConvertNotOrToAndNot extends AbstractASTTransformation {
     public Node transformNode(Node node) {
         LTLPrefixOperatorNode outerNot = (LTLPrefixOperatorNode) node;
         LTLInfixOperatorNode innerOr = (LTLInfixOperatorNode) outerNot.getArgument();
-
-        setChanged();
-
+        
         return new LTLInfixOperatorNode(AND, new LTLPrefixOperatorNode(NOT, innerOr.getLeft()), new LTLPrefixOperatorNode(NOT, innerOr.getRight()));
     }
 }

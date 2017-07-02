@@ -27,7 +27,6 @@ public class ConvertNotUntil extends AbstractASTTransformation {
                     LTLInfixOperatorNode untilsLeftAndNotUntilsRight = new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.AND, untilsLeft, notUntilsRight);
                     LTLPrefixOperatorNode notUntilsLeft = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT, untilsLeft);
                     LTLInfixOperatorNode notUntilsLeftAndNotUntilsRight = new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.AND, notUntilsLeft, notUntilsRight);
-                    setChanged();
                     return new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.WEAK_UNTIL, untilsLeftAndNotUntilsRight, notUntilsLeftAndNotUntilsRight);
                 }
             }

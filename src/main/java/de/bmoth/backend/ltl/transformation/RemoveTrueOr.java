@@ -18,8 +18,6 @@ public class RemoveTrueOr extends AbstractASTTransformation {
 
     @Override
     public Node transformNode(Node node) {
-        setChanged();
-
         return new LTLKeywordNode(TRUE);
     }
 }
