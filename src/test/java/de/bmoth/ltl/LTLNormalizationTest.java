@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 public class LTLNormalizationTest extends TestParser {
     @Test
-    @Ignore
     public void testNormalization1() {
         LTLFormula ltlFormula = parseLtlFormula("not(GG { 1=1 })");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
@@ -21,7 +20,6 @@ public class LTLNormalizationTest extends TestParser {
     }
 
     @Test
-    @Ignore
     public void testNormalization2() {
         LTLFormula ltlFormula = parseLtlFormula("G not(F { 1=1 })");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
@@ -90,7 +88,6 @@ public class LTLNormalizationTest extends TestParser {
     }
 
     @Test
-    @Ignore
     public void testNormalization10() {
         LTLFormula ltlFormula = parseLtlFormula("G { 1=1 }");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
