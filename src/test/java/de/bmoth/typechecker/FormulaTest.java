@@ -1,6 +1,7 @@
 package de.bmoth.typechecker;
 
 import de.bmoth.parser.ast.nodes.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -82,6 +83,15 @@ public class FormulaTest {
         DeclarationNode b = formulaNode.getImplicitDeclarations().get(1);
         assertEquals("b", b.getName());
         assertEquals(INTEGER, b.getType().toString());
+    }
+
+    @Test
+    @Ignore
+    public void testCartesianProductDelayedTyping() {
+        String formula = "a * b = c & a = d &  b <: d & d = {1}";
+        FormulaNode formulaNode = parseFormula(formula);
+
+        formulaNode.getImplicitDeclarations().forEach(v -> assertEquals(POW_INTEGER, v.getType().toString()));
     }
 
     @Test
@@ -257,7 +267,7 @@ public class FormulaTest {
         FormulaNode formulaNode = parseFormula(formula);
         assertEquals(EXPRESSION_FORMULA, formulaNode.getFormulaType());
         SetComprehensionNode setComprehension = (SetComprehensionNode) formulaNode.getFormula();
-        
+
         List<DeclarationNode> declarationList = setComprehension.getDeclarationList();
         DeclarationNode a = declarationList.get(0);
         DeclarationNode b = declarationList.get(1);
