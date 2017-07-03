@@ -173,12 +173,21 @@ public class LTLTransformationTest extends TestParser {
 
     @Test
     public void testRemoveTrueOr() {
-        LTLFormula ltlFormula = parseLtlFormula("{0=1} or true");
-        LTLNode node = (LTLNode) new RemoveTrueOr().transformNode(ltlFormula.getLTLNode());
-        assertEquals("TRUE", node.toString());
-        ltlFormula = parseLtlFormula("true or {0=1}");
-        node = (LTLNode) new RemoveTrueOr().transformNode(ltlFormula.getLTLNode());
-        assertEquals("TRUE", node.toString());
+        LTLNode node1 = parseLtlFormula("{0=1} or true").getLTLNode();
+        LTLNode node2 = parseLtlFormula("true or {0=1}").getLTLNode();
+        LTLNode nodeFailContainsRight = parseLtlFormula("{0=1} or false").getLTLNode();
+
+        ASTTransformation transformation = new RemoveTrueOr();
+
+        assertTrue(transformation.canHandleNode(node1));
+        assertTrue(transformation.canHandleNode(node2));
+        assertFalse(transformation.canHandleNode(nodeFailContainsRight));
+
+        LTLNode newNode1 = (LTLNode) transformation.transformNode(node1);
+        LTLNode newNode2 = (LTLNode) transformation.transformNode(node2);
+
+        assertEquals("TRUE", newNode1.toString());
+        assertEquals("TRUE", newNode2.toString());
     }
 
     @Test
