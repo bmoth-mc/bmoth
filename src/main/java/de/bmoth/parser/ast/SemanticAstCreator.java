@@ -483,6 +483,8 @@ public class SemanticAstCreator {
             SubstitutionNode elseSubNode = null;
             if (ctx.elseSub != null) {
                 elseSubNode = (SubstitutionNode) ctx.elseSub.accept(this);
+            } else {
+                elseSubNode = new SkipSubstitutionNode();
             }
             return new SelectSubstitutionNode(predNodes, subNodes, elseSubNode);
         }
@@ -496,6 +498,8 @@ public class SemanticAstCreator {
             SubstitutionNode elseSubNode = null;
             if (ctx.elseSub != null) {
                 elseSubNode = (SubstitutionNode) ctx.elseSub.accept(this);
+            } else {
+                elseSubNode = new SkipSubstitutionNode();
             }
             return new IfSubstitutionNode(predNodes, subNodes, elseSubNode);
         }
