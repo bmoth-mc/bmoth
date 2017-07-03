@@ -1,7 +1,6 @@
 package de.bmoth.backend.z3;
 
 import com.microsoft.z3.*;
-
 import de.bmoth.backend.SubstitutionOptions;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.parser.ast.nodes.*;
@@ -213,7 +212,7 @@ public class MachineToZ3Translator {
                 parameters[i] = getVariableAsZ3Expression(node.getParameters().get(i));
             }
             BoolExpr parameterConstraints = FormulaToZ3Translator.translatePredicate(node.getWherePredicate(),
-                    z3Context, z3TypeInference);
+                z3Context, z3TypeInference);
             BoolExpr transition = visitSubstitutionNode(node.getThenSubstitution(), ops);
             BoolExpr existsBody = z3Context.mkAnd(parameterConstraints, transition);
             return z3Context.mkExists(parameters, existsBody, parameters.length, null, null, null, null);
@@ -221,7 +220,7 @@ public class MachineToZ3Translator {
 
         @Override
         public BoolExpr visitSelectSubstitutionNode(SelectSubstitutionNode node, SubstitutionOptions ops) {
-            if (node.getConditions().size() > 1 || node.getElseSubstitution() != null) {
+            if (node.getConditions().size() > 1 || !(node.getElseSubstitution() instanceof SkipSubstitutionNode)) {
                 throw new AssertionError(CURRENTLY_NOT_SUPPORTED);
             }
             BoolExpr condition = translatePredicate(node.getConditions().get(0), ops.getRhs());
@@ -262,7 +261,7 @@ public class MachineToZ3Translator {
 
         @Override
         public BoolExpr visitBecomesElementOfSubstitutionNode(BecomesElementOfSubstitutionNode node,
-                SubstitutionOptions ops) {
+                                                              SubstitutionOptions ops) {
             if (node.getIdentifiers().size() > 1) {
                 throw new AssertionError(CURRENTLY_NOT_SUPPORTED);
             }

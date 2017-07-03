@@ -107,7 +107,7 @@ public class NodeTest extends TestParser {
         OperationNode selectOperation = machine.getOperations().get(1);
         assertEquals("set", setOperation.getName());
         assertEquals("set = BEGIN x := 1 END", setOperation.toString());
-        assertEquals("select = SELECT EQUAL(x,1) THEN x := x END", selectOperation.toString());
+        assertEquals("select = SELECT EQUAL(x,1) THEN x := x ELSE skip END", selectOperation.toString());
         assertEquals("[x]", setOperation.getAssignedDeclarationNodes().toString());
     }
 

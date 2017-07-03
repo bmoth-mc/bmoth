@@ -12,4 +12,8 @@ public class SkipSubstitutionNode extends SubstitutionNode {
     public boolean equalAst(Node other) {
         return NodeUtil.isSameClass(this, other);
     }
+
+    public String toString() {
+        return "skip";
+    }
 }
