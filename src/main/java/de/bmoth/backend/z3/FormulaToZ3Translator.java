@@ -175,19 +175,7 @@ public class FormulaToZ3Translator {
             return boolExpr;
         }
     }
-
-    private Sort getZ3Sort(TypedNode node) {
-        return z3TypeInference.getZ3Sort(node, z3Context);
-    }
-
-    private Z3Type getZ3Type(TypedNode node) {
-        return z3TypeInference.getZ3TypeOfNode(node);
-    }
-
-    private Sort getZ3Sort(Z3Type z3Type) {
-        return z3TypeInference.getZ3Sort(z3Type, z3Context);
-    }
-
+    
     class FormulaToZ3TranslatorVisitor implements FormulaVisitor<Expr, TranslationOptions> {
 
         class OperatorNotImplementedError extends AssertionError {
@@ -197,6 +185,18 @@ public class FormulaToZ3Translator {
                 super("Not implemented: " + node.getOperator());
             }
 
+        }
+
+        private Sort getZ3Sort(TypedNode node) {
+            return z3TypeInference.getZ3Sort(node, z3Context);
+        }
+
+        private Z3Type getZ3Type(TypedNode node) {
+            return z3TypeInference.getZ3TypeOfNode(node);
+        }
+
+        private Sort getZ3Sort(Z3Type z3Type) {
+            return z3TypeInference.getZ3Sort(z3Type, z3Context);
         }
 
         @Override
