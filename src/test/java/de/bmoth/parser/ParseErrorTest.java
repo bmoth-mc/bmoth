@@ -30,7 +30,7 @@ public class ParseErrorTest {
     }
 
     @Test
-    public void testParserErrorException() {
+    public void testParserErrorExceptionViaLTL2CST() {
         String formula = " 1  {1} ";
         try {
             Parser.getLTLFormulaAsCST(formula);
@@ -52,5 +52,21 @@ public class ParseErrorTest {
                 fail("Expected type error exception.");
             }
         }
+    }
+
+    @Test(expected = ParserException.class)
+    public void testParseErrorViaLTL2AST() throws ParserException {
+        String formula = " 1  {1} ";
+        Parser.getLTLFormulaAsSemanticAst(formula);
+    }
+
+    @Test(expected = ParserException.class)
+    public void testParserErrorViaMachine() throws ParserException {
+        Parser.getMachineAsSemanticAst("...");
+    }
+
+    @Test(expected = ParserException.class)
+    public void testParserErrorViaMachineFile() throws ParserException {
+        Parser.getMachineFileAsSemanticAst("src/test/resources/machines/lifts/FlawedMachine.mch");
     }
 }
