@@ -3,13 +3,19 @@ package de.bmoth.ltl;
 import de.bmoth.TestParser;
 import de.bmoth.backend.ltl.transformation.*;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
+import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
+import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.ASTTransformation;
 import org.junit.Test;
 
+import static de.bmoth.backend.ltl.LTLTransformationUtil.*;
+import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.OR;
+import static de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode.Kind.FALSE;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.FINALLY;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.GLOBALLY;
 import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class LTLTransformationTest extends TestParser {
 
@@ -250,5 +256,36 @@ public class LTLTransformationTest extends TestParser {
         LTLFormula ltlFormula = parseLtlFormula("not({0=1} W false)");
         LTLNode node = (LTLNode) new ConvertNotWeakUntil().transformNode(ltlFormula.getLTLNode());
         assertEquals("UNTIL(AND(EQUAL(0,1),NOT(FALSE)),AND(NOT(EQUAL(0,1)),NOT(FALSE)))", node.toString());
+    }
+
+    @Test
+    public void testLTLTransformationUtil() {
+        LTLNode infixOp = new LTLInfixOperatorNode(OR, null, null);
+        LTLNode prefixOp = new LTLPrefixOperatorNode(FINALLY, null);
+        LTLNode prefixPrefixOp = new LTLPrefixOperatorNode(FINALLY, new LTLPrefixOperatorNode(FINALLY, null));
+
+        // infix can not contain prefix op
+        assertFalse(contains(infixOp, FINALLY));
+        assertFalse(contains(infixOp, FINALLY, FINALLY));
+
+        // infix can not contain keyword
+        assertFalse(contains(infixOp, FALSE));
+
+        // infix can not contain a single infix op (use containsLeft|Right instead!)
+        assertFalse(contains(infixOp, OR));
+
+        // first op: right type but mismatch kind...
+        assertFalse(contains(prefixPrefixOp, FINALLY, GLOBALLY));
+
+        // prefix can not contain left|right anything...
+        assertFalse(containsLeft(prefixOp, OR));
+        assertFalse(containsLeft(prefixOp, FALSE));
+        assertFalse(containsRight(prefixOp, OR));
+        assertFalse(containsRight(prefixOp, FALSE));
+
+        // ... same with left|right child...
+        assertNull(leftChild(prefixOp));
+        assertNull(rightChild(prefixOp));
+
     }
 }

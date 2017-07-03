@@ -64,7 +64,7 @@ public class LTLTransformationUtil {
 
     public static boolean contains(LTLPrefixOperatorNode node, LTLPrefixOperatorNode.Kind operator1, LTLPrefixOperatorNode.Kind operator2) {
         LTLNode inner = node.getArgument();
-        return contains(node, operator1) && inner instanceof LTLPrefixOperatorNode && contains((LTLPrefixOperatorNode) inner, operator2);
+        return isOperator(inner, operator1) && contains((LTLPrefixOperatorNode) inner, operator2);
     }
 
     public static boolean containsLeft(Node node, LTLInfixOperatorNode.Kind operator) {
