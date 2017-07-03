@@ -210,6 +210,42 @@ public class LTLTransformationTest extends TestParser {
     }
 
     @Test
+    public void testRemoveTrueFromAnd() {
+        LTLNode node1 = parseLtlFormula("{0=1} & true").getLTLNode();
+        LTLNode node2 = parseLtlFormula("true & {0=1}").getLTLNode();
+
+        ASTTransformation transformation = new RemoveTrueFromAnd();
+
+        assertTrue(transformation.canHandleNode(node1));
+        assertTrue(transformation.canHandleNode(node2));
+
+        LTLNode newNode1 = (LTLNode) transformation.transformNode(node1);
+        LTLNode newNode2 = (LTLNode) transformation.transformNode(node2);
+
+        assertEquals("EQUAL(0,1)", newNode1.toString());
+        assertEquals("EQUAL(0,1)", newNode2.toString());
+
+    }
+
+    @Test
+    public void testRemoveFalseFromOr() {
+        LTLNode node1 = parseLtlFormula("{234=234} or false").getLTLNode();
+        LTLNode node2 = parseLtlFormula("false or {234=234}").getLTLNode();
+
+        ASTTransformation transformation = new RemoveFalseFromOr();
+
+        assertTrue(transformation.canHandleNode(node1));
+        assertTrue(transformation.canHandleNode(node2));
+
+        LTLNode newNode1 = (LTLNode) transformation.transformNode(node1);
+        LTLNode newNode2 = (LTLNode) transformation.transformNode(node2);
+
+        assertEquals("EQUAL(234,234)", newNode1.toString());
+        assertEquals("EQUAL(234,234)", newNode2.toString());
+
+    }
+
+    @Test
     public void testConvertNotWeakUntil() {
         LTLFormula ltlFormula = parseLtlFormula("not({0=1} W false)");
         LTLNode node = (LTLNode) new ConvertNotWeakUntil().transformNode(ltlFormula.getLTLNode());
