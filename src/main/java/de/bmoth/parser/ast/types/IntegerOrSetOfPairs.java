@@ -115,7 +115,7 @@ public class IntegerOrSetOfPairs extends Observable implements BType, Observer {
         throw new UnificationException();
     }
 
-    public void replaceBy(BType otherType) {
+    private void replaceBy(BType otherType) {
         /*
          * unregister this instance from the sub types, i.e. it will be no
          * longer updated
@@ -134,7 +134,7 @@ public class IntegerOrSetOfPairs extends Observable implements BType, Observer {
     @Override
     public boolean unifiable(BType otherType) {
         if (otherType instanceof SetOrIntegerType || otherType instanceof IntegerType
-                || otherType instanceof IntegerOrSetOfPairs || otherType instanceof UntypedType) {
+            || otherType instanceof IntegerOrSetOfPairs || otherType instanceof UntypedType) {
             return true;
         } else if (otherType instanceof SetType) {
             SetType setType = (SetType) otherType;
