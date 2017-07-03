@@ -111,7 +111,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
             for (SolutionFinder opFinder : this.opFinder.keySet()) {
                 Callable<Void> call = () -> {
                     Set<Model> successors = opFinder.findSolutions((BoolExpr)stateConstraint.translate(getContext(opFinder)), maxTransitions);
-                    models.stream()
+                    successors.stream()
                         .map(model -> getStateFromModel(current, model))
                         .filter(state -> !visited.contains(state) && !queue.contains(state))
                         .forEach(queue::add);
