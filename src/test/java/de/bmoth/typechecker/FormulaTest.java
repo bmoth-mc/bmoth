@@ -1,7 +1,6 @@
 package de.bmoth.typechecker;
 
 import de.bmoth.parser.ast.nodes.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -15,7 +14,6 @@ import static de.bmoth.typechecker.TestTypechecker.typeCheckFormulaAndGetErrorMe
 import static org.junit.Assert.assertEquals;
 
 public class FormulaTest {
-
 
     @Test
     public void testExpressionFormula() {
@@ -86,12 +84,18 @@ public class FormulaTest {
     }
 
     @Test
-    @Ignore
     public void testCartesianProductDelayedTyping() {
         String formula = "a * b = c & a = d &  b <: d & d = {1}";
         FormulaNode formulaNode = parseFormula(formula);
 
-        formulaNode.getImplicitDeclarations().forEach(v -> assertEquals(POW_INTEGER, v.getType().toString()));
+        formulaNode.getImplicitDeclarations().stream().filter(n -> !n.getName().equals("c"))
+                .forEach(v -> assertEquals(POW_INTEGER, v.getType().toString()));
+    }
+
+    @Test
+    public void testCartesianProduct2() {
+        String formula = "(a,b,c) : INTEGER*{2}*BOOL";
+        parseFormula(formula);
     }
 
     @Test
@@ -291,7 +295,7 @@ public class FormulaTest {
         QuantifiedPredicateNode quantification = (QuantifiedPredicateNode) formulaNode.getFormula();
 
         assertEquals(QuantifiedPredicateNode.QuantifiedPredicateOperator.UNIVERSAL_QUANTIFICATION,
-            quantification.getOperator());
+                quantification.getOperator());
         List<DeclarationNode> declarationList = quantification.getDeclarationList();
         DeclarationNode x = declarationList.get(0);
         DeclarationNode y = declarationList.get(1);
@@ -309,7 +313,7 @@ public class FormulaTest {
         QuantifiedPredicateNode quantification = (QuantifiedPredicateNode) formulaNode.getFormula();
 
         assertEquals(QuantifiedPredicateNode.QuantifiedPredicateOperator.EXISTENTIAL_QUANTIFICATION,
-            quantification.getOperator());
+                quantification.getOperator());
         List<DeclarationNode> declarationList = quantification.getDeclarationList();
         DeclarationNode x = declarationList.get(0);
         DeclarationNode y = declarationList.get(1);

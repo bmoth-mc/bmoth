@@ -38,7 +38,10 @@ public class CoupleType extends Observable implements BType, Observer {
     @Override
     public void update(Observable o, Object arg) {
         o.deleteObserver(this);
-        if (this.left == o) {
+        if (this.left == o && this.right == o) {
+            setLeftType((BType) arg);
+            setRightType((BType) arg);
+        } else if (this.left == o) {
             setLeftType((BType) arg);
         } else {
             setRightType((BType) arg);
@@ -65,8 +68,8 @@ public class CoupleType extends Observable implements BType, Observer {
     public void replaceBy(BType otherType) {
         /*
          * unregister this instance from the sub type, i.e. it will be no longer
-		 * updated
-		 */
+         * updated
+         */
         if (left instanceof Observable) {
             ((Observable) left).deleteObserver(this);
         }
