@@ -99,6 +99,30 @@ public class FormulaTest {
     }
 
     @Test
+    public void testMult3() {
+        String formula = "1 = a * b";
+        FormulaNode formulaNode = parseFormula(formula);
+        DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("a", a.getName());
+        assertEquals("INTEGER", a.getType().toString());
+        DeclarationNode b = formulaNode.getImplicitDeclarations().get(1);
+        assertEquals("b", b.getName());
+        assertEquals(INTEGER, b.getType().toString());
+    }
+
+    @Test
+    public void testMult4() {
+        String formula = "{(1,TRUE)} = a * b";
+        FormulaNode formulaNode = parseFormula(formula);
+        DeclarationNode a = formulaNode.getImplicitDeclarations().get(0);
+        assertEquals("a", a.getName());
+        assertEquals("POW(INTEGER)", a.getType().toString());
+        DeclarationNode b = formulaNode.getImplicitDeclarations().get(1);
+        assertEquals("b", b.getName());
+        assertEquals("POW(BOOL)", b.getType().toString());
+    }
+
+    @Test
     public void testEmptySetError() {
         String formula = "{} = {}";
         typeCheckFormulaAndGetErrorMessage(formula);
