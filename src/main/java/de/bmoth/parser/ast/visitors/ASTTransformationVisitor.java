@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 public class ASTTransformationVisitor {
 
-    private final List<AbstractASTTransformation> modifierList;
+    private final List<ASTTransformation> modifierList;
 
-    public ASTTransformationVisitor(List<AbstractASTTransformation> modifierList) {
+    public ASTTransformationVisitor(List<ASTTransformation> modifierList) {
         this.modifierList = modifierList;
     }
 
@@ -32,7 +32,7 @@ public class ASTTransformationVisitor {
     private class ASTVisitor implements AbstractVisitor<Node, Void> {
 
         private Node modifyNode(Node node) {
-            for (AbstractASTTransformation astModifier : modifierList) {
+            for (ASTTransformation astModifier : modifierList) {
                 if (astModifier.canHandleNode(node)) {
                     Node temp = astModifier.transformNode(node);
                     if (!temp.equalAst(node)) {

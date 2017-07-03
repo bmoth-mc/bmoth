@@ -4,7 +4,7 @@ import de.bmoth.TestParser;
 import de.bmoth.backend.ltl.transformation.*;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertFalse;
@@ -19,7 +19,7 @@ public class LTLTransformationTest extends TestParser {
         LTLNode node2 = parseLtlFormula("F( not( F( { 1 = 1 } ) ) )").getLTLNode();
         LTLNode nodeFailNotFinally = parseLtlFormula("F( not( { 1 = 1 } ) )").getLTLNode();
 
-        AbstractASTTransformation transformation = new ConvertFinallyFinallyToFinally();
+        ASTTransformation transformation = new ConvertFinallyFinallyToFinally();
 
         assertTrue(transformation.canHandleNode(node1));
         assertTrue(transformation.canHandleNode(node2));
@@ -37,7 +37,7 @@ public class LTLTransformationTest extends TestParser {
         LTLNode node1 = parseLtlFormula("G( G( { 1 = 1 } ) )").getLTLNode();
         LTLNode node2 = parseLtlFormula("G( not( G( { 1 = 1 } ) ) )").getLTLNode();
 
-        AbstractASTTransformation transformation = new ConvertGloballyGloballyToGlobally();
+        ASTTransformation transformation = new ConvertGloballyGloballyToGlobally();
 
         assertTrue(transformation.canHandleNode(node1));
         assertTrue(transformation.canHandleNode(node2));
@@ -52,7 +52,7 @@ public class LTLTransformationTest extends TestParser {
     @Test
     public void testNotGloballyToFinallyNot() {
         LTLNode node = parseLtlFormula("not(G { 1=1 })").getLTLNode();
-        AbstractASTTransformation transformation = new ConvertNotGloballyToFinallyNot();
+        ASTTransformation transformation = new ConvertNotGloballyToFinallyNot();
 
         assertTrue(transformation.canHandleNode(node));
 
@@ -67,7 +67,7 @@ public class LTLTransformationTest extends TestParser {
         LTLNode node3 = parseLtlFormula("( {1=1} U {2=2} ) U {3=3}").getLTLNode();
         LTLNode node4 = parseLtlFormula("{3=3} U ( {5=5} U {2=2} )").getLTLNode();
 
-        AbstractASTTransformation transformation = new ConvertPhiUntilPhiUntilPsiToPhiUntilPsi();
+        ASTTransformation transformation = new ConvertPhiUntilPhiUntilPsiToPhiUntilPsi();
 
         assertTrue(transformation.canHandleNode(node1));
         assertTrue(transformation.canHandleNode(node2));
@@ -85,7 +85,7 @@ public class LTLTransformationTest extends TestParser {
     public void testFinallyPhiOrPsiToFinallyPhiOrFinallyPsi() {
         LTLNode node1 = parseLtlFormula("F( ( {3=3} or {2=2} ) )").getLTLNode();
 
-        AbstractASTTransformation transformation = new ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi();
+        ASTTransformation transformation = new ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi();
 
         assertTrue(transformation.canHandleNode(node1));
 
@@ -98,7 +98,7 @@ public class LTLTransformationTest extends TestParser {
     public void testGloballyPhiAndPsiToGloballyPhiAndGloballyPsi() {
         LTLNode node1 = parseLtlFormula("G( ( {3=3} & {2=2} ) )").getLTLNode();
 
-        AbstractASTTransformation transformation = new ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi();
+        ASTTransformation transformation = new ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi();
 
         assertTrue(transformation.canHandleNode(node1));
 
@@ -112,7 +112,7 @@ public class LTLTransformationTest extends TestParser {
         LTLNode node1 = parseLtlFormula("not( {23=23} R {24=24} )").getLTLNode();
         LTLNode node2 = parseLtlFormula("not( {23=23} U {24=24} )").getLTLNode();
 
-        AbstractASTTransformation transformation = new ConvertNotRelease();
+        ASTTransformation transformation = new ConvertNotRelease();
 
         assertTrue(transformation.canHandleNode(node1));
         assertFalse(transformation.canHandleNode(node2));
@@ -127,7 +127,7 @@ public class LTLTransformationTest extends TestParser {
         LTLNode node1 = parseLtlFormula("{12=12} W {13=13}").getLTLNode();
         LTLNode node2 = parseLtlFormula("{12=12} R {13=13}").getLTLNode();
 
-        AbstractASTTransformation transformation = new ConvertWeakToRelease();
+        ASTTransformation transformation = new ConvertWeakToRelease();
 
         assertTrue(transformation.canHandleNode(node1));
         assertFalse(transformation.canHandleNode(node2));
@@ -142,7 +142,7 @@ public class LTLTransformationTest extends TestParser {
     @Test
     public void testTransformationNotFinallyToGloballyNot() {
         LTLNode node = parseLtlFormula("not (F {2=1})").getLTLNode();
-        AbstractASTTransformation transformation = new ConvertNotFinallyToGloballyNot();
+        ASTTransformation transformation = new ConvertNotFinallyToGloballyNot();
 
         assertTrue(transformation.canHandleNode(node));
 
@@ -187,7 +187,7 @@ public class LTLTransformationTest extends TestParser {
         LTLNode node2 = parseLtlFormula("false & {0=1}").getLTLNode();
         LTLNode nodeFailContainsRight = parseLtlFormula("{0=1} & true").getLTLNode();
 
-        AbstractASTTransformation transformation = new RemoveFalseAnd();
+        ASTTransformation transformation = new RemoveFalseAnd();
 
         assertTrue(transformation.canHandleNode(node1));
         assertTrue(transformation.canHandleNode(node2));

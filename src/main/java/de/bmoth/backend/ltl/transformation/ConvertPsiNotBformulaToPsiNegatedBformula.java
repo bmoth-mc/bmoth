@@ -6,12 +6,12 @@ import de.bmoth.parser.ast.nodes.PredicateOperatorNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Arrays;
 
-public class ConvertPsiNotBformulaToPsiNegatedBformula extends AbstractASTTransformation{
+public class ConvertPsiNotBformulaToPsiNegatedBformula implements ASTTransformation {
 
 	@Override
 	public boolean canHandleNode(Node node) {

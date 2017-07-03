@@ -4,11 +4,11 @@ import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.NumberNode;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 
 import java.math.BigInteger;
 
-public class ConstantFolding extends AbstractASTTransformation {
+public class ConstantFolding implements ASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {

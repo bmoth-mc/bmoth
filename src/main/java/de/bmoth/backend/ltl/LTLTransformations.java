@@ -4,7 +4,7 @@ package de.bmoth.backend.ltl;
 import com.google.common.reflect.ClassPath;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class LTLTransformations {
 
     private static LTLTransformations instance;
 
-    private final List<AbstractASTTransformation> transformationList;
+    private final List<ASTTransformation> transformationList;
 
     private LTLTransformations() {
         this.transformationList = new ArrayList<>();
@@ -27,7 +27,7 @@ public class LTLTransformations {
             for (final ClassPath.ClassInfo info : ClassPath.from(loader).getTopLevelClasses()) {
                 if (info.getName().startsWith("de.bmoth.backend.ltl.transformation")) {
                     final Class<?> clazz = info.load();
-                    transformationList.add((AbstractASTTransformation) clazz.newInstance());
+                    transformationList.add((ASTTransformation) clazz.newInstance());
                 }
             }
         } catch (IOException | InstantiationException | IllegalAccessException e) {

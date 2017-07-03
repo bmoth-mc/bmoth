@@ -1,7 +1,7 @@
 package de.bmoth.backend.z3.transformation;
 
 import de.bmoth.parser.ast.nodes.*;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 import de.bmoth.preferences.BMothPreferences;
 
 import java.math.BigInteger;
@@ -11,7 +11,7 @@ import java.util.Collections;
 import static de.bmoth.parser.ast.nodes.PredicateOperatorNode.PredicateOperator;
 import static de.bmoth.parser.ast.nodes.PredicateOperatorWithExprArgsNode.PredOperatorExprArgs;
 
-public class ConvertMemberOfIntegerSetToLeqGeq extends AbstractASTTransformation {
+public class ConvertMemberOfIntegerSetToLeqGeq implements ASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {

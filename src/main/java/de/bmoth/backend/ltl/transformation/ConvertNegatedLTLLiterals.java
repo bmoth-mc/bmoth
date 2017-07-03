@@ -3,7 +3,7 @@ package de.bmoth.backend.ltl.transformation;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 
 import static de.bmoth.backend.ltl.LTLTransformationUtil.contains;
 import static de.bmoth.backend.ltl.LTLTransformationUtil.isOperator;
@@ -11,7 +11,7 @@ import static de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode.Kind.FALSE;
 import static de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode.Kind.TRUE;
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NOT;
 
-public class ConvertNegatedLTLLiterals extends AbstractASTTransformation {
+public class ConvertNegatedLTLLiterals implements ASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {

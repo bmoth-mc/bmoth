@@ -4,9 +4,9 @@ import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 
-public class ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi extends AbstractASTTransformation {
+public class ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi implements ASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {

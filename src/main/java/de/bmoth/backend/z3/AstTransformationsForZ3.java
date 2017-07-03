@@ -4,7 +4,7 @@ import com.google.common.reflect.ClassPath;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class AstTransformationsForZ3 {
 
     private static AstTransformationsForZ3 instance;
 
-    private final List<AbstractASTTransformation> transformationList;
+    private final List<ASTTransformation> transformationList;
 
     private AstTransformationsForZ3() {
         this.transformationList = new ArrayList<>();
@@ -27,7 +27,7 @@ public class AstTransformationsForZ3 {
             for (final ClassPath.ClassInfo info : ClassPath.from(loader).getTopLevelClasses()) {
                 if (info.getName().startsWith("de.bmoth.backend.z3.transformation")) {
                     final Class<?> clazz = info.load();
-                    transformationList.add((AbstractASTTransformation) clazz.newInstance());
+                    transformationList.add((ASTTransformation) clazz.newInstance());
                 }
             }
         } catch (IOException | InstantiationException | IllegalAccessException e) {
