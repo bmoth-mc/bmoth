@@ -3,7 +3,6 @@ package de.bmoth.ltl;
 import de.bmoth.TestParser;
 import de.bmoth.backend.ltl.LTLTransformations;
 import de.bmoth.parser.ast.nodes.ltl.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NEXT;
