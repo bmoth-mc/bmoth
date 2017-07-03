@@ -81,14 +81,14 @@ public class FormulaToZ3Translator {
         this.z3TypeInference = z3TypeInference;
     }
 
-    public static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context,
-                                                        Z3TypeInference z3TypeInference) {
+    static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context,
+                                                 Z3TypeInference z3TypeInference) {
         ExprNode exprNode = AstTransformationsForZ3.transformExprNode(value);
         return translateVariableEqualToExpr(name, exprNode, z3Context, UNPRIMED, z3TypeInference);
     }
 
-    public static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context,
-                                                        TranslationOptions opt, Z3TypeInference z3TypeInference) {
+    private static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context,
+                                                         TranslationOptions opt, Z3TypeInference z3TypeInference) {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context, z3TypeInference);
         FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
         Expr z3Value = visitor.visitExprNode(value, opt);
@@ -104,8 +104,8 @@ public class FormulaToZ3Translator {
         }
     }
 
-    public static BoolExpr translateVariableElementOfSetExpr(String name, DeclarationNode variable, ExprNode setValue,
-                                                             Context z3Context, TranslationOptions opt, Z3TypeInference z3TypeInference) {
+    static BoolExpr translateVariableElementOfSetExpr(String name, DeclarationNode variable, ExprNode setValue,
+                                                      Context z3Context, TranslationOptions opt, Z3TypeInference z3TypeInference) {
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context, z3TypeInference);
         FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
         ArrayExpr z3Value = (ArrayExpr) visitor.visitExprNode(setValue, opt);
@@ -121,7 +121,7 @@ public class FormulaToZ3Translator {
         }
     }
 
-    public BoolExpr getAccumulatedConstraints(Context z3Context) {
+    private BoolExpr getAccumulatedConstraints(Context z3Context) {
         switch (constraintList.size()) {
             case 0:
                 return null;
@@ -176,15 +176,15 @@ public class FormulaToZ3Translator {
         }
     }
 
-    Sort getZ3Sort(TypedNode node) {
+    private Sort getZ3Sort(TypedNode node) {
         return z3TypeInference.getZ3Sort(node, z3Context);
     }
 
-    Z3Type getZ3Type(TypedNode node) {
+    private Z3Type getZ3Type(TypedNode node) {
         return z3TypeInference.getZ3TypeOfNode(node);
     }
 
-    Sort getZ3Sort(Z3Type z3Type) {
+    private Sort getZ3Sort(Z3Type z3Type) {
         return z3TypeInference.getZ3Sort(z3Type, z3Context);
     }
 
