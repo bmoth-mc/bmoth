@@ -58,10 +58,11 @@ public class BuechiAutomaton {
         return newNodes;
     }
 
-    private List<LTLNode> next1(LTLInfixOperatorNode node) {
+    private List<LTLNode> next1(LTLInfixOperatorNode subNode) {
         List<LTLNode> newNodes = new ArrayList<>();
-        if (node.getKind() == LTLInfixOperatorNode.Kind.UNTIL || node.getKind() == LTLInfixOperatorNode.Kind.RELEASE) {
-            newNodes.add(node);
+        if (subNode.getKind() == LTLInfixOperatorNode.Kind.UNTIL || subNode.getKind() == LTLInfixOperatorNode.Kind.RELEASE) {
+            System.out.println("subNode is Until or Release");
+            newNodes.add(subNode);
         }
         // In case of or an empty list is returned
         return newNodes;
@@ -75,7 +76,7 @@ public class BuechiAutomaton {
         List<LTLNode> newNext = new ArrayList<>(node.next);
         newNext.addAll(next1((LTLInfixOperatorNode) subNode));
 
-        return new BuechiAutomatonNode(newName(), node.incoming,
+        return new BuechiAutomatonNode(newName(), new ArrayList<>(node.incoming),
             newUnprocessed, newProcessed, newNext);
     }
 
@@ -85,8 +86,8 @@ public class BuechiAutomaton {
         newUnprocessed.removeAll(node.processed);
         newUnprocessed.addAll(node.unprocessed);
 
-        return new BuechiAutomatonNode(newName(), node.incoming,
-            newUnprocessed, newProcessed, node.next);
+        return new BuechiAutomatonNode(newName(), new ArrayList<>(node.incoming),
+            newUnprocessed, newProcessed, new ArrayList<>(node.next));
     }
 
     private List<BuechiAutomatonNode> expand(BuechiAutomatonNode node, List<BuechiAutomatonNode> nodesSet) {
@@ -102,7 +103,12 @@ public class BuechiAutomaton {
                 incoming.add(node.name);
                 List<BuechiAutomatonNode> newNodesSet = new ArrayList<>(nodesSet);
                 newNodesSet.add(node);
-                return expand(new BuechiAutomatonNode(newName(), incoming, node.next,
+                System.out.println("###\nNodeSet updated: [");
+                for (BuechiAutomatonNode nodeToPrint : newNodesSet) {
+                    System.out.println(nodeToPrint.toString());
+                }
+                System.out.println("]");
+                return expand(new BuechiAutomatonNode(newName(), incoming, new ArrayList<>(node.next),
                     new ArrayList<>(), new ArrayList<>()), newNodesSet);
             }
         } else {
@@ -111,7 +117,8 @@ public class BuechiAutomaton {
 
             // True, False
             if (subNode instanceof LTLKeywordNode) {
-                if (((LTLKeywordNode) subNode).getKind() == FALSE) {
+                System.out.println("subNode is " + ((LTLKeywordNode) subNode).getKind().toString());
+                if (((LTLKeywordNode) subNode).getKind() == LTLKeywordNode.Kind.FALSE) {
                     // Current node contains a contradiction, discard
                     return nodesSet;
                 } else {
@@ -121,52 +128,57 @@ public class BuechiAutomaton {
             } else
                 // B predicate
                 if (subNode instanceof LTLBPredicateNode) {
+                    System.out.println("subNode is B predicate");
                     // TODO: Check if negation of predicate already occured -> contradiction -> boom
                     node.processed.add(subNode);
                     return expand(node, nodesSet);
-            } else
-                // Next, Not
-                if (subNode instanceof LTLPrefixOperatorNode) {
-                    if (((LTLPrefixOperatorNode) subNode).getKind() == LTLPrefixOperatorNode.Kind.NEXT) {
-                        // Next
-                        List<LTLNode> processed = new ArrayList<>(node.processed);
-                        processed.add(subNode);
-                        List<LTLNode> next = node.next;
-                        next.add(((LTLPrefixOperatorNode) subNode).getArgument());
-                        return expand(new BuechiAutomatonNode(node.name, node.incoming, node.unprocessed,
-                            processed, next), nodesSet);
-                    } else {
-                        // Not
-                        // TODO: Check if negative of predicate already occured -> contradiction -> boom
-                        node.processed.add(subNode);
-                        return expand(node, nodesSet);
-                    }
-            } else
-                // And, Or, Until, Weak-Until
-                if (subNode instanceof LTLInfixOperatorNode) {
-                    if (((LTLInfixOperatorNode) subNode).getKind() == LTLInfixOperatorNode.Kind.AND) {
-                        // And
-                        List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
-                        List<LTLNode> newUnprocessed = new ArrayList<>();
-                        newUnprocessed.add(((LTLInfixOperatorNode) subNode).getLeft());
-                        newUnprocessed.add(((LTLInfixOperatorNode) subNode).getRight());
-                        newUnprocessed.removeAll(node.processed);
-                        newUnprocessed.addAll(unprocessed);
+                } else
+                    // Next, Not
+                    if (subNode instanceof LTLPrefixOperatorNode) {
+                        if (((LTLPrefixOperatorNode) subNode).getKind() == LTLPrefixOperatorNode.Kind.NEXT) {
+                            System.out.println("subNode is Next");
+                            // Next
+                            List<LTLNode> processed = new ArrayList<>(node.processed);
+                            processed.add(subNode);
+                            List<LTLNode> next = new ArrayList<>(node.next);
+                            next.add(((LTLPrefixOperatorNode) subNode).getArgument());
+                            return expand(new BuechiAutomatonNode(node.name + "_1", new ArrayList<>(node.incoming),
+                                new ArrayList<>(node.unprocessed), processed, next), nodesSet);
+                        } else {
+                            // Not
+                            System.out.println("subNode is Not");
+                            // TODO: Check if negative of predicate already occured -> contradiction -> boom
+                            node.processed.add(subNode);
+                            return expand(node, nodesSet);
+                        }
+                    } else
+                        // And, Or, Until, Release
+                        if (subNode instanceof LTLInfixOperatorNode) {
+                            if (((LTLInfixOperatorNode) subNode).getKind() == LTLInfixOperatorNode.Kind.AND) {
+                                System.out.println("subNode is And");
+                                // And
+                                List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
+                                List<LTLNode> newUnprocessed = new ArrayList<>();
+                                newUnprocessed.add(((LTLInfixOperatorNode) subNode).getLeft());
+                                newUnprocessed.add(((LTLInfixOperatorNode) subNode).getRight());
+                                newUnprocessed.removeAll(node.processed);
+                                newUnprocessed.addAll(unprocessed);
 
-                        List<LTLNode> newProcessed = new ArrayList<>(node.processed);
-                        newProcessed.add(subNode);
+                                List<LTLNode> newProcessed = new ArrayList<>(node.processed);
+                                newProcessed.add(subNode);
 
-                        return expand(new BuechiAutomatonNode(node.name, node.incoming,
-                            newUnprocessed, newProcessed, node.next), nodesSet);
+                                return expand(new BuechiAutomatonNode(node.name, new ArrayList<>(node.incoming),
+                                    newUnprocessed, newProcessed, new ArrayList<>(node.next)), nodesSet);
 
-                    } else {
-                        // Until, Weak-until, Or: Split the node in two
-                        List<LTLNode> newProcessed = new ArrayList<>(node.processed);
-                        newProcessed.add(subNode);
-                        return expand(handleSecondNodeInSplit(node, subNode, newProcessed),
-                            expand(handleFirstNodeInSplit(node, subNode, newProcessed), nodesSet));
-                    }
-            }
+                            } else {
+                                System.out.println("subNode is Until, Release or Or");
+                                // Until, Release, Or: Split the node in two
+                                List<LTLNode> newProcessed = new ArrayList<>(node.processed);
+                                newProcessed.add(subNode);
+                                return expand(handleSecondNodeInSplit(node, subNode, newProcessed),
+                                    expand(handleFirstNodeInSplit(node, subNode, newProcessed), nodesSet));
+                            }
+                        }
         }
         return nodesSet;
     }
