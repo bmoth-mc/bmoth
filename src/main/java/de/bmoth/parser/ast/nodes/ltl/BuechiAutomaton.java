@@ -3,11 +3,8 @@ package de.bmoth.parser.ast.nodes.ltl;
 import de.bmoth.parser.ast.nodes.NodeUtil;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.StringJoiner;
-
-import static de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode.Kind.FALSE;
 
 public class BuechiAutomaton {
 
@@ -27,7 +24,6 @@ public class BuechiAutomaton {
         // Check whether the finished node is already in the list (determined by the same Old- and Next-sets).
         BuechiAutomatonNode foundNode = null;
         for (BuechiAutomatonNode nodeInSet: nodesSet) {
-
             if (NodeUtil.equalAst(node.processed, nodeInSet.processed)) {
                 if (NodeUtil.equalAst(node.next, nodeInSet.next)) {
                     foundNode = nodeInSet;
@@ -61,7 +57,6 @@ public class BuechiAutomaton {
     private List<LTLNode> next1(LTLInfixOperatorNode subNode) {
         List<LTLNode> newNodes = new ArrayList<>();
         if (subNode.getKind() == LTLInfixOperatorNode.Kind.UNTIL || subNode.getKind() == LTLInfixOperatorNode.Kind.RELEASE) {
-            System.out.println("subNode is Until or Release");
             newNodes.add(subNode);
         }
         // In case of or an empty list is returned
@@ -103,11 +98,6 @@ public class BuechiAutomaton {
                 incoming.add(node.name);
                 List<BuechiAutomatonNode> newNodesSet = new ArrayList<>(nodesSet);
                 newNodesSet.add(node);
-                System.out.println("###\nNodeSet updated: [");
-                for (BuechiAutomatonNode nodeToPrint : newNodesSet) {
-                    System.out.println(nodeToPrint.toString());
-                }
-                System.out.println("]");
                 return expand(new BuechiAutomatonNode(newName(), incoming, new ArrayList<>(node.next),
                     new ArrayList<>(), new ArrayList<>()), newNodesSet);
             }
@@ -117,7 +107,6 @@ public class BuechiAutomaton {
 
             // True, False
             if (subNode instanceof LTLKeywordNode) {
-                System.out.println("subNode is " + ((LTLKeywordNode) subNode).getKind().toString());
                 if (((LTLKeywordNode) subNode).getKind() == LTLKeywordNode.Kind.FALSE) {
                     // Current node contains a contradiction, discard
                     return nodesSet;
@@ -128,7 +117,6 @@ public class BuechiAutomaton {
             } else
                 // B predicate
                 if (subNode instanceof LTLBPredicateNode) {
-                    System.out.println("subNode is B predicate");
                     // TODO: Check if negation of predicate already occured -> contradiction -> boom
                     node.processed.add(subNode);
                     return expand(node, nodesSet);
@@ -136,7 +124,6 @@ public class BuechiAutomaton {
                     // Next, Not
                     if (subNode instanceof LTLPrefixOperatorNode) {
                         if (((LTLPrefixOperatorNode) subNode).getKind() == LTLPrefixOperatorNode.Kind.NEXT) {
-                            System.out.println("subNode is Next");
                             // Next
                             List<LTLNode> processed = new ArrayList<>(node.processed);
                             processed.add(subNode);
@@ -146,8 +133,7 @@ public class BuechiAutomaton {
                                 new ArrayList<>(node.unprocessed), processed, next), nodesSet);
                         } else {
                             // Not
-                            System.out.println("subNode is Not");
-                            // TODO: Check if negative of predicate already occured -> contradiction -> boom
+                            // TODO: Check if negation of predicate already occured -> contradiction -> boom
                             node.processed.add(subNode);
                             return expand(node, nodesSet);
                         }
@@ -155,7 +141,6 @@ public class BuechiAutomaton {
                         // And, Or, Until, Release
                         if (subNode instanceof LTLInfixOperatorNode) {
                             if (((LTLInfixOperatorNode) subNode).getKind() == LTLInfixOperatorNode.Kind.AND) {
-                                System.out.println("subNode is And");
                                 // And
                                 List<LTLNode> unprocessed = new ArrayList<>(node.unprocessed);
                                 List<LTLNode> newUnprocessed = new ArrayList<>();
@@ -171,7 +156,6 @@ public class BuechiAutomaton {
                                     newUnprocessed, newProcessed, new ArrayList<>(node.next)), nodesSet);
 
                             } else {
-                                System.out.println("subNode is Until, Release or Or");
                                 // Until, Release, Or: Split the node in two
                                 List<LTLNode> newProcessed = new ArrayList<>(node.processed);
                                 newProcessed.add(subNode);
@@ -194,7 +178,6 @@ public class BuechiAutomaton {
     }
 
     public String toString() {
-        System.out.println("\n\n");
         StringJoiner nodesString = new StringJoiner(",\n\n", "", "");
         for (BuechiAutomatonNode node: finalNodeSet) {
             nodesString.add(node.toString());
