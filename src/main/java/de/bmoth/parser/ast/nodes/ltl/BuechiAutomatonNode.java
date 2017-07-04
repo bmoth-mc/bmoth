@@ -18,4 +18,6 @@ public class BuechiAutomatonNode {
         this.processed = processed;
         this.next = next;
     }
+
+    
 }

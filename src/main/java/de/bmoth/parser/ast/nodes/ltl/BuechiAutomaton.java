@@ -1,5 +1,7 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
+import de.bmoth.parser.ast.nodes.NodeUtil;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,12 +27,9 @@ public class BuechiAutomaton {
         // Check whether the finished node is already in the list (determined by the same Old- and Next-sets).
         BuechiAutomatonNode foundNode = null;
         for (BuechiAutomatonNode nodeInSet: nodesSet) {
-            HashSet<LTLNode> setProcessed = new HashSet<>(nodeInSet.processed);
-            HashSet<LTLNode> nodeProcessed = new HashSet<>(node.processed);
-            HashSet<LTLNode> setNext = new HashSet<>(nodeInSet.next);
-            HashSet<LTLNode> nodeNext = new HashSet<>(node.next);
-            if (setProcessed.equals(nodeProcessed)){
-                if (setNext.equals(nodeNext)) {
+
+            if (NodeUtil.equalAst(node.processed, nodeInSet.processed)) {
+                if (NodeUtil.equalAst(node.next, nodeInSet.next)) {
                     foundNode = nodeInSet;
                     break;
                 }
