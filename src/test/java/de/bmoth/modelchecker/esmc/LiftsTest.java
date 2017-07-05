@@ -1,6 +1,8 @@
 package de.bmoth.modelchecker.esmc;
 
+import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
+import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Ignore;
