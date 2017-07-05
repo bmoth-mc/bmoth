@@ -10,18 +10,15 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.preferences.BMothPreferences;
-import jdk.nashorn.internal.codegen.CompilerConstants;
 
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.*;
 
