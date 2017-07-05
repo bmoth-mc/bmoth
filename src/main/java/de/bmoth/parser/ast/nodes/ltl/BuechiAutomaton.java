@@ -183,6 +183,12 @@ public class BuechiAutomaton {
             new ArrayList<>()), new ArrayList<>());
     }
 
+    public void labelNodeSet() {
+        for (BuechiAutomatonNode buechiNode : finalNodeSet) {
+            buechiNode.label();
+        }
+    }
+
     public String toString() {
         StringJoiner nodesString = new StringJoiner(",\n\n", "", "");
         for (BuechiAutomatonNode node: finalNodeSet) {
