@@ -70,7 +70,8 @@ public class FormulaToZ3Translator {
 
     private FormulaToZ3Translator(Context z3Context, String formula) throws ParserException {
         this.z3Context = z3Context;
-        formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        this.formulaNode = Parser.getFormulaAsSemanticAst(formula);
+        
         this.implicitDeclarations = formulaNode.getImplicitDeclarations();
         z3TypeInference = new Z3TypeInference();
         z3TypeInference.visitPredicateNode((PredicateNode) formulaNode.getFormula());
@@ -81,9 +82,8 @@ public class FormulaToZ3Translator {
         this.z3TypeInference = z3TypeInference;
     }
 
-    static BoolExpr translateVariableEqualToExpr(String name, ExprNode value, Context z3Context,
+    static BoolExpr translateVariableEqualToExpr(String name, ExprNode exprNode, Context z3Context,
                                                  Z3TypeInference z3TypeInference) {
-        ExprNode exprNode = AstTransformationsForZ3.transformExprNode(value);
         return translateVariableEqualToExpr(name, exprNode, z3Context, UNPRIMED, z3TypeInference);
     }
 
@@ -138,11 +138,9 @@ public class FormulaToZ3Translator {
         if (formulaToZ3Translator.formulaNode.getFormulaType() != FormulaType.PREDICATE_FORMULA) {
             throw new IllegalArgumentException("Expected predicate.");
         }
-        PredicateNode predNode = AstTransformationsForZ3
-            .transformPredicate((PredicateNode) formulaToZ3Translator.formulaNode.getFormula());
 
         FormulaToZ3TranslatorVisitor visitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
-        Expr constraint = visitor.visitPredicateNode(predNode, UNPRIMED);
+        Expr constraint = visitor.visitPredicateNode((PredicateNode)formulaToZ3Translator.formulaNode.getFormula(), UNPRIMED);
         if (!(constraint instanceof BoolExpr)) {
             throw new IllegalStateException("Invalid translation. Expected BoolExpr but found " + constraint.getClass());
         }
@@ -155,14 +153,12 @@ public class FormulaToZ3Translator {
         }
     }
 
-    public static BoolExpr translatePredicate(PredicateNode pred, Context z3Context, Z3TypeInference z3TypeInference) {
-        PredicateNode predNode = AstTransformationsForZ3.transformPredicate(pred);
+    public static BoolExpr translatePredicate(PredicateNode predNode, Context z3Context, Z3TypeInference z3TypeInference) {
         return translatePredicate(predNode, z3Context, UNPRIMED, z3TypeInference);
     }
 
-    public static BoolExpr translatePredicate(PredicateNode pred, Context z3Context, TranslationOptions opt,
+    public static BoolExpr translatePredicate(PredicateNode predNode, Context z3Context, TranslationOptions opt,
                                               Z3TypeInference z3TypeInference) {
-        PredicateNode predNode = AstTransformationsForZ3.transformPredicate(pred);
         FormulaToZ3Translator formulaToZ3Translator = new FormulaToZ3Translator(z3Context, z3TypeInference);
         FormulaToZ3TranslatorVisitor formulaToZ3TranslatorVisitor = formulaToZ3Translator.new FormulaToZ3TranslatorVisitor();
 

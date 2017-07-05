@@ -6,7 +6,7 @@ import java.util.Set;
 public class OperationNode implements Node {
 
     private final String name;
-    private final SubstitutionNode substitution;
+    private SubstitutionNode substitution;
 
     public OperationNode(String name, SubstitutionNode substitution) {
         this.name = name;
@@ -19,6 +19,10 @@ public class OperationNode implements Node {
 
     public SubstitutionNode getSubstitution() {
         return substitution;
+    }
+
+    public void setSubstitution(SubstitutionNode substitution) {
+        this.substitution = substitution;
     }
 
     @Override

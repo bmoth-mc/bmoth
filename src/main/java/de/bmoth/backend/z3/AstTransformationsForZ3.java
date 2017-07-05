@@ -1,8 +1,11 @@
 package de.bmoth.backend.z3;
 
 import com.google.common.reflect.ClassPath;
-import de.bmoth.parser.ast.nodes.ExprNode;
-import de.bmoth.parser.ast.nodes.PredicateNode;
+
+import de.bmoth.parser.ast.TypeChecker;
+import de.bmoth.parser.ast.TypeErrorException;
+import de.bmoth.parser.ast.nodes.FormulaNode;
+import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
 import de.bmoth.parser.ast.visitors.ASTTransformation;
 
@@ -42,16 +45,31 @@ public class AstTransformationsForZ3 {
         return instance;
     }
 
-    public static PredicateNode transformPredicate(PredicateNode predNode) {
+    public static MachineNode transformMachineNode(MachineNode machineNode) {
         AstTransformationsForZ3 astTransformationForZ3 = AstTransformationsForZ3.getInstance();
         ASTTransformationVisitor visitor = new ASTTransformationVisitor(astTransformationForZ3.transformationList);
-        return visitor.transformPredicate(predNode);
+        visitor.transformMachine(machineNode);
+        try {
+            TypeChecker.typecheckMachineNode(machineNode);
+        } catch (TypeErrorException e) {
+            // a type error should only occur when the AST transformation is
+            // invalid
+            throw new AssertionError(e);
+        }
+        return machineNode;
     }
 
-    public static ExprNode transformExprNode(ExprNode value) {
+    public static FormulaNode transformFormulaNode(FormulaNode formulaNode) {
         AstTransformationsForZ3 astTransformationForZ3 = AstTransformationsForZ3.getInstance();
         ASTTransformationVisitor visitor = new ASTTransformationVisitor(astTransformationForZ3.transformationList);
-        return visitor.transformExpr(value);
+        visitor.transformFormula(formulaNode);
+        try {
+            TypeChecker.typecheckFormulaNode(formulaNode);
+        } catch (TypeErrorException e) {
+            // a type error should only occur when the AST transformation is
+            // invalid
+            throw new AssertionError(e);
+        }
+        return formulaNode;
     }
-
 }

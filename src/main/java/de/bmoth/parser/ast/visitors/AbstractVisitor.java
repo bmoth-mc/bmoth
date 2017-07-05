@@ -4,6 +4,7 @@ import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ltl.*;
 
 public interface AbstractVisitor<R, P> {
+
     default R visitNode(Node node, P expected) {
         if (node instanceof ExprNode) {
             return visitExprNode((ExprNode) node, expected);
@@ -60,7 +61,6 @@ public interface AbstractVisitor<R, P> {
     R visitQuantifiedExpressionNode(QuantifiedExpressionNode node, P expected);
 
     R visitSetComprehensionNode(SetComprehensionNode node, P expected);
-
 
     /*
      * Predicates

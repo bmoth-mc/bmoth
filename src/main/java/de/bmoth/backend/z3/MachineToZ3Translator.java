@@ -20,7 +20,7 @@ public class MachineToZ3Translator {
     private TupleSort tuple;
 
     public MachineToZ3Translator(MachineNode machineNode, Context ctx) {
-        this.machineNode = machineNode;
+        this.machineNode = AstTransformationsForZ3.transformMachineNode(machineNode);
         this.z3Context = ctx;
         this.visitor = new SubstitutionToZ3TranslatorVisitor();
         this.z3TypeInference = new Z3TypeInference();

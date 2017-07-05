@@ -5,7 +5,6 @@ import de.bmoth.parser.ast.nodes.PredicateNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.function.Predicate;
 
 public class BuechiAutomatonNode {
 
