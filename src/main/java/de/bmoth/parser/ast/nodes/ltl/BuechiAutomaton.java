@@ -191,4 +191,8 @@ public class BuechiAutomaton {
         }
         return nodesString.toString();
     }
+
+    public List<BuechiAutomatonNode> getFinalNodeSet() {
+        return finalNodeSet;
+    }
 }
