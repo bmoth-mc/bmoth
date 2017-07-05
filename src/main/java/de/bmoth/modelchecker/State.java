@@ -6,6 +6,7 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,5 +69,16 @@ public class State {
 
     public Map<String, Expr> getValues() {
         return values;
+    }
+
+    public void translate(Context context) {
+        Map<String, Expr> untranslatedMap = new HashMap<>(this.values);
+        this.values.clear();
+        this.values = new HashMap<>(untranslatedMap.size());
+        for (Map.Entry<String,Expr> entry : untranslatedMap.entrySet()) {
+            this.values.put(entry.getKey(), entry.getValue().translate(context));
+        }
+        untranslatedMap.clear();
+        //Tanslate predecessor
     }
 }
