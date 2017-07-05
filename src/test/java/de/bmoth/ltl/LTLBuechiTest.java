@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 public class LTLBuechiTest {
 
     @Test
-    public void testGraphConstruction() throws ParserException {
+    public void testGraphConstructionNext() throws ParserException {
         String formula = "(X {0=1})";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
@@ -24,7 +24,7 @@ public class LTLBuechiTest {
     }
 
     @Test
-    public void testGraphConstruction2() throws ParserException {
+    public void testGraphConstructionGlobally() throws ParserException {
         String formula = "G (X {0=1})";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
@@ -34,8 +34,8 @@ public class LTLBuechiTest {
     }
 
     @Test
-    @Ignore 
-    public void testGraphConstruction3() throws ParserException {
+    @Ignore
+    public void testGraphConstructionGloballyFinally() throws ParserException {
         String formula = "G (F (X {0=1}))";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
@@ -43,6 +43,26 @@ public class LTLBuechiTest {
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         System.out.println(buechiAutomaton.toString());
         assertEquals(4, buechiAutomaton.getFinalNodeSet().size());
+    }
+
+    @Test
+    public void testGraphConstructionNot() throws ParserException {
+        String formula = "G not (X {0=1})";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        System.out.println(buechiAutomaton.toString());
+        assertEquals(2, buechiAutomaton.getFinalNodeSet().size());
+    }
+
+    @Test
+    public void testGraphConstructionAnd() throws ParserException {
+        String formula = "G (X ( {0=1} & {2=3} ) )";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        System.out.println(buechiAutomaton.toString());
+        assertEquals(2, buechiAutomaton.getFinalNodeSet().size());
     }
 
 }
