@@ -11,13 +11,13 @@ public class BuechiAutomaton {
     private int nodeCounter = 0;
     private List<BuechiAutomatonNode> finalNodeSet;
 
-    public String newName() {
-        nodeCounter++;
-        return "node" + nodeCounter;
-    }
-
     public BuechiAutomaton(LTLNode ltlNode) {
         this.finalNodeSet = createGraph(ltlNode);
+    }
+
+    private String newName() {
+        nodeCounter++;
+        return "node" + nodeCounter;
     }
 
     private BuechiAutomatonNode nodeIsInNodeSet(BuechiAutomatonNode buechiNode, List<BuechiAutomatonNode> nodesSet) {
@@ -161,7 +161,6 @@ public class BuechiAutomaton {
             } else
                 if (ltlNode instanceof LTLBPredicateNode) {
                     // B predicate
-                    // TODO: Check if negation of predicate already occured -> contradiction -> boom
                     buechiNode.processed.add(ltlNode);
                     return expand(buechiNode, nodeSet);
                 } else
