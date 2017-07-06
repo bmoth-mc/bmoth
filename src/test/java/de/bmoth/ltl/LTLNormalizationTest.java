@@ -9,8 +9,6 @@ import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NEXT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
-
 public class LTLNormalizationTest extends TestParser {
     @Test
     public void testNormalization1() {
