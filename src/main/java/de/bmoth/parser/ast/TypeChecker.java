@@ -72,7 +72,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
 
     private void checkFormulaNode(FormulaNode formulaNode) {
         for (DeclarationNode node : formulaNode.getImplicitDeclarations()) {
-            node.setType(new UntypedType());
+            setInitialType(node);
         }
         Node formula = formulaNode.getFormula();
         if (formula instanceof PredicateNode) {
@@ -115,24 +115,34 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
         performPostActions();
     }
 
+    private void setInitialType(DeclarationNode node) {
+        if (node.getType() == null) {
+            node.setType(new UntypedType());
+        }
+    }
+
     private void checkMachineNode(MachineNode machineNode) {
         for (EnumeratedSetDeclarationNode eSet : machineNode.getEnumaratedSets()) {
             DeclarationNode setDeclaration = eSet.getSetDeclaration();
-            EnumeratedSetElementType userDefinedElementType = new EnumeratedSetElementType(setDeclaration.getName(),
-                    eSet.getElementsAsStrings());
-            setDeclaration.setType(new SetType(userDefinedElementType));
-            for (DeclarationNode element : eSet.getElements()) {
-                element.setType(userDefinedElementType);
+            if (setDeclaration.getType() == null) {
+                EnumeratedSetElementType userDefinedElementType = new EnumeratedSetElementType(setDeclaration.getName(),
+                        eSet.getElementsAsStrings());
+                setDeclaration.setType(new SetType(userDefinedElementType));
+                for (DeclarationNode element : eSet.getElements()) {
+                    element.setType(userDefinedElementType);
+                }
             }
         }
 
         for (DeclarationNode deferredSet : machineNode.getDeferredSets()) {
-            DeferredSetElementType userDefinedElementType = new DeferredSetElementType(deferredSet.getName());
-            deferredSet.setType(new SetType(userDefinedElementType));
+            if (deferredSet.getType() == null) {
+                DeferredSetElementType userDefinedElementType = new DeferredSetElementType(deferredSet.getName());
+                deferredSet.setType(new SetType(userDefinedElementType));
+            }
         }
 
         // set all constants to untyped
-        machineNode.getConstants().forEach(con -> con.setType(new UntypedType()));
+        machineNode.getConstants().forEach(this::setInitialType);
 
         // visit the properties clause
         if (machineNode.getProperties() != null) {
@@ -148,7 +158,7 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
         }
 
         // set all variables to untyped
-        machineNode.getVariables().forEach(var -> var.setType(new UntypedType()));
+        machineNode.getVariables().forEach(this::setInitialType);
 
         // visit the invariant clause
         if (machineNode.getInvariant() != null) {
@@ -555,7 +565,9 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
 
     private void setDeclarationTypes(List<DeclarationNode> list) {
         for (DeclarationNode decl : list) {
-            decl.setType(new UntypedType());
+            if (decl.getType() == null) {
+                decl.setType(new UntypedType());
+            }
             this.typedNodes.add(decl);
         }
     }

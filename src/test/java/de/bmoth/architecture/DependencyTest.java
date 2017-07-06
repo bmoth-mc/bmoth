@@ -34,7 +34,7 @@ public class DependencyTest {
 
         // cycles in packages
         String[][] exceptions2DimArray = new String[][] {
-                new String[] { "de.bmoth.parser", "de.bmoth.parser.ast", "de.bmoth.parser.cst" },
+                new String[] { "de.bmoth.parser", "de.bmoth.parser.ast", "de.bmoth.parser.cst", "de.bmoth.parser.ast.visitors" },
                 new String[] { "de.bmoth.parser.ast.nodes", "de.bmoth.parser.ast.nodes.ltl" } };
         @SuppressWarnings("unchecked")
         Set<String>[] exceptions = Arrays.stream(exceptions2DimArray)
@@ -99,7 +99,6 @@ public class DependencyTest {
             private DependencyRule parser;
             private DependencyRule parser_;
             private DependencyRule preferences;
-            private DependencyRule parserAst;
 
             @Override
             public void defineRules() {
@@ -113,9 +112,7 @@ public class DependencyTest {
                 modelchecker_.mayUse(backend, backend_, modelchecker, parser_, preferences);
 
                 parser.mayUse(antlr, parser_);
-                parser_.mayUse(antlr);
-
-                parserAst.mayUse(backend);
+                parser_.mayUse(antlr, parser_);
             }
         }
 

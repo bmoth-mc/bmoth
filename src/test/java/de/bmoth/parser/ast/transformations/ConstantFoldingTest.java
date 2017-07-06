@@ -2,7 +2,6 @@ package de.bmoth.parser.ast.transformations;
 
 import de.bmoth.backend.z3.AstTransformationsForZ3;
 import de.bmoth.parser.ast.nodes.FormulaNode;
-import de.bmoth.parser.ast.nodes.PredicateNode;
 import org.junit.Test;
 
 import static de.bmoth.TestParser.parseFormula;
@@ -13,7 +12,7 @@ public class ConstantFoldingTest {
     public void testIntegerAddition() {
         String formula = "a = 1+2+3";
         FormulaNode formulaNode = parseFormula(formula);
-        PredicateNode op = AstTransformationsForZ3.transformPredicate((PredicateNode) formulaNode.getFormula());
-        assertEquals("EQUAL(a,6)", op.toString());
+        formulaNode = AstTransformationsForZ3.transformFormulaNode(formulaNode);
+        assertEquals("EQUAL(a,6)", formulaNode.getFormula().toString());
     }
 }

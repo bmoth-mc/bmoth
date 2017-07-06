@@ -9,18 +9,29 @@ import java.util.StringJoiner;
 public class BuechiAutomaton {
 
     private int nodeCounter = 0;
+    private List<LTLInfixOperatorNode> subFormulasForAcceptance = new ArrayList<>();
     private List<BuechiAutomatonNode> finalNodeSet;
-
-    public String newName() {
-        nodeCounter++;
-        return "node" + nodeCounter;
-    }
 
     public BuechiAutomaton(LTLNode ltlNode) {
         this.finalNodeSet = createGraph(ltlNode);
     }
 
-    private BuechiAutomatonNode nodeIsInNodeSet(BuechiAutomatonNode buechiNode, List<BuechiAutomatonNode> nodesSet) {
+    private String newName() {
+        nodeCounter++;
+        return "node" + nodeCounter;
+    }
+
+    private Boolean ltlNodeIsInNodeSet(LTLNode ltlNode, List<LTLNode> processed) {
+        Boolean isInNodeSet = false;
+        for (LTLNode processedNode : processed) {
+            if (ltlNode.equalAst(processedNode)) {
+                isInNodeSet = true; 
+            }
+        }
+        return isInNodeSet;
+    }
+
+    private BuechiAutomatonNode buechiNodeIsInNodeSet(BuechiAutomatonNode buechiNode, List<BuechiAutomatonNode> nodesSet) {
         // Check whether the finished node is already in the list (determined by the same Old- and Next-sets).
         BuechiAutomatonNode foundNode = null;
         for (BuechiAutomatonNode nodeInSet: nodesSet) {
@@ -85,7 +96,7 @@ public class BuechiAutomaton {
 
     private List<BuechiAutomatonNode> handleProcessedNode(BuechiAutomatonNode buechiNode, List<BuechiAutomatonNode> nodeSet) {
         // Add a processed node to the nodeSet or update it.
-        BuechiAutomatonNode nodeInSet = nodeIsInNodeSet(buechiNode, nodeSet);
+        BuechiAutomatonNode nodeInSet = buechiNodeIsInNodeSet(buechiNode, nodeSet);
         if (nodeInSet != null) {
             nodeInSet.incoming.addAll(buechiNode.incoming);
             return nodeSet;
@@ -116,6 +127,9 @@ public class BuechiAutomaton {
                 newUnprocessed, newProcessed, new ArrayList<>(buechiNode.next)), nodeSet);
         } else {
             // Until, Release, Or: Split the node in two
+            if (((LTLInfixOperatorNode) ltlNode).getKind() == LTLInfixOperatorNode.Kind.UNTIL) {
+                subFormulasForAcceptance.add((LTLInfixOperatorNode) ltlNode);
+            }
             List<LTLNode> newProcessed = new ArrayList<>(buechiNode.processed);
             newProcessed.add(ltlNode);
             return expand(buildSecondNodeInSplit(buechiNode, ltlNode, newProcessed),
@@ -161,7 +175,6 @@ public class BuechiAutomaton {
             } else
                 if (ltlNode instanceof LTLBPredicateNode) {
                     // B predicate
-                    // TODO: Check if negation of predicate already occured -> contradiction -> boom
                     buechiNode.processed.add(ltlNode);
                     return expand(buechiNode, nodeSet);
                 } else
@@ -184,11 +197,29 @@ public class BuechiAutomaton {
             new ArrayList<>()), new ArrayList<>());
     }
 
+    public void labelNodeSet() {
+        for (BuechiAutomatonNode buechiNode : finalNodeSet) {
+            buechiNode.label();
+        }
+        for (LTLInfixOperatorNode untilNode : subFormulasForAcceptance) {
+            for (BuechiAutomatonNode buechiNode : finalNodeSet) {
+                if (!ltlNodeIsInNodeSet(untilNode, buechiNode.processed) ||
+                    ltlNodeIsInNodeSet(untilNode.getRight(), buechiNode.processed)) {
+                    buechiNode.isAcceptingState = true;
+                }
+            }
+        }
+    }
+
     public String toString() {
         StringJoiner nodesString = new StringJoiner(",\n\n", "", "");
         for (BuechiAutomatonNode node: finalNodeSet) {
             nodesString.add(node.toString());
         }
         return nodesString.toString();
+    }
+
+    public List<BuechiAutomatonNode> getFinalNodeSet() {
+        return finalNodeSet;
     }
 }
