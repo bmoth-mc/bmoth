@@ -5,7 +5,6 @@ import de.bmoth.antlr.BMoThParser.*;
 import de.bmoth.antlr.BMoThParserBaseVisitor;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ExpressionOperatorNode.ExpressionOperator;
-import de.bmoth.parser.ast.nodes.QuantifiedExpressionNode.QuantifiedExpressionOperator;
 import de.bmoth.parser.ast.nodes.ltl.*;
 import de.bmoth.parser.cst.BDefinition;
 import de.bmoth.parser.cst.BDefinition.KIND;
@@ -68,6 +67,17 @@ public class SemanticAstCreator {
             SubstitutionNode substitution = (SubstitutionNode) machineAnalyser.getInitialisationClause().substitution()
                 .accept(formulaVisitor);
             machineNode.setInitialisation(substitution);
+        }
+
+        Map<String, LtlStartContext> ltlFormulaMap = machineAnalyser.getLTLFormulaMap();
+        for (Entry<String, LtlStartContext> entry : ltlFormulaMap.entrySet()) {
+            String name = entry.getKey();
+            LtlStartContext value = entry.getValue();
+            LTLNode ltlNode = (LTLNode) value.accept(formulaVisitor);
+            LTLFormula ltlFormula = new LTLFormula();
+            ltlFormula.setName(name);
+            ltlFormula.setFormula(ltlNode);
+            machineNode.addLTLFormula(ltlFormula);
         }
 
         machineNode
@@ -181,7 +191,6 @@ public class SemanticAstCreator {
             return new QuantifiedPredicateNode(ctx, declarationList, predNode);
         }
 
-
         @Override
         public Node visitEmptySequenceExpression(BMoThParser.EmptySequenceExpressionContext ctx) {
             return new ExpressionOperatorNode(ctx, new ArrayList<>(), ExpressionOperator.EMPTY_SEQUENCE);
@@ -230,7 +239,7 @@ public class SemanticAstCreator {
                 DeclarationNode declarationNode = declarationMap.get(declNode);
                 return new DeferredSetNode(terminalNode, declarationNode, terminalNode.getText());
             } else if (declNode.getParent().getParent() instanceof EnumeratedSetContext) {
-                EnumeratedSetDeclarationNode enumeratedSetDeclarationNode = enumerations.get(declNode.getParent());
+                EnumeratedSetDeclarationNode enumeratedSetDeclarationNode = enumerations.get(declNode.getParent().getParent());
                 DeclarationNode declarationNode = declarationMap.get(declNode);
                 return new EnumeratedSetElementNode(terminalNode, enumeratedSetDeclarationNode, terminalNode.getText(),
                     declarationNode);
@@ -351,8 +360,7 @@ public class SemanticAstCreator {
         public Node visitSetComprehensionExpression(BMoThParser.SetComprehensionExpressionContext ctx) {
             List<DeclarationNode> declarationList = createDeclarationNodeList(ctx.identifier_list().IDENTIFIER());
             PredicateNode predNode = (PredicateNode) ctx.predicate().accept(this);
-            return new QuantifiedExpressionNode(ctx, declarationList, predNode, null,
-                QuantifiedExpressionOperator.SET_COMPREHENSION);
+            return new SetComprehensionNode(ctx, declarationList, predNode);
         }
 
         @Override
@@ -475,6 +483,8 @@ public class SemanticAstCreator {
             SubstitutionNode elseSubNode = null;
             if (ctx.elseSub != null) {
                 elseSubNode = (SubstitutionNode) ctx.elseSub.accept(this);
+            } else {
+                elseSubNode = new SkipSubstitutionNode();
             }
             return new SelectSubstitutionNode(predNodes, subNodes, elseSubNode);
         }
@@ -488,6 +498,8 @@ public class SemanticAstCreator {
             SubstitutionNode elseSubNode = null;
             if (ctx.elseSub != null) {
                 elseSubNode = (SubstitutionNode) ctx.elseSub.accept(this);
+            } else {
+                elseSubNode = new SkipSubstitutionNode();
             }
             return new IfSubstitutionNode(predNodes, subNodes, elseSubNode);
         }
@@ -542,6 +554,11 @@ public class SemanticAstCreator {
         }
 
         // LTL
+
+        @Override
+        public LTLNode visitLtlStart(BMoThParser.LtlStartContext ctx) {
+            return (LTLNode) ctx.ltlFormula().accept(this);
+        }
 
         @Override
         public Node visitLTLPrefixOperator(BMoThParser.LTLPrefixOperatorContext ctx) {

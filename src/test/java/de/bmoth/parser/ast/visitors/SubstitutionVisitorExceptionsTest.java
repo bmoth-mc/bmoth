@@ -1,18 +1,17 @@
 package de.bmoth.parser.ast.visitors;
 
+import de.bmoth.antlr.BMoThParser;
 import de.bmoth.parser.ast.nodes.*;
 import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
-
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -30,7 +29,7 @@ public class SubstitutionVisitorExceptionsTest {
     @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandleExprOperator() {
         ExpressionOperatorNode node = new ExpressionOperatorNode(null, null,
-                ExpressionOperatorNode.ExpressionOperator.BOOL);
+            ExpressionOperatorNode.ExpressionOperator.BOOL);
         visitor.visitExprOperatorNode(node, null);
     }
 
@@ -53,16 +52,9 @@ public class SubstitutionVisitorExceptionsTest {
     }
 
     @Test(expected = AssertionError.class)
-    public void substitutionVisitorsDoNotHandleQuantifiedExpr() {
-        QuantifiedExpressionNode node = new QuantifiedExpressionNode(null, null, null, null,
-                QuantifiedExpressionNode.QuantifiedExpressionOperator.SET_COMPREHENSION);
-        visitor.visitQuantifiedExpressionNode(node, null);
-    }
-
-    @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandlePredicate() {
         PredicateNode node = new PredicateOperatorNode(null, PredicateOperatorNode.PredicateOperator.AND,
-                Collections.emptyList());
+            Collections.emptyList());
         visitor.visitPredicateNode(node, null);
     }
 
@@ -81,14 +73,65 @@ public class SubstitutionVisitorExceptionsTest {
     @Test(expected = AssertionError.class)
     public void substitutionVisitorsDoNotHandlePredicateOperatorWithExprArgs() {
         PredicateOperatorWithExprArgsNode node = new PredicateOperatorWithExprArgsNode(null,
-                PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.ELEMENT_OF, null);
+            PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.ELEMENT_OF, null);
         visitor.visitPredicateOperatorWithExprArgs(node, null);
     }
 
     @Test(expected = AssertionError.class)
-    @Ignore("nullpointer exception, how to construct quantified predicate note properly?")
     public void substitutionVisitorsDoNotHandleQuantifiedPredicate() {
-        QuantifiedPredicateNode node = new QuantifiedPredicateNode(null, null, null);
+        BMoThParser.QuantifiedPredicateContext ctx = new BMoThParser.QuantifiedPredicateContext(new BMoThParser.PredicateContext());
+        ctx.operator = new Token() {
+            @Override
+            public String getText() {
+                return null;
+            }
+
+            @Override
+            public int getType() {
+                return 0;
+            }
+
+            @Override
+            public int getLine() {
+                return 0;
+            }
+
+            @Override
+            public int getCharPositionInLine() {
+                return 0;
+            }
+
+            @Override
+            public int getChannel() {
+                return 0;
+            }
+
+            @Override
+            public int getTokenIndex() {
+                return 0;
+            }
+
+            @Override
+            public int getStartIndex() {
+                return 0;
+            }
+
+            @Override
+            public int getStopIndex() {
+                return 0;
+            }
+
+            @Override
+            public TokenSource getTokenSource() {
+                return null;
+            }
+
+            @Override
+            public CharStream getInputStream() {
+                return null;
+            }
+        };
+        QuantifiedPredicateNode node = new QuantifiedPredicateNode(ctx, null, null);
         visitor.visitQuantifiedPredicateNode(node, null);
     }
 
@@ -150,7 +193,7 @@ public class SubstitutionVisitorExceptionsTest {
 
             @Override
             public Object visitBecomesElementOfSubstitutionNode(BecomesElementOfSubstitutionNode node,
-                    Object expected) {
+                                                                Object expected) {
                 return null;
             }
 

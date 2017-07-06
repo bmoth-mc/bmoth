@@ -11,6 +11,14 @@ import static org.junit.Assert.assertEquals;
 public class RelationsTest {
 
     @Test
+    public void testSetOfRelations() {
+        String formula = "a <-> b = {{(1|->TRUE)}}";
+        Map<String, String> formulaTypes = getFormulaTypes(formula);
+        assertEquals("POW(INTEGER)", formulaTypes.get("a"));
+        assertEquals("POW(BOOL)", formulaTypes.get("b"));
+    }
+    
+    @Test
     public void testFunctionCall() {
         String formula = "[4,5,6](2) = a";
         Map<String, String> formulaTypes = getFormulaTypes(formula);

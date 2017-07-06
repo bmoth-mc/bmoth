@@ -41,4 +41,16 @@ public class ConditionSubstitutionNode extends SubstitutionNode {
     public void setCondition(PredicateNode predicate) {
         this.condition = predicate;
     }
+
+    @Override
+    public boolean equalAst(Node other) {
+        if (!NodeUtil.isSameClass(this, other)) {
+            return false;
+        }
+
+        ConditionSubstitutionNode that = (ConditionSubstitutionNode) other;
+        return this.kind.equals(that.kind)
+            && this.condition.equalAst(that.condition)
+            && this.substitution.equalAst(that.substitution);
+    }
 }

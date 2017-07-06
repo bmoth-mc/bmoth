@@ -1,40 +1,41 @@
 package de.bmoth.backend.ltl;
 
 
-
-import java.util.ArrayList;
-import java.util.List;
-
-import de.bmoth.backend.ltl.transformation.*;
+import com.google.common.reflect.ClassPath;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LTLTransformations {
+    private final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    private final Logger logger = Logger.getLogger(getClass().getName());
+
     private static LTLTransformations instance;
 
-    private final List<AbstractASTTransformation> transformationList;
+    private final List<ASTTransformation> transformationList;
 
     private LTLTransformations() {
         this.transformationList = new ArrayList<>();
-        transformationList.add(new ConvertNotGloballyToFinallyNot());
-        transformationList.add(new ConvertNotFinallyToGloballyNot());
-        transformationList.add(new ConvertNotNextToNextNot());
-        transformationList.add(new ConvertFinallyGloballyFinallyToGloballyFinally());
-        transformationList.add(new ConvertGloballyFinallyGloballyToFinallyGlobally());
-        transformationList.add(new ConvertGloballyGloballyToGlobally());
-        transformationList.add(new ConvertFinallyFinallyToFinally());
-        transformationList.add(new ConvertPhiUntilPhiUntilPsiToPhiUntilPsi());
-        transformationList.add(new ConvertNextPhiUntilPsiToNextPhiUntilNextPsi());
-        transformationList.add(new ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi());
-        transformationList.add(new ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi());
-        transformationList.add(new ConvertNotUntil());
-        transformationList.add(new ConvertNotWeakUntil());
-        transformationList.add(new ConvertFinallyPhiToTrueUntilPhi());
-        transformationList.add(new ConvertGloballyPhiToPhiWeakUntilFalse());
+
+        try {
+            for (final ClassPath.ClassInfo info : ClassPath.from(loader).getTopLevelClasses()) {
+                if (info.getName().startsWith("de.bmoth.backend.ltl.transformation")) {
+                    final Class<?> clazz = info.load();
+                    transformationList.add((ASTTransformation) clazz.newInstance());
+                }
+            }
+        } catch (IOException | InstantiationException | IllegalAccessException e) {
+            logger.log(Level.SEVERE, "Error loading LTL transformation rules", e);
+        }
     }
 
-    public static LTLTransformations getInstance() {
+    private static LTLTransformations getInstance() {
         if (null == instance) {
             instance = new LTLTransformations();
         }

@@ -1,12 +1,13 @@
 package de.bmoth.backend.z3.transformation;
 
 import de.bmoth.parser.ast.nodes.*;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class ConvertElementOfUnionToMultipleElementOfs extends AbstractASTTransformation {
+public class ConvertElementOfUnionToMultipleElementOfs implements ASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
@@ -24,14 +25,10 @@ public class ConvertElementOfUnionToMultipleElementOfs extends AbstractASTTransf
                 List<PredicateNode> predicateArguments = new ArrayList<>();
                 ExpressionOperatorNode union = (ExpressionOperatorNode) right;
                 for (ExprNode set : union.getExpressionNodes()) {
-                    List<ExprNode> args = new ArrayList<>();
-                    args.add(left);
-                    args.add(set);
                     PredicateOperatorWithExprArgsNode predicateOperatorWithExprArgsNode = new PredicateOperatorWithExprArgsNode(
-                        set.getParseTree(), PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.ELEMENT_OF, args);
+                        set.getParseTree(), PredicateOperatorWithExprArgsNode.PredOperatorExprArgs.ELEMENT_OF, Arrays.asList(left, set));
                     predicateArguments.add(predicateOperatorWithExprArgsNode);
                 }
-                setChanged();
                 return new PredicateOperatorNode(node.getParseTree(), PredicateOperatorNode.PredicateOperator.OR, predicateArguments);
             }
         }

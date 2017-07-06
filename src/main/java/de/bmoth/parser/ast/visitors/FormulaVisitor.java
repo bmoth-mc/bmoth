@@ -9,13 +9,8 @@ import de.bmoth.parser.ast.nodes.ParallelSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SingleAssignSubstitutionNode;
 import de.bmoth.parser.ast.nodes.SkipSubstitutionNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 
-public interface FormulaVisitor<R, P> extends AbstractVisitor<R, P> {
+public interface FormulaVisitor<R, P> extends FormulaAndSubstitutionVisitor<R, P> {
 
     @Override
     default R visitSelectSubstitutionNode(SelectSubstitutionNode node, P expected) {
@@ -59,31 +54,6 @@ public interface FormulaVisitor<R, P> extends AbstractVisitor<R, P> {
 
     @Override
     default R visitSkipSubstitutionNode(SkipSubstitutionNode node, P expected) {
-        throw new AssertionError();
-    }
-
-    @Override
-    default R visitLTLNode(LTLNode node, P expected) {
-        throw new AssertionError();
-    }
-
-    @Override
-    default R visitLTLPrefixOperatorNode(LTLPrefixOperatorNode node, P expected) {
-        throw new AssertionError();
-    }
-
-    @Override
-    default R visitLTLKeywordNode(LTLKeywordNode node, P expected) {
-        throw new AssertionError();
-    }
-
-    @Override
-    default R visitLTLInfixOperatorNode(LTLInfixOperatorNode node, P expected) {
-        throw new AssertionError();
-    }
-
-    @Override
-    default R visitLTLBPredicateNode(LTLBPredicateNode node, P expected) {
         throw new AssertionError();
     }
 

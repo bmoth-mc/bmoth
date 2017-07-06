@@ -70,4 +70,17 @@ public class QuantifiedPredicateNode extends PredicateNode {
     public void setPredicate(PredicateNode pred) {
         this.predicateNode = pred;
     }
+
+    @Override
+    public boolean equalAst(Node other) {
+        if (!NodeUtil.isSameClass(this, other)) {
+            return false;
+        }
+
+        QuantifiedPredicateNode that = (QuantifiedPredicateNode) other;
+        return this.operator.equals(that.operator)
+            && this.predicateNode.equalAst(that.predicateNode)
+            && NodeUtil.equalAst(this.declarationList, that.declarationList);
+
+    }
 }

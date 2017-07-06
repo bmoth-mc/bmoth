@@ -1,18 +1,25 @@
 package de.bmoth.parser.ast.visitors;
 
 import de.bmoth.parser.ast.nodes.*;
-import de.bmoth.parser.ast.nodes.ltl.LTLBPredicateNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
+import de.bmoth.parser.ast.nodes.ltl.*;
 
 public interface AbstractVisitor<R, P> {
+    default R visitNode(Node node, P expected) {
+        if (node instanceof ExprNode) {
+            return visitExprNode((ExprNode) node, expected);
+        } else if (node instanceof PredicateNode) {
+            return visitPredicateNode((PredicateNode) node, expected);
+        } else if (node instanceof SubstitutionNode) {
+            return visitSubstitutionNode((SubstitutionNode) node, expected);
+        } else if (node instanceof LTLNode) {
+            return visitLTLNode((LTLNode) node, expected);
+        }
+        throw new AssertionError();
+    }
 
     /*
      * Expressions
      */
-
     default R visitExprNode(ExprNode node, P expected) {
         if (node instanceof ExpressionOperatorNode) {
             return visitExprOperatorNode((ExpressionOperatorNode) node, expected);
@@ -22,6 +29,8 @@ public interface AbstractVisitor<R, P> {
             return visitNumberNode((NumberNode) node, expected);
         } else if (node instanceof QuantifiedExpressionNode) {
             return visitQuantifiedExpressionNode((QuantifiedExpressionNode) node, expected);
+        } else if (node instanceof SetComprehensionNode) {
+            return visitSetComprehensionNode((SetComprehensionNode) node, expected);
         } else if (node instanceof CastPredicateExpressionNode) {
             return visitCastPredicateExpressionNode((CastPredicateExpressionNode) node, expected);
         } else if (node instanceof EnumeratedSetElementNode) {
@@ -49,6 +58,9 @@ public interface AbstractVisitor<R, P> {
     R visitNumberNode(NumberNode node, P expected);
 
     R visitQuantifiedExpressionNode(QuantifiedExpressionNode node, P expected);
+
+    R visitSetComprehensionNode(SetComprehensionNode node, P expected);
+
 
     /*
      * Predicates

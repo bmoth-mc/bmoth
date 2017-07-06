@@ -1,31 +1,41 @@
 package de.bmoth.backend.z3;
 
-import de.bmoth.backend.z3.transformation.ConvertElementOfUnionToMultipleElementOfs;
-import de.bmoth.backend.z3.transformation.ConvertMemberOfIntegerSetToLeqGeq;
-import de.bmoth.backend.z3.transformation.ConvertMemberOfIntervalToLeqAndGeq;
-import de.bmoth.backend.z3.transformation.ConvertNestedUnionsToUnionList;
+import com.google.common.reflect.ClassPath;
 import de.bmoth.parser.ast.nodes.ExprNode;
 import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AstTransformationsForZ3 {
+    private final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    private final Logger logger = Logger.getLogger(getClass().getName());
+
     private static AstTransformationsForZ3 instance;
 
-    private final List<AbstractASTTransformation> transformationList;
+    private final List<ASTTransformation> transformationList;
 
     private AstTransformationsForZ3() {
         this.transformationList = new ArrayList<>();
-        transformationList.add(new ConvertNestedUnionsToUnionList());
-        transformationList.add(new ConvertElementOfUnionToMultipleElementOfs());
-        transformationList.add(new ConvertMemberOfIntervalToLeqAndGeq());
-        transformationList.add(new ConvertMemberOfIntegerSetToLeqGeq());
+
+        try {
+            for (final ClassPath.ClassInfo info : ClassPath.from(loader).getTopLevelClasses()) {
+                if (info.getName().startsWith("de.bmoth.backend.z3.transformation")) {
+                    final Class<?> clazz = info.load();
+                    transformationList.add((ASTTransformation) clazz.newInstance());
+                }
+            }
+        } catch (IOException | InstantiationException | IllegalAccessException e) {
+            logger.log(Level.SEVERE, "Error loading LTL transformation rules", e);
+        }
     }
 
-    public static AstTransformationsForZ3 getInstance() {
+    private static AstTransformationsForZ3 getInstance() {
         if (null == instance) {
             instance = new AstTransformationsForZ3();
         }

@@ -12,9 +12,7 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
-import static de.bmoth.modelchecker.ModelCheckingResult.createCounterExampleFound;
-import static de.bmoth.modelchecker.ModelCheckingResult.createExceededMaxSteps;
-import static de.bmoth.modelchecker.ModelCheckingResult.createVerified;
+import static de.bmoth.modelchecker.ModelCheckingResult.*;
 
 public class KInductionModelChecker extends ModelChecker {
 
@@ -36,7 +34,7 @@ public class KInductionModelChecker extends ModelChecker {
             baseSolver.reset();
 
             // INIT(V0)
-            baseSolver.add(init(0));
+            baseSolver.add(init());
 
             // CONJUNCTION i from 1 to k T(Vi-1, Vi)
             for (int i = 1; i <= k; i++) {
@@ -45,8 +43,6 @@ public class KInductionModelChecker extends ModelChecker {
 
             // not INV(Vk)
             baseSolver.add(getContext().mkNot(invariant(k)));
-
-            //TODO add missing CONJUNCTION i from 1 to k, j from i + 1 to k (Vi != Vj)
 
             Status check = baseSolver.check();
             if (check == Status.SATISFIABLE) {
@@ -57,6 +53,8 @@ public class KInductionModelChecker extends ModelChecker {
                 stepSolver.reset();
 
                 stepSolver.add();
+                // CONJUNCTION i from 1 to k, j from i + 1 to k (Vi != Vj)
+                stepSolver.add(distinctVectors(k));
 
                 for (int i = 0; i <= k; i++) {
                     stepSolver.add(transition(i - 1, i));
@@ -77,7 +75,7 @@ public class KInductionModelChecker extends ModelChecker {
         return createExceededMaxSteps(maxSteps);
     }
 
-    private BoolExpr init(int step) {
+    private BoolExpr init() {
         return getMachineTranslator().getInitialValueConstraint(TranslationOptions.PRIMED_0);
     }
 
@@ -87,6 +85,10 @@ public class KInductionModelChecker extends ModelChecker {
 
     private BoolExpr invariant(int step) {
         return getMachineTranslator().getInvariantConstraint(new TranslationOptions(step));
+    }
+
+    private BoolExpr distinctVectors(int to) {
+        return getMachineTranslator().getDistinctVars(0, to);
     }
 
     private State getStateFromModel(Model model, int step) {

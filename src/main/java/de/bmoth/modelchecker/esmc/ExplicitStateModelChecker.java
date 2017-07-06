@@ -66,7 +66,6 @@ public class ExplicitStateModelChecker extends ModelChecker {
         Set<Model> models = finder.findSolutions(initialValueConstraint, maxInitialStates);
         models.stream()
             .map(this::getStateFromModel)
-            .filter(state -> !queue.contains(state))
             .forEach(queue::add);
 
         final BoolExpr invariant = getMachineTranslator().getInvariantConstraint();

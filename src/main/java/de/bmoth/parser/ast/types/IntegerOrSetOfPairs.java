@@ -41,6 +41,11 @@ public class IntegerOrSetOfPairs extends Observable implements BType, Observer {
                 } else {
                     getLeft().unify(IntegerType.getInstance());
                 }
+            } else if (newType instanceof SetType && o == getLeft() && o == getRight()) {
+                this.setChanged();
+                BType subType = ((SetType) newType).getSubType();
+                SetType cartesianProductType = new SetType(new CoupleType(subType, subType));
+                this.notifyObservers(cartesianProductType);
             } else if (newType instanceof SetType && o == getLeft()) {
                 this.setChanged();
                 // left is a set
@@ -57,6 +62,9 @@ public class IntegerOrSetOfPairs extends Observable implements BType, Observer {
                 }
                 SetType l = (SetType) left.unify(new SetType(new UntypedType()));
                 this.notifyObservers(new SetType(new CoupleType(l.getSubType(), ((SetType) newType).getSubType())));
+            } else if (o == getLeft() && o == getRight()) {
+                setLeftType(newType);
+                setRightType(newType);
             } else if (o == getLeft()) {
                 setLeftType(newType);
             } else {
@@ -107,7 +115,7 @@ public class IntegerOrSetOfPairs extends Observable implements BType, Observer {
         throw new UnificationException();
     }
 
-    public void replaceBy(BType otherType) {
+    private void replaceBy(BType otherType) {
         /*
          * unregister this instance from the sub types, i.e. it will be no
          * longer updated

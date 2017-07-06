@@ -89,7 +89,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
 
     @Test
     public void testNAT() {
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, "10");
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, 10);
         check(SATISFIABLE, "0 : NAT");
         check(SATISFIABLE, "1 : NAT");
         check(UNSATISFIABLE, "-1 : NAT");
@@ -100,7 +100,7 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
 
     @Test
     public void testNAT1() {
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, "10");
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, 10);
         check(UNSATISFIABLE, "0 : NAT1");
         check(SATISFIABLE, "1 : NAT1");
         check(UNSATISFIABLE, "-1 : NAT1");
@@ -116,8 +116,8 @@ public class SetFormulaEvaluationTest extends TestUsingZ3 {
 
     @Test
     public void testINT() {
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, "10");
-        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MIN_INT, "-1");
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MAX_INT, 10);
+        BMothPreferences.setIntPreference(BMothPreferences.IntPreference.MIN_INT, -1);
         check(SATISFIABLE, "0 : INT");
         check(SATISFIABLE, "1 : INT");
         check(SATISFIABLE, "-1 : INT");

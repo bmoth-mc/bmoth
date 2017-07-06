@@ -3,40 +3,39 @@ package de.bmoth.backend.ltl.transformation;
 import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 
-public class ConvertGloballyGloballyToGlobally extends AbstractASTTransformation{
+import static de.bmoth.backend.ltl.LTLTransformationUtil.contains;
+import static de.bmoth.backend.ltl.LTLTransformationUtil.isOperator;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.GLOBALLY;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NOT;
+
+public class ConvertGloballyGloballyToGlobally implements ASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
-        return node instanceof LTLPrefixOperatorNode;
+        return isOperator(node, GLOBALLY) && (contains(node, GLOBALLY) || contains(node, NOT, GLOBALLY));
     }
 
     @Override
-    public Node transformNode(Node oldNode) {
-        LTLPrefixOperatorNode globallyOperator01 = (LTLPrefixOperatorNode) oldNode;
-        if (globallyOperator01.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
-            LTLNode argument = globallyOperator01.getArgument();
-            if (argument instanceof LTLPrefixOperatorNode) {
-                LTLPrefixOperatorNode operator02 = (LTLPrefixOperatorNode) argument;
-                // case GG->G
-                if (operator02.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
-                    setChanged();
-                    return operator02;
-                }
-                // case GnG->nG
-                if (operator02.getKind() != LTLPrefixOperatorNode.Kind.NOT) {
-                        LTLNode argument02 = operator02.getArgument();
-                        if (argument02 instanceof LTLPrefixOperatorNode) {
-                            LTLPrefixOperatorNode operator03 = (LTLPrefixOperatorNode) argument02;
-                            if (operator03.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
-                                setChanged();
-                                return operator02;
-                            }
-                        }
-                }
-            }
+    public Node transformNode(Node node) {
+        LTLPrefixOperatorNode outerGlobally = (LTLPrefixOperatorNode) node;
+
+        // case GG->G
+        if (contains(outerGlobally, GLOBALLY)) {
+            LTLPrefixOperatorNode innerGlobally = (LTLPrefixOperatorNode) outerGlobally.getArgument();
+            LTLNode inner = innerGlobally.getArgument();
+
+
+            return new LTLPrefixOperatorNode(GLOBALLY, inner);
         }
-        return oldNode;
+        // case GnG->nG
+        else {
+            LTLPrefixOperatorNode not = (LTLPrefixOperatorNode) outerGlobally.getArgument();
+            LTLPrefixOperatorNode innerGlobally = (LTLPrefixOperatorNode) not.getArgument();
+            LTLNode inner = innerGlobally.getArgument();
+
+            return new LTLPrefixOperatorNode(NOT, new LTLPrefixOperatorNode(GLOBALLY, inner));
+        }
     }
 }

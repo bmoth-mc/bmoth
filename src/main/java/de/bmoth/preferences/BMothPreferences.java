@@ -3,6 +3,10 @@ package de.bmoth.preferences;
 public class BMothPreferences {
     private static java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(BMothPreferences.class);
 
+    private BMothPreferences() {
+        // should not be instantiated
+    }
+
     public static String getStringPreference(StringPreference p) {
         return prefs.get(p.toString(), p.defaultValue);
     }
@@ -23,12 +27,8 @@ public class BMothPreferences {
         return prefs.getInt(p.toString(), p.defaultValue);
     }
 
-    public static void setIntPreference(IntPreference p, String val) {
-        prefs.put(p.toString(), val);
-    }
-
-    public static void setIntPreference(IntPreference p, Integer val) {
-        prefs.put(p.toString(), val.toString());
+    public static void setIntPreference(IntPreference p, int val) {
+        prefs.put(p.toString(), String.valueOf(val));
     }
 
     public enum StringPreference {

@@ -1,6 +1,0 @@
-MACHINE OnlyConstants
-CONSTANTS
- a,b
-PROPERTIES
- a = b + 1
-END

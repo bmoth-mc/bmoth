@@ -5,7 +5,7 @@ package de.bmoth.antlr;
 }
 
 @members {
-int countBrackets = 0;
+int curlyBracketsCount = 0;
 }
 
 fragment DIGIT: ('0'..'9');
@@ -69,8 +69,8 @@ DOUBLE_COLON: '::' | ':' '\u2208' ;  /* becomes_element_of */
 
 EQUIVALENCE: '<=>' | '\u21d4';
 IMPLIES: EQUAL GREATER | '\u21d2';
-LEFT_BRACE: '{' {countBrackets++;} ;
-RIGHT_BRACE: '}' {countBrackets--;} {countBrackets>0}?;
+LEFT_BRACE: '{' {curlyBracketsCount++;} ;
+RIGHT_BRACE: '}' {curlyBracketsCount--;} {curlyBracketsCount>0}?;
 LEFT_PAR: '(';
 RIGHT_PAR: ')';
 LEFT_BRACKET: '[';
@@ -143,6 +143,23 @@ GREATER_EQUAL: GREATER EQUAL | '\u2265';
 
 TRUE: 'TRUE';
 FALSE: 'FALSE';
+
+//expression_p125
+SET_RELATION: '<->' | '↔';//'\u2194';
+PARTIAL_FUNCTION: '+->'| '⇸';//'\u21f8';
+TOTAL_FUNCTION: '-->' | '→' | MINUS MINUS GREATER; //'\u2192';
+TOTAL_INJECTION: '>->' | '↣'; //'\u21a3';
+PARTIAL_INJECTION: '>+>' | '⤔'; //'\u2914';
+TOTAL_SURJECTION: '-->>' | '↠'; //'\u21a0';
+PARTIAL_SURJECTION: '+->>' | '⤀'; //'\u2900';
+TOTAL_BIJECTION: '>->>' | '⤖'; //'\u2916';
+PARTIAL_BIJECTION: '>+>>' ;
+
+// Extensions
+TOTAL_RELATION: '<<->';
+SURJECTION_RELATION: '<->>' ; //surjection_relation = lt minus gt gt | 0xe101;
+TOTAL_SURJECTION_RELATION: '<<->>'; //{normal} total_surjection_relation = lt lt minus gt gt | 0xe102;
+
 
 
 // expression prefix operators with one parameter
@@ -233,7 +250,9 @@ LINE_COMMENT
 
 WS: [ \t\r\n]+ -> skip;
 
-B_END: '}' {countBrackets--;}-> mode(LTL_MODE);
+B_END: '}' {curlyBracketsCount=0;} -> mode(LTL_MODE); // reset brackets counter
+
+ErrorCharacter : . ;
 
 mode LTL_MODE;
 
@@ -251,5 +270,6 @@ LTL_UNTIL: 'U';
 LTL_WEAK_UNTIL: 'W';
 LTL_RELEASE: 'R';
 LTL_NEXT: 'X';
-LTL_B_START: '{' -> mode(DEFAULT_MODE) ;
+LTL_B_START: '{' {curlyBracketsCount=0;} -> mode(DEFAULT_MODE) ; // reset brackets counter
 LTL_WS: [ \t\r\n]+ -> skip;
+LTL_ErrorCharacter : . ;

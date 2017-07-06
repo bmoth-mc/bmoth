@@ -4,9 +4,9 @@ import de.bmoth.parser.ast.nodes.Node;
 import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
-import de.bmoth.parser.ast.visitors.AbstractASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformation;
 
-public class ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi extends AbstractASTTransformation{
+public class ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi implements ASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
@@ -25,7 +25,6 @@ public class ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi extends AbstractASTT
                     LTLPrefixOperatorNode newNextRight = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.FINALLY, orOperator.getRight());
                     orOperator.setLeft(newNextLeft);
                     orOperator.setRight(newNextRight);
-                    setChanged();
                     return orOperator;
                 }
             }

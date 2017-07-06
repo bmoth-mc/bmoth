@@ -19,7 +19,7 @@ public abstract class ScopeChecker extends BMoThParserBaseVisitor<Void> {
         private static final long serialVersionUID = 5003348008806300117L;
         final ScopeException scopeException;
 
-        ScopeCheckerVisitorException(ScopeException e) {
+        public ScopeCheckerVisitorException(ScopeException e) {
             this.scopeException = e;
         }
 
