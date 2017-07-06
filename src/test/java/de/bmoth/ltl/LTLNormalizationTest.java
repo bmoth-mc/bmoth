@@ -9,6 +9,8 @@ import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NEXT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
+
 public class LTLNormalizationTest extends TestParser {
     @Test
     public void testNormalization1() {
@@ -38,7 +40,9 @@ public class LTLNormalizationTest extends TestParser {
     public void testNormalization4() {
         LTLFormula ltlFormula = parseLtlFormula("({1:dom([1,2,3])} U {2 /: ran([1])}) U {2<17}");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("UNTIL(UNTIL(ELEMENT_OF(1,DOMAIN(SEQ_ENUMERATION(1,2,3))),NOT_BELONGING(2,RANGE(SEQ_ENUMERATION(1)))),LESS(2,17))", node.toString());
+        assertEquals(
+                "UNTIL(UNTIL(ELEMENT_OF(1,DOMAIN(SEQ_ENUMERATION(1,2,3))),NOT_BELONGING(2,RANGE(SEQ_ENUMERATION(1)))),LESS(2,17))",
+                node.toString());
         assertTrue(isNormalized(node));
     }
 
@@ -74,7 +78,9 @@ public class LTLNormalizationTest extends TestParser {
     public void testNormalization8() {
         LTLFormula ltlFormula = parseLtlFormula("not( { 1=1 } U {2=1})");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("RELEASE(AND(NOT(EQUAL(1,1)),NOT(EQUAL(2,1))),OR(AND(EQUAL(1,1),NOT(EQUAL(2,1))),AND(NOT(EQUAL(1,1)),NOT(EQUAL(2,1)))))", node.toString());
+        assertEquals(
+                "RELEASE(AND(NOT(EQUAL(1,1)),NOT(EQUAL(2,1))),OR(AND(EQUAL(1,1),NOT(EQUAL(2,1))),AND(NOT(EQUAL(1,1)),NOT(EQUAL(2,1)))))",
+                node.toString());
         assertTrue(isNormalized(node));
     }
 
@@ -82,7 +88,7 @@ public class LTLNormalizationTest extends TestParser {
     public void testNormalization9() {
         LTLFormula ltlFormula = parseLtlFormula("not( { 1=1 } W {2=1})");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("UNTIL(NOT(EQUAL(2,1)),AND(NOT(EQUAL(1,1)),NOT(EQUAL(2,1))))", node.toString());
+        assertEquals("UNTIL(AND(EQUAL(1,1),NOT(EQUAL(2,1))),AND(NOT(EQUAL(1,1)),NOT(EQUAL(2,1))))", node.toString());
         assertTrue(isNormalized(node));
     }
 
@@ -112,13 +118,13 @@ public class LTLNormalizationTest extends TestParser {
         if (formula instanceof LTLInfixOperatorNode) {
             LTLInfixOperatorNode node = (LTLInfixOperatorNode) formula;
             switch (node.getKind()) {
-                case UNTIL:
-                case RELEASE:
-                case AND:
-                case OR:
-                    return isNormalized(node.getLeft()) && isNormalized(node.getRight());
-                default:
-                    return false;
+            case UNTIL:
+            case RELEASE:
+            case AND:
+            case OR:
+                return isNormalized(node.getLeft()) && isNormalized(node.getRight());
+            default:
+                return false;
             }
         }
         if (formula instanceof LTLPrefixOperatorNode && ((LTLPrefixOperatorNode) formula).getKind() == NEXT) {

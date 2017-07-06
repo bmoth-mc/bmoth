@@ -2,8 +2,6 @@ package de.bmoth.backend.z3;
 
 import com.google.common.reflect.ClassPath;
 
-import de.bmoth.parser.ast.TypeChecker;
-import de.bmoth.parser.ast.TypeErrorException;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
@@ -49,13 +47,6 @@ public class AstTransformationsForZ3 {
         AstTransformationsForZ3 astTransformationForZ3 = AstTransformationsForZ3.getInstance();
         ASTTransformationVisitor visitor = new ASTTransformationVisitor(astTransformationForZ3.transformationList);
         visitor.transformMachine(machineNode);
-        try {
-            TypeChecker.typecheckMachineNode(machineNode);
-        } catch (TypeErrorException e) {
-            // a type error should only occur when the AST transformation is
-            // invalid
-            throw new AssertionError(e);
-        }
         return machineNode;
     }
 
@@ -63,13 +54,6 @@ public class AstTransformationsForZ3 {
         AstTransformationsForZ3 astTransformationForZ3 = AstTransformationsForZ3.getInstance();
         ASTTransformationVisitor visitor = new ASTTransformationVisitor(astTransformationForZ3.transformationList);
         visitor.transformFormula(formulaNode);
-        try {
-            TypeChecker.typecheckFormulaNode(formulaNode);
-        } catch (TypeErrorException e) {
-            // a type error should only occur when the AST transformation is
-            // invalid
-            throw new AssertionError(e);
-        }
         return formulaNode;
     }
 }

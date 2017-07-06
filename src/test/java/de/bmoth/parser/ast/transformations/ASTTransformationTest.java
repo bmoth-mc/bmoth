@@ -21,7 +21,8 @@ public class ASTTransformationTest {
         String formula = "a : {1} \\/ b \\/ c";
         FormulaNode formulaNode = parseFormula(formula);
         formulaNode = AstTransformationsForZ3.transformFormulaNode(formulaNode);
-        assertEquals("OR(OR(ELEMENT_OF(a,SET_ENUMERATION(1)),ELEMENT_OF(a,b)),ELEMENT_OF(a,c))", formulaNode.getFormula().toString());
+        assertEquals("OR(OR(ELEMENT_OF(a,SET_ENUMERATION(1)),ELEMENT_OF(a,b)),ELEMENT_OF(a,c))",
+                formulaNode.getFormula().toString());
     }
 
     @Test
@@ -37,7 +38,8 @@ public class ASTTransformationTest {
         String formula = "a : {1} /\\ b /\\ c";
         FormulaNode formulaNode = parseFormula(formula);
         formulaNode = AstTransformationsForZ3.transformFormulaNode(formulaNode);
-        assertEquals("AND(AND(ELEMENT_OF(a,SET_ENUMERATION(1)),ELEMENT_OF(a,b)),ELEMENT_OF(a,c))", formulaNode.getFormula().toString());
+        assertEquals("AND(AND(ELEMENT_OF(a,SET_ENUMERATION(1)),ELEMENT_OF(a,b)),ELEMENT_OF(a,c))",
+                formulaNode.getFormula().toString());
     }
 
     @Test
