@@ -72,4 +72,13 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
         assertEquals(COUNTER_EXAMPLE_FOUND, ModelCheckingResult.Type.valueOf("COUNTER_EXAMPLE_FOUND"));
         assertEquals(EXCEEDED_MAX_STEPS, ModelCheckingResult.Type.valueOf("EXCEEDED_MAX_STEPS"));
     }
+
+    @Test
+    public void testToString() {
+        assertEquals("UNKNOWN check-sat ... after 23 steps", ModelCheckingResult.createUnknown(23, unknown).toString());
+        assertEquals("ABORTED after 15 steps", ModelCheckingResult.createAborted(15).toString());
+        assertEquals("COUNTER_EXAMPLE_FOUND {x=11} after 12 steps", ModelCheckingResult.createCounterExampleFound(12, secondState).toString());
+        assertEquals("EXCEEDED_MAX_STEPS after 17 steps", ModelCheckingResult.createExceededMaxSteps(17).toString());
+        assertEquals("VERIFIED after 3 steps", ModelCheckingResult.createVerified(3).toString());
+    }
 }

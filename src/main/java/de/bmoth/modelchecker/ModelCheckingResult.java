@@ -61,4 +61,24 @@ public class ModelCheckingResult {
     public String getReason() {
         return reason;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(type.name()).append(' ');
+
+        switch (type) {
+            case COUNTER_EXAMPLE_FOUND:
+                sb.append(lastState.toString()).append(' ');
+                break;
+            case UNKNOWN:
+                sb.append(reason).append(' ');
+                break;
+            case EXCEEDED_MAX_STEPS:
+            case VERIFIED:
+            case ABORTED:
+        }
+
+        return sb.append("after ").append(steps).append(" steps").toString();
+    }
 }
