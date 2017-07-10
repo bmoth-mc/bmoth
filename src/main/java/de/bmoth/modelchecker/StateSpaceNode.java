@@ -1,16 +1,16 @@
 package de.bmoth.modelchecker;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class StateSpaceNode {
     private final State state;
-    private final List<StateSpaceNode> successors;
+    private final Set<StateSpaceNode> successors;
 
     public StateSpaceNode(State state) {
         this.state = state;
-        successors = new ArrayList<>();
+        successors = new HashSet<>();
     }
 
     public void addSuccessor(StateSpaceNode successor) {
