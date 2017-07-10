@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public class State {
-    private State predecessor;
-    private Map<String, Expr> values;
+    private final State predecessor;
+    private final Map<String, Expr> values;
 
     public State(State predecessor, Map<String, Expr> values) {
         this.predecessor = predecessor;
