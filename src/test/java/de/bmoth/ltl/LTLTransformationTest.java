@@ -282,12 +282,11 @@ public class LTLTransformationTest extends TestParser {
         assertFalse(containsRight(prefixOp, OR));
         assertFalse(containsRight(prefixOp, FALSE));
 
-        // prefix can contain keyword
-        assertTrue(contains(prefixKeywordOp, TRUE));
-
         // ... same with left|right child...
         assertNull(leftChild(prefixOp));
         assertNull(rightChild(prefixOp));
 
+        // prefix can contain keyword
+        assertTrue(contains(prefixKeywordOp, TRUE));
     }
 }
