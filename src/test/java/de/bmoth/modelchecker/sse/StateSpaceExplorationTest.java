@@ -62,5 +62,6 @@ public class StateSpaceExplorationTest extends TestParser {
         result = new StateSpaceExplorator(machine).check();
         assertEquals(false, result.isCorrect());
         assertEquals(UNKNOWN, result.getType());
+        assertEquals(1, result.getSteps());
     }
 }
