@@ -2,16 +2,14 @@ package de.bmoth.ltl;
 
 import de.bmoth.TestParser;
 import de.bmoth.backend.ltl.transformation.*;
-import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
-import de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
+import de.bmoth.parser.ast.nodes.ltl.*;
 import de.bmoth.parser.ast.visitors.ASTTransformation;
 import org.junit.Test;
 
 import static de.bmoth.backend.ltl.LTLTransformationUtil.*;
 import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.OR;
 import static de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode.Kind.FALSE;
+import static de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode.Kind.TRUE;
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.FINALLY;
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.GLOBALLY;
 import static junit.framework.TestCase.assertFalse;
@@ -263,6 +261,7 @@ public class LTLTransformationTest extends TestParser {
         LTLNode infixOp = new LTLInfixOperatorNode(OR, null, null);
         LTLNode prefixOp = new LTLPrefixOperatorNode(FINALLY, null);
         LTLNode prefixPrefixOp = new LTLPrefixOperatorNode(FINALLY, new LTLPrefixOperatorNode(FINALLY, null));
+        LTLNode prefixKeywordOp = new LTLPrefixOperatorNode(FINALLY, new LTLKeywordNode(TRUE));
 
         // infix can not contain prefix op
         assertFalse(contains(infixOp, FINALLY));
@@ -282,6 +281,9 @@ public class LTLTransformationTest extends TestParser {
         assertFalse(containsLeft(prefixOp, FALSE));
         assertFalse(containsRight(prefixOp, OR));
         assertFalse(containsRight(prefixOp, FALSE));
+
+        // prefix can contain keyword
+        assertTrue(contains(prefixKeywordOp, TRUE));
 
         // ... same with left|right child...
         assertNull(leftChild(prefixOp));
