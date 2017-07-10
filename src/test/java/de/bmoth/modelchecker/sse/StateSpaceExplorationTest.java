@@ -49,5 +49,18 @@ public class StateSpaceExplorationTest extends TestParser {
         assertTrue(result.isCorrect());
     }
 
+    @Test
+    public void testSateSpaceExplorationResultUnknown() {
+        machine = machineBuilder
+            .setName("ResultUnknownMachine")
+            .setVariables("x")
+            .setInvariant("x : INTEGER")
+            .setInitialization("x := 1")
+            .addOperation("failWithUnknown = SELECT (x>0 => 2**(10*x) = 2*(2**(10*x-1))) THEN x:= 2 END")
+            .build();
+
+        result = new StateSpaceExplorator(machine).check();
+        assertEquals(false, result.isCorrect());
+        assertEquals(UNKNOWN, result.getType());
     }
 }
