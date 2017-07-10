@@ -2,19 +2,32 @@ package de.bmoth.modelchecker.sse;
 
 import de.bmoth.TestParser;
 import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import org.junit.Before;
 import org.junit.Test;
 
+import static de.bmoth.modelchecker.ModelCheckingResult.Type.UNKNOWN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class StateSpaceExplorationTest extends TestParser {
+    private MachineBuilder machineBuilder;
+    private ModelCheckingResult result;
+    private MachineNode machine;
+
+    @Before
+    public void init() {
+        machineBuilder = new MachineBuilder();
+        result = null;
+        machine = null;
+    }
+
+
     @Test
     public void testStateSpaceExploration() {
-        MachineBuilder machineBuilder = new MachineBuilder();
-
-        MachineNode boringMachine = machineBuilder
-            .setName("StateSpaceExploration")
+        machine = machineBuilder
+            .setName("BoringMachineWithoutLoop")
             .setVariables("x")
             .setInvariant("x : 1..7")
             .setInitialization("ANY p WHERE p : 1..2 THEN x := p END")
@@ -22,16 +35,19 @@ public class StateSpaceExplorationTest extends TestParser {
             .addOperation("incFromThree = SELECT x : 3..6 THEN x := x + 1 END")
             .build();
 
-        MachineNode exitingMachine = machineBuilder
+        result = new StateSpaceExplorator(machine).check();
+        assertEquals(8, result.getSteps());
+        assertTrue(result.isCorrect());
+
+        machine = machineBuilder
+            .setName("ExitingMachineWithLoop")
             .addOperation("resetToThree = SELECT x = 7 THEN x := 3 END")
             .build();
 
-        ModelCheckingResult result = new StateSpaceExplorator(exitingMachine).check();
+        result = new StateSpaceExplorator(machine).check();
         assertEquals(9, result.getSteps());
         assertTrue(result.isCorrect());
+    }
 
-        result = new StateSpaceExplorator(boringMachine).check();
-        assertEquals(8, result.getSteps());
-        assertTrue(result.isCorrect());
     }
 }
