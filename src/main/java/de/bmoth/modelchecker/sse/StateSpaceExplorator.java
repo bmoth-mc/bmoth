@@ -84,9 +84,8 @@ public class StateSpaceExplorator extends ModelChecker {
         if (!knownStateToStateSpaceNode.containsKey(to)) {
             toNode = new StateSpaceNode(to);
             knownStateToStateSpaceNode.put(to, toNode);
-            if (!queue.contains(to)) {
-                queue.add(to);
-            }
+            // !queue.contains(...) check can be omitted as it is always parallel to insertion into knownStateToStateSpaceNode
+            queue.add(to);
         } else {
             toNode = knownStateToStateSpaceNode.get(to);
         }
