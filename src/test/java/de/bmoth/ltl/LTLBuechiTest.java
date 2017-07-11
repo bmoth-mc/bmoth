@@ -14,21 +14,23 @@ import static org.junit.Assert.assertEquals;
 public class LTLBuechiTest {
 
     @Test
-    public void testGraphConstructionNext() throws ParserException {
-        String formula = "(X {0=1})";
-        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
-        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
-        assertEquals(3, buechiAutomaton.getFinalNodeSet().size());
-    }
-
-    @Test
-    public void testGraphConstructionGlobally() throws ParserException {
+    public void testGraphConstructionGloballyNext() throws ParserException {
         String formula = "G (X {0=1})";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(2, buechiAutomaton.getFinalNodeSet().size());
+        buechiAutomaton.labelNodeSet();
+        System.out.println(buechiAutomaton.toString());
+    }
+
+    @Test
+    public void testGraphConstructionUntil() throws ParserException {
+        String formula = "{0=1} U (X {1=1})";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        assertEquals(4, buechiAutomaton.getFinalNodeSet().size());
     }
 
     @Test
@@ -37,9 +39,7 @@ public class LTLBuechiTest {
         String formula = "G (F (X {0=1}))";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        System.out.println(node.toString());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
-        System.out.println(buechiAutomaton.toString());
         assertEquals(4, buechiAutomaton.getFinalNodeSet().size());
     }
 

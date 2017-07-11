@@ -25,7 +25,7 @@ public class BuechiAutomaton {
         Boolean isInNodeSet = false;
         for (LTLNode processedNode : processed) {
             if (ltlNode.equalAst(processedNode)) {
-                isInNodeSet = true; 
+                isInNodeSet = true;
             }
         }
         return isInNodeSet;
@@ -127,7 +127,8 @@ public class BuechiAutomaton {
                 newUnprocessed, newProcessed, new ArrayList<>(buechiNode.next)), nodeSet);
         } else {
             // Until, Release, Or: Split the node in two
-            if (((LTLInfixOperatorNode) ltlNode).getKind() == LTLInfixOperatorNode.Kind.UNTIL) {
+            if ((((LTLInfixOperatorNode) ltlNode).getKind() == LTLInfixOperatorNode.Kind.UNTIL) ||
+                (((LTLInfixOperatorNode) ltlNode).getKind() == LTLInfixOperatorNode.Kind.RELEASE)) {
                 subFormulasForAcceptance.add((LTLInfixOperatorNode) ltlNode);
             }
             List<LTLNode> newProcessed = new ArrayList<>(buechiNode.processed);
@@ -166,7 +167,7 @@ public class BuechiAutomaton {
             if (ltlNode instanceof LTLKeywordNode) {
                 // True, False
                 if (((LTLKeywordNode) ltlNode).getKind() == LTLKeywordNode.Kind.FALSE) {
-                    // Current node contains a contradiction, discard
+                    // Discard the current node
                     return nodeSet;
                 } else {
                     buechiNode.processed.add(ltlNode);
