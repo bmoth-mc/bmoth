@@ -10,6 +10,8 @@ public class BuechiAutomaton {
 
     private int nodeCounter = 0;
     private List<LTLInfixOperatorNode> subFormulasForAcceptance = new ArrayList<>();
+    private List<List<BuechiAutomatonNode>> acceptingStateSets = new ArrayList<>();
+
     private List<BuechiAutomatonNode> finalNodeSet;
 
     public BuechiAutomaton(LTLNode ltlNode) {
@@ -203,12 +205,15 @@ public class BuechiAutomaton {
             buechiNode.label();
         }
         for (LTLInfixOperatorNode untilNode : subFormulasForAcceptance) {
+            List<BuechiAutomatonNode> acceptingStateSet = new ArrayList<>();
             for (BuechiAutomatonNode buechiNode : finalNodeSet) {
                 if (!ltlNodeIsInNodeSet(untilNode, buechiNode.processed) ||
                     ltlNodeIsInNodeSet(untilNode.getRight(), buechiNode.processed)) {
                     buechiNode.isAcceptingState = true;
+                    acceptingStateSet.add(buechiNode);
                 }
             }
+            acceptingStateSets.add(acceptingStateSet);
         }
     }
 
@@ -217,6 +222,15 @@ public class BuechiAutomaton {
         for (BuechiAutomatonNode node: finalNodeSet) {
             nodesString.add(node.toString());
         }
+        StringJoiner acceptingString = new StringJoiner(", ", "[", "]");
+        for (List<BuechiAutomatonNode> acceptingStateSet : acceptingStateSets) {
+            StringJoiner acceptingStatesString = new StringJoiner(", ", "(", ")");
+            for (BuechiAutomatonNode node : acceptingStateSet) {
+                acceptingStatesString.add(node.name);
+            }
+            acceptingString.add(acceptingStatesString.toString());
+        }
+        nodesString.add("Accepting state sets: " + acceptingString.toString());
         return nodesString.toString();
     }
 
