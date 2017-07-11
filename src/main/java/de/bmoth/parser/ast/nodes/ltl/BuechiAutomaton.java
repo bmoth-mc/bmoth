@@ -46,7 +46,7 @@ public class BuechiAutomaton {
                     }
                 }
             }
-            return ((nodeProcessed.size() == 0) & (nodeInSetProcessed.size() == 0));
+            return (nodeProcessed.isEmpty() && nodeInSetProcessed.isEmpty());
         } else {
             return false;
         }
@@ -58,7 +58,7 @@ public class BuechiAutomaton {
         for (BuechiAutomatonNode nodeInSet: nodesSet) {
             Boolean processedEquals = compareLTLNodeSets(buechiNode.processed, nodeInSet.processed);
             Boolean nextEquals = compareLTLNodeSets(buechiNode.next, nodeInSet.next);
-            if (processedEquals & nextEquals) {
+            if (processedEquals && nextEquals) {
                 foundNode = nodeInSet;
                 break;
             }
@@ -136,11 +136,10 @@ public class BuechiAutomaton {
                                                               List<BuechiAutomatonNode> nodeSet) {
         if (((LTLInfixOperatorNode) ltlNode).getKind() == LTLInfixOperatorNode.Kind.AND) {
             // And
-            Set<LTLNode> unprocessed = new HashSet<>();
+            Set<LTLNode> unprocessed = new HashSet<>(buechiNode.unprocessed);
             unprocessed.add(((LTLInfixOperatorNode) ltlNode).getLeft());
             unprocessed.add(((LTLInfixOperatorNode) ltlNode).getRight());
             unprocessed.removeAll(buechiNode.processed);
-            unprocessed.addAll(new HashSet<>(buechiNode.unprocessed));
 
             Set<LTLNode> processed = new HashSet<>(buechiNode.processed);
             processed.add(ltlNode);
@@ -211,7 +210,6 @@ public class BuechiAutomaton {
     }
 
     private List<BuechiAutomatonNode> createGraph(LTLNode node) {
-        // Initialization of the graph
         List<String> initIncoming = new ArrayList<>();
         initIncoming.add("init");
         Set<LTLNode> unprocessed = new HashSet<>();
