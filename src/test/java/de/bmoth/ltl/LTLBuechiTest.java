@@ -34,17 +34,16 @@ public class LTLBuechiTest {
     }
 
     @Test
-    @Ignore
     public void testGraphConstructionGloballyFinally() throws ParserException {
         String formula = "G (F (X {0=1}))";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(4, buechiAutomaton.getFinalNodeSet().size());
+        buechiAutomaton.labelNodeSet();
     }
 
     @Test
-    @Ignore
     public void testGraphConstructionFinally() throws ParserException {
         String formula = "F (X {0=1})";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
