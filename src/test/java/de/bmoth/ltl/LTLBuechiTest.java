@@ -6,7 +6,6 @@ import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.ltl.BuechiAutomaton;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -21,7 +20,6 @@ public class LTLBuechiTest {
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(2, buechiAutomaton.getFinalNodeSet().size());
         buechiAutomaton.labelNodeSet();
-        System.out.println(buechiAutomaton.toString());
     }
 
     @Test
