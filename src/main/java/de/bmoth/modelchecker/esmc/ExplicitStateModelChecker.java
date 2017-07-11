@@ -16,6 +16,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -141,6 +142,9 @@ public class ExplicitStateModelChecker extends ModelChecker {
                     }
                 }
                 successors.stream()
+                    .map(state -> {
+                        state.translate(getContext());
+                        return state;})
                     .filter(state -> !visited.contains(state) && !queue.contains(state))
                     .forEach(queue::add);
                 execService.shutdown();
@@ -199,11 +203,9 @@ public class ExplicitStateModelChecker extends ModelChecker {
         @Override
         public Set<State> call() throws Exception {
             Set<Model> successorModels = this.opFinder.findSolutions(this.stateConstraint, this.maxTransitions);
-            return successorModels.stream().map(model -> {
-                State state = new State(currentState, machineToZ3Translator.getVarMapFromModel(model,TranslationOptions.PRIMED_0));
-                state.translate(getContext());
-                return state;
-            }).collect(Collectors.toSet());
+            return successorModels.stream()
+                .map(model -> new State(currentState, machineToZ3Translator.getVarMapFromModel(model,TranslationOptions.PRIMED_0)))
+                .collect(Collectors.toSet());
         }
 
         SolutionFinder getFinder() {

@@ -20,7 +20,7 @@ public class ModelCheckerPerformanceTest {
     @Test
     @Benchmark
     public void testLeuschelPerformanceMachines1() throws IOException {
-        MachineNode machine = parseMachine(dir + "/performance/CounterErr.mch");
+        MachineNode machine = parseMachine(dir + "performance/CounterErr.mch");
         ModelCheckingResult result = ExplicitStateModelChecker.check(machine);
         assertEquals(false, result.isCorrect());
     }
