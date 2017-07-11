@@ -4,22 +4,23 @@ import de.bmoth.parser.ast.nodes.PredicateNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.StringJoiner;
 
 public class BuechiAutomatonNode {
 
     String name;
     List<String> incoming;
-    List<LTLNode> unprocessed;
-    List<LTLNode> processed;
-    List<LTLNode> next;
+    Set<LTLNode> unprocessed;
+    Set<LTLNode> processed;
+    Set<LTLNode> next;
 
-    List<PredicateNode> labels = new ArrayList<>();
-    Boolean isInitialState = false;
+    private List<PredicateNode> labels = new ArrayList<>();
+    private Boolean isInitialState = false;
     Boolean isAcceptingState = false;
 
-    public BuechiAutomatonNode(String name, List<String> incoming, List<LTLNode> unprocessed, List<LTLNode> processed,
-                               List<LTLNode> next) {
+    public BuechiAutomatonNode(String name, List<String> incoming, Set<LTLNode> unprocessed, Set<LTLNode> processed,
+                               Set<LTLNode> next) {
         this.name = name;
         this.incoming = incoming;
         this.unprocessed = unprocessed;
