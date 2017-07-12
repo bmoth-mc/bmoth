@@ -8,8 +8,8 @@ public class LTLBPredicateNode implements LTLNode {
 
     private PredicateNode predicate;
 
-    public LTLBPredicateNode(PredicateNode pred) {
-        this.predicate = pred;
+    public LTLBPredicateNode(PredicateNode predicate) {
+        this.predicate = predicate;
     }
 
     public PredicateNode getPredicate() {

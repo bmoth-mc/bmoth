@@ -1,5 +1,7 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
+import de.bmoth.parser.ast.nodes.PredicateNode;
+
 import java.util.*;
 
 public class BuechiAutomaton {
@@ -17,6 +19,21 @@ public class BuechiAutomaton {
     private String newName() {
         nodeCounter++;
         return "node" + nodeCounter;
+    }
+
+    private Boolean checkForContradiction(LTLNode ltlNode, Set<LTLNode> processedNodes) {
+        PredicateNode negatedNode = ((LTLBPredicateNode) ltlNode).getPredicate().getNegatedPredicateNode();
+        Boolean contradiction = false;
+        for (LTLNode processedNode : processedNodes) {
+            if (processedNode.getClass() == LTLBPredicateNode.class) {
+                if (((LTLBPredicateNode) processedNode).getPredicate().equalAst(negatedNode)) {
+                    contradiction = true;
+                    break;
+                }
+            }
+
+        }
+        return contradiction;
     }
 
     private Boolean ltlNodeIsInList(LTLNode ltlNode, Set<LTLNode> processed) {
@@ -198,8 +215,12 @@ public class BuechiAutomaton {
                 }
             } else if (ltlNode instanceof LTLBPredicateNode) {
                 // B predicate
-                buechiNode.processed.add(ltlNode);
-                return expand(buechiNode, nodeSet);
+                if (!checkForContradiction(ltlNode, buechiNode.processed)) {
+                    buechiNode.processed.add(ltlNode);
+                    return expand(buechiNode, nodeSet);
+                } else {
+                    return nodeSet;
+                }
             } else if (ltlNode instanceof LTLPrefixOperatorNode) {
                 return handlePrefixOperatorNode(buechiNode, ltlNode, nodeSet);
             } else if (ltlNode instanceof LTLInfixOperatorNode) {
