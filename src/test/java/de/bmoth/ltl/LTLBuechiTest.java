@@ -91,4 +91,24 @@ public class LTLBuechiTest {
         assertEquals(2, buechiAutomaton.getFinalNodeSet().size());
     }
 
+    @Test
+    public void testGraphConstructionAnd2() throws ParserException {
+        String formula = "G ( {0=1} & {2=3} )";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        assertEquals(2, buechiAutomaton.getFinalNodeSet().size());
+    }
+
+    @Test
+    public void testGraphConstructionNotGloballyNextUntil() throws ParserException {
+        String formula = "not G ( X ({3=4} U {2=3}) )";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        System.out.println(node + "\n\n");
+        assertEquals(6, buechiAutomaton.getFinalNodeSet().size());
+        buechiAutomaton.labelNodeSet();
+        System.out.println(buechiAutomaton.toString());
+    }
 }
