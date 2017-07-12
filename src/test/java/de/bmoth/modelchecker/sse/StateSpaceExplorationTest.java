@@ -51,6 +51,7 @@ public class StateSpaceExplorationTest extends TestParser {
     }
 
     @Test
+    @Ignore
     public void testSateSpaceExplorationResultUnknown() {
         machine = machineBuilder
             .setName("ResultUnknownMachine")
