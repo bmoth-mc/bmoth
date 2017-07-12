@@ -14,6 +14,7 @@ public class BuechiAutomaton {
 
     public BuechiAutomaton(LTLNode ltlNode) {
         this.finalNodeSet = createGraph(ltlNode);
+        labelNodeSet();
     }
 
     private String newName() {
@@ -120,7 +121,7 @@ public class BuechiAutomaton {
         Set<LTLNode> next = new HashSet<>(buechiNode.next);
         next.addAll(next1((LTLInfixOperatorNode) subNode));
 
-        return new BuechiAutomatonNode(newName(), new ArrayList<>(buechiNode.incoming),
+        return new BuechiAutomatonNode(newName(), new HashSet<>(buechiNode.incoming),
             unprocessed, newProcessed, next);
     }
 
@@ -130,7 +131,7 @@ public class BuechiAutomaton {
         unprocessed.removeAll(buechiNode.processed);
         unprocessed.addAll(buechiNode.unprocessed);
 
-        return new BuechiAutomatonNode(newName(), new ArrayList<>(buechiNode.incoming),
+        return new BuechiAutomatonNode(newName(), new HashSet<>(buechiNode.incoming),
             unprocessed, processed, new HashSet<>(buechiNode.next));
     }
 
@@ -141,8 +142,8 @@ public class BuechiAutomaton {
             nodeInSet.incoming.addAll(buechiNode.incoming);
             return nodeSet;
         } else {
-            List<String> incoming = new ArrayList<>();
-            incoming.add(buechiNode.name);
+            Set<BuechiAutomatonNode> incoming = new HashSet<>();
+            incoming.add(buechiNode);
             nodeSet.add(buechiNode);
             return expand(new BuechiAutomatonNode(newName(), incoming, new HashSet<>(buechiNode.next),
                 new HashSet<>(), new HashSet<>()), nodeSet);
@@ -161,7 +162,7 @@ public class BuechiAutomaton {
             Set<LTLNode> processed = new HashSet<>(buechiNode.processed);
             processed.add(ltlNode);
 
-            return expand(new BuechiAutomatonNode(buechiNode.name, new ArrayList<>(buechiNode.incoming),
+            return expand(new BuechiAutomatonNode(buechiNode.name, new HashSet<>(buechiNode.incoming),
                 unprocessed, processed, new HashSet<>(buechiNode.next)), nodeSet);
         } else {
             // Until, Release, Or: Split the node in two
@@ -185,7 +186,7 @@ public class BuechiAutomaton {
             Set<LTLNode> next = new HashSet<>(buechiNode.next);
             next.add(((LTLPrefixOperatorNode) ltlNode).getArgument());
 
-            return expand(new BuechiAutomatonNode(buechiNode.name + "_1", new ArrayList<>(buechiNode.incoming),
+            return expand(new BuechiAutomatonNode(buechiNode.name + "_1", new HashSet<>(buechiNode.incoming),
                 new HashSet<>(buechiNode.unprocessed), processed, next), nodeSet);
         } else {
             // Not
@@ -231,15 +232,16 @@ public class BuechiAutomaton {
     }
 
     private List<BuechiAutomatonNode> createGraph(LTLNode node) {
-        List<String> initIncoming = new ArrayList<>();
-        initIncoming.add("init");
+        Set<BuechiAutomatonNode> initIncoming = new HashSet<>();
+        initIncoming.add(new BuechiAutomatonNode("init", new HashSet<>(), new HashSet<>(),
+            new HashSet<>(), new HashSet<>()));
         Set<LTLNode> unprocessed = new HashSet<>();
         unprocessed.add(node);
         return expand(new BuechiAutomatonNode(newName(), initIncoming, unprocessed, new HashSet<>(),
             new HashSet<>()), new ArrayList<>());
     }
 
-    public void labelNodeSet() {
+    private void labelNodeSet() {
         for (BuechiAutomatonNode buechiNode : finalNodeSet) {
             buechiNode.label();
         }

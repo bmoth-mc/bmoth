@@ -7,7 +7,7 @@ import java.util.*;
 public class BuechiAutomatonNode {
 
     String name;
-    List<String> incoming;
+    Set<BuechiAutomatonNode> incoming;
     Set<BuechiAutomatonNode> successors = new HashSet<>();
     Set<LTLNode> unprocessed;
     Set<LTLNode> processed;
@@ -17,7 +17,7 @@ public class BuechiAutomatonNode {
     private Boolean isInitialState = false;
     Boolean isAcceptingState = false;
 
-    public BuechiAutomatonNode(String name, List<String> incoming, Set<LTLNode> unprocessed, Set<LTLNode> processed,
+    public BuechiAutomatonNode(String name, Set<BuechiAutomatonNode> incoming, Set<LTLNode> unprocessed, Set<LTLNode> processed,
                                Set<LTLNode> next) {
         this.name = name;
         this.incoming = incoming;
@@ -27,8 +27,10 @@ public class BuechiAutomatonNode {
     }
 
     public void label() {
-        if (incoming.contains("init")) {
-            isInitialState = true;
+        for (BuechiAutomatonNode incomingNode : incoming) {
+            if (incomingNode.name.equals("init")) {
+                isInitialState = true;
+            }
         }
         for (LTLNode processedNode : processed) {
             if (processedNode instanceof LTLBPredicateNode) {
@@ -42,8 +44,8 @@ public class BuechiAutomatonNode {
         nodeString.add(this.name + ": ");
 
         StringJoiner incomingString = new StringJoiner(", ", "{", "}");
-        for(String incomingNode: this.incoming) {
-            incomingString.add(incomingNode);
+        for(BuechiAutomatonNode incomingNode: this.incoming) {
+            incomingString.add(incomingNode.name);
         }
         nodeString.add("Incoming: " + incomingString.toString());
 
