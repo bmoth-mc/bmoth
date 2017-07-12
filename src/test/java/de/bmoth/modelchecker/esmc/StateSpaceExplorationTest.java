@@ -1,4 +1,4 @@
-package de.bmoth.modelchecker.sse;
+package de.bmoth.modelchecker.esmc;
 
 import de.bmoth.TestParser;
 import de.bmoth.modelchecker.ModelCheckingResult;
