@@ -75,7 +75,7 @@ public class StateSpaceExplorator extends ModelChecker {
         }
 
 
-        return ModelCheckingResult.createStateSpaceCompleted(steps, stateSpace);
+        return ModelCheckingResult.createVerified(steps, stateSpace);
     }
 
     private void updateStateSpace(State from, State to) {

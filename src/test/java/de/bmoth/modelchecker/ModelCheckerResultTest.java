@@ -48,13 +48,12 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     @Test
     public void testIsCorrect() {
-        ModelCheckingResult resultCorrect = ModelCheckingResult.createVerified(0);
-        ModelCheckingResult resultCorrect2 = ModelCheckingResult.createStateSpaceCompleted(1, stateSpace);
+        //TODO think about state space root
+        ModelCheckingResult resultCorrect = ModelCheckingResult.createVerified(0, null);
         ModelCheckingResult resultIncorrectUnknown = ModelCheckingResult.createUnknown(0, unknown);
         ModelCheckingResult resultIncorrectPath = ModelCheckingResult.createCounterExampleFound(0, firstState);
 
         assertTrue(resultCorrect.isCorrect());
-        assertTrue(resultCorrect2.isCorrect());
         assertFalse(resultIncorrectUnknown.isCorrect());
         assertFalse(resultIncorrectPath.isCorrect());
     }
@@ -67,8 +66,9 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     @Test
     public void testGetStateSpace() {
-        ModelCheckingResult resultNoStateSpace = ModelCheckingResult.createVerified(0);
-        ModelCheckingResult resultWithStateSpace = ModelCheckingResult.createStateSpaceCompleted(1, stateSpace);
+        // TODO merge into one
+        ModelCheckingResult resultNoStateSpace = ModelCheckingResult.createVerified(0, null);
+        ModelCheckingResult resultWithStateSpace = ModelCheckingResult.createVerified(1, stateSpace);
 
         assertTrue(resultNoStateSpace.getStateSpaceRoot().isEmpty());
         assertEquals("[{x=12}, successors: [{x=11}]]", resultWithStateSpace.getStateSpaceRoot().toString());
@@ -91,7 +91,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     @Test
     public void testType() {
         assertArrayEquals(new ModelCheckingResult.Type[]{COUNTER_EXAMPLE_FOUND,
-                EXCEEDED_MAX_STEPS, VERIFIED, ABORTED, UNKNOWN, STATE_SPACE_COMPLETED},
+                EXCEEDED_MAX_STEPS, VERIFIED, ABORTED, UNKNOWN},
             ModelCheckingResult.Type.values());
 
         assertEquals(COUNTER_EXAMPLE_FOUND, ModelCheckingResult.Type.valueOf("COUNTER_EXAMPLE_FOUND"));
@@ -104,7 +104,6 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
         assertEquals("ABORTED after 15 steps", ModelCheckingResult.createAborted(15).toString());
         assertEquals("COUNTER_EXAMPLE_FOUND {x=11} after 12 steps", ModelCheckingResult.createCounterExampleFound(12, secondState).toString());
         assertEquals("EXCEEDED_MAX_STEPS after 17 steps", ModelCheckingResult.createExceededMaxSteps(17).toString());
-        assertEquals("VERIFIED after 3 steps", ModelCheckingResult.createVerified(3).toString());
-        assertEquals("STATE_SPACE_COMPLETED after 23 steps", ModelCheckingResult.createStateSpaceCompleted(23, null).toString());
+        assertEquals("VERIFIED after 3 steps", ModelCheckingResult.createVerified(3, null).toString());
     }
 }

@@ -16,8 +16,7 @@ public class ModelCheckingResult {
         EXCEEDED_MAX_STEPS,
         VERIFIED,
         ABORTED,
-        UNKNOWN,
-        STATE_SPACE_COMPLETED
+        UNKNOWN
     }
 
     private ModelCheckingResult(State lastState, int steps, Type type, String reason, Set<StateSpaceNode> stateSpaceRoot) {
@@ -28,8 +27,8 @@ public class ModelCheckingResult {
         this.stateSpaceRoot = stateSpaceRoot;
     }
 
-    public static ModelCheckingResult createVerified(int steps) {
-        return new ModelCheckingResult(null, steps, Type.VERIFIED, null, null);
+    public static ModelCheckingResult createVerified(int steps, Set<StateSpaceNode> stateSpaceRoot) {
+        return new ModelCheckingResult(null, steps, Type.VERIFIED, null, stateSpaceRoot);
     }
 
     public static ModelCheckingResult createAborted(int steps) {
@@ -48,10 +47,6 @@ public class ModelCheckingResult {
         return new ModelCheckingResult(null, maxSteps, Type.EXCEEDED_MAX_STEPS, null, null);
     }
 
-    public static ModelCheckingResult createStateSpaceCompleted(int steps, Set<StateSpaceNode> stateSpaceRoot) {
-        return new ModelCheckingResult(null, steps, Type.STATE_SPACE_COMPLETED, null, stateSpaceRoot);
-    }
-
     public State getLastState() {
         return lastState;
     }
@@ -61,7 +56,7 @@ public class ModelCheckingResult {
     }
 
     public boolean isCorrect() {
-        return type == Type.VERIFIED || type == Type.STATE_SPACE_COMPLETED;
+        return type == Type.VERIFIED;
     }
 
     public Set<StateSpaceNode> getStateSpaceRoot() {
@@ -91,7 +86,6 @@ public class ModelCheckingResult {
             case EXCEEDED_MAX_STEPS:
             case VERIFIED:
             case ABORTED:
-            case STATE_SPACE_COMPLETED:
         }
 
         return sb.append("after ").append(steps).append(" steps").toString();

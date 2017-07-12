@@ -103,7 +103,8 @@ public class ExplicitStateModelChecker extends ModelChecker {
         if (isAborted()) {
             return createAborted(visited.size());
         } else {
-            return createVerified(visited.size());
+            // TODO think about state space root!
+            return createVerified(visited.size(), null);
         }
     }
 
