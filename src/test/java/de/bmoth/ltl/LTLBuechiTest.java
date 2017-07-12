@@ -13,6 +13,17 @@ import static org.junit.Assert.assertEquals;
 public class LTLBuechiTest {
 
     @Test
+    public void testGraphConstructionGlobally() throws ParserException {
+        String formula = "G ({0=1})";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        assertEquals(1, buechiAutomaton.getFinalNodeSet().size());
+        buechiAutomaton.labelNodeSet();
+        System.out.println(buechiAutomaton.toString());
+    }
+
+    @Test
     public void testGraphConstructionGloballyNext() throws ParserException {
         String formula = "G (X {0=1})";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
@@ -20,10 +31,21 @@ public class LTLBuechiTest {
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(2, buechiAutomaton.getFinalNodeSet().size());
         buechiAutomaton.labelNodeSet();
+        System.out.println(buechiAutomaton.toString());
     }
 
     @Test
     public void testGraphConstructionUntil() throws ParserException {
+        String formula = "{0=1} U {1=1}";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        assertEquals(3, buechiAutomaton.getFinalNodeSet().size());
+        System.out.println(buechiAutomaton.toString());
+    }
+
+    @Test
+    public void testGraphConstructionUntilNext() throws ParserException {
         String formula = "{0=1} U (X {1=1})";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
@@ -39,6 +61,7 @@ public class LTLBuechiTest {
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(4, buechiAutomaton.getFinalNodeSet().size());
         buechiAutomaton.labelNodeSet();
+        System.out.println(buechiAutomaton.toString());
     }
 
     @Test
