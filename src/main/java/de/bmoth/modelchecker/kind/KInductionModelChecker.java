@@ -67,7 +67,8 @@ public class KInductionModelChecker extends ModelChecker {
                 Status checkStep = stepSolver.check();
 
                 if (checkStep == Status.UNSATISFIABLE)
-                    return createVerified(k);
+                    // TODO think about state space root!
+                    return createVerified(k,null);
             }
         }
 
