@@ -2,15 +2,13 @@ package de.bmoth.parser.ast.nodes.ltl;
 
 import de.bmoth.parser.ast.nodes.PredicateNode;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class BuechiAutomatonNode {
 
     String name;
     List<String> incoming;
+    Set<BuechiAutomatonNode> successors = new HashSet<>();
     Set<LTLNode> unprocessed;
     Set<LTLNode> processed;
     Set<LTLNode> next;
