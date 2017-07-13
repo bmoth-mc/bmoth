@@ -13,6 +13,13 @@ import static org.junit.Assert.assertEquals;
 public class LTLBuechiTest {
 
     @Test
+    public void testGraphConstructionGloballyNotFalse() throws ParserException {
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton();
+        assertEquals(1, buechiAutomaton.getFinalNodeSet().size());
+        System.out.println(buechiAutomaton.toString());
+    }
+
+    @Test
     public void testGraphConstructionGlobally() throws ParserException {
         String formula = "G ({0=1})";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
