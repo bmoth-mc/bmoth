@@ -42,11 +42,10 @@ public class BuechiAutomaton {
         PredicateNode negatedNode = ((LTLBPredicateNode) ltlNode).getPredicate().getNegatedPredicateNode();
         Boolean contradiction = false;
         for (LTLNode processedNode : processedNodes) {
-            if (processedNode.getClass() == LTLBPredicateNode.class) {
-                if (((LTLBPredicateNode) processedNode).getPredicate().equalAst(negatedNode)) {
-                    contradiction = true;
-                    break;
-                }
+            if ((processedNode.getClass() == LTLBPredicateNode.class)
+                && ((LTLBPredicateNode) processedNode).getPredicate().equalAst(negatedNode)){
+                contradiction = true;
+                break;
             }
         }
         return contradiction;
