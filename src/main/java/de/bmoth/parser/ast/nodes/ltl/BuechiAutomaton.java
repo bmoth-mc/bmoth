@@ -1,8 +1,5 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
-import de.bmoth.backend.ltl.LTLTransformations;
-import de.bmoth.parser.Parser;
-import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.PredicateNode;
 
 import java.util.*;
@@ -14,18 +11,6 @@ public class BuechiAutomaton {
     private List<List<BuechiAutomatonNode>> acceptingStateSets = new ArrayList<>();
 
     private List<BuechiAutomatonNode> finalNodeSet;
-
-    public BuechiAutomaton() {
-        try {
-            LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst("G not false");
-            LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-            this.finalNodeSet = createGraph(node);
-            labelNodes();
-            determineSuccessors();
-        } catch (ParserException e) {
-            e.printStackTrace();
-        }
-    }
 
     public BuechiAutomaton(LTLNode ltlNode) {
         this.finalNodeSet = createGraph(ltlNode);

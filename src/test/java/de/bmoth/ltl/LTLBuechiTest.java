@@ -19,7 +19,10 @@ public class LTLBuechiTest {
 
     @Test
     public void testGraphConstructionGloballyNotFalse() throws ParserException {
-        BuechiAutomaton buechiAutomaton = new BuechiAutomaton();
+        String formula = "G not false";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(1, buechiAutomaton.getFinalNodeSet().size());
         logger.log(Level.INFO, buechiAutomaton.toString());
     }
