@@ -15,6 +15,7 @@ public class BuechiAutomaton {
     public BuechiAutomaton(LTLNode ltlNode) {
         this.finalNodeSet = createGraph(ltlNode);
         labelNodeSet();
+        determineSuccessors();
     }
 
     private String newName() {
@@ -32,7 +33,6 @@ public class BuechiAutomaton {
                     break;
                 }
             }
-
         }
         return contradiction;
     }
@@ -255,6 +255,14 @@ public class BuechiAutomaton {
                 }
             }
             acceptingStateSets.add(acceptingStateSet);
+        }
+    }
+
+    private void determineSuccessors() {
+        for (BuechiAutomatonNode node: finalNodeSet) {
+            for (BuechiAutomatonNode incomingNode : node.incoming) {
+                incomingNode.successors.add(node);
+            }
         }
     }
 

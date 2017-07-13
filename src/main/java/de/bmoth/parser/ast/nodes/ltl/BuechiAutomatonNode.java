@@ -49,6 +49,12 @@ public class BuechiAutomatonNode {
         }
         nodeString.add("Incoming: " + incomingString.toString());
 
+        StringJoiner successorString = new StringJoiner(", ", "{", "}");
+        for(BuechiAutomatonNode successorNode: this.successors) {
+            successorString.add(successorNode.name);
+        }
+        nodeString.add("Successors: " + successorString.toString());
+
         StringJoiner unprocessedString = new StringJoiner("; ", "(", ")");
         for (LTLNode subNode : this.unprocessed) {
             unprocessedString.add(subNode.toString());
