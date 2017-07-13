@@ -10,7 +10,7 @@ public class BuechiAutomaton {
     private List<LTLInfixOperatorNode> subFormulasForAcceptance = new ArrayList<>();
     private List<List<BuechiAutomatonNode>> acceptingStateSets = new ArrayList<>();
 
-    private List<BuechiAutomatonNode> finalNodeSet;
+    private final List<BuechiAutomatonNode> finalNodeSet;
 
     public BuechiAutomaton(LTLNode ltlNode) {
         this.finalNodeSet = createGraph(ltlNode);
@@ -25,15 +25,13 @@ public class BuechiAutomaton {
 
     private Boolean checkForContradiction(LTLNode ltlNode, Set<LTLNode> processedNodes) {
         PredicateNode negatedNode = ((LTLBPredicateNode) ltlNode).getPredicate().getNegatedPredicateNode();
-        Boolean contradiction = false;
         for (LTLNode processedNode : processedNodes) {
-            if ((processedNode.getClass() == LTLBPredicateNode.class)
-                && ((LTLBPredicateNode) processedNode).getPredicate().equalAst(negatedNode)){
-                contradiction = true;
-                break;
+            if (processedNode instanceof LTLBPredicateNode
+                && ((LTLBPredicateNode) processedNode).getPredicate().equalAst(negatedNode)) {
+                return true;
             }
         }
-        return contradiction;
+        return false;
     }
 
     private Boolean ltlNodeIsInList(LTLNode ltlNode, Set<LTLNode> processed) {
@@ -47,14 +45,14 @@ public class BuechiAutomaton {
     }
 
     private Boolean compareLTLNodeSets(Set<LTLNode> nodeSet, Set<LTLNode> processedNodeSet) {
-        if (nodeSet.size() == processedNodeSet.size()){
+        if (nodeSet.size() == processedNodeSet.size()) {
             Set<LTLNode> nodeProcessed = new HashSet<>(nodeSet);
             Set<LTLNode> nodeInSetProcessed = new HashSet<>(processedNodeSet);
             Iterator<LTLNode> nodeIterator = nodeProcessed.iterator();
-            while(nodeIterator.hasNext()){
+            while (nodeIterator.hasNext()) {
                 LTLNode ltlNode = nodeIterator.next();
                 Iterator<LTLNode> nodeInSetIterator = nodeInSetProcessed.iterator();
-                while(nodeInSetIterator.hasNext()) {
+                while (nodeInSetIterator.hasNext()) {
                     LTLNode ltlNodeInSet = nodeInSetIterator.next();
                     if (ltlNode.equalAst(ltlNodeInSet)) {
                         nodeIterator.remove();
@@ -71,16 +69,14 @@ public class BuechiAutomaton {
 
     private BuechiAutomatonNode buechiNodeIsInNodeSet(BuechiAutomatonNode buechiNode, List<BuechiAutomatonNode> nodesSet) {
         // Check whether the finished node is already in the list (determined by the same Old- and Next-sets).
-        BuechiAutomatonNode foundNode = null;
-        for (BuechiAutomatonNode nodeInSet: nodesSet) {
+        for (BuechiAutomatonNode nodeInSet : nodesSet) {
             Boolean processedEquals = compareLTLNodeSets(buechiNode.processed, nodeInSet.processed);
             Boolean nextEquals = compareLTLNodeSets(buechiNode.next, nodeInSet.next);
             if (processedEquals && nextEquals) {
-                foundNode = nodeInSet;
-                break;
+                return nodeInSet;
             }
         }
-        return foundNode;
+        return null;
     }
 
     private Set<LTLNode> new1(LTLInfixOperatorNode ltlNode) {
@@ -201,7 +197,7 @@ public class BuechiAutomaton {
             return handleProcessedNode(buechiNode, nodeSet);
         } else {
             Iterator<LTLNode> iterator = buechiNode.unprocessed.iterator();
-            LTLNode ltlNode =  iterator.next();
+            LTLNode ltlNode = iterator.next();
             iterator.remove();
 
             if (ltlNode instanceof LTLKeywordNode) {
@@ -258,7 +254,7 @@ public class BuechiAutomaton {
     }
 
     private void determineSuccessors() {
-        for (BuechiAutomatonNode node: finalNodeSet) {
+        for (BuechiAutomatonNode node : finalNodeSet) {
             for (BuechiAutomatonNode incomingNode : node.incoming) {
                 incomingNode.successors.add(node);
             }
@@ -267,7 +263,7 @@ public class BuechiAutomaton {
 
     public String toString() {
         StringJoiner nodesString = new StringJoiner(",\n\n", "", "");
-        for (BuechiAutomatonNode node: finalNodeSet) {
+        for (BuechiAutomatonNode node : finalNodeSet) {
             nodesString.add(node.toString());
         }
         StringJoiner acceptingString = new StringJoiner(", ", "[", "]");
