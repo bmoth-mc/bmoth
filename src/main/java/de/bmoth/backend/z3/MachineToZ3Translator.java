@@ -66,6 +66,10 @@ public class MachineToZ3Translator {
         return list;
     }
 
+    public Z3TypeInference getZ3TypeInference() {
+        return z3TypeInference;
+    }
+
     public List<DeclarationNode> getVariables() {
         return machineNode.getVariables();
     }
