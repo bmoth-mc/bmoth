@@ -32,19 +32,19 @@ public class ModelCheckingResult {
     }
 
     public static ModelCheckingResult createAborted(int steps) {
-        return new ModelCheckingResult(null, steps, Type.ABORTED, null, null);
+        return new ModelCheckingResult(null, steps, Type.ABORTED, null, Collections.emptySet());
     }
 
     public static ModelCheckingResult createUnknown(int steps, String reason) {
-        return new ModelCheckingResult(null, steps, Type.UNKNOWN, reason, null);
+        return new ModelCheckingResult(null, steps, Type.UNKNOWN, reason, Collections.emptySet());
     }
 
     public static ModelCheckingResult createCounterExampleFound(int steps, State lastState) {
-        return new ModelCheckingResult(lastState, steps, Type.COUNTER_EXAMPLE_FOUND, null, null);
+        return new ModelCheckingResult(lastState, steps, Type.COUNTER_EXAMPLE_FOUND, null, Collections.emptySet());
     }
 
     public static ModelCheckingResult createExceededMaxSteps(int maxSteps) {
-        return new ModelCheckingResult(null, maxSteps, Type.EXCEEDED_MAX_STEPS, null, null);
+        return new ModelCheckingResult(null, maxSteps, Type.EXCEEDED_MAX_STEPS, null, Collections.emptySet());
     }
 
     public State getLastState() {
@@ -60,7 +60,7 @@ public class ModelCheckingResult {
     }
 
     public Set<StateSpaceNode> getStateSpaceRoot() {
-        return stateSpaceRoot != null ? stateSpaceRoot : Collections.emptySet();
+        return stateSpaceRoot;
     }
 
     public int getSteps() {
