@@ -79,4 +79,8 @@ public class State {
     public Map<String, Expr> getValues() {
         return values;
     }
+
+    public Set<BuechiAutomatonNode> getBuechiNodes() {
+        return buechiNodes;
+    }
 }

@@ -84,4 +84,12 @@ public class BuechiAutomatonNode {
         return nodeString.toString();
     }
 
+    public Set<BuechiAutomatonNode> getSuccessors() {
+        return successors;
+    }
+
+    public List<PredicateNode> getLabels() {
+        return labels;
+    }
+
 }

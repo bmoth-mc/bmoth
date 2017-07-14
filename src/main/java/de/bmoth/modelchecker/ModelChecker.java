@@ -6,6 +6,7 @@ import de.bmoth.backend.Abortable;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.BuechiAutomaton;
 import de.bmoth.parser.ast.nodes.ltl.BuechiAutomatonNode;
 
@@ -52,6 +53,16 @@ public abstract class ModelChecker implements Abortable {
             buechiNodes = buechiAutomaton.getInitialStates();
         } else {
             buechiNodes = new HashSet<>();
+            Set<BuechiAutomatonNode> predecessorBuechiNodes = predecessor.getBuechiNodes();
+            for (BuechiAutomatonNode node : predecessorBuechiNodes) {
+                Set<BuechiAutomatonNode> nodeSuccessors = node.getSuccessors();
+                for (BuechiAutomatonNode successor : nodeSuccessors) {
+                    for (PredicateNode label : successor.getLabels()) {
+                        // TODO TypeInference?
+                        System.out.println("Find valid successors here.");
+                    }
+                }
+            }
         }
         return new State(predecessor, getMachineTranslator().getVarMapFromModel(model, ops), buechiNodes);
     }
