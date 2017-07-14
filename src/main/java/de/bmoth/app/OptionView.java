@@ -41,11 +41,11 @@ public class OptionView implements FxmlView<OptionViewModel>, Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         optionViewModel.loadPrefs();
-        optionViewModel.getMinInt().bindBidirectional(minInt.textProperty());
-        optionViewModel.getMaxInt().bindBidirectional(maxInt.textProperty());
-        optionViewModel.getMaxInitState().bindBidirectional(maxInitState.textProperty());
-        optionViewModel.getMaxTrans().bindBidirectional(maxTrans.textProperty());
-        optionViewModel.getZ3Timeout().bindBidirectional(z3Timeout.textProperty());
+        minInt.textProperty().bindBidirectional(optionViewModel.getMinInt());
+        maxInt.textProperty().bindBidirectional(optionViewModel.getMaxInt());
+        maxInitState.textProperty().bindBidirectional(optionViewModel.getMaxInitState());
+        maxTrans.textProperty().bindBidirectional(optionViewModel.getMaxTrans());
+        z3Timeout.textProperty().bindBidirectional(optionViewModel.getZ3Timeout());
 
         preferenceVerificationErrorAlert = new Alert(Alert.AlertType.ERROR);
         optionViewModel.getAlertText().bind(preferenceVerificationErrorAlert.contentTextProperty());
