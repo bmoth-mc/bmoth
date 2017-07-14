@@ -49,7 +49,7 @@ public abstract class ModelChecker implements Abortable {
     protected State getStateFromModel(State predecessor, Model model, TranslationOptions ops, BuechiAutomaton buechiAutomaton) {
         Set<BuechiAutomatonNode> buechiNodes;
         if (predecessor == null) {
-            buechiNodes = buechiAutomaton.getFinalNodeSet();
+            buechiNodes = buechiAutomaton.getInitialStates();
         } else {
             buechiNodes = new HashSet<>();
         }

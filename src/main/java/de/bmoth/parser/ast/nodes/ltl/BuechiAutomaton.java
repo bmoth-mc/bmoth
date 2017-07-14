@@ -9,6 +9,7 @@ public class BuechiAutomaton {
     private int nodeCounter = 0;
     private List<LTLInfixOperatorNode> subFormulasForAcceptance = new ArrayList<>();
     private List<List<BuechiAutomatonNode>> acceptingStateSets = new ArrayList<>();
+    private Set<BuechiAutomatonNode> initialStates = new HashSet<>();
 
     private final Set<BuechiAutomatonNode> finalNodeSet;
 
@@ -18,13 +19,13 @@ public class BuechiAutomaton {
 
         this.finalNodeSet = createGraph(ltlNode);
         labelNodes();
-        determineSuccessors();
+        determineInitialsAndSuccessors();
     }
 
     public BuechiAutomaton(LTLNode ltlNode) {
         this.finalNodeSet = createGraph(ltlNode);
         labelNodes();
-        determineSuccessors();
+        determineInitialsAndSuccessors();
     }
 
     private String newName() {
@@ -261,10 +262,13 @@ public class BuechiAutomaton {
         }
     }
 
-    private void determineSuccessors() {
+    private void determineInitialsAndSuccessors() {
         for (BuechiAutomatonNode node : finalNodeSet) {
             for (BuechiAutomatonNode incomingNode : node.incoming) {
                 incomingNode.successors.add(node);
+            }
+            if (node.isInitialState) {
+                initialStates.add(node);
             }
         }
     }
@@ -288,5 +292,9 @@ public class BuechiAutomaton {
 
     public Set<BuechiAutomatonNode> getFinalNodeSet() {
         return finalNodeSet;
+    }
+
+    public Set<BuechiAutomatonNode> getInitialStates() {
+        return initialStates;
     }
 }

@@ -14,7 +14,7 @@ public class BuechiAutomatonNode {
     Set<LTLNode> next;
 
     private List<PredicateNode> labels = new ArrayList<>();
-    private Boolean isInitialState = false;
+    Boolean isInitialState = false;
     Boolean isAcceptingState = false;
 
     public BuechiAutomatonNode(String name, Set<BuechiAutomatonNode> incoming, Set<LTLNode> unprocessed, Set<LTLNode> processed,
