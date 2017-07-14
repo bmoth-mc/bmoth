@@ -8,4 +8,4 @@ INITIALISATION
 OPERATIONS
   Inc = SELECT x < 10 THEN x := x + 1 END;
   Dec = SELECT x > 1 THEN x := x -1 END
-END
+END 

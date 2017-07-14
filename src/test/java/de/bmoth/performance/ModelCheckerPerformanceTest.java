@@ -10,17 +10,17 @@ import org.openjdk.jmh.annotations.State;
 
 import java.io.IOException;
 
+import static de.bmoth.TestParser.parseMachineFromFile;
 import static org.junit.Assert.assertEquals;
-import static de.bmoth.TestParser.*;
 @State(Scope.Benchmark)
 public class ModelCheckerPerformanceTest {
 
-    private String dir = "src/test/resources/machines/";
+    private String dir = "src/test/resources/machines";
 
     @Test
     @Benchmark
     public void testLeuschelPerformanceMachines1() throws IOException {
-        MachineNode machine = parseMachine(dir + "/performance/CounterErr.mch");
+        MachineNode machine = parseMachineFromFile(dir + "/performance/CounterErr.mch");
         ModelCheckingResult result = ExplicitStateModelChecker.check(machine);
         assertEquals(false, result.isCorrect());
     }
@@ -28,7 +28,7 @@ public class ModelCheckerPerformanceTest {
     @Test
     //@Benchmark
     public void testLeuschelPerformanceMachines2() throws IOException {
-        MachineNode machine = parseMachine(dir + "/performance/SimpleSetIncrease.mch");
+        MachineNode machine = parseMachineFromFile(dir + "/performance/SimpleSetIncrease.mch");
         ModelCheckingResult result = ExplicitStateModelChecker.check(machine);
         assertEquals(false, result.isCorrect());
     }
@@ -36,7 +36,7 @@ public class ModelCheckerPerformanceTest {
     @Test
     //@Benchmark
     public void testLeuschelPerformanceMachines3() throws IOException {
-        MachineNode machine = parseMachine(dir + "/performance/CounterErr2.mch");
+        MachineNode machine = parseMachineFromFile(dir + "/performance/CounterErr2.mch");
         ModelCheckingResult result = ExplicitStateModelChecker.check(machine);
         assertEquals(false, result.isCorrect());
     }
