@@ -6,6 +6,11 @@ import de.bmoth.backend.Abortable;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.parser.ast.nodes.ltl.BuechiAutomaton;
+import de.bmoth.parser.ast.nodes.ltl.BuechiAutomatonNode;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class ModelChecker implements Abortable {
     private Context ctx;
@@ -40,6 +45,16 @@ public abstract class ModelChecker implements Abortable {
     }
 
     protected abstract ModelCheckingResult doModelCheck();
+
+    protected State getStateFromModel(State predecessor, Model model, TranslationOptions ops, BuechiAutomaton buechiAutomaton) {
+        Set<BuechiAutomatonNode> buechiNodes;
+        if (predecessor == null) {
+            buechiNodes = buechiAutomaton.getFinalNodeSet();
+        } else {
+            buechiNodes = new HashSet<>();
+        }
+        return new State(predecessor, getMachineTranslator().getVarMapFromModel(model, ops), buechiNodes);
+    }
 
     protected State getStateFromModel(State predecessor, Model model, TranslationOptions ops) {
         return new State(predecessor, getMachineTranslator().getVarMapFromModel(model, ops));
