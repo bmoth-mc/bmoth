@@ -10,8 +10,16 @@ public class BuechiAutomaton {
     private List<LTLInfixOperatorNode> subFormulasForAcceptance = new ArrayList<>();
     private List<List<BuechiAutomatonNode>> acceptingStateSets = new ArrayList<>();
 
-    private final List<BuechiAutomatonNode> finalNodeSet;
+    private final Set<BuechiAutomatonNode> finalNodeSet;
 
+    public BuechiAutomaton() {
+        LTLKeywordNode ltlKeywordNode = new LTLKeywordNode(LTLKeywordNode.Kind.TRUE);
+        LTLPrefixOperatorNode ltlNode = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.GLOBALLY, ltlKeywordNode);
+
+        this.finalNodeSet = createGraph(ltlNode);
+        labelNodes();
+        determineSuccessors();
+    }
 
     public BuechiAutomaton(LTLNode ltlNode) {
         this.finalNodeSet = createGraph(ltlNode);
@@ -67,7 +75,7 @@ public class BuechiAutomaton {
         }
     }
 
-    private BuechiAutomatonNode buechiNodeIsInNodeSet(BuechiAutomatonNode buechiNode, List<BuechiAutomatonNode> nodesSet) {
+    private BuechiAutomatonNode buechiNodeIsInNodeSet(BuechiAutomatonNode buechiNode, Set<BuechiAutomatonNode> nodesSet) {
         // Check whether the finished node is already in the list (determined by the same Old- and Next-sets).
         for (BuechiAutomatonNode nodeInSet : nodesSet) {
             Boolean processedEquals = compareLTLNodeSets(buechiNode.processed, nodeInSet.processed);
@@ -130,7 +138,7 @@ public class BuechiAutomaton {
             unprocessed, processed, new HashSet<>(buechiNode.next));
     }
 
-    private List<BuechiAutomatonNode> handleProcessedNode(BuechiAutomatonNode buechiNode, List<BuechiAutomatonNode> nodeSet) {
+    private Set<BuechiAutomatonNode> handleProcessedNode(BuechiAutomatonNode buechiNode, Set<BuechiAutomatonNode> nodeSet) {
         // Add a processed node to the nodeSet or update it.
         BuechiAutomatonNode nodeInSet = buechiNodeIsInNodeSet(buechiNode, nodeSet);
         if (nodeInSet != null) {
@@ -145,8 +153,8 @@ public class BuechiAutomaton {
         }
     }
 
-    private List<BuechiAutomatonNode> handleInfixOperatorNode(BuechiAutomatonNode buechiNode, LTLNode ltlNode,
-                                                              List<BuechiAutomatonNode> nodeSet) {
+    private Set<BuechiAutomatonNode> handleInfixOperatorNode(BuechiAutomatonNode buechiNode, LTLNode ltlNode,
+                                                              Set<BuechiAutomatonNode> nodeSet) {
         if (((LTLInfixOperatorNode) ltlNode).getKind() == LTLInfixOperatorNode.Kind.AND) {
             // And
             Set<LTLNode> unprocessed = new HashSet<>(buechiNode.unprocessed);
@@ -172,8 +180,8 @@ public class BuechiAutomaton {
         }
     }
 
-    private List<BuechiAutomatonNode> handlePrefixOperatorNode(BuechiAutomatonNode buechiNode, LTLNode ltlNode,
-                                                               List<BuechiAutomatonNode> nodeSet) {
+    private Set<BuechiAutomatonNode> handlePrefixOperatorNode(BuechiAutomatonNode buechiNode, LTLNode ltlNode,
+                                                               Set<BuechiAutomatonNode> nodeSet) {
         if (((LTLPrefixOperatorNode) ltlNode).getKind() == LTLPrefixOperatorNode.Kind.NEXT) {
             // Next
             Set<LTLNode> processed = new HashSet<>(buechiNode.processed);
@@ -190,7 +198,7 @@ public class BuechiAutomaton {
         }
     }
 
-    private List<BuechiAutomatonNode> expand(BuechiAutomatonNode buechiNode, List<BuechiAutomatonNode> nodeSet) {
+    private Set<BuechiAutomatonNode> expand(BuechiAutomatonNode buechiNode, Set<BuechiAutomatonNode> nodeSet) {
         if (buechiNode.unprocessed.isEmpty()) {
             // The current node is completely processed and can be added to the list (or, in case he was
             // already added before, updated).
@@ -226,14 +234,14 @@ public class BuechiAutomaton {
         return nodeSet;
     }
 
-    private List<BuechiAutomatonNode> createGraph(LTLNode node) {
+    private Set<BuechiAutomatonNode> createGraph(LTLNode node) {
         Set<BuechiAutomatonNode> initIncoming = new HashSet<>();
         initIncoming.add(new BuechiAutomatonNode("init", new HashSet<>(), new HashSet<>(),
             new HashSet<>(), new HashSet<>()));
         Set<LTLNode> unprocessed = new HashSet<>();
         unprocessed.add(node);
         return expand(new BuechiAutomatonNode(newName(), initIncoming, unprocessed, new HashSet<>(),
-            new HashSet<>()), new ArrayList<>());
+            new HashSet<>()), new HashSet<>());
     }
 
     private void labelNodes() {
@@ -278,7 +286,7 @@ public class BuechiAutomaton {
         return nodesString.toString();
     }
 
-    public List<BuechiAutomatonNode> getFinalNodeSet() {
+    public Set<BuechiAutomatonNode> getFinalNodeSet() {
         return finalNodeSet;
     }
 }

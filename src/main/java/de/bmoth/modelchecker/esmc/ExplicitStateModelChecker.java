@@ -12,6 +12,7 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.modelchecker.StateSpaceNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.parser.ast.nodes.ltl.BuechiAutomaton;
 import de.bmoth.preferences.BMothPreferences;
 
 import java.util.*;
@@ -27,6 +28,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
     private Queue<State> queue;
     private Map<State, StateSpaceNode> knownStateToStateSpaceNode;
     private Set<StateSpaceNode> stateSpace;
+    private BuechiAutomaton buechiAutomaton;
 
     public ExplicitStateModelChecker(MachineNode machine) {
         super(machine);
@@ -35,7 +37,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
         this.finder = new SolutionFinder(solver, getContext());
         this.opFinder = new SolutionFinder(opSolver, getContext());
         this.knownStateToStateSpaceNode = new HashMap<>();
-
+        this.buechiAutomaton = new BuechiAutomaton();
     }
 
     public static ModelCheckingResult check(MachineNode machine) {
@@ -137,10 +139,10 @@ public class ExplicitStateModelChecker extends ModelChecker {
     }
 
     private State getStateFromModel(Model model) {
-        return getStateFromModel(null, model, TranslationOptions.PRIMED_0);
+        return getStateFromModel(null, model, TranslationOptions.PRIMED_0, buechiAutomaton);
     }
 
     private State getStateFromModel(State predecessor, Model model) {
-        return getStateFromModel(predecessor, model, TranslationOptions.PRIMED_0);
+        return getStateFromModel(predecessor, model, TranslationOptions.PRIMED_0, buechiAutomaton);
     }
 }
