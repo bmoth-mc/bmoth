@@ -1,4 +1,4 @@
-package de.bmoth.typechecker;
+package de.bmoth.parser.typechecker;
 
 import de.bmoth.parser.ast.nodes.*;
 import org.junit.Test;
@@ -10,7 +10,7 @@ import static de.bmoth.TestConstants.POW_INTEGER;
 import static de.bmoth.TestParser.parseFormula;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
-import static de.bmoth.typechecker.TestTypechecker.typeCheckFormulaAndGetErrorMessage;
+import static de.bmoth.parser.typechecker.TestTypechecker.typeCheckFormulaAndGetErrorMessage;
 import static org.junit.Assert.assertEquals;
 
 public class FormulaTest {

@@ -1,4 +1,4 @@
-package de.bmoth.typechecker;
+package de.bmoth.parser.typechecker;
 
 import org.junit.Ignore;
 import org.junit.Test;

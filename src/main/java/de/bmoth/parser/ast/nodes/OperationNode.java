@@ -1,16 +1,22 @@
 package de.bmoth.parser.ast.nodes;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class OperationNode implements Node {
 
     private final String name;
+    private final List<DeclarationNode> outputParams;
+    private final List<DeclarationNode> params;
     private SubstitutionNode substitution;
 
-    public OperationNode(String name, SubstitutionNode substitution) {
+    public OperationNode(String name, List<DeclarationNode> outputParamNodes, SubstitutionNode substitution,
+            List<DeclarationNode> paramNodes) {
         this.name = name;
         this.substitution = substitution;
+        this.outputParams = outputParamNodes;
+        this.params = paramNodes;
     }
 
     public String getName() {
@@ -45,5 +51,13 @@ public class OperationNode implements Node {
         }
         OperationNode that = (OperationNode) other;
         return this.name.equals(that.name) && this.substitution.equalAst(that.substitution);
+    }
+
+    public List<DeclarationNode> getOutputParams() {
+        return outputParams;
+    }
+
+    public List<DeclarationNode> getParams() {
+        return params;
     }
 }

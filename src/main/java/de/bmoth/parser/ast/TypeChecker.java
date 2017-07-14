@@ -179,9 +179,17 @@ public class TypeChecker implements AbstractVisitor<BType, BType> {
         }
 
         // visit all operations
-        machineNode.getOperations().forEach(op -> visitSubstitutionNode(op.getSubstitution(), null));
+        visitOperations(machineNode);
 
         performPostActions();
+    }
+
+    private void visitOperations(MachineNode machineNode) {
+        for (OperationNode operationsNode : machineNode.getOperations()) {
+            setDeclarationTypes(operationsNode.getOutputParams());
+            setDeclarationTypes(operationsNode.getParams());
+            visitSubstitutionNode(operationsNode.getSubstitution(), null);
+        }
     }
 
     private void performPostActions() {

@@ -1,21 +1,22 @@
-package de.bmoth.typechecker;
+package de.bmoth.parser.typechecker;
 
 import de.bmoth.parser.ast.nodes.AnySubstitutionNode;
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.parser.ast.nodes.OperationNode;
+
 import org.junit.Test;
 
 import static de.bmoth.TestConstants.*;
 import static org.junit.Assert.assertEquals;
 import static de.bmoth.TestParser.*;
-import static de.bmoth.typechecker.TestTypechecker.*;
+import static de.bmoth.parser.typechecker.TestTypechecker.*;
 
 public class MachinesTest {
 
     private static final String VARIABLES_X_Y = "VARIABLES x,y \n";
     private static final String INVARIANT_X_Y = "INVARIANT x=1 & y : BOOL \n";
     private static final String INITIALISATION_X_1_Y_TRUE = "INITIALISATION x,y:= 1,TRUE \n";
-
 
     @Test
     public void testInteger() {
@@ -240,6 +241,21 @@ public class MachinesTest {
         MachineNode machineAsSemanticAst = parseMachine(machine);
         AnySubstitutionNode any = (AnySubstitutionNode) machineAsSemanticAst.getOperations().get(0).getSubstitution();
         DeclarationNode p = any.getParameters().get(0);
+        assertEquals("p", p.getName());
+        assertEquals(INTEGER, p.getType().toString());
+    }
+
+    @Test
+    public void testAOperationParameter() {
+        String machine = MACHINE_NAME;
+        machine += VARIABLES_X_Y;
+        machine += INVARIANT_X_Y;
+        machine += INITIALISATION_X_1_Y_TRUE;
+        machine += "OPERATIONS foo(p) = SELECT p = 1 THEN x := p END \n";
+        machine += "END";
+        MachineNode machineAsSemanticAst = parseMachine(machine);
+        OperationNode operationNode = machineAsSemanticAst.getOperations().get(0);
+        DeclarationNode p = operationNode.getParams().get(0);
         assertEquals("p", p.getName());
         assertEquals(INTEGER, p.getType().toString());
     }

@@ -46,7 +46,7 @@ definition_body
   ;
 
 single_operation
-  : IDENTIFIER EQUAL substitution                                         # Operation
+  :  ( outputParams=identifier_list  OUTPUT_PARAMS)? IDENTIFIER ( LEFT_PAR params=identifier_list RIGHT_PAR )? EQUAL substitution   # Operation
   ;
 
 quantified_variables_list

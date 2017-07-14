@@ -1,13 +1,13 @@
-package de.bmoth.typechecker;
+package de.bmoth.parser.typechecker;
 
 import de.bmoth.parser.ast.nodes.DeclarationNode;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import org.junit.Test;
 
 import static de.bmoth.TestConstants.INTEGER;
-import static de.bmoth.typechecker.TestTypechecker.*;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.EXPRESSION_FORMULA;
 import static de.bmoth.parser.ast.nodes.FormulaNode.FormulaType.PREDICATE_FORMULA;
+import static de.bmoth.parser.typechecker.TestTypechecker.*;
 import static org.junit.Assert.assertEquals;
 import static de.bmoth.TestParser.*;
 

@@ -1,10 +1,10 @@
-package de.bmoth.typechecker;
+package de.bmoth.parser.typechecker;
 
 import org.junit.Test;
 
 import static de.bmoth.TestConstants.MACHINE_NAME;
 import static de.bmoth.TestConstants.TWO_CONSTANTS;
-import static de.bmoth.typechecker.TestTypechecker.*;
+import static de.bmoth.parser.typechecker.TestTypechecker.*;
 
 public class ErrorMachinesTest {
 
