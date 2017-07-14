@@ -1,7 +1,6 @@
 package de.bmoth.backend.ltl.transformation;
 
 import de.bmoth.parser.ast.nodes.Node;
-import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.ASTTransformation;
 
@@ -20,21 +19,6 @@ public class ConvertFinallyFinallyToFinally implements ASTTransformation {
     @Override
     public Node transformNode(Node node) {
         LTLPrefixOperatorNode outerFinally = (LTLPrefixOperatorNode) node;
-
-        // case FF->F
-        if (contains(outerFinally, FINALLY)) {
-            LTLPrefixOperatorNode innerFinally = (LTLPrefixOperatorNode) outerFinally.getArgument();
-            LTLNode inner = innerFinally.getArgument();
-
-            return new LTLPrefixOperatorNode(FINALLY, inner);
-        }
-        // case FnF->nF
-        else {
-            LTLPrefixOperatorNode not = (LTLPrefixOperatorNode) outerFinally.getArgument();
-            LTLPrefixOperatorNode innerFinally = (LTLPrefixOperatorNode) not.getArgument();
-            LTLNode inner = innerFinally.getArgument();
-
-            return new LTLPrefixOperatorNode(NOT, new LTLPrefixOperatorNode(FINALLY, inner));
-        }
+        return outerFinally.getArgument();
     }
 }
