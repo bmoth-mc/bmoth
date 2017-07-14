@@ -3,8 +3,8 @@ package de.bmoth.backend.ltl;
 
 import com.google.common.reflect.ClassPath;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
 import de.bmoth.parser.ast.visitors.ASTTransformation;
+import de.bmoth.parser.ast.visitors.ASTTransformationVisitor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +30,10 @@ public class LTLTransformations {
                     transformationList.add((ASTTransformation) clazz.newInstance());
                 }
             }
+            transformationList.sort((o1, o2) -> {
+                // TODO: replace by comparison based on priority
+                return o1.hashCode() - o2.hashCode();
+            });
         } catch (IOException | InstantiationException | IllegalAccessException e) {
             logger.log(Level.SEVERE, "Error loading LTL transformation rules", e);
         }
