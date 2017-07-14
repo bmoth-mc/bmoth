@@ -24,7 +24,7 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(1, buechiAutomaton.getFinalNodeSet().size());
-        logger.log(Level.INFO, "%s", buechiAutomaton.toString());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(1, buechiAutomaton.getFinalNodeSet().size());
-        logger.log(Level.INFO, "%s", buechiAutomaton.toString());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
     @Test
@@ -44,7 +44,7 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(2, buechiAutomaton.getFinalNodeSet().size());
-        logger.log(Level.INFO, "%s", buechiAutomaton.toString());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(3, buechiAutomaton.getFinalNodeSet().size());
-        logger.log(Level.INFO, "%s", buechiAutomaton.toString());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(4, buechiAutomaton.getFinalNodeSet().size());
-        logger.log(Level.INFO, "%s", buechiAutomaton.toString());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(5, buechiAutomaton.getFinalNodeSet().size());
-        logger.log(Level.INFO, "%s", buechiAutomaton.toString());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(4, buechiAutomaton.getFinalNodeSet().size());
-        logger.log(Level.INFO, "%s", buechiAutomaton.toString());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(2, buechiAutomaton.getFinalNodeSet().size());
-        logger.log(Level.INFO, "%s", buechiAutomaton.toString());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
     @Test
@@ -104,7 +104,7 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(2, buechiAutomaton.getFinalNodeSet().size());
-        logger.log(Level.INFO, "%s", buechiAutomaton.toString());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
     @Test
@@ -114,7 +114,7 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(2, buechiAutomaton.getFinalNodeSet().size());
-        logger.log(Level.INFO, "%s", buechiAutomaton.toString());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
     @Test
@@ -124,6 +124,6 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(6, buechiAutomaton.getFinalNodeSet().size());
-        logger.log(Level.INFO, "%s", buechiAutomaton.toString());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 }

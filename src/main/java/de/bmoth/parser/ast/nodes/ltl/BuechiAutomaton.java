@@ -12,6 +12,7 @@ public class BuechiAutomaton {
 
     private final List<BuechiAutomatonNode> finalNodeSet;
 
+
     public BuechiAutomaton(LTLNode ltlNode) {
         this.finalNodeSet = createGraph(ltlNode);
         labelNodes();
