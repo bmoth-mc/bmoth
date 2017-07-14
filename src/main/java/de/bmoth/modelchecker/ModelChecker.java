@@ -59,6 +59,9 @@ public abstract class ModelChecker implements Abortable {
             for (BuechiAutomatonNode node : predecessorBuechiNodes) {
                 Set<BuechiAutomatonNode> nodeSuccessors = node.getSuccessors();
                 for (BuechiAutomatonNode successor : nodeSuccessors) {
+                    if (successor.getLabels().isEmpty()) {
+                        buechiNodes.add(successor);
+                    }
                     for (PredicateNode label : successor.getLabels()) {
                         Expr eval = model.eval(FormulaToZ3Translator.translatePredicate(label, ctx, machineTranslator.getZ3TypeInference()), true);
                         switch (eval.getBoolValue()) {
