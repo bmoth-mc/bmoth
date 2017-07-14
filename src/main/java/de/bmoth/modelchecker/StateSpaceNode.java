@@ -17,6 +17,14 @@ public class StateSpaceNode {
         successors.add(successor);
     }
 
+    public Set<StateSpaceNode> getSuccessors() {
+        return successors;
+    }
+
+    public State getState() {
+        return state;
+    }
+
     @Override
     public int hashCode() {
         return state.hashCode();

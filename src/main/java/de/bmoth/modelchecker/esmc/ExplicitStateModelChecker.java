@@ -13,6 +13,7 @@ import de.bmoth.modelchecker.State;
 import de.bmoth.modelchecker.StateSpaceNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.nodes.ltl.BuechiAutomaton;
+import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.preferences.BMothPreferences;
 
 import java.util.*;
@@ -37,7 +38,12 @@ public class ExplicitStateModelChecker extends ModelChecker {
         this.finder = new SolutionFinder(solver, getContext());
         this.opFinder = new SolutionFinder(opSolver, getContext());
         this.knownStateToStateSpaceNode = new HashMap<>();
-        this.buechiAutomaton = new BuechiAutomaton();
+        List<LTLFormula> ltlFormulas = machine.getLTLFormulas();
+        if (ltlFormulas.size() == 1) {
+            this.buechiAutomaton = new BuechiAutomaton(ltlFormulas.get(0).getLTLNode());
+        } else {
+            this.buechiAutomaton = new BuechiAutomaton();
+        }
     }
 
     public static ModelCheckingResult check(MachineNode machine) {
@@ -125,7 +131,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
             toNode = new StateSpaceNode(to);
             knownStateToStateSpaceNode.put(to, toNode);
             // !queue.contains(...) check can be omitted as it is always parallel to insertion into knownStateToStateSpaceNode
-            if (!visited.contains(to)){
+            if (!visited.contains(to)) {
                 queue.add(to);
             }
         } else {
