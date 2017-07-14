@@ -35,13 +35,12 @@ public class BuechiAutomaton {
     }
 
     private Boolean ltlNodeIsInList(LTLNode ltlNode, Set<LTLNode> processed) {
-        Boolean isInNodeSet = false;
         for (LTLNode processedNode : processed) {
             if (ltlNode.equalAst(processedNode)) {
-                isInNodeSet = true;
+                return true;
             }
         }
-        return isInNodeSet;
+        return false;
     }
 
     private Boolean compareLTLNodeSets(Set<LTLNode> nodeSet, Set<LTLNode> processedNodeSet) {
