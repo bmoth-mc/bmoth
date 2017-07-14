@@ -28,6 +28,9 @@ public class ModelCheckingResult {
     }
 
     public static ModelCheckingResult createVerified(int steps, Set<StateSpaceNode> stateSpaceRoot) {
+        if (stateSpaceRoot == null) {
+            return new ModelCheckingResult(null, steps, Type.VERIFIED, null, Collections.emptySet());
+        }
         return new ModelCheckingResult(null, steps, Type.VERIFIED, null, stateSpaceRoot);
     }
 
