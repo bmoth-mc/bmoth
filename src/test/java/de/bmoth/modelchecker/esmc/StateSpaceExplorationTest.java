@@ -2,6 +2,7 @@ package de.bmoth.modelchecker.esmc;
 
 import de.bmoth.TestParser;
 import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.modelchecker.StateSpace;
 import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Before;
@@ -48,6 +49,9 @@ public class StateSpaceExplorationTest extends TestParser {
         result = new ExplicitStateModelChecker(machine).check();
         assertEquals(7, result.getSteps());
         assertTrue(result.isCorrect());
+
+        StateSpace space = new StateSpace(result.getStateSpaceRoot());
+        space.printStronglyConnectedComponents();
     }
 
     @Test
