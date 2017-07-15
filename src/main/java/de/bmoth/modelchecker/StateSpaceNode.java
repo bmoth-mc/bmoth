@@ -1,6 +1,5 @@
 package de.bmoth.modelchecker;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,7 +18,7 @@ public class StateSpaceNode {
     }
 
     public Set<StateSpaceNode> getSuccessors() {
-        return successors != null ? successors : Collections.emptySet();
+        return successors;
     }
 
     public State getState() {
