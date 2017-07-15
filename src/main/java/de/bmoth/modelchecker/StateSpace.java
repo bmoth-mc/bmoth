@@ -113,7 +113,7 @@ public class StateSpace {
         return vertex;
     }
 
-    class Vertex {
+    static class Vertex {
         int index;
         int lowLink;
         State state;

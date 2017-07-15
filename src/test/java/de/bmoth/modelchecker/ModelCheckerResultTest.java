@@ -88,6 +88,17 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     }
 
     @Test
+    public void testVertex() {
+        StateSpace.Vertex vertex = new StateSpace.Vertex(firstState);
+        StateSpace.Vertex vertexEqiv = new StateSpace.Vertex(firstStateEquiv);
+
+        assertEquals("{x=10} (0,0)", vertex.toString());
+        assertFalse(vertex.equals(new Object()));
+        assertTrue(vertex.equals(vertex));
+        assertTrue(vertex.equals(vertexEqiv));
+    }
+
+    @Test
     public void testGetPath() {
         assertEquals("[" + secondState + ", " + thirdState.toString() + "]",
             firstState.getPath().toString());
