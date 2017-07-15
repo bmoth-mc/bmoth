@@ -24,7 +24,7 @@ public class ModelCheckingResult {
         this.steps = steps;
         this.type = type;
         this.reason = reason;
-        this.stateSpace = stateSpaceRoot == null ? new StateSpace(stateSpaceRoot) : null;
+        this.stateSpace = stateSpaceRoot != null ? new StateSpace(stateSpaceRoot) : null;
     }
 
     public static ModelCheckingResult createVerified(int steps, Set<StateSpaceNode> stateSpaceRoot) {
