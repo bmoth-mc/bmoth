@@ -1,6 +1,6 @@
 package de.bmoth.preferences;
 
-public class BMothPreferences {
+public final class BMothPreferences {
     private static java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(BMothPreferences.class);
 
     private BMothPreferences() {

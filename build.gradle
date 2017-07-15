@@ -101,6 +101,7 @@ dependencies {
     // TestFX & monocle for headless testing
     testCompile "org.testfx:testfx-core:4.0.+"
     testCompile "org.testfx:testfx-junit:4.0.+"
+    testCompile "net.trajano.commons:commons-testing:1.0.1"
     testRuntime 'org.testfx:openjfx-monocle:1.8.0_20'
 
     // code assert (e.g. to check for circular dependencies)

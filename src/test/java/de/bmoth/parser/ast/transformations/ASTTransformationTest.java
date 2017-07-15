@@ -1,10 +1,12 @@
 package de.bmoth.parser.ast.transformations;
 
+import de.bmoth.backend.ltl.LTLTransformationUtil;
 import de.bmoth.backend.z3.AstTransformationsForZ3;
 import de.bmoth.parser.ast.nodes.FormulaNode;
 import org.junit.Test;
 
 import static de.bmoth.TestParser.parseFormula;
+import static net.trajano.commons.testing.UtilityClassTestUtil.assertUtilityClassWellDefined;
 import static org.junit.Assert.assertEquals;
 
 public class ASTTransformationTest {
@@ -48,5 +50,10 @@ public class ASTTransformationTest {
         FormulaNode formulaNode = parseFormula(formula);
         formulaNode = AstTransformationsForZ3.transformFormulaNode(formulaNode);
         assertEquals("AND(GREATER_EQUAL(a,1),LESS_EQUAL(a,7))", formulaNode.getFormula().toString());
+    }
+
+    @Test
+    public void testLTLTransformationUtil() {
+        assertUtilityClassWellDefined(LTLTransformationUtil.class);
     }
 }
