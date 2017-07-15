@@ -44,4 +44,8 @@ public class StateSpaceNode {
     public Set<StateSpaceNode> getSuccessors() {
         return successors != null ? successors : Collections.emptySet();
     }
+
+    public State getState() {
+        return state;
+    }
 }

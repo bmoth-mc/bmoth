@@ -3,79 +3,159 @@ package de.bmoth.modelchecker;
 import java.util.*;
 
 public class StateSpace {
-    private final Set<Vertex> V;
-    private final Map<Vertex, Set<Vertex>> E;
+    private final Set<Vertex> vertices;
+    private final Map<Vertex, Set<Vertex>> edges;
+    private final Map<Vertex, StateSpaceNode> vertexToSpaceStateNode;
 
-    private int maxdfs;
-    private Set<Vertex> U;
-    private Stack<Vertex> S;
+    private int index;
+    private Queue<Vertex> unseen;
+    private Stack<Vertex> stack;
 
     public StateSpace(Set<StateSpaceNode> spaceStateRoot) {
-        V = new HashSet<>();
-        E = new HashMap<>();
+        vertices = new LinkedHashSet<>();
+        edges = new HashMap<>();
 
-        for (StateSpaceNode rootNode : spaceStateRoot) {
-            collectVertices(null, new Vertex(rootNode));
+        // helper map to allow outputting of SpaceStateNodes after completion of tarjan
+        vertexToSpaceStateNode = new HashMap<>();
+
+        // temporary helper map to prevent duplicate generation of same vertex
+        Map<StateSpaceNode, Vertex> spaceStateNodeToVertex = new HashMap<>();
+
+        // breadth-first generation of vertices
+        Queue<StateSpaceNode> queue = new ArrayDeque<>();
+        Set<StateSpaceNode> visited = new HashSet<>();
+
+        // init queue
+        for (StateSpaceNode root : spaceStateRoot) {
+            queue.add(root);
+            visited.add(root);
+        }
+
+        // process queue ...
+        while (!queue.isEmpty()) {
+            StateSpaceNode node = queue.poll();
+            Vertex vertex = generateUniqueVertex(node, spaceStateNodeToVertex);
+
+            // ... store vertex
+            vertices.add(vertex);
+
+            // ... process successors
+            Set<Vertex> successors = new LinkedHashSet<>();
+            for (StateSpaceNode successorNode : node.getSuccessors()) {
+                if (!visited.contains(successorNode)) {
+                    queue.add(successorNode);
+                    visited.add(successorNode);
+                }
+
+                Vertex successor = generateUniqueVertex(successorNode, spaceStateNodeToVertex);
+                successors.add(successor);
+            }
+
+            // ... store edges
+            edges.put(vertex, successors);
         }
     }
 
-    private void collectVertices(Vertex rootVertex, Vertex vertex) {
-        if (!V.contains(vertex)) {
-            V.add(vertex);
-            for (StateSpaceNode succesor : vertex.stateSpaceNode.getSuccessors()) {
-                collectVertices(vertex, new Vertex(succesor));
+    public List<List<StateSpaceNode>> getStronglyConnectedComponents() {
+        List<List<StateSpaceNode>> sccList = new ArrayList<>();
+
+        index = 0;
+        unseen = new ArrayDeque<>(vertices);
+        stack = new Stack<>();
+
+        while (!unseen.isEmpty()) {
+            Vertex v0 = unseen.poll();
+            tarjan(v0, sccList);
+        }
+
+        return sccList;
+    }
+
+    private void tarjan(Vertex current, List<List<StateSpaceNode>> sccList) {
+        current.init(index);
+        index++;
+
+        stack.push(current);
+        unseen.remove(current);
+
+        for (Vertex successor : edges.get(current)) {
+            if (unseen.contains(successor)) {
+                tarjan(successor, sccList);
+                current.adjustLowLink(successor.lowLink);
+            } else if (stack.contains(successor)) {
+                current.adjustLowLink(successor.index);
             }
         }
 
-        if (!E.containsKey(rootVertex)){
-            E.put(rootVertex, new HashSet<>());
-        }
+        // if root of scc
+        if (current.isSscRoot()) {
+            List<StateSpaceNode> currentScc = new ArrayList<>();
 
-        Set<Vertex> successors = E.get(rootVertex);
-        successors.add(vertex);
-    }
-
-    public void printStronglyConnectedComponents() {
-        maxdfs = 0;
-        U = new HashSet<>(V);
-        S = new Stack<>();
-        while (!U.isEmpty()) {
-            Vertex v0 = U.iterator().next();
-            tarjan(v0);
+            Vertex top;
+            do {
+                top = stack.pop();
+                currentScc.add(vertexToSpaceStateNode.get(top));
+            }
+            while (current != top);
+            sccList.add(currentScc);
         }
     }
 
-    private void tarjan(Vertex v) {
-        v.dfs = maxdfs;
-        v.lowlink = maxdfs;
-        maxdfs++;
-
-        S.push(v);
-        U.remove(v);
-
-        //for (Vertex v_ : v.stateSpaceNode.getSuccessors().stream().map()
-        //    ) {
-
-        //}
+    private Vertex generateUniqueVertex(StateSpaceNode node, Map<StateSpaceNode, Vertex> spaceStateNodeToVertex) {
+        Vertex vertex;
+        if (spaceStateNodeToVertex.containsKey(node)) {
+            vertex = spaceStateNodeToVertex.get(node);
+        } else {
+            vertex = new Vertex(node.getState());
+            spaceStateNodeToVertex.put(node, vertex);
+            vertexToSpaceStateNode.put(vertex, node);
+        }
+        return vertex;
     }
 
     class Vertex {
-        int dfs;
-        int lowlink;
-        StateSpaceNode stateSpaceNode;
+        int index;
+        int lowLink;
+        State state;
 
-        Vertex(StateSpaceNode stateSpaceNode) {
-            this.stateSpaceNode = stateSpaceNode;
+        Vertex(State state) {
+            this.state = state;
         }
 
         @Override
-        public boolean equals(Object o) {
-            return stateSpaceNode.equals(o);
+        public String toString() {
+            return state.toString() + " (" + lowLink + "," + index + ")";
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Vertex)) {
+                return false;
+            }
+            if (this == obj) {
+                return true;
+            }
+
+            Vertex that = (Vertex) obj;
+            return this.state.equals(that.state);
         }
 
         @Override
         public int hashCode() {
-            return stateSpaceNode.hashCode();
+            return state.hashCode();
+        }
+
+        void init(int index) {
+            this.index = index;
+            this.lowLink = index;
+        }
+
+        void adjustLowLink(int lowLink) {
+            this.lowLink = Math.min(this.lowLink, lowLink);
+        }
+
+        boolean isSscRoot() {
+            return index == lowLink;
         }
     }
 }
