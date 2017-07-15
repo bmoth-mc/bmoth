@@ -6,13 +6,10 @@ import de.bmoth.modelchecker.State;
 import de.bmoth.modelchecker.StateSpace;
 import de.bmoth.modelchecker.StateSpaceNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
-import de.bmoth.parser.ast.nodes.SelectSubstitutionNode;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.Type.UNKNOWN;
@@ -46,7 +43,7 @@ public class StateSpaceExplorationTest extends TestParser {
         assertEquals(7, result.getSteps());
         assertTrue(result.isCorrect());
 
-        StateSpace space = new StateSpace(result.getStateSpaceRoot());
+        StateSpace space = result.getStateSpace();
         assertEquals(7, space.getStronglyConnectedComponents().size());
 
         // 7 singular strongly connected components
@@ -63,7 +60,7 @@ public class StateSpaceExplorationTest extends TestParser {
         assertEquals(7, result.getSteps());
         assertTrue(result.isCorrect());
 
-        space = new StateSpace(result.getStateSpaceRoot());
+        space = result.getStateSpace();
         assertEquals(3, space.getStronglyConnectedComponents().size());
         assertEquals("[{x=7}, {x=6}, {x=5}, {x=4}, {x=3}]", space.getStronglyConnectedComponents().get(0).stream().map(StateSpaceNode::getState).collect(Collectors.toList()).toString());
         assertEquals("[{x=1}]", space.getStronglyConnectedComponents().get(1).stream().map(StateSpaceNode::getState).collect(Collectors.toList()).toString());
@@ -95,7 +92,7 @@ public class StateSpaceExplorationTest extends TestParser {
         assertTrue(result.isCorrect());
         assertEquals(10, result.getSteps());
 
-        StateSpace space = new StateSpace(result.getStateSpaceRoot());
+        StateSpace space = result.getStateSpace();
         assertEquals(2, space.getStronglyConnectedComponents().size());
         assertEquals("[{x=10}, {x=8}, {x=7}, {x=9}, {x=6}]", space.getStronglyConnectedComponents().get(0).stream().map(StateSpaceNode::getState).collect(Collectors.toList()).toString());
         assertEquals("[{x=5}, {x=4}, {x=3}, {x=2}, {x=1}]", space.getStronglyConnectedComponents().get(1).stream().map(StateSpaceNode::getState).collect(Collectors.toList()).toString());

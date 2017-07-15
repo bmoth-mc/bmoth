@@ -6,12 +6,14 @@ public class StateSpace {
     private final Set<Vertex> vertices;
     private final Map<Vertex, Set<Vertex>> edges;
     private final Map<Vertex, StateSpaceNode> vertexToSpaceStateNode;
+    private final Set<StateSpaceNode> spaceStateRoot;
 
     private int index;
     private Queue<Vertex> unseen;
     private Deque<Vertex> stack;
 
     public StateSpace(Set<StateSpaceNode> spaceStateRoot) {
+        this.spaceStateRoot = spaceStateRoot;
         vertices = new LinkedHashSet<>();
         edges = new HashMap<>();
 
@@ -111,6 +113,10 @@ public class StateSpace {
             vertexToSpaceStateNode.put(vertex, node);
         }
         return vertex;
+    }
+
+    public Set<StateSpaceNode> getRoot() {
+        return spaceStateRoot;
     }
 
     static class Vertex {

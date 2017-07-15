@@ -74,8 +74,8 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
         ModelCheckingResult resultNoStateSpace = ModelCheckingResult.createVerified(0, null);
         ModelCheckingResult resultWithStateSpace = ModelCheckingResult.createVerified(1, stateSpace);
 
-        assertTrue(resultNoStateSpace.getStateSpaceRoot().isEmpty());
-        assertEquals("[{x=12}, successors: [{x=11}]]", resultWithStateSpace.getStateSpaceRoot().toString());
+        assertTrue(resultNoStateSpace.getStateSpace() == null);
+        assertEquals("[{x=12}, successors: [{x=11}]]", resultWithStateSpace.getStateSpace().getRoot().toString());
     }
 
     @Test

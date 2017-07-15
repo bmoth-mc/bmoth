@@ -9,7 +9,7 @@ public class ModelCheckingResult {
     private final State lastState;
     private final Type type;
     private final String reason;
-    private final Set<StateSpaceNode> stateSpaceRoot;
+    private final StateSpace stateSpace;
 
     public enum Type {
         COUNTER_EXAMPLE_FOUND,
@@ -24,13 +24,10 @@ public class ModelCheckingResult {
         this.steps = steps;
         this.type = type;
         this.reason = reason;
-        this.stateSpaceRoot = stateSpaceRoot;
+        this.stateSpace = stateSpaceRoot == null ? new StateSpace(stateSpaceRoot) : null;
     }
 
     public static ModelCheckingResult createVerified(int steps, Set<StateSpaceNode> stateSpaceRoot) {
-        if (stateSpaceRoot == null) {
-            return new ModelCheckingResult(null, steps, Type.VERIFIED, null, Collections.emptySet());
-        }
         return new ModelCheckingResult(null, steps, Type.VERIFIED, null, stateSpaceRoot);
     }
 
@@ -62,8 +59,8 @@ public class ModelCheckingResult {
         return type == Type.VERIFIED;
     }
 
-    public Set<StateSpaceNode> getStateSpaceRoot() {
-        return stateSpaceRoot;
+    public StateSpace getStateSpace() {
+        return stateSpace;
     }
 
     public int getSteps() {

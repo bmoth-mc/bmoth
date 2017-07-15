@@ -7,10 +7,7 @@ import com.microsoft.z3.Status;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
-import de.bmoth.modelchecker.ModelChecker;
-import de.bmoth.modelchecker.ModelCheckingResult;
-import de.bmoth.modelchecker.State;
-import de.bmoth.modelchecker.StateSpaceNode;
+import de.bmoth.modelchecker.*;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.nodes.ltl.BuechiAutomaton;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
@@ -28,7 +25,6 @@ public class ExplicitStateModelChecker extends ModelChecker {
     private Set<State> visited;
     private Queue<State> queue;
     private Map<State, StateSpaceNode> knownStateToStateSpaceNode;
-    private Set<StateSpaceNode> stateSpace;
     private BuechiAutomaton buechiAutomaton;
 
     public ExplicitStateModelChecker(MachineNode machine) {
@@ -65,7 +61,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
 
         visited = new HashSet<>();
         queue = new LinkedList<>();
-        stateSpace = new HashSet<>();
+        Set<StateSpaceNode> stateSpaceRoot = new HashSet<>();
 
         // prepare initial states
         BoolExpr initialValueConstraint = getMachineTranslator().getInitialValueConstraint();
@@ -75,7 +71,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
             .map(this::getStateFromModel)
             .forEach(state -> {
                 updateStateSpace(null, state);
-                stateSpace.add(knownStateToStateSpaceNode.get(state));
+                stateSpaceRoot.add(knownStateToStateSpaceNode.get(state));
             });
 
         final BoolExpr invariant = getMachineTranslator().getInvariantConstraint();
@@ -119,8 +115,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
         if (isAborted()) {
             return createAborted(visited.size());
         } else {
-            // TODO think about state space root!
-            return createVerified(visited.size(), stateSpace);
+            return createVerified(visited.size(), stateSpaceRoot);
         }
     }
 
