@@ -9,7 +9,7 @@ public class StateSpace {
 
     private int index;
     private Queue<Vertex> unseen;
-    private Stack<Vertex> stack;
+    private Deque<Vertex> stack;
 
     public StateSpace(Set<StateSpaceNode> spaceStateRoot) {
         vertices = new LinkedHashSet<>();
@@ -61,7 +61,7 @@ public class StateSpace {
 
         index = 0;
         unseen = new ArrayDeque<>(vertices);
-        stack = new Stack<>();
+        stack = new ArrayDeque<>();
 
         while (!unseen.isEmpty()) {
             Vertex v0 = unseen.poll();
