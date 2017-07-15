@@ -19,7 +19,7 @@ public class StateSpaceNode {
     }
 
     public Set<StateSpaceNode> getSuccessors() {
-        return successors;
+        return successors != null ? successors : Collections.emptySet();
     }
 
     public State getState() {
@@ -47,13 +47,5 @@ public class StateSpaceNode {
     @Override
     public String toString() {
         return state.toString() + ", successors: " + successors.stream().map(successor -> successor.state).collect(Collectors.toList());
-    }
-
-    public Set<StateSpaceNode> getSuccessors() {
-        return successors != null ? successors : Collections.emptySet();
-    }
-
-    public State getState() {
-        return state;
     }
 }
