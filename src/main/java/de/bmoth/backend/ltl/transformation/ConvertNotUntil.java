@@ -21,13 +21,11 @@ public class ConvertNotUntil implements ASTTransformation {
             if (argument instanceof LTLInfixOperatorNode) {
                 LTLInfixOperatorNode untilOperator = (LTLInfixOperatorNode) argument;
                 if (untilOperator.getKind() == LTLInfixOperatorNode.Kind.UNTIL) {
-                    LTLNode untilsLeft = untilOperator.getLeft();
-                    LTLNode untilsRight = untilOperator.getRight();
-                    LTLPrefixOperatorNode notUntilsRight = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT, untilsRight);
-                    LTLInfixOperatorNode untilsLeftAndNotUntilsRight = new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.AND, untilsLeft, notUntilsRight);
-                    LTLPrefixOperatorNode notUntilsLeft = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT, untilsLeft);
-                    LTLInfixOperatorNode notUntilsLeftAndNotUntilsRight = new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.AND, notUntilsLeft, notUntilsRight);
-                    return new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.WEAK_UNTIL, untilsLeftAndNotUntilsRight, notUntilsLeftAndNotUntilsRight);
+                    LTLNode left = untilOperator.getLeft();
+                    LTLNode right = untilOperator.getRight();
+                    LTLPrefixOperatorNode notRight = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT, right);
+                    LTLPrefixOperatorNode notLeft = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.NOT, left);
+                    return new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.RELEASE, notLeft, notRight);
                 }
             }
         }

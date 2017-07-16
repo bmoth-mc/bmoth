@@ -250,13 +250,6 @@ public class LTLTransformationTest extends TestParser {
     }
 
     @Test
-    public void testConvertNotWeakUntil() {
-        LTLFormula ltlFormula = parseLtlFormula("not({0=1} W false)");
-        LTLNode node = (LTLNode) new ConvertNotWeakUntil().transformNode(ltlFormula.getLTLNode());
-        assertEquals("UNTIL(AND(EQUAL(0,1),NOT(FALSE)),AND(NOT(EQUAL(0,1)),NOT(FALSE)))", node.toString());
-    }
-
-    @Test
     public void testLTLTransformationUtil() {
         LTLNode infixOp = new LTLInfixOperatorNode(OR, null, null);
         LTLNode prefixOp = new LTLPrefixOperatorNode(FINALLY, null);

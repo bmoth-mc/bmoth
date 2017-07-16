@@ -10,7 +10,7 @@ import de.bmoth.parser.ast.visitors.ASTTransformation;
 import static de.bmoth.backend.ltl.LTLTransformationUtil.isOperator;
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.GLOBALLY;
 
-public class ConvertGloballyPhiToPhiWeakUntilFalse implements ASTTransformation {
+public class ConvertGloballyPhiToFalseReleasePhi implements ASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
@@ -21,6 +21,6 @@ public class ConvertGloballyPhiToPhiWeakUntilFalse implements ASTTransformation 
     public Node transformNode(Node oldNode) {
         LTLPrefixOperatorNode globallyOperator = (LTLPrefixOperatorNode) oldNode;
         LTLNode argument = globallyOperator.getArgument();
-        return new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.WEAK_UNTIL, argument, new LTLKeywordNode(LTLKeywordNode.Kind.FALSE));
+        return new LTLInfixOperatorNode(LTLInfixOperatorNode.Kind.RELEASE, new LTLKeywordNode(LTLKeywordNode.Kind.FALSE), argument);
     }
 }

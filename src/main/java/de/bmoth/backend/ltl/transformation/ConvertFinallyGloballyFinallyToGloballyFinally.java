@@ -24,9 +24,7 @@ public class ConvertFinallyGloballyFinallyToGloballyFinally implements ASTTransf
                     if (argument2 instanceof LTLPrefixOperatorNode) {
                         LTLPrefixOperatorNode innerFinallyOperator = (LTLPrefixOperatorNode) argument2;
                         if (innerFinallyOperator.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
-                            LTLPrefixOperatorNode newFinally = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.FINALLY,
-                                innerFinallyOperator.getArgument());
-                            return new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.GLOBALLY, newFinally);
+                            return globallyOperator;
                         }
                     }
                 }
