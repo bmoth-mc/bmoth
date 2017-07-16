@@ -6,6 +6,8 @@ import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.ASTTransformation;
 
+import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.AND;
+
 public class ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi implements ASTTransformation {
 
     @Override
@@ -20,12 +22,10 @@ public class ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi implements ASTT
             LTLNode argument = globallyOperator.getArgument();
             if (argument instanceof LTLInfixOperatorNode) {
                 LTLInfixOperatorNode andOperator = (LTLInfixOperatorNode) argument;
-                if (andOperator.getKind() == LTLInfixOperatorNode.Kind.AND) {
+                if (andOperator.getKind() == AND) {
                     LTLPrefixOperatorNode newNextLeft = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.GLOBALLY, andOperator.getLeft());
                     LTLPrefixOperatorNode newNextRight = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.GLOBALLY, andOperator.getRight());
-                    andOperator.setLeft(newNextLeft);
-                    andOperator.setRight(newNextRight);
-                    return andOperator;
+                    return new LTLInfixOperatorNode(AND, newNextLeft, newNextRight);
                 }
             }
         }

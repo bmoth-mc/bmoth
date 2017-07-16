@@ -6,6 +6,8 @@ import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.ASTTransformation;
 
+import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.OR;
+
 public class ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi implements ASTTransformation {
 
     @Override
@@ -20,12 +22,10 @@ public class ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi implements ASTTransf
             LTLNode argument = finallyOperator.getArgument();
             if (argument instanceof LTLInfixOperatorNode) {
                 LTLInfixOperatorNode orOperator = (LTLInfixOperatorNode) argument;
-                if (orOperator.getKind() == LTLInfixOperatorNode.Kind.OR) {
+                if (orOperator.getKind() == OR) {
                     LTLPrefixOperatorNode newNextLeft = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.FINALLY, orOperator.getLeft());
                     LTLPrefixOperatorNode newNextRight = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.FINALLY, orOperator.getRight());
-                    orOperator.setLeft(newNextLeft);
-                    orOperator.setRight(newNextRight);
-                    return orOperator;
+                    return new LTLInfixOperatorNode(OR, newNextLeft, newNextRight);
                 }
             }
         }
