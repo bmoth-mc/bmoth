@@ -68,7 +68,7 @@ public class LTLNormalizationTest extends TestParser {
     public void testNormalization7() {
         LTLFormula ltlFormula = parseLtlFormula("X ({1<3} U {3>1})");
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
-        assertEquals("UNTIL(NEXT(LESS(1,3)),NEXT(GREATER(3,1)))", node.toString());
+        assertEquals("NEXT(UNTIL(LESS(1,3),GREATER(3,1)))", node.toString());
         assertTrue(isNormalized(node));
     }
 
