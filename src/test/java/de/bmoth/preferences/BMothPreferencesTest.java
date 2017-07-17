@@ -55,7 +55,7 @@ public class BMothPreferencesTest {
     }
 
     @Test
-    public void testClass() {
+    public void testClass() throws ReflectiveOperationException {
         assertUtilityClassWellDefined(BMothPreferences.class);
     }
 

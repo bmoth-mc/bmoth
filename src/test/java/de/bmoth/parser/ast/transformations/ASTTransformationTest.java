@@ -53,7 +53,7 @@ public class ASTTransformationTest {
     }
 
     @Test
-    public void testLTLTransformationUtil() {
+    public void testLTLTransformationUtil() throws ReflectiveOperationException {
         assertUtilityClassWellDefined(LTLTransformationUtil.class);
     }
 }
