@@ -2,15 +2,11 @@ package de.bmoth.modelchecker.esmc;
 
 import de.bmoth.TestParser;
 import de.bmoth.modelchecker.ModelCheckingResult;
-import de.bmoth.modelchecker.State;
 import de.bmoth.modelchecker.StateSpace;
-import de.bmoth.modelchecker.StateSpaceNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.stream.Collectors;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.Type.UNKNOWN;
 import static org.junit.Assert.*;
@@ -44,12 +40,7 @@ public class StateSpaceExplorationTest extends TestParser {
         assertTrue(result.isCorrect());
 
         StateSpace space = result.getStateSpace();
-        assertEquals(7, space.getStronglyConnectedComponents().size());
-
-        // 7 singular strongly connected components
-        assertArrayEquals(new String[]{"{x=7}", "{x=6}", "{x=5}", "{x=4}", "{x=3}", "{x=1}", "{x=2}"},
-            space.getStronglyConnectedComponents().stream().map(ssc -> ssc.stream().map(StateSpaceNode::getState).map(State::toString).collect(Collectors.joining())).toArray()
-        );
+        assertEquals(0, space.getCycles().size());
 
         machine = machineBuilder
             .setName("ExitingMachineWithLoop")
@@ -61,10 +52,8 @@ public class StateSpaceExplorationTest extends TestParser {
         assertTrue(result.isCorrect());
 
         space = result.getStateSpace();
-        assertEquals(3, space.getStronglyConnectedComponents().size());
-        assertEquals("[{x=7}, {x=6}, {x=5}, {x=4}, {x=3}]", space.getStronglyConnectedComponents().get(0).stream().map(StateSpaceNode::getState).collect(Collectors.toList()).toString());
-        assertEquals("[{x=1}]", space.getStronglyConnectedComponents().get(1).stream().map(StateSpaceNode::getState).collect(Collectors.toList()).toString());
-        assertEquals("[{x=2}]", space.getStronglyConnectedComponents().get(2).stream().map(StateSpaceNode::getState).collect(Collectors.toList()).toString());
+        assertEquals(1, space.getCycles().size());
+        assertEquals("[{x=3}, {x=4}, {x=5}, {x=6}, {x=7}]", space.getCycles().get(0).toString());
     }
 
     @Test
@@ -93,9 +82,15 @@ public class StateSpaceExplorationTest extends TestParser {
         assertEquals(10, result.getSteps());
 
         StateSpace space = result.getStateSpace();
-        assertEquals(2, space.getStronglyConnectedComponents().size());
-        assertEquals("[{x=10}, {x=8}, {x=7}, {x=9}, {x=6}]", space.getStronglyConnectedComponents().get(0).stream().map(StateSpaceNode::getState).collect(Collectors.toList()).toString());
-        assertEquals("[{x=5}, {x=4}, {x=3}, {x=2}, {x=1}]", space.getStronglyConnectedComponents().get(1).stream().map(StateSpaceNode::getState).collect(Collectors.toList()).toString());
+        assertEquals(8, space.getCycles().size());
+        assertEquals("[{x=1}, {x=2}, {x=3}, {x=4}]", space.getCycles().get(0).toString());
+        assertEquals("[{x=3}, {x=4}, {x=5}]", space.getCycles().get(1).toString());
+        assertEquals("[{x=3}, {x=5}]", space.getCycles().get(2).toString());
+        assertEquals("[{x=6}, {x=9}, {x=7}]", space.getCycles().get(3).toString());
+        assertEquals("[{x=6}, {x=9}]", space.getCycles().get(4).toString());
+        assertEquals("[{x=6}, {x=7}]", space.getCycles().get(5).toString());
+        assertEquals("[{x=6}, {x=7}, {x=8}, {x=10}, {x=9}]", space.getCycles().get(6).toString());
+        assertEquals("[{x=9}, {x=7}, {x=8}, {x=10}]", space.getCycles().get(7).toString());
     }
 
     @Test

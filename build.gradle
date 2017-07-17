@@ -92,6 +92,8 @@ dependencies {
     compile 'com.google.guava:guava:22.0'
     compile 'org.apache.commons:commons-lang3:3.6'
 
+    compile group: 'org.jgrapht', name: 'jgrapht-core', version: '1.0.1'
+
     // JavaFX RichText Editor
     compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
     // MVVMFx
