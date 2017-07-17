@@ -79,8 +79,8 @@ public class BuechiAutomaton {
     private BuechiAutomatonNode buechiNodeIsInNodeSet(BuechiAutomatonNode buechiNode, Set<BuechiAutomatonNode> nodesSet) {
         // Check whether the finished node is already in the list (determined by the same Old- and Next-sets).
         for (BuechiAutomatonNode nodeInSet : nodesSet) {
-            Boolean processedEquals = compareLTLNodeSets(buechiNode.processed, nodeInSet.processed);
-            Boolean nextEquals = compareLTLNodeSets(buechiNode.next, nodeInSet.next);
+            boolean processedEquals = compareLTLNodeSets(buechiNode.processed, nodeInSet.processed);
+            boolean nextEquals = compareLTLNodeSets(buechiNode.next, nodeInSet.next);
             if (processedEquals && nextEquals) {
                 return nodeInSet;
             }
