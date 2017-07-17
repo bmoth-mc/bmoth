@@ -106,6 +106,14 @@ public class LTLNormalizationTest extends TestParser {
         assertTrue(isNormalized(node));
     }
 
+    @Test
+    public void testTranslateFormulaForBuechiTests() {
+        LTLFormula ltlFormula = parseLtlFormula("G not (X {0=1})");
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        assertEquals("RELEASE(FALSE,NEXT(NOT(EQUAL(0,1))))", node.toString());
+        assertTrue(isNormalized(node));
+    }
+
     private boolean isNormalized(LTLNode formula) {
         if (formula instanceof LTLBPredicateNode) {
             return true;

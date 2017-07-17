@@ -14,19 +14,15 @@ public class ConvertNotFormulaToNegatedBFormula implements ASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
-        return isOperator(node, NOT);
+        return isOperator(node, NOT) && ((LTLPrefixOperatorNode) node).getArgument() instanceof LTLBPredicateNode;
     }
 
     @Override
     public Node transformNode(Node node) {
         LTLPrefixOperatorNode notOperator = (LTLPrefixOperatorNode) node;
         LTLNode argument = notOperator.getArgument();
-        if (argument instanceof LTLBPredicateNode) {
-            LTLBPredicateNode bPredicateNode = (LTLBPredicateNode) argument;
-            PredicateNode negatedPredicate = bPredicateNode.getPredicate().getNegatedPredicateNode();
-            return new LTLBPredicateNode(negatedPredicate);
-        }
-        return node;
+        LTLBPredicateNode bPredicateNode = (LTLBPredicateNode) argument;
+        PredicateNode negatedPredicate = bPredicateNode.getPredicate().getNegatedPredicateNode();
+        return new LTLBPredicateNode(negatedPredicate);
     }
-
 }

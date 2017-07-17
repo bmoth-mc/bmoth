@@ -6,29 +6,25 @@ import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.ASTTransformation;
 
+import static de.bmoth.backend.ltl.LTLTransformationUtil.contains;
+import static de.bmoth.backend.ltl.LTLTransformationUtil.isOperator;
 import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.OR;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.FINALLY;
 
 public class ConvertFinallyPhiOrPsiToFinallyPhiOrFinallyPsi implements ASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
-        return node instanceof LTLPrefixOperatorNode;
+        return isOperator(node, FINALLY) && contains(node, OR);
     }
 
     @Override
     public Node transformNode(Node oldNode) {
         LTLPrefixOperatorNode finallyOperator = (LTLPrefixOperatorNode) oldNode;
-        if (finallyOperator.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
-            LTLNode argument = finallyOperator.getArgument();
-            if (argument instanceof LTLInfixOperatorNode) {
-                LTLInfixOperatorNode orOperator = (LTLInfixOperatorNode) argument;
-                if (orOperator.getKind() == OR) {
-                    LTLPrefixOperatorNode newNextLeft = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.FINALLY, orOperator.getLeft());
-                    LTLPrefixOperatorNode newNextRight = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.FINALLY, orOperator.getRight());
-                    return new LTLInfixOperatorNode(OR, newNextLeft, newNextRight);
-                }
-            }
-        }
-        return oldNode;
+        LTLNode argument = finallyOperator.getArgument();
+        LTLInfixOperatorNode orOperator = (LTLInfixOperatorNode) argument;
+        LTLPrefixOperatorNode newNextLeft = new LTLPrefixOperatorNode(FINALLY, orOperator.getLeft());
+        LTLPrefixOperatorNode newNextRight = new LTLPrefixOperatorNode(FINALLY, orOperator.getRight());
+        return new LTLInfixOperatorNode(OR, newNextLeft, newNextRight);
     }
 }
