@@ -6,7 +6,6 @@ import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.ltl.BuechiAutomaton;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.logging.Level;
@@ -76,7 +75,6 @@ public class LTLBuechiTest {
     }
 
     @Test
-    @Ignore
     public void testGraphConstructionGloballyFinally() throws ParserException {
         String formula = "G (F (X {0=1}))";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
