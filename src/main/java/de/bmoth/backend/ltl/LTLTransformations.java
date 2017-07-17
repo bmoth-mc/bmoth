@@ -30,10 +30,6 @@ public class LTLTransformations {
                     transformationList.add((ASTTransformation) clazz.newInstance());
                 }
             }
-            transformationList.sort((o1, o2) -> {
-                // TODO: replace by comparison based on priority
-                return o1.getClass().getName().compareTo(o2.getClass().getName());
-            });
         } catch (IOException | InstantiationException | IllegalAccessException e) {
             logger.log(Level.SEVERE, "Error loading LTL transformation rules", e);
         }
