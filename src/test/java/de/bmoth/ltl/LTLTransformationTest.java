@@ -99,19 +99,6 @@ public class LTLTransformationTest extends TestParser {
     }
 
     @Test
-    public void testGloballyPhiAndPsiToGloballyPhiAndGloballyPsi() {
-        LTLNode node1 = parseLtlFormula("G( ( {3=3} & {2=2} ) )").getLTLNode();
-
-        ASTTransformation transformation = new ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi();
-
-        assertTrue(transformation.canHandleNode(node1));
-
-        LTLNode newNode1 = (LTLNode) transformation.transformNode(node1);
-
-        assertEquals("AND(GLOBALLY(EQUAL(3,3)),GLOBALLY(EQUAL(2,2)))", newNode1.toString());
-    }
-
-    @Test
     public void testNotRelease() {
         LTLNode node1 = parseLtlFormula("not( {23=23} R {24=24} )").getLTLNode();
         LTLNode node2 = parseLtlFormula("not( {23=23} U {24=24} )").getLTLNode();
