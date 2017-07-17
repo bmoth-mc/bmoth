@@ -81,9 +81,9 @@ public class LTLBuechiTest {
         String formula = "G (F (X {0=1}))";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        assertEquals("RELEASE(FALSE,UNTIL(TRUE,NEXT(EQUAL(0,1))))", node.toString());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(4, buechiAutomaton.getFinalNodeSet().size());
-        System.out.println(node);
         logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
