@@ -24,7 +24,7 @@ public class ASTTransformationTest {
         FormulaNode formulaNode = parseFormula(formula);
         formulaNode = AstTransformationsForZ3.transformFormulaNode(formulaNode);
         assertEquals("OR(OR(ELEMENT_OF(a,SET_ENUMERATION(1)),ELEMENT_OF(a,b)),ELEMENT_OF(a,c))",
-                formulaNode.getFormula().toString());
+            formulaNode.getFormula().toString());
     }
 
     @Test
@@ -41,7 +41,7 @@ public class ASTTransformationTest {
         FormulaNode formulaNode = parseFormula(formula);
         formulaNode = AstTransformationsForZ3.transformFormulaNode(formulaNode);
         assertEquals("AND(AND(ELEMENT_OF(a,SET_ENUMERATION(1)),ELEMENT_OF(a,b)),ELEMENT_OF(a,c))",
-                formulaNode.getFormula().toString());
+            formulaNode.getFormula().toString());
     }
 
     @Test
@@ -50,6 +50,14 @@ public class ASTTransformationTest {
         FormulaNode formulaNode = parseFormula(formula);
         formulaNode = AstTransformationsForZ3.transformFormulaNode(formulaNode);
         assertEquals("AND(GREATER_EQUAL(a,1),LESS_EQUAL(a,7))", formulaNode.getFormula().toString());
+    }
+
+    @Test
+    public void testMemberOfIntervalInsideComprehensionToLeqGeq() {
+        String formula = "sc = {a | a : 1..7}";
+        FormulaNode formulaNode = parseFormula(formula);
+        formulaNode = AstTransformationsForZ3.transformFormulaNode(formulaNode);
+        assertEquals("EQUAL(sc,SET_COMPREHENSION(a,AND(GREATER_EQUAL(a,1),LESS_EQUAL(a,7))))", formulaNode.getFormula().toString());
     }
 
     @Test

@@ -3,6 +3,7 @@ package de.bmoth.parser.ast.nodes;
 import de.bmoth.antlr.BMoThParser.ExpressionContext;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SetComprehensionNode extends ExprNode {
     private List<DeclarationNode> declarationList;
@@ -24,6 +25,18 @@ public class SetComprehensionNode extends ExprNode {
 
     public void setPredicate(PredicateNode newPredicate) {
         predicateNode = newPredicate;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SET_COMPREHENSION(");
+
+        sb.append(declarationList.stream().map(Object::toString).collect(Collectors.joining(",")));
+        sb.append(",");
+        sb.append(predicateNode);
+        sb.append(")");
+        return sb.toString();
     }
 
     @Override
