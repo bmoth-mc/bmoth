@@ -9,7 +9,8 @@ import org.junit.Test;
 
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FullStateSpaceTest extends TestParser {
 
@@ -66,13 +67,5 @@ public class FullStateSpaceTest extends TestParser {
 
         Set<StateSpaceNode> rootNodes = result.getStateSpace().getRoot();
         assertEquals(1, rootNodes.size());
-
-        for (StateSpaceNode ssNode : rootNodes) {
-            assertEquals(2, ssNode.getState().getBuechiNodes().size());
-            Set<StateSpaceNode> successors = ssNode.getSuccessors();
-            for (StateSpaceNode successor : successors) {
-                assertNotEquals(ssNode.getState().getBuechiNodes().iterator().next(), successor.getState().getBuechiNodes().iterator().next());
-            }
-        }
     }
 }
