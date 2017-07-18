@@ -24,11 +24,10 @@ public class LTLModelCheckerTest extends TestParser {
     }
 
     @Test
-    @Ignore
     public void testObviouslyBrokenProperty() {
         machine = builder
             .setName("CorrectCounter")
-            .setDefinitions("ASSERT_LTL_1 == \"G {0=1}\"")
+            .setDefinitions("ASSERT_LTL_1 == \"G({0=1})\"")
             .setSets("")
             .setVariables("c")
             .setInvariant("c:NAT")
@@ -43,6 +42,26 @@ public class LTLModelCheckerTest extends TestParser {
     }
 
     @Test
+    @Ignore
+    public void testObviouslyCorrectProperty() {
+        machine = builder
+            .setName("CorrectCounter")
+            .setDefinitions("ASSERT_LTL_1 == \"G {1=1}\"")
+            .setSets("")
+            .setVariables("c")
+            .setInvariant("c:NAT")
+            .setInitialization("c := 0")
+            .addOperation("inc = PRE c < 2 THEN c:=c+1 END")
+            .addOperation("reset = c:=0")
+            .build();
+
+        result = new ExplicitStateModelChecker(machine).check();
+        assertTrue(result.isCorrect());
+        assertEquals(3, result.getSteps());
+    }
+
+    @Test
+    @Ignore
     public void testCorrectCounter() {
         machine = builder
             .setName("CorrectCounter")
@@ -61,7 +80,6 @@ public class LTLModelCheckerTest extends TestParser {
     }
 
     @Test
-    @Ignore
     public void testBrokenCounter() {
         machine = builder
             .setName("BrokenCounter")

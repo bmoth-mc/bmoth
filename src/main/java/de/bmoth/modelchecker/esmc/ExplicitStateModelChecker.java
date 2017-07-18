@@ -5,6 +5,7 @@ import com.microsoft.z3.Model;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 import de.bmoth.backend.TranslationOptions;
+import de.bmoth.backend.ltl.LTLTransformations;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
@@ -40,7 +41,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
         this.knownStateToStateSpaceNode = new HashMap<>();
         List<LTLFormula> ltlFormulas = machine.getLTLFormulas();
         if (ltlFormulas.size() == 1) {
-            this.buechiAutomaton = new BuechiAutomaton(ltlFormulas.get(0).getLTLNode());
+            this.buechiAutomaton = new BuechiAutomaton(LTLTransformations.transformLTLNode(ltlFormulas.get(0).getLTLNode()));
         } else {
             this.buechiAutomaton = new BuechiAutomaton();
         }
