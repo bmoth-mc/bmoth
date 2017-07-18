@@ -61,6 +61,19 @@ public class ASTTransformationTest {
     }
 
     @Test
+    public void testMemberOfIntervalInsideQuantifiersToLeqGeq() {
+        String formula = "!(a) . (a : 1..7)";
+        FormulaNode formulaNode = parseFormula(formula);
+        formulaNode = AstTransformationsForZ3.transformFormulaNode(formulaNode);
+        assertEquals("FORALL(a,AND(GREATER_EQUAL(a,1),LESS_EQUAL(a,7)))", formulaNode.getFormula().toString());
+
+        formula = "#(a) . (a : 1..7)";
+        formulaNode = parseFormula(formula);
+        formulaNode = AstTransformationsForZ3.transformFormulaNode(formulaNode);
+        assertEquals("EXISTS(a,AND(GREATER_EQUAL(a,1),LESS_EQUAL(a,7)))", formulaNode.getFormula().toString());
+    }
+
+    @Test
     public void testLTLTransformationUtil() throws ReflectiveOperationException {
         assertUtilityClassWellDefined(LTLTransformationUtil.class);
     }
