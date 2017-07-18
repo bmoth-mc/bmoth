@@ -68,7 +68,7 @@ public class FullStateSpaceTest extends TestParser {
         assertEquals(1, rootNodes.size());
 
         for (StateSpaceNode ssNode : rootNodes) {
-            assertEquals(ssNode.getState().getBuechiNodes().size(), 1);
+            assertEquals(2, ssNode.getState().getBuechiNodes().size());
             Set<StateSpaceNode> successors = ssNode.getSuccessors();
             for (StateSpaceNode successor : successors) {
                 assertNotEquals(ssNode.getState().getBuechiNodes().iterator().next(), successor.getState().getBuechiNodes().iterator().next());

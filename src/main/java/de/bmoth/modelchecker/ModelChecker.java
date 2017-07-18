@@ -50,32 +50,30 @@ public abstract class ModelChecker implements Abortable {
     protected abstract ModelCheckingResult doModelCheck();
 
     protected State getStateFromModel(State predecessor, Model model, TranslationOptions ops, BuechiAutomaton buechiAutomaton) {
-        Set<BuechiAutomatonNode> buechiNodes;
+        final Set<BuechiAutomatonNode> buechiNodes = new HashSet<>();
+        final Set<BuechiAutomatonNode> candidates = new HashSet<>();
         if (predecessor == null) {
-            buechiNodes = buechiAutomaton.getInitialStates();
+            candidates.addAll(buechiAutomaton.getInitialStates());
         } else {
-            buechiNodes = new HashSet<>();
-            Set<BuechiAutomatonNode> predecessorBuechiNodes = predecessor.getBuechiNodes();
-            for (BuechiAutomatonNode node : predecessorBuechiNodes) {
-                Set<BuechiAutomatonNode> nodeSuccessors = node.getSuccessors();
-                for (BuechiAutomatonNode successor : nodeSuccessors) {
-                    if (successor.getLabels().isEmpty()) {
-                        buechiNodes.add(successor);
-                    }
-                    for (PredicateNode label : successor.getLabels()) {
-                        Expr eval = model.eval(FormulaToZ3Translator.translatePredicate(label, ctx, machineTranslator.getZ3TypeInference()), true);
-                        switch (eval.getBoolValue()) {
-                            case Z3_L_FALSE:
-                                break;
-                            case Z3_L_UNDEF:
-                                throw new UnsupportedOperationException("should not be undefined");
-                            case Z3_L_TRUE:
-                                buechiNodes.add(successor);
-                        }
-                    }
+            predecessor.getBuechiNodes().forEach(n -> candidates.addAll(n.getSuccessors()));
+        }
+        for (BuechiAutomatonNode node : candidates) {
+            if (node.getLabels().isEmpty()) {
+                buechiNodes.add(node);
+            }
+            for (PredicateNode label : node.getLabels()) {
+                Expr eval = model.eval(FormulaToZ3Translator.translatePredicate(label, ctx, machineTranslator.getZ3TypeInference()), true);
+                switch (eval.getBoolValue()) {
+                    case Z3_L_FALSE:
+                        break;
+                    case Z3_L_UNDEF:
+                        throw new UnsupportedOperationException("should not be undefined");
+                    case Z3_L_TRUE:
+                        buechiNodes.add(node);
                 }
             }
         }
+
         return new State(predecessor, getMachineTranslator().getVarMapFromModel(model, ops), buechiNodes);
     }
 

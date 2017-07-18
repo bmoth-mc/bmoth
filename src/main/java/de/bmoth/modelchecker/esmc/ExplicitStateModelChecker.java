@@ -13,14 +13,13 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.modelchecker.StateSpaceNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
-import de.bmoth.parser.ast.nodes.ltl.BuechiAutomaton;
-import de.bmoth.parser.ast.nodes.ltl.BuechiAutomatonNode;
-import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
+import de.bmoth.parser.ast.nodes.ltl.*;
 import de.bmoth.preferences.BMothPreferences;
 
 import java.util.*;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.*;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NOT;
 
 public class ExplicitStateModelChecker extends ModelChecker {
     private Solver solver;
@@ -41,7 +40,8 @@ public class ExplicitStateModelChecker extends ModelChecker {
         this.knownStateToStateSpaceNode = new HashMap<>();
         List<LTLFormula> ltlFormulas = machine.getLTLFormulas();
         if (ltlFormulas.size() == 1) {
-            this.buechiAutomaton = new BuechiAutomaton(LTLTransformations.transformLTLNode(ltlFormulas.get(0).getLTLNode()));
+            LTLNode negatedFormula = new LTLPrefixOperatorNode(NOT, ltlFormulas.get(0).getLTLNode());
+            this.buechiAutomaton = new BuechiAutomaton(LTLTransformations.transformLTLNode(negatedFormula));
         } else {
             this.buechiAutomaton = new BuechiAutomaton();
         }

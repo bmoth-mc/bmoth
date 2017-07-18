@@ -5,7 +5,6 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -42,7 +41,6 @@ public class LTLModelCheckerTest extends TestParser {
     }
 
     @Test
-    @Ignore
     public void testObviouslyCorrectProperty() {
         machine = builder
             .setName("CorrectCounter")
@@ -61,11 +59,10 @@ public class LTLModelCheckerTest extends TestParser {
     }
 
     @Test
-    @Ignore
     public void testCorrectCounter() {
         machine = builder
             .setName("CorrectCounter")
-            .setDefinitions("ASSERT_LTL_1 == \"G X {c<5}\"")
+            .setDefinitions("ASSERT_LTL_1 == \"G {c<5}\"")
             .setSets("")
             .setVariables("c")
             .setInvariant("c:NAT")
