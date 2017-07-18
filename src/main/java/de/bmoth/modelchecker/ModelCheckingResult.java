@@ -13,6 +13,7 @@ public class ModelCheckingResult {
 
     public enum Type {
         COUNTER_EXAMPLE_FOUND,
+        LTL_COUNTER_EXAMPLE_FOUND,
         EXCEEDED_MAX_STEPS,
         VERIFIED,
         ABORTED,
@@ -41,6 +42,10 @@ public class ModelCheckingResult {
 
     public static ModelCheckingResult createCounterExampleFound(int steps, State lastState) {
         return new ModelCheckingResult(lastState, steps, Type.COUNTER_EXAMPLE_FOUND, null, Collections.emptySet());
+    }
+
+    public static ModelCheckingResult createLTLCounterExampleFound(int steps, State lastState) {
+        return new ModelCheckingResult(lastState, steps, Type.LTL_COUNTER_EXAMPLE_FOUND, null, Collections.emptySet());
     }
 
     public static ModelCheckingResult createExceededMaxSteps(int maxSteps) {
@@ -82,6 +87,9 @@ public class ModelCheckingResult {
                 break;
             case UNKNOWN:
                 sb.append(reason).append(' ');
+                break;
+            case LTL_COUNTER_EXAMPLE_FOUND:
+                sb.append(lastState.toString()).append(' ');
                 break;
             case EXCEEDED_MAX_STEPS:
             case VERIFIED:

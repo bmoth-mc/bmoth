@@ -7,9 +7,13 @@ import com.microsoft.z3.Status;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
-import de.bmoth.modelchecker.*;
+import de.bmoth.modelchecker.ModelChecker;
+import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.modelchecker.State;
+import de.bmoth.modelchecker.StateSpaceNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.nodes.ltl.BuechiAutomaton;
+import de.bmoth.parser.ast.nodes.ltl.BuechiAutomatonNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.preferences.BMothPreferences;
 
@@ -115,7 +119,20 @@ public class ExplicitStateModelChecker extends ModelChecker {
         if (isAborted()) {
             return createAborted(visited.size());
         } else {
-            return createVerified(visited.size(), stateSpaceRoot);
+            ModelCheckingResult resultVerified = createVerified(visited.size(), stateSpaceRoot);
+            // do ltl model check
+            List<List<State>> cycles = resultVerified.getStateSpace().getCycles();
+            for (List<State> cycle : cycles) {
+                // if there is an accepting Buechi state in the cycle, a counterexample is found
+                for (State state : cycle) {
+                    for (BuechiAutomatonNode node : state.getBuechiNodes()) {
+                        if (node.isAccepting()) {
+                            return createLTLCounterExampleFound(visited.size(), state);
+                        }
+                    }
+                }
+            }
+            return resultVerified;
         }
     }
 

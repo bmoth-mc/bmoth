@@ -103,7 +103,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     @Test
     public void testType() {
-        assertArrayEquals(new ModelCheckingResult.Type[]{COUNTER_EXAMPLE_FOUND,
+        assertArrayEquals(new ModelCheckingResult.Type[]{COUNTER_EXAMPLE_FOUND, LTL_COUNTER_EXAMPLE_FOUND,
                 EXCEEDED_MAX_STEPS, VERIFIED, ABORTED, UNKNOWN},
             ModelCheckingResult.Type.values());
 
