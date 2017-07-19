@@ -59,7 +59,7 @@ public class AppViewTest extends HeadlessUITest {
     }
 
     @Test
-    @Ignore("this still influences the repl tests somehow")
+    @Ignore //affects repl
     public void clickingReplOpensRepl() throws InterruptedException {
         verifyThat("#replText", isNull());
 

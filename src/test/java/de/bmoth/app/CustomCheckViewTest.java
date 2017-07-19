@@ -39,6 +39,10 @@ public class CustomCheckViewTest extends HeadlessUITest {
     @Test
     public void testHandleOk() {
 
+        BMothPreferences.setBooleanPreference(BMothPreferences.BooleanPreference.INITIAL_CHECK, true);
+        BMothPreferences.setBooleanPreference(BMothPreferences.BooleanPreference.INVARIANT_CHECK, true);
+        BMothPreferences.setBooleanPreference(BMothPreferences.BooleanPreference.MODEL_CHECK, true);
+        viewCustomCheckViewModelViewTuple.getCodeBehind().initialize(null, null);
         boolean initB = BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.INITIAL_CHECK);
         boolean invarB = BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.INVARIANT_CHECK);
         boolean checkB = BMothPreferences.getBooleanPreference(BMothPreferences.BooleanPreference.MODEL_CHECK);

@@ -411,7 +411,11 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         File file = new File(path);
         try (FileWriter fileWriter = new FileWriter(file)) {
             fileWriter.write(codeArea.getText());
+            currentFile = file.getAbsolutePath();
             primaryStage.setTitle(APPNAME + " - " + file.getName().substring(0, file.getName().length() - 4));
+            BMothPreferences.setStringPreference(BMothPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
+            BMothPreferences.setStringPreference(BMothPreferences.StringPreference.LAST_DIR, file.getParent());
+
         }
     }
 
@@ -433,6 +437,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
             } else {
                 saveFile(file.getAbsolutePath());
             }
+            currentFile = file.getAbsolutePath();
             BMothPreferences.setStringPreference(BMothPreferences.StringPreference.LAST_FILE, file.getAbsolutePath());
             BMothPreferences.setStringPreference(BMothPreferences.StringPreference.LAST_DIR, file.getParent());
             return true;
