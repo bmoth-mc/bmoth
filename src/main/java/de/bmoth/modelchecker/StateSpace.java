@@ -53,4 +53,8 @@ public class StateSpace {
     public Set<StateSpaceNode> getRoot() {
         return spaceStateRoot;
     }
+
+    public DirectedGraph<State, DefaultEdge> getGraph() {
+        return graph;
+    }
 }

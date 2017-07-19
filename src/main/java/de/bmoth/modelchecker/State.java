@@ -14,18 +14,11 @@ import java.util.Set;
 public class State {
     private final State predecessor;
     private final Map<String, Expr> values;
-    private final Set<BuechiAutomatonNode> buechiNodes;
-
-    public State(State predecessor, Map<String, Expr> values, Set<BuechiAutomatonNode> buechiNodes) {
-        this.predecessor = predecessor;
-        this.values = values;
-        this.buechiNodes = buechiNodes;
-    }
+    private Set<BuechiAutomatonNode> buechiNodes;
 
     public State(State predecessor, Map<String, Expr> values) {
         this.predecessor = predecessor;
         this.values = values;
-        this.buechiNodes = null;
     }
 
     public String toString() {
@@ -82,5 +75,9 @@ public class State {
 
     public Set<BuechiAutomatonNode> getBuechiNodes() {
         return buechiNodes;
+    }
+
+    public void setBuechiNodes(Set<BuechiAutomatonNode> buechiNodes) {
+        this.buechiNodes = buechiNodes;
     }
 }

@@ -1,11 +1,9 @@
 package de.bmoth.modelchecker.esmc;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Model;
-import com.microsoft.z3.Solver;
-import com.microsoft.z3.Status;
+import com.microsoft.z3.*;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.ltl.LTLTransformations;
+import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
@@ -13,8 +11,11 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.modelchecker.StateSpaceNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.*;
 import de.bmoth.preferences.BMothPreferences;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 
 import java.util.*;
 
@@ -24,6 +25,7 @@ import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NOT;
 public class ExplicitStateModelChecker extends ModelChecker {
     private Solver solver;
     private Solver opSolver;
+    private Solver labelSolver;
     private SolutionFinder finder;
     private SolutionFinder opFinder;
     private Set<State> visited;
@@ -35,6 +37,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
         super(machine);
         this.solver = Z3SolverFactory.getZ3Solver(getContext());
         this.opSolver = Z3SolverFactory.getZ3Solver(getContext());
+        this.labelSolver = Z3SolverFactory.getZ3Solver(getContext());
         this.finder = new SolutionFinder(solver, getContext());
         this.opFinder = new SolutionFinder(opSolver, getContext());
         this.knownStateToStateSpaceNode = new HashMap<>();
@@ -122,6 +125,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
         } else {
             ModelCheckingResult resultVerified = createVerified(visited.size(), stateSpaceRoot);
             // do ltl model check
+            labelStateSpace(resultVerified.getStateSpace().getGraph());
             List<List<State>> cycles = resultVerified.getStateSpace().getCycles();
             for (List<State> cycle : cycles) {
                 // if there is an accepting Buechi state in the cycle, a counterexample is found
@@ -157,11 +161,51 @@ public class ExplicitStateModelChecker extends ModelChecker {
         }
     }
 
+    private void labelStateSpace(DirectedGraph<State, DefaultEdge> graph) {
+        Set<State> vertexSet = graph.vertexSet();
+        for (State vertex : vertexSet) {
+            final Set<BuechiAutomatonNode> buechiNodes = new HashSet<>();
+            final Set<BuechiAutomatonNode> candidates = new HashSet<>();
+            if (graph.inDegreeOf(vertex) == 0) {
+                candidates.addAll(buechiAutomaton.getInitialStates());
+            } else {
+                Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(vertex);
+                for (DefaultEdge incomingEdge : incomingEdges) {
+                    State predecessor = graph.getEdgeSource(incomingEdge);
+                    predecessor.getBuechiNodes().forEach(n -> candidates.addAll(n.getSuccessors()));
+                }
+            }
+            for (BuechiAutomatonNode node : candidates) {
+                if (node.getLabels().isEmpty()) {
+                    buechiNodes.add(node);
+                }
+                // TODO use all labels?
+                for (PredicateNode label : node.getLabels()) {
+                    labelSolver.reset();
+                    labelSolver.add(FormulaToZ3Translator.translatePredicate(label, getContext(), getMachineTranslator().getZ3TypeInference()));
+                    labelSolver.add(vertex.getStateConstraint(getContext()));
+                    Status status = labelSolver.check();
+                    switch (status) {
+                        case UNSATISFIABLE:
+                            break;
+                        case UNKNOWN:
+                            throw new UnsupportedOperationException("should not be undefined");
+                        case SATISFIABLE:
+                            buechiNodes.add(node);
+                    }
+                }
+            }
+            vertex.setBuechiNodes(buechiNodes);
+        }
+
+
+    }
+
     private State getStateFromModel(Model model) {
-        return getStateFromModel(null, model, TranslationOptions.PRIMED_0, buechiAutomaton);
+        return getStateFromModel(null, model, TranslationOptions.PRIMED_0);
     }
 
     private State getStateFromModel(State predecessor, Model model) {
-        return getStateFromModel(predecessor, model, TranslationOptions.PRIMED_0, buechiAutomaton);
+        return getStateFromModel(predecessor, model, TranslationOptions.PRIMED_0);
     }
 }
