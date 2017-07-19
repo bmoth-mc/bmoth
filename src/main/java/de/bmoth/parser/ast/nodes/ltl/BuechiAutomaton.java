@@ -6,7 +6,6 @@ import java.util.*;
 
 import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.*;
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NEXT;
-import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NOT;
 
 public class BuechiAutomaton {
 
@@ -192,10 +191,6 @@ public class BuechiAutomaton {
 
             return expand(new BuechiAutomatonNode(buechiNode.name + "_1", new LinkedHashSet<>(buechiNode.incoming),
                 new LinkedHashSet<>(buechiNode.unprocessed), processed, next), nodeSet);
-        } else if (((LTLPrefixOperatorNode) ltlNode).getKind() == NOT) {
-            // Not
-            buechiNode.processed.add(ltlNode);
-            return expand(buechiNode, nodeSet);
         } else {
             throw new IllegalArgumentException("Formula not normalized");
         }
