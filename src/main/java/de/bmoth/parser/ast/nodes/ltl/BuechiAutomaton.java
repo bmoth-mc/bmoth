@@ -4,6 +4,7 @@ import de.bmoth.parser.ast.nodes.PredicateNode;
 
 import java.util.*;
 
+import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.*;
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NEXT;
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NOT;
 
@@ -60,7 +61,6 @@ public class BuechiAutomaton {
                     if (ltlNode.equalAst(ltlNodeInSet)) {
                         nodeIterator.remove();
                         nodeInSetIterator.remove();
-                        break;
                     }
                 }
             }
@@ -84,11 +84,13 @@ public class BuechiAutomaton {
 
     private Set<LTLNode> new1(LTLInfixOperatorNode ltlNode) {
         Set<LTLNode> newNodes = new LinkedHashSet<>();
-        if (ltlNode.getKind() == LTLInfixOperatorNode.Kind.RELEASE) {
+        if (ltlNode.getKind() == RELEASE) {
             newNodes.add(ltlNode.getRight());
-        } else {
+        } else if (ltlNode.getKind() == UNTIL || ltlNode.getKind() == OR) {
             // Until, or
             newNodes.add(ltlNode.getLeft());
+        } else {
+            throw new IllegalArgumentException("Formula not normalized");
         }
         return newNodes;
     }
@@ -96,7 +98,7 @@ public class BuechiAutomaton {
     private Set<LTLNode> new2(LTLInfixOperatorNode ltlNode) {
         Set<LTLNode> newNodes = new LinkedHashSet<>();
         newNodes.add(ltlNode.getRight());
-        if (ltlNode.getKind() == LTLInfixOperatorNode.Kind.RELEASE) {
+        if (ltlNode.getKind() == RELEASE) {
             newNodes.add(ltlNode.getLeft());
         }
         return newNodes;
@@ -104,11 +106,15 @@ public class BuechiAutomaton {
 
     private Set<LTLNode> next1(LTLInfixOperatorNode ltlNode) {
         Set<LTLNode> newNodes = new LinkedHashSet<>();
-        if (ltlNode.getKind() == LTLInfixOperatorNode.Kind.UNTIL || ltlNode.getKind() == LTLInfixOperatorNode.Kind.RELEASE) {
+        if (ltlNode.getKind() == UNTIL || ltlNode.getKind() == RELEASE) {
             newNodes.add(ltlNode);
+            return newNodes;
+        } else if (ltlNode.getKind() == OR) {
+            // In case of or an empty list is returned
+            return newNodes;
+        } else {
+            throw new IllegalArgumentException("Formula not normalized");
         }
-        // In case of or an empty list is returned
-        return newNodes;
     }
 
     private BuechiAutomatonNode buildFirstNodeInSplit(BuechiAutomatonNode buechiNode, LTLNode subNode, Set<LTLNode> newProcessed) {
@@ -164,8 +170,8 @@ public class BuechiAutomaton {
                 unprocessed, processed, new LinkedHashSet<>(buechiNode.next)), nodeSet);
         } else {
             // Until, Release, Or: Split the node in two
-            if ((((LTLInfixOperatorNode) ltlNode).getKind() == LTLInfixOperatorNode.Kind.UNTIL) ||
-                (((LTLInfixOperatorNode) ltlNode).getKind() == LTLInfixOperatorNode.Kind.RELEASE)) {
+            if ((((LTLInfixOperatorNode) ltlNode).getKind() == UNTIL) ||
+                (((LTLInfixOperatorNode) ltlNode).getKind() == RELEASE)) {
                 subFormulasForAcceptance.add((LTLInfixOperatorNode) ltlNode);
             }
             Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);

@@ -5,6 +5,7 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -63,6 +64,25 @@ public class LTLModelCheckerTest extends TestParser {
         machine = builder
             .setName("CorrectCounter")
             .setDefinitions("ASSERT_LTL_1 == \"G {c<5}\"")
+            .setSets("")
+            .setVariables("c")
+            .setInvariant("c:NAT")
+            .setInitialization("c := 0")
+            .addOperation("inc = PRE c < 2 THEN c:=c+1 END")
+            .addOperation("reset = c:=0")
+            .build();
+
+        result = new ExplicitStateModelChecker(machine).check();
+        assertTrue(result.isCorrect());
+        assertEquals(3, result.getSteps());
+    }
+
+    @Test
+    @Ignore
+    public void testCorrectCounterWithNext() {
+        machine = builder
+            .setName("CorrectCounter")
+            .setDefinitions("ASSERT_LTL_1 == \"G X {c<5}\"")
             .setSets("")
             .setVariables("c")
             .setInvariant("c:NAT")
