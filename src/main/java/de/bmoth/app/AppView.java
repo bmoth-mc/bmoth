@@ -302,6 +302,13 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
                         "...not correct!\nCounter-example found in state " + result.getLastState().toString()
                             + ".\nReversed path: " + result.getLastState().getPath());
                     break;
+                case LTL_COUNTER_EXAMPLE_FOUND:
+                    alert.setHeaderText("The LTL-model is...");
+                    alert.setContentText(
+                        "...not correct!\nCounter-example found in state " + result.getLastState().toString()
+                            + ".\nReversed path: " + result.getLastState().getPath());
+                    break;
+
                 case UNKNOWN:
                     alert.setHeaderText("Model checking result unknown...");
                     alert.setContentText(
