@@ -80,6 +80,24 @@ public class LTLModelCheckerTest extends TestParser {
     public void testBrokenCounter() {
         machine = builder
             .setName("BrokenCounter")
+            .setDefinitions("ASSERT_LTL_1 == \"G {c<0}\"")
+            .setSets("")
+            .setVariables("c")
+            .setInvariant("c:NAT")
+            .setInitialization("c := 0")
+            .addOperation("inc = PRE c < 2 THEN c:=c+1 END")
+            .addOperation("reset = c:=0")
+            .build();
+
+        result = new ExplicitStateModelChecker(machine).check();
+        assertFalse(result.isCorrect());
+        assertEquals(3, result.getSteps());
+    }
+
+    @Test
+    public void testBrokenCounterWithNext() {
+        machine = builder
+            .setName("BrokenCounter")
             .setDefinitions("ASSERT_LTL_1 == \"G X {c<0}\"")
             .setSets("")
             .setVariables("c")
