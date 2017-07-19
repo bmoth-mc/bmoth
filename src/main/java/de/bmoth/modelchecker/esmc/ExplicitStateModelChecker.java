@@ -201,19 +201,19 @@ public class ExplicitStateModelChecker extends ModelChecker {
                     }
                 }
             }
-            Set<BuechiAutomatonNode> currentBuechiNodes = current.getBuechiNodes();
-            for (BuechiAutomatonNode newBuechiNode : buechiNodes) {
-                if (!currentBuechiNodes.contains(newBuechiNode)) {
-                    // found a new node, need to update successors again
-                    current.addBuechiNode(newBuechiNode);
 
-                    Set<DefaultEdge> outgoingEdges = graph.outgoingEdgesOf(current);
-                    for (DefaultEdge outgoingEdge : outgoingEdges) {
-                        State successor = graph.getEdgeTarget(outgoingEdge);
+            buechiNodes.stream().filter(n -> !current.getBuechiNodes().contains(n)).forEach(newBuechiNode -> {
+                // found a new node, need to update successors again
+                current.addBuechiNode(newBuechiNode);
+
+                Set<DefaultEdge> outgoingEdges = graph.outgoingEdgesOf(current);
+                for (DefaultEdge outgoingEdge : outgoingEdges) {
+                    State successor = graph.getEdgeTarget(outgoingEdge);
+                    if (!statesToUpdate.contains(successor)) {
                         statesToUpdate.add(successor);
                     }
                 }
-            }
+            });
         }
     }
 
