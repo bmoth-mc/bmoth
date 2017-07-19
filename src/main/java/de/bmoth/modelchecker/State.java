@@ -6,15 +6,12 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
 import de.bmoth.parser.ast.nodes.ltl.BuechiAutomatonNode;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class State {
     private final State predecessor;
     private final Map<String, Expr> values;
-    private Set<BuechiAutomatonNode> buechiNodes;
+    private final Set<BuechiAutomatonNode> buechiNodes = new HashSet<>();
 
     public State(State predecessor, Map<String, Expr> values) {
         this.predecessor = predecessor;
@@ -77,7 +74,7 @@ public class State {
         return buechiNodes;
     }
 
-    public void setBuechiNodes(Set<BuechiAutomatonNode> buechiNodes) {
-        this.buechiNodes = buechiNodes;
+    public void addBuechiNodes(Set<BuechiAutomatonNode> buechiNodes) {
+        this.buechiNodes.addAll(buechiNodes);
     }
 }

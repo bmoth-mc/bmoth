@@ -1,6 +1,9 @@
 package de.bmoth.modelchecker.esmc;
 
-import com.microsoft.z3.*;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Model;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Status;
 import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.ltl.LTLTransformations;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
@@ -195,7 +198,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
                     }
                 }
             }
-            vertex.setBuechiNodes(buechiNodes);
+            vertex.addBuechiNodes(buechiNodes);
         }
 
 
