@@ -66,6 +66,10 @@ public class State {
         return path;
     }
 
+    public State getPredecessor() {
+        return predecessor;
+    }
+
     public Map<String, Expr> getValues() {
         return values;
     }
@@ -74,7 +78,7 @@ public class State {
         return buechiNodes;
     }
 
-    public void addBuechiNodes(Set<BuechiAutomatonNode> buechiNodes) {
-        this.buechiNodes.addAll(buechiNodes);
+    public void addBuechiNode(BuechiAutomatonNode newNode) {
+        buechiNodes.add(newNode);
     }
 }

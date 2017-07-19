@@ -165,14 +165,17 @@ public class ExplicitStateModelChecker extends ModelChecker {
     }
 
     private void labelStateSpace(DirectedGraph<State, DefaultEdge> graph) {
-        Set<State> vertexSet = graph.vertexSet();
-        for (State vertex : vertexSet) {
+        Queue<State> statesToUpdate = new ArrayDeque<>();
+        statesToUpdate.addAll(graph.vertexSet());
+        while (!statesToUpdate.isEmpty()) {
+            State current = statesToUpdate.poll();
             final Set<BuechiAutomatonNode> buechiNodes = new HashSet<>();
             final Set<BuechiAutomatonNode> candidates = new HashSet<>();
-            if (graph.inDegreeOf(vertex) == 0) {
+            // cant check for inDegreeOf as there might be a loop in the state space
+            if (current.getPredecessor() == null) {
                 candidates.addAll(buechiAutomaton.getInitialStates());
             } else {
-                Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(vertex);
+                Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(current);
                 for (DefaultEdge incomingEdge : incomingEdges) {
                     State predecessor = graph.getEdgeSource(incomingEdge);
                     predecessor.getBuechiNodes().forEach(n -> candidates.addAll(n.getSuccessors()));
@@ -186,7 +189,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
                 for (PredicateNode label : node.getLabels()) {
                     labelSolver.reset();
                     labelSolver.add(FormulaToZ3Translator.translatePredicate(label, getContext(), getMachineTranslator().getZ3TypeInference()));
-                    labelSolver.add(vertex.getStateConstraint(getContext()));
+                    labelSolver.add(current.getStateConstraint(getContext()));
                     Status status = labelSolver.check();
                     switch (status) {
                         case UNSATISFIABLE:
@@ -198,10 +201,20 @@ public class ExplicitStateModelChecker extends ModelChecker {
                     }
                 }
             }
-            vertex.addBuechiNodes(buechiNodes);
+            Set<BuechiAutomatonNode> currentBuechiNodes = current.getBuechiNodes();
+            for (BuechiAutomatonNode newBuechiNode : buechiNodes) {
+                if (!currentBuechiNodes.contains(newBuechiNode)) {
+                    // found a new node, need to update successors again
+                    current.addBuechiNode(newBuechiNode);
+
+                    Set<DefaultEdge> outgoingEdges = graph.outgoingEdgesOf(current);
+                    for (DefaultEdge outgoingEdge : outgoingEdges) {
+                        State successor = graph.getEdgeTarget(outgoingEdge);
+                        statesToUpdate.add(successor);
+                    }
+                }
+            }
         }
-
-
     }
 
     private State getStateFromModel(Model model) {
