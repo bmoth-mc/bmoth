@@ -42,11 +42,6 @@ public class FullStateSpaceTest extends TestParser {
 
         Set<StateSpaceNode> stateSpace = result.getStateSpace().getRoot();
         assertEquals(1, stateSpace.size());
-
-        // as we have not added an LTL formula, each root node should be in the Buechi default node
-        for (StateSpaceNode ssNode : stateSpace) {
-            assertEquals(ssNode.getState().getBuechiNodes().size(), 1);
-        }
     }
 
     @Test

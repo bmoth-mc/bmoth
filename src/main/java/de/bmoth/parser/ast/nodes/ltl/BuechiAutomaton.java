@@ -4,6 +4,9 @@ import de.bmoth.parser.ast.nodes.PredicateNode;
 
 import java.util.*;
 
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NEXT;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NOT;
+
 public class BuechiAutomaton {
 
     private int nodeCounter = 0;
@@ -12,15 +15,6 @@ public class BuechiAutomaton {
     private Set<BuechiAutomatonNode> initialStates = new LinkedHashSet<>();
 
     private final Set<BuechiAutomatonNode> finalNodeSet;
-
-    public BuechiAutomaton() {
-        LTLKeywordNode ltlKeywordNode = new LTLKeywordNode(LTLKeywordNode.Kind.TRUE);
-        LTLPrefixOperatorNode ltlNode = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.GLOBALLY, ltlKeywordNode);
-
-        this.finalNodeSet = createGraph(ltlNode);
-        labelNodes();
-        determineInitialsAndSuccessors();
-    }
 
     public BuechiAutomaton(LTLNode ltlNode) {
         this.finalNodeSet = createGraph(ltlNode);
@@ -183,7 +177,7 @@ public class BuechiAutomaton {
 
     private Set<BuechiAutomatonNode> handlePrefixOperatorNode(BuechiAutomatonNode buechiNode, LTLNode ltlNode,
                                                               Set<BuechiAutomatonNode> nodeSet) {
-        if (((LTLPrefixOperatorNode) ltlNode).getKind() == LTLPrefixOperatorNode.Kind.NEXT) {
+        if (((LTLPrefixOperatorNode) ltlNode).getKind() == NEXT) {
             // Next
             Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
             processed.add(ltlNode);
@@ -192,10 +186,12 @@ public class BuechiAutomaton {
 
             return expand(new BuechiAutomatonNode(buechiNode.name + "_1", new LinkedHashSet<>(buechiNode.incoming),
                 new LinkedHashSet<>(buechiNode.unprocessed), processed, next), nodeSet);
-        } else {
+        } else if (((LTLPrefixOperatorNode) ltlNode).getKind() == NOT) {
             // Not
             buechiNode.processed.add(ltlNode);
             return expand(buechiNode, nodeSet);
+        } else {
+            throw new IllegalArgumentException("Formula not normalized");
         }
     }
 
@@ -214,9 +210,11 @@ public class BuechiAutomaton {
                 if (((LTLKeywordNode) ltlNode).getKind() == LTLKeywordNode.Kind.FALSE) {
                     // Discard the current node
                     return nodeSet;
-                } else {
+                } else if (((LTLKeywordNode) ltlNode).getKind() == LTLKeywordNode.Kind.TRUE) {
                     buechiNode.processed.add(ltlNode);
                     return expand(buechiNode, nodeSet);
+                } else {
+                    throw new IllegalArgumentException("Formula not normalized!");
                 }
             } else if (ltlNode instanceof LTLBPredicateNode) {
                 // B predicate

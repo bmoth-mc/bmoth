@@ -49,7 +49,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
             LTLNode negatedFormula = new LTLPrefixOperatorNode(NOT, ltlFormulas.get(0).getLTLNode());
             this.buechiAutomaton = new BuechiAutomaton(LTLTransformations.transformLTLNode(negatedFormula));
         } else {
-            this.buechiAutomaton = new BuechiAutomaton();
+            this.buechiAutomaton = null;
         }
     }
 
@@ -127,15 +127,17 @@ public class ExplicitStateModelChecker extends ModelChecker {
             return createAborted(visited.size());
         } else {
             ModelCheckingResult resultVerified = createVerified(visited.size(), stateSpaceRoot);
-            // do ltl model check
-            labelStateSpace(resultVerified.getStateSpace().getGraph());
-            List<List<State>> cycles = resultVerified.getStateSpace().getCycles();
-            for (List<State> cycle : cycles) {
-                // if there is an accepting Buechi state in the cycle, a counterexample is found
-                for (State state : cycle) {
-                    for (BuechiAutomatonNode node : state.getBuechiNodes()) {
-                        if (node.isAccepting()) {
-                            return createLTLCounterExampleFound(visited.size(), state);
+            if (buechiAutomaton != null) {
+                // do ltl model check
+                labelStateSpace(resultVerified.getStateSpace().getGraph());
+                List<List<State>> cycles = resultVerified.getStateSpace().getCycles();
+                for (List<State> cycle : cycles) {
+                    // if there is an accepting Buechi state in the cycle, a counterexample is found
+                    for (State state : cycle) {
+                        for (BuechiAutomatonNode node : state.getBuechiNodes()) {
+                            if (node.isAccepting()) {
+                                return createLTLCounterExampleFound(visited.size(), state);
+                            }
                         }
                     }
                 }
@@ -143,6 +145,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
             return resultVerified;
         }
     }
+    
 
     private void updateStateSpace(State from, State to) {
         StateSpaceNode toNode;
