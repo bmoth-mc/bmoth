@@ -1,11 +1,11 @@
-package de.bmoth.typechecker;
+package de.bmoth.parser.typechecker;
 
 import org.junit.Test;
 
 import java.util.Map;
 
 import static de.bmoth.TestConstants.*;
-import static de.bmoth.typechecker.TestTypechecker.getFormulaTypes;
+import static de.bmoth.parser.typechecker.TestTypechecker.getFormulaTypes;
 import static org.junit.Assert.assertEquals;
 
 public class SetFormulaTest {

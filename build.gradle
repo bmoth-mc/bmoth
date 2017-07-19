@@ -92,6 +92,8 @@ dependencies {
     compile 'com.google.guava:guava:22.0'
     compile 'org.apache.commons:commons-lang3:3.6'
 
+    compile group: 'org.jgrapht', name: 'jgrapht-core', version: '1.0.1'
+
     // JavaFX RichText Editor
     compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
     // MVVMFx
@@ -101,6 +103,7 @@ dependencies {
     // TestFX & monocle for headless testing
     testCompile "org.testfx:testfx-core:4.0.+"
     testCompile "org.testfx:testfx-junit:4.0.+"
+    testCompile "net.trajano.commons:commons-testing:2.1.0"
     testRuntime 'org.testfx:openjfx-monocle:1.8.0_20'
 
     // code assert (e.g. to check for circular dependencies)
@@ -257,7 +260,7 @@ jacocoTestReport {
     reports {
         xml.enabled false
         csv.enabled false
-        html.destination "${buildDir}/jacocoHtml"
+        html.destination new File("${buildDir}/jacocoHtml")
     }
 
     afterEvaluate {

@@ -7,9 +7,8 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
+import static net.trajano.commons.testing.EqualsTestUtil.assertEqualsImplementedCorrectly;
+import static org.junit.Assert.*;
 
 public class StateTest extends TestUsingZ3 {
     @Test
@@ -77,5 +76,24 @@ public class StateTest extends TestUsingZ3 {
 
         assertEquals("(and (= x 11) (= y 12))", state1.getStateConstraint(z3Context).toString());
         assertNull(state2.getStateConstraint(z3Context));
+    }
+
+    @Test
+    public void testEquals() {
+        HashMap<String, Expr> map = new HashMap<>();
+
+        map.put("a", z3Context.mkInt(1));
+        map.put("b", z3Context.mkInt(2));
+
+        State s = new State(null, map);
+        State s2 = new State(null, map);
+
+        assertEqualsImplementedCorrectly(s);
+        assertEqualsImplementedCorrectly(s, s2);
+
+        s2 = new State(s, map);
+        State s3 = new State(s, map);
+        assertEqualsImplementedCorrectly(s2);
+        assertEqualsImplementedCorrectly(s2, s3);
     }
 }

@@ -1,9 +1,9 @@
-package de.bmoth.typechecker;
+package de.bmoth.parser.typechecker;
 
 import org.junit.Test;
 
+import static de.bmoth.parser.typechecker.TestTypechecker.*;
 import static org.junit.Assert.assertTrue;
-import static de.bmoth.typechecker.TestTypechecker.*;
 
 public class TypeErrorExceptionTest {
 

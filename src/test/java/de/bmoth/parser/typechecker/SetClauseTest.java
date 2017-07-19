@@ -1,4 +1,4 @@
-package de.bmoth.typechecker;
+package de.bmoth.parser.typechecker;
 
 import static de.bmoth.TestConstants.MACHINE_NAME;
 import static de.bmoth.TestConstants.THREE_CONSTANTS;

@@ -88,7 +88,7 @@ DOUBLE_VERTICAL_BAR: '||' | '\u2225';
 COMMA: ',';
 REC: 'rec';
 STRUCT: 'struct';
-
+OUTPUT_PARAMS: '<--';
 
 //predicate prefix operators
 NOT: 'not' | '\u00ac';

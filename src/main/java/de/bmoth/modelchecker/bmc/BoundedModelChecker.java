@@ -1,24 +1,20 @@
 package de.bmoth.modelchecker.bmc;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Model;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
-import de.bmoth.backend.SubstitutionOptions;
-import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.Z3SolverFactory;
-import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
+import de.bmoth.modelchecker.SymbolicModelChecker;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
-public class BoundedModelChecker extends ModelChecker {
+public class BoundedModelChecker extends SymbolicModelChecker {
 
     private final int maxSteps;
     private final Solver solver;
 
     public BoundedModelChecker(MachineNode machine, int maxSteps) {
-        super(machine);
+        super(machine, maxSteps);
         this.maxSteps = maxSteps;
         this.solver = Z3SolverFactory.getZ3Solver(getContext());
     }
@@ -53,26 +49,5 @@ public class BoundedModelChecker extends ModelChecker {
 
         // no counter example found after maxStep steps
         return ModelCheckingResult.createExceededMaxSteps(maxSteps);
-    }
-
-    private BoolExpr init() {
-        // step is always 0 for init, so omitting var...
-        return getMachineTranslator().getInitialValueConstraint(TranslationOptions.PRIMED_0);
-    }
-
-    private BoolExpr transition(int fromStep, int toStep) {
-        return getMachineTranslator().getCombinedOperationConstraint(new SubstitutionOptions(new TranslationOptions(toStep), new TranslationOptions(fromStep)));
-    }
-
-    private BoolExpr invariant(int step) {
-        return getMachineTranslator().getInvariantConstraint(new TranslationOptions(step));
-    }
-
-    private BoolExpr distinctVectors(int to) {
-        return getMachineTranslator().getDistinctVars(0, to);
-    }
-
-    private State getStateFromModel(Model model, int step) {
-        return getStateFromModel(null, model, new TranslationOptions(step));
     }
 }

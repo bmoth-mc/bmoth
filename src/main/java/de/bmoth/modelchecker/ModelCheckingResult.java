@@ -9,10 +9,11 @@ public class ModelCheckingResult {
     private final State lastState;
     private final Type type;
     private final String reason;
-    private final Set<StateSpaceNode> stateSpaceRoot;
+    private final StateSpace stateSpace;
 
     public enum Type {
         COUNTER_EXAMPLE_FOUND,
+        LTL_COUNTER_EXAMPLE_FOUND,
         EXCEEDED_MAX_STEPS,
         VERIFIED,
         ABORTED,
@@ -24,7 +25,7 @@ public class ModelCheckingResult {
         this.steps = steps;
         this.type = type;
         this.reason = reason;
-        this.stateSpaceRoot = stateSpaceRoot;
+        this.stateSpace = stateSpaceRoot != null ? new StateSpace(stateSpaceRoot) : null;
     }
 
     public static ModelCheckingResult createVerified(int steps, Set<StateSpaceNode> stateSpaceRoot) {
@@ -32,19 +33,23 @@ public class ModelCheckingResult {
     }
 
     public static ModelCheckingResult createAborted(int steps) {
-        return new ModelCheckingResult(null, steps, Type.ABORTED, null, null);
+        return new ModelCheckingResult(null, steps, Type.ABORTED, null, Collections.emptySet());
     }
 
     public static ModelCheckingResult createUnknown(int steps, String reason) {
-        return new ModelCheckingResult(null, steps, Type.UNKNOWN, reason, null);
+        return new ModelCheckingResult(null, steps, Type.UNKNOWN, reason, Collections.emptySet());
     }
 
     public static ModelCheckingResult createCounterExampleFound(int steps, State lastState) {
-        return new ModelCheckingResult(lastState, steps, Type.COUNTER_EXAMPLE_FOUND, null, null);
+        return new ModelCheckingResult(lastState, steps, Type.COUNTER_EXAMPLE_FOUND, null, Collections.emptySet());
+    }
+
+    public static ModelCheckingResult createLTLCounterExampleFound(int steps, State lastState) {
+        return new ModelCheckingResult(lastState, steps, Type.LTL_COUNTER_EXAMPLE_FOUND, null, Collections.emptySet());
     }
 
     public static ModelCheckingResult createExceededMaxSteps(int maxSteps) {
-        return new ModelCheckingResult(null, maxSteps, Type.EXCEEDED_MAX_STEPS, null, null);
+        return new ModelCheckingResult(null, maxSteps, Type.EXCEEDED_MAX_STEPS, null, Collections.emptySet());
     }
 
     public State getLastState() {
@@ -59,8 +64,8 @@ public class ModelCheckingResult {
         return type == Type.VERIFIED;
     }
 
-    public Set<StateSpaceNode> getStateSpaceRoot() {
-        return stateSpaceRoot != null ? stateSpaceRoot : Collections.emptySet();
+    public StateSpace getStateSpace() {
+        return stateSpace;
     }
 
     public int getSteps() {
@@ -82,6 +87,9 @@ public class ModelCheckingResult {
                 break;
             case UNKNOWN:
                 sb.append(reason).append(' ');
+                break;
+            case LTL_COUNTER_EXAMPLE_FOUND:
+                sb.append(lastState.toString()).append(' ');
                 break;
             case EXCEEDED_MAX_STEPS:
             case VERIFIED:

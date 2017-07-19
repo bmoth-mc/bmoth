@@ -14,8 +14,8 @@ public class BuechiAutomatonNode {
     Set<LTLNode> next;
 
     private List<PredicateNode> labels = new ArrayList<>();
-    private Boolean isInitialState = false;
-    Boolean isAcceptingState = false;
+    boolean isInitialState = false;
+    boolean isAcceptingState = false;
 
     public BuechiAutomatonNode(String name, Set<BuechiAutomatonNode> incoming, Set<LTLNode> unprocessed, Set<LTLNode> processed,
                                Set<LTLNode> next) {
@@ -44,13 +44,13 @@ public class BuechiAutomatonNode {
         nodeString.add(this.name + ": ");
 
         StringJoiner incomingString = new StringJoiner(", ", "{", "}");
-        for(BuechiAutomatonNode incomingNode: this.incoming) {
+        for (BuechiAutomatonNode incomingNode : this.incoming) {
             incomingString.add(incomingNode.name);
         }
         nodeString.add("Incoming: " + incomingString.toString());
 
         StringJoiner successorString = new StringJoiner(", ", "{", "}");
-        for(BuechiAutomatonNode successorNode: this.successors) {
+        for (BuechiAutomatonNode successorNode : this.successors) {
             successorString.add(successorNode.name);
         }
         nodeString.add("Successors: " + successorString.toString());
@@ -78,10 +78,21 @@ public class BuechiAutomatonNode {
             labelString.add(predicate.toString());
         }
         nodeString.add("Labels: " + labelString.toString());
-        nodeString.add("Initial state? " + isInitialState.toString());
-        nodeString.add("Accepting state? " + isAcceptingState.toString());
+        nodeString.add("Initial state? " + isInitialState);
+        nodeString.add("Accepting state? " + isAcceptingState);
 
         return nodeString.toString();
     }
 
+    public Set<BuechiAutomatonNode> getSuccessors() {
+        return successors;
+    }
+
+    public List<PredicateNode> getLabels() {
+        return labels;
+    }
+
+    public boolean isAccepting() {
+        return isAcceptingState;
+    }
 }

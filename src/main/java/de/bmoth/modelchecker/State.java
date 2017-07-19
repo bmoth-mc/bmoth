@@ -4,18 +4,28 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Sort;
+import de.bmoth.parser.ast.nodes.ltl.BuechiAutomatonNode;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class State {
     private final State predecessor;
     private final Map<String, Expr> values;
+    private final Set<BuechiAutomatonNode> buechiNodes;
+
+    public State(State predecessor, Map<String, Expr> values, Set<BuechiAutomatonNode> buechiNodes) {
+        this.predecessor = predecessor;
+        this.values = values;
+        this.buechiNodes = buechiNodes;
+    }
 
     public State(State predecessor, Map<String, Expr> values) {
         this.predecessor = predecessor;
         this.values = values;
+        this.buechiNodes = null;
     }
 
     public String toString() {
@@ -68,5 +78,9 @@ public class State {
 
     public Map<String, Expr> getValues() {
         return values;
+    }
+
+    public Set<BuechiAutomatonNode> getBuechiNodes() {
+        return buechiNodes;
     }
 }

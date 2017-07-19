@@ -9,6 +9,7 @@ import static de.bmoth.preferences.BMothPreferences.BooleanPreference.MODEL_CHEC
 import static de.bmoth.preferences.BMothPreferences.IntPreference.*;
 import static de.bmoth.preferences.BMothPreferences.StringPreference.LAST_DIR;
 import static de.bmoth.preferences.BMothPreferences.StringPreference.LAST_FILE;
+import static net.trajano.commons.testing.UtilityClassTestUtil.assertUtilityClassWellDefined;
 import static org.junit.Assert.*;
 
 public class BMothPreferencesTest {
@@ -51,6 +52,11 @@ public class BMothPreferencesTest {
 
         BMothPreferences.setBooleanPreference(INVARIANT_CHECK, true);
         assertTrue(BMothPreferences.getBooleanPreference(INVARIANT_CHECK));
+    }
+
+    @Test
+    public void testClass() throws ReflectiveOperationException {
+        assertUtilityClassWellDefined(BMothPreferences.class);
     }
 
 }

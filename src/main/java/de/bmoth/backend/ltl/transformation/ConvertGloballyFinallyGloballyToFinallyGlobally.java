@@ -1,38 +1,24 @@
 package de.bmoth.backend.ltl.transformation;
 
 import de.bmoth.parser.ast.nodes.Node;
-import de.bmoth.parser.ast.nodes.ltl.LTLNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode;
 import de.bmoth.parser.ast.visitors.ASTTransformation;
+
+import static de.bmoth.backend.ltl.LTLTransformationUtil.contains;
+import static de.bmoth.backend.ltl.LTLTransformationUtil.isOperator;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.FINALLY;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.GLOBALLY;
 
 public class ConvertGloballyFinallyGloballyToFinallyGlobally implements ASTTransformation {
 
     @Override
     public boolean canHandleNode(Node node) {
-        return node instanceof LTLPrefixOperatorNode;
+        return isOperator(node, GLOBALLY) && contains(node, FINALLY, GLOBALLY);
     }
 
     @Override
-    public Node transformNode(Node oldnode) {
-        LTLPrefixOperatorNode globallyOperator = (LTLPrefixOperatorNode) oldnode;
-        if (globallyOperator.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
-            LTLNode argument = globallyOperator.getArgument();
-            if (argument instanceof LTLPrefixOperatorNode) {
-                LTLPrefixOperatorNode finallyOperator = (LTLPrefixOperatorNode) argument;
-                if (finallyOperator.getKind() == LTLPrefixOperatorNode.Kind.FINALLY) {
-                    LTLNode argument2 = finallyOperator.getArgument();
-                    if (argument2 instanceof LTLPrefixOperatorNode) {
-                        LTLPrefixOperatorNode innerGloballyOperator = (LTLPrefixOperatorNode) argument2;
-                        if (innerGloballyOperator.getKind() == LTLPrefixOperatorNode.Kind.GLOBALLY) {
-                            LTLPrefixOperatorNode newGlobally = new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.GLOBALLY,
-                                innerGloballyOperator.getArgument());
-                            return new LTLPrefixOperatorNode(LTLPrefixOperatorNode.Kind.FINALLY, newGlobally);
-                        }
-                    }
-                }
-            }
-        }
-        return oldnode;
+    public Node transformNode(Node node) {
+        LTLPrefixOperatorNode globallyOperator = (LTLPrefixOperatorNode) node;
+        return globallyOperator.getArgument();
     }
-
 }

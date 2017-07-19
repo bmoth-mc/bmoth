@@ -1,4 +1,4 @@
-package de.bmoth.typechecker;
+package de.bmoth.parser.typechecker;
 
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;

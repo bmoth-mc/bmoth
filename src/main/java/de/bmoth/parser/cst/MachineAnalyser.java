@@ -308,7 +308,22 @@ public class MachineAnalyser {
                 scopeTable.add(MachineAnalyser.this.constantsDeclarations);
                 scopeTable.add(MachineAnalyser.this.variablesDeclarations);
                 scopeTable.add(MachineAnalyser.this.definitionsDeclarations);
-                entry.getValue().substitution().accept(this);
+                OperationContext operation = entry.getValue();
+                if (operation.outputParams != null) {
+                    LinkedHashMap<String, TerminalNode> outputMap = new LinkedHashMap<>();
+                    for (TerminalNode terminalNode : operation.outputParams.IDENTIFIER()) {
+                        outputMap.put(terminalNode.getSymbol().getText(), terminalNode);
+                    }
+                    scopeTable.add(outputMap);
+                }
+                if (operation.params != null) {
+                    LinkedHashMap<String, TerminalNode> paramsMap = new LinkedHashMap<>();
+                    for (TerminalNode terminalNode : operation.params.IDENTIFIER()) {
+                        paramsMap.put(terminalNode.getSymbol().getText(), terminalNode);
+                    }
+                    scopeTable.add(paramsMap);
+                }
+                operation.substitution().accept(this);
                 scopeTable.clear();
             }
 
@@ -331,17 +346,17 @@ public class MachineAnalyser {
                 String name = entry.getKey();
                 StringExpressionContext value = entry.getValue();
                 String string = value.getText();
-                if(string.startsWith("\"")){
-                    string = string.substring(1, string.length()-1);
-                }else{
-                    string = string.substring(3, string.length()-3);
+                if (string.startsWith("\"")) {
+                    string = string.substring(1, string.length() - 1);
+                } else {
+                    string = string.substring(3, string.length() - 3);
                 }
                 scopeTable.clear();
                 scopeTable.add(MachineAnalyser.this.setsDeclarations);
                 scopeTable.add(MachineAnalyser.this.constantsDeclarations);
                 scopeTable.add(MachineAnalyser.this.variablesDeclarations);
                 scopeTable.add(MachineAnalyser.this.definitionsDeclarations);
-                
+
                 LtlStartContext ltlStart = Parser.getLTLFormulaAsCST(string);
                 ltlFormulas.put(name, ltlStart);
                 ltlStart.accept(this);
@@ -439,6 +454,5 @@ public class MachineAnalyser {
         }
 
     }
-
 
 }

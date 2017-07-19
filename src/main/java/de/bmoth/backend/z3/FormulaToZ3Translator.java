@@ -71,7 +71,7 @@ public class FormulaToZ3Translator {
     private FormulaToZ3Translator(Context z3Context, String formula) throws ParserException {
         this.z3Context = z3Context;
         this.formulaNode = Parser.getFormulaAsSemanticAst(formula);
-        
+
         this.implicitDeclarations = formulaNode.getImplicitDeclarations();
         z3TypeInference = new Z3TypeInference();
         z3TypeInference.visitPredicateNode((PredicateNode) formulaNode.getFormula());
@@ -171,7 +171,7 @@ public class FormulaToZ3Translator {
             return boolExpr;
         }
     }
-    
+
     class FormulaToZ3TranslatorVisitor implements FormulaVisitor<Expr, TranslationOptions> {
 
         class OperatorNotImplementedError extends AssertionError {

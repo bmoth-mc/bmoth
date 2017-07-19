@@ -16,6 +16,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     State firstState;
     State secondState;
     State thirdState;
+    State firstStateEquiv;
 
     String unknown = "check-sat ...";
 
@@ -26,14 +27,17 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
         HashMap<String, Expr> firstMap = new HashMap<>();
         HashMap<String, Expr> secondMap = new HashMap<>();
         HashMap<String, Expr> thirdMap = new HashMap<>();
+        HashMap<String, Expr> firstMapEquiv = new HashMap<>();
 
         firstMap.put("x", z3Context.mkInt(10));
         secondMap.put("x", z3Context.mkInt(11));
         thirdMap.put("x", z3Context.mkInt(12));
+        firstMapEquiv.put("x", z3Context.mkInt(10));
 
         thirdState = new State(null, thirdMap);
         secondState = new State(thirdState, secondMap);
         firstState = new State(secondState, firstMap);
+        firstStateEquiv = new State(null, firstMapEquiv);
 
         StateSpaceNode thirdNode = new StateSpaceNode(thirdState);
         StateSpaceNode secondNode = new StateSpaceNode(secondState);
@@ -70,8 +74,17 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
         ModelCheckingResult resultNoStateSpace = ModelCheckingResult.createVerified(0, null);
         ModelCheckingResult resultWithStateSpace = ModelCheckingResult.createVerified(1, stateSpace);
 
-        assertTrue(resultNoStateSpace.getStateSpaceRoot().isEmpty());
-        assertEquals("[{x=12}, successors: [{x=11}]]", resultWithStateSpace.getStateSpaceRoot().toString());
+        assertTrue(resultNoStateSpace.getStateSpace() == null);
+        assertEquals("[{x=12}, successors: [{x=11}]]", resultWithStateSpace.getStateSpace().getRoot().toString());
+    }
+
+    @Test
+    public void testStateSpaceNode() {
+        StateSpaceNode firstNode = new StateSpaceNode(firstState);
+
+        assertFalse(firstNode.equals(new Object()));
+        assertTrue(firstNode.equals(firstNode));
+        assertTrue(firstNode.equals(new StateSpaceNode(firstStateEquiv)));
     }
 
     @Test
@@ -90,7 +103,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     @Test
     public void testType() {
-        assertArrayEquals(new ModelCheckingResult.Type[]{COUNTER_EXAMPLE_FOUND,
+        assertArrayEquals(new ModelCheckingResult.Type[]{COUNTER_EXAMPLE_FOUND, LTL_COUNTER_EXAMPLE_FOUND,
                 EXCEEDED_MAX_STEPS, VERIFIED, ABORTED, UNKNOWN},
             ModelCheckingResult.Type.values());
 

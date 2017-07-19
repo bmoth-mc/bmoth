@@ -99,19 +99,6 @@ public class LTLTransformationTest extends TestParser {
     }
 
     @Test
-    public void testGloballyPhiAndPsiToGloballyPhiAndGloballyPsi() {
-        LTLNode node1 = parseLtlFormula("G( ( {3=3} & {2=2} ) )").getLTLNode();
-
-        ASTTransformation transformation = new ConvertGloballyPhiAndPsiToGloballyPhiAndGloballyPsi();
-
-        assertTrue(transformation.canHandleNode(node1));
-
-        LTLNode newNode1 = (LTLNode) transformation.transformNode(node1);
-
-        assertEquals("AND(GLOBALLY(EQUAL(3,3)),GLOBALLY(EQUAL(2,2)))", newNode1.toString());
-    }
-
-    @Test
     public void testNotRelease() {
         LTLNode node1 = parseLtlFormula("not( {23=23} R {24=24} )").getLTLNode();
         LTLNode node2 = parseLtlFormula("not( {23=23} U {24=24} )").getLTLNode();
@@ -247,13 +234,6 @@ public class LTLTransformationTest extends TestParser {
         assertEquals("EQUAL(234,234)", newNode1.toString());
         assertEquals("EQUAL(234,234)", newNode2.toString());
 
-    }
-
-    @Test
-    public void testConvertNotWeakUntil() {
-        LTLFormula ltlFormula = parseLtlFormula("not({0=1} W false)");
-        LTLNode node = (LTLNode) new ConvertNotWeakUntil().transformNode(ltlFormula.getLTLNode());
-        assertEquals("UNTIL(AND(EQUAL(0,1),NOT(FALSE)),AND(NOT(EQUAL(0,1)),NOT(FALSE)))", node.toString());
     }
 
     @Test

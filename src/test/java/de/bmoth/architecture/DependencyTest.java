@@ -17,7 +17,7 @@ import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class DependencyTest {
-    private String[] packages = new String[] { "app", "backend", "checkers", "eventbus", "modelchecker", "parser" };
+    private String[] packages = new String[]{"app", "backend", "checkers", "eventbus", "modelchecker", "parser"};
     private AnalyzerConfig config;
 
     @Before
@@ -33,13 +33,13 @@ public class DependencyTest {
         assertThat(new ModelAnalyzer(config).analyze(), hasNoClassCycles());
 
         // cycles in packages
-        String[][] exceptions2DimArray = new String[][] {
-                new String[] { "de.bmoth.parser", "de.bmoth.parser.ast", "de.bmoth.parser.cst", "de.bmoth.parser.ast.visitors" },
-                new String[] { "de.bmoth.parser.ast.nodes", "de.bmoth.parser.ast.nodes.ltl" } };
+        String[][] exceptions2DimArray = new String[][]{
+            new String[]{"de.bmoth.parser", "de.bmoth.parser.ast", "de.bmoth.parser.cst", "de.bmoth.parser.ast.visitors"},
+            new String[]{"de.bmoth.parser.ast.nodes", "de.bmoth.parser.ast.nodes.ltl"}};
         @SuppressWarnings("unchecked")
         Set<String>[] exceptions = Arrays.stream(exceptions2DimArray)
-                .map(a -> Arrays.stream(a).collect(Collectors.toSet())).collect(Collectors.toList())
-                .toArray((Set<String>[]) new Set<?>[exceptions2DimArray.length]);
+            .map(a -> Arrays.stream(a).collect(Collectors.toSet())).collect(Collectors.toList())
+            .toArray((Set<String>[]) new Set<?>[exceptions2DimArray.length]);
         assertThat(new ModelAnalyzer(config).analyze(), hasNoPackgeCyclesExcept(exceptions));
     }
 
@@ -61,6 +61,7 @@ public class DependencyTest {
                 deBmothBackendZ3.mustUse(comMicrosoftZ3);
                 deBmothBackendZ3.mayUse(comMicrosoftZ3Enumerations);
                 deBmothModelchecker.mustUse(comMicrosoftZ3);
+                deBmothModelchecker.mayUse(comMicrosoftZ3Enumerations);
                 deBmothModelchecker_.mustUse(comMicrosoftZ3);
                 deBmothCheckers_.mustUse(comMicrosoftZ3);
             }
@@ -121,8 +122,8 @@ public class DependencyTest {
         // maybe we should include com.microsoft again and check who is
         // allowed to directly speak to z3
         DependencyRules rules = DependencyRules.denyAll().withAbsoluteRules(new InternalPackages())
-                .withAbsoluteRules(new ExternalPackages()).withRelativeRules(new DeBmoth())
-                .withExternals("com.google.*", "java.*", "javafx.*", "org.*");
+            .withAbsoluteRules(new ExternalPackages()).withRelativeRules(new DeBmoth())
+            .withExternals("com.google.*", "java.*", "javafx.*", "org.*");
 
         assertThat(new ModelAnalyzer(config).analyze(), packagesMatchExactly(rules));
     }

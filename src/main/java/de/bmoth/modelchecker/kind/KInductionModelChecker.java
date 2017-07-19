@@ -1,29 +1,21 @@
 package de.bmoth.modelchecker.kind;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Model;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
-import de.bmoth.backend.SubstitutionOptions;
-import de.bmoth.backend.TranslationOptions;
 import de.bmoth.backend.z3.Z3SolverFactory;
-import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
+import de.bmoth.modelchecker.SymbolicModelChecker;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.*;
 
-public class KInductionModelChecker extends ModelChecker {
+public class KInductionModelChecker extends SymbolicModelChecker {
 
-    private final int maxSteps;
-    private final Solver baseSolver;
     private final Solver stepSolver;
 
     public KInductionModelChecker(MachineNode machine, int maxSteps) {
-        super(machine);
-        this.maxSteps = maxSteps;
-        this.baseSolver = Z3SolverFactory.getZ3Solver(getContext());
+        super(machine, maxSteps);
         this.stepSolver = Z3SolverFactory.getZ3Solver(getContext());
     }
 
@@ -68,31 +60,11 @@ public class KInductionModelChecker extends ModelChecker {
 
                 if (checkStep == Status.UNSATISFIABLE)
                     // TODO think about state space root!
-                    return createVerified(k,null);
+                    return createVerified(k, null);
             }
         }
 
         // no counter example found after maxStep steps
         return createExceededMaxSteps(maxSteps);
-    }
-
-    private BoolExpr init() {
-        return getMachineTranslator().getInitialValueConstraint(TranslationOptions.PRIMED_0);
-    }
-
-    private BoolExpr transition(int fromStep, int toStep) {
-        return getMachineTranslator().getCombinedOperationConstraint(new SubstitutionOptions(new TranslationOptions(toStep), new TranslationOptions(fromStep)));
-    }
-
-    private BoolExpr invariant(int step) {
-        return getMachineTranslator().getInvariantConstraint(new TranslationOptions(step));
-    }
-
-    private BoolExpr distinctVectors(int to) {
-        return getMachineTranslator().getDistinctVars(0, to);
-    }
-
-    private State getStateFromModel(Model model, int step) {
-        return getStateFromModel(null, model, new TranslationOptions(step));
     }
 }

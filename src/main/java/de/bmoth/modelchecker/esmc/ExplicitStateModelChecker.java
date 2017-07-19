@@ -5,6 +5,7 @@ import com.microsoft.z3.Model;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 import de.bmoth.backend.TranslationOptions;
+import de.bmoth.backend.ltl.LTLTransformations;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
 import de.bmoth.modelchecker.ModelChecker;
@@ -12,11 +13,13 @@ import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.modelchecker.State;
 import de.bmoth.modelchecker.StateSpaceNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import de.bmoth.parser.ast.nodes.ltl.*;
 import de.bmoth.preferences.BMothPreferences;
 
 import java.util.*;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.*;
+import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NOT;
 
 public class ExplicitStateModelChecker extends ModelChecker {
     private Solver solver;
@@ -26,7 +29,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
     private Set<State> visited;
     private Queue<State> queue;
     private Map<State, StateSpaceNode> knownStateToStateSpaceNode;
-    private Set<StateSpaceNode> stateSpace;
+    private BuechiAutomaton buechiAutomaton;
 
     public ExplicitStateModelChecker(MachineNode machine) {
         super(machine);
@@ -35,7 +38,13 @@ public class ExplicitStateModelChecker extends ModelChecker {
         this.finder = new SolutionFinder(solver, getContext());
         this.opFinder = new SolutionFinder(opSolver, getContext());
         this.knownStateToStateSpaceNode = new HashMap<>();
-
+        List<LTLFormula> ltlFormulas = machine.getLTLFormulas();
+        if (ltlFormulas.size() == 1) {
+            LTLNode negatedFormula = new LTLPrefixOperatorNode(NOT, ltlFormulas.get(0).getLTLNode());
+            this.buechiAutomaton = new BuechiAutomaton(LTLTransformations.transformLTLNode(negatedFormula));
+        } else {
+            this.buechiAutomaton = new BuechiAutomaton();
+        }
     }
 
     public static ModelCheckingResult check(MachineNode machine) {
@@ -57,7 +66,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
 
         visited = new HashSet<>();
         queue = new LinkedList<>();
-        stateSpace = new HashSet<>();
+        Set<StateSpaceNode> stateSpaceRoot = new HashSet<>();
 
         // prepare initial states
         BoolExpr initialValueConstraint = getMachineTranslator().getInitialValueConstraint();
@@ -67,7 +76,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
             .map(this::getStateFromModel)
             .forEach(state -> {
                 updateStateSpace(null, state);
-                stateSpace.add(knownStateToStateSpaceNode.get(state));
+                stateSpaceRoot.add(knownStateToStateSpaceNode.get(state));
             });
 
         final BoolExpr invariant = getMachineTranslator().getInvariantConstraint();
@@ -111,8 +120,20 @@ public class ExplicitStateModelChecker extends ModelChecker {
         if (isAborted()) {
             return createAborted(visited.size());
         } else {
-            // TODO think about state space root!
-            return createVerified(visited.size(), stateSpace);
+            ModelCheckingResult resultVerified = createVerified(visited.size(), stateSpaceRoot);
+            // do ltl model check
+            List<List<State>> cycles = resultVerified.getStateSpace().getCycles();
+            for (List<State> cycle : cycles) {
+                // if there is an accepting Buechi state in the cycle, a counterexample is found
+                for (State state : cycle) {
+                    for (BuechiAutomatonNode node : state.getBuechiNodes()) {
+                        if (node.isAccepting()) {
+                            return createLTLCounterExampleFound(visited.size(), state);
+                        }
+                    }
+                }
+            }
+            return resultVerified;
         }
     }
 
@@ -123,7 +144,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
             toNode = new StateSpaceNode(to);
             knownStateToStateSpaceNode.put(to, toNode);
             // !queue.contains(...) check can be omitted as it is always parallel to insertion into knownStateToStateSpaceNode
-            if (!visited.contains(to)){
+            if (!visited.contains(to)) {
                 queue.add(to);
             }
         } else {
@@ -137,10 +158,10 @@ public class ExplicitStateModelChecker extends ModelChecker {
     }
 
     private State getStateFromModel(Model model) {
-        return getStateFromModel(null, model, TranslationOptions.PRIMED_0);
+        return getStateFromModel(null, model, TranslationOptions.PRIMED_0, buechiAutomaton);
     }
 
     private State getStateFromModel(State predecessor, Model model) {
-        return getStateFromModel(predecessor, model, TranslationOptions.PRIMED_0);
+        return getStateFromModel(predecessor, model, TranslationOptions.PRIMED_0, buechiAutomaton);
     }
 }
