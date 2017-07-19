@@ -11,7 +11,9 @@ import de.bmoth.eventbus.ErrorEvent;
 import de.bmoth.eventbus.EventBusProvider;
 import de.bmoth.modelchecker.ModelChecker;
 import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.modelchecker.bmc.BoundedModelChecker;
 import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
+import de.bmoth.modelchecker.kind.KInductionModelChecker;
 import de.bmoth.parser.Parser;
 import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.MachineNode;
@@ -54,7 +56,12 @@ import java.util.logging.Logger;
 public class AppView implements FxmlView<AppViewModel>, Initializable {
 
     private static final String APPNAME = "Bmoth";
+    private static final int MAX_STEPS = 20; //shouldn't be hardcoded
     private final Logger logger = Logger.getLogger(getClass().getName());
+    @FXML
+    MenuItem kInductCheck;
+    @FXML
+    MenuItem boundedCheck;
     @FXML
     MenuItem customCheck;
     @FXML
@@ -235,59 +242,94 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
 
             modelChecker = new ExplicitStateModelChecker(machineNode);
 
-            task = new Task<ModelCheckingResult>() {
-                @Override
-                protected ModelCheckingResult call() throws Exception {
-                    return modelChecker.check();
-                }
-            };
+            checkwithChecker(modelChecker);
 
-            task.setOnSucceeded(event -> {
-                ModelCheckingResult result = task.getValue();
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Model Checking Result");
-
-                switch (result.getType()) {
-                    case VERIFIED:
-                        alert.setHeaderText("The model is...");
-                        alert.setContentText("...correct!\nNo counter-example found.");
-                        break;
-                    case EXCEEDED_MAX_STEPS:
-                        alert.setHeaderText("The model is...");
-                        alert.setContentText("...correct for " + result.getSteps() + " steps!\n(Warning: Exceeded max steps)");
-                        break;
-                    case COUNTER_EXAMPLE_FOUND:
-                        alert.setHeaderText("The model is...");
-                        alert.setContentText(
-                            "...not correct!\nCounter-example found in state " + result.getLastState().toString()
-                                + ".\nReversed path: " + result.getLastState().getPath());
-                        break;
-                    case UNKNOWN:
-                        alert.setHeaderText("Model checking result unknown...");
-                        alert.setContentText(
-                            "... reason: " + result.getReason());
-                        break;
-                    case ABORTED:
-                        alert.setHeaderText("Model checking aborted...");
-                        alert.setContentText(
-                            "... after " + result.getSteps() + " steps");
-                        break;
-                }
-
-                alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-                alert.showAndWait();
-            });
-            task.setOnCancelled(event -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Model Checking Result");
-                alert.setHeaderText("Modelchecking was canceled!");
-                alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-                alert.showAndWait();
-            });
-            modelCheckingThread = new Thread(task);
-            modelCheckingThread.start();
         }
     }
+
+    public void handleBounded() {
+        if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
+
+            parseMachineNode();
+
+            modelChecker = new BoundedModelChecker(machineNode, MAX_STEPS);
+
+            checkwithChecker(modelChecker);
+        }
+
+
+    }
+
+    public void handleKInduct() {
+
+        if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
+
+            parseMachineNode();
+
+            modelChecker = new KInductionModelChecker(machineNode, MAX_STEPS);
+
+            checkwithChecker(modelChecker);
+        }
+
+    }
+
+    public void checkwithChecker(ModelChecker modelChecker) {
+
+        task = new Task<ModelCheckingResult>() {
+            @Override
+            protected ModelCheckingResult call() throws Exception {
+                return AppView.this.modelChecker.check();
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            ModelCheckingResult result = task.getValue();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Model Checking Result");
+
+            switch (result.getType()) {
+                case VERIFIED:
+                    alert.setHeaderText("The model is...");
+                    alert.setContentText("...VERIFIED via K-Induction Model Checking!\nNo counter-example found.");
+                    break;
+                case EXCEEDED_MAX_STEPS:
+                    alert.setHeaderText("The model is...");
+                    alert.setContentText("...correct for " + result.getSteps() + " steps!\n(Warning: Exceeded max steps)");
+                    break;
+                case COUNTER_EXAMPLE_FOUND:
+                    alert.setHeaderText("The model is...");
+                    alert.setContentText(
+                        "...not correct!\nCounter-example found in state " + result.getLastState().toString()
+                            + ".\nReversed path: " + result.getLastState().getPath());
+                    break;
+                case UNKNOWN:
+                    alert.setHeaderText("Model checking result unknown...");
+                    alert.setContentText(
+                        "... reason: " + result.getReason());
+                    break;
+                case ABORTED:
+                    alert.setHeaderText("Model checking aborted...");
+                    alert.setContentText(
+                        "... after " + result.getSteps() + " steps");
+                    break;
+            }
+
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.showAndWait();
+        });
+        task.setOnCancelled(event -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Model Checking Result");
+            alert.setHeaderText("Modelchecking was canceled!");
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.showAndWait();
+        });
+        modelCheckingThread = new Thread(task);
+        modelCheckingThread.start();
+    }
+
+
+
 
     private void parseMachineNode() {
         if (hasChanged || machineNode == null) {
@@ -544,4 +586,5 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         }
 
     }
+
 }

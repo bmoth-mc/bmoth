@@ -63,7 +63,7 @@ public class KInductionModelCheckerTest extends TestParser {
             .setVariables("c")
             .setInvariant("c : INTEGER")
             .setInitialization(" c:= 0")
-            .addOperation("inc = c := c + 1")
+            .addOperation("inc = BEGIN c := c + 1 END")
             .build();
 
         result = new KInductionModelChecker(machine, 20).check();
