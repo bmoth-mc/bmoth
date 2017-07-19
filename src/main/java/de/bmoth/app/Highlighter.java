@@ -13,20 +13,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Highlighter {
-    private Highlighter() {
-    }
-
     private static final String[] START = new String[]{
         "MACHINE"
     };
-
     private static final String[] KEYWORDS = new String[]{
-        "VARIABLES", "INVARIANT", "INITIALISATION", "OPERATIONS", "CONSTANTS", "PROPERTIES"
+        "VARIABLES", "DEFINITIONS", "INVARIANT", "INITIALISATION", "OPERATIONS", "CONSTANTS", "PROPERTIES"
     };
     private static final String[] KEYWORDS2 = new String[]{
         "END", "SELECT", "THEN", "BEGIN", "WHERE", "ANY"
     };
-
     private static final String START_PATTERN = "\\b(" + String.join("|", START) + ")\\b";
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
     private static final String KEYWORD2_PATTERN = "\\b(" + String.join("|", KEYWORDS2) + ")\\b";
@@ -36,7 +31,6 @@ public class Highlighter {
     private static final String SEMICOLON_PATTERN = "\\;";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-
     private static final Pattern PATTERN = Pattern.compile(
         "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
             + "|(?<START>" + START_PATTERN + ")"
@@ -48,6 +42,9 @@ public class Highlighter {
             + "|(?<STRING>" + STRING_PATTERN + ")"
             + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
     );
+
+    private Highlighter() {
+    }
 
     protected static StyleSpans<Collection<String>> computeHighlighting(String text) {
         String[] groups = new String[]{"START", "KEYWORD", "KEYWORD2", "PAREN", "BRACE", "BRACKET", "SEMICOLON", "STRING", "COMMENT"};
