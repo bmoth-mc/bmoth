@@ -119,9 +119,12 @@ public class BuechiAutomaton {
 
     private BuechiAutomatonNode buildFirstNodeInSplit(BuechiAutomatonNode buechiNode, LTLInfixOperatorNode subNode, Set<LTLNode> newProcessed) {
         // Prepare the different parts of the first new node created for Until, Release and Or
-        Set<LTLNode> unprocessed = new1(subNode);
-        unprocessed.removeAll(buechiNode.processed);
-        unprocessed.addAll(buechiNode.unprocessed);
+        Set<LTLNode> unprocessed = new LinkedHashSet<>(buechiNode.unprocessed);
+        for (LTLNode node : new1(subNode)) {
+            if (!ltlNodeIsInList(node, buechiNode.processed)) {
+                unprocessed.add(node);
+            }
+        }
 
         Set<LTLNode> next = new LinkedHashSet<>(buechiNode.next);
         next.addAll(next1(subNode));
@@ -132,9 +135,12 @@ public class BuechiAutomaton {
 
     private BuechiAutomatonNode buildSecondNodeInSplit(BuechiAutomatonNode buechiNode, LTLInfixOperatorNode subNode, Set<LTLNode> processed) {
         // Prepare the different parts of the second new node created for Until, Release and Or
-        Set<LTLNode> unprocessed = new2(subNode);
-        unprocessed.removeAll(buechiNode.processed);
-        unprocessed.addAll(buechiNode.unprocessed);
+        Set<LTLNode> unprocessed = new LinkedHashSet<>(buechiNode.unprocessed);
+        for (LTLNode node : new2(subNode)) {
+            if (!ltlNodeIsInList(node, buechiNode.processed)) {
+                unprocessed.add(node);
+            }
+        }
 
         return new BuechiAutomatonNode(newName(), new LinkedHashSet<>(buechiNode.incoming),
             unprocessed, processed, new LinkedHashSet<>(buechiNode.next));
