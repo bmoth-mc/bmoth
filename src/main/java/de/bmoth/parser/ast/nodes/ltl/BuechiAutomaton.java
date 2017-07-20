@@ -153,13 +153,13 @@ public class BuechiAutomaton {
         }
     }
 
-    private Set<BuechiAutomatonNode> handleInfixOperatorNode(BuechiAutomatonNode buechiNode, LTLNode ltlNode,
+    private Set<BuechiAutomatonNode> handleInfixOperatorNode(BuechiAutomatonNode buechiNode, LTLInfixOperatorNode ltlNode,
                                                              Set<BuechiAutomatonNode> nodeSet) {
-        if (((LTLInfixOperatorNode) ltlNode).getKind() == LTLInfixOperatorNode.Kind.AND) {
+        if (ltlNode.getKind() == LTLInfixOperatorNode.Kind.AND) {
             // And
             Set<LTLNode> unprocessed = new LinkedHashSet<>(buechiNode.unprocessed);
-            unprocessed.add(((LTLInfixOperatorNode) ltlNode).getLeft());
-            unprocessed.add(((LTLInfixOperatorNode) ltlNode).getRight());
+            unprocessed.add(ltlNode.getLeft());
+            unprocessed.add(ltlNode.getRight());
             unprocessed.removeAll(buechiNode.processed);
 
             Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
@@ -170,9 +170,9 @@ public class BuechiAutomaton {
         } else {
             // Until, Release, Or: Split the node in two
             // TODO: the previous comment mentions OR, but it is not in the if?
-            if ((((LTLInfixOperatorNode) ltlNode).getKind() == UNTIL) ||
-                (((LTLInfixOperatorNode) ltlNode).getKind() == RELEASE)) {
-                subFormulasForAcceptance.add((LTLInfixOperatorNode) ltlNode);
+            if ((ltlNode.getKind() == UNTIL) ||
+                (ltlNode.getKind() == RELEASE)) {
+                subFormulasForAcceptance.add(ltlNode);
             }
             Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
             processed.add(ltlNode);
@@ -181,14 +181,14 @@ public class BuechiAutomaton {
         }
     }
 
-    private Set<BuechiAutomatonNode> handlePrefixOperatorNode(BuechiAutomatonNode buechiNode, LTLNode ltlNode,
+    private Set<BuechiAutomatonNode> handlePrefixOperatorNode(BuechiAutomatonNode buechiNode, LTLPrefixOperatorNode ltlNode,
                                                               Set<BuechiAutomatonNode> nodeSet) {
-        if (((LTLPrefixOperatorNode) ltlNode).getKind() == NEXT) {
+        if (ltlNode.getKind() == NEXT) {
             // Next
             Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
             processed.add(ltlNode);
             Set<LTLNode> next = new LinkedHashSet<>(buechiNode.next);
-            next.add(((LTLPrefixOperatorNode) ltlNode).getArgument());
+            next.add(ltlNode.getArgument());
 
             return expand(new BuechiAutomatonNode(buechiNode.name + "_1", new LinkedHashSet<>(buechiNode.incoming),
                 new LinkedHashSet<>(buechiNode.unprocessed), processed, next), nodeSet);
@@ -227,9 +227,9 @@ public class BuechiAutomaton {
                     return nodeSet;
                 }
             } else if (ltlNode instanceof LTLPrefixOperatorNode) {
-                return handlePrefixOperatorNode(buechiNode, ltlNode, nodeSet);
+                return handlePrefixOperatorNode(buechiNode, (LTLPrefixOperatorNode) ltlNode, nodeSet);
             } else if (ltlNode instanceof LTLInfixOperatorNode) {
-                return handleInfixOperatorNode(buechiNode, ltlNode, nodeSet);
+                return handleInfixOperatorNode(buechiNode, (LTLInfixOperatorNode) ltlNode, nodeSet);
             }
         }
         return nodeSet;
