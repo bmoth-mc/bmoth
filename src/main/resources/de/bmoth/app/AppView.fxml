@@ -18,17 +18,19 @@
             <SeparatorMenuItem/>
             <MenuItem text="Exit" fx:id="exit" onAction="#handleExit"/>
         </Menu>
-        <Menu text="Checks">
-            <MenuItem text="Custom Model Checking" fx:id="customCheck" onAction="#handleCustomCheck"/>
-            <MenuItem text="Start Model Checking" fx:id="modelCheck" onAction="#handleCheck"/>
+        <Menu text="Model Checking">
+            <MenuItem text="Explicit State Model Checking" fx:id="modelCheck" onAction="#handleCheck"/>
+            <SeparatorMenuItem/>
             <MenuItem text="Bounded Model Checking" fx:id="boundedCheck" onAction="#handleBounded"/>
             <MenuItem text="K Induction Model Checking" fx:id="kInductCheck" onAction="#handleKInduct"/>
             <SeparatorMenuItem/>
+            <MenuItem text="Cancel" fx:id="cancelModelCheck" onAction="#handelCancelModelCheck"/>
+        </Menu>
+        <Menu text="Other Checks">
             <MenuItem text="Check Invariant Satisfiability" fx:id="invariantSatisfiability"
                       onAction="#handleInvariantSatisfiability"/>
             <MenuItem text="Check for Initial State" fx:id="initialStateExists"
                       onAction="#handleInitialStateExists"/>
-            <MenuItem text="Cancel" fx:id="cancelModelCheck" onAction="#handelCancelModelCheck"/>
         </Menu>
         <Menu text="REPL" fx:id="replMenu">
             <MenuItem text="Open REPL" fx:id="openRepl" onAction="#handleREPL"/>

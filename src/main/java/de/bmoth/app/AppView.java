@@ -63,8 +63,6 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     @FXML
     MenuItem boundedCheck;
     @FXML
-    MenuItem customCheck;
-    @FXML
     MenuItem newFile;
     @FXML
     MenuItem open;
@@ -336,8 +334,6 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     }
 
 
-
-
     private void parseMachineNode() {
         if (hasChanged || machineNode == null) {
             handleSave();
@@ -358,19 +354,6 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     public void handelCancelModelCheck(ActionEvent actionEvent) {
         task.cancel();
         modelCheckingThread.interrupt();
-    }
-
-    @FXML
-    public void handleCustomCheck() throws IOException {
-
-        ViewTuple<CustomCheckView, CustomCheckViewModel> viewCustomCheckViewModelViewTuple = FluentViewLoader
-            .fxmlView(CustomCheckView.class).load();
-        viewCustomCheckViewModelViewTuple.getCodeBehind().setAppControllerReference(this);
-        Parent root = viewCustomCheckViewModelViewTuple.getView();
-        Scene scene = new Scene(root);
-        Stage customCheckStage = new Stage();
-        customCheckStage.setScene(scene);
-        customCheckStage.show();
     }
 
     @FXML
