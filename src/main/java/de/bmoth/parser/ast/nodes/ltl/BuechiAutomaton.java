@@ -5,6 +5,8 @@ import de.bmoth.parser.ast.nodes.PredicateNode;
 import java.util.*;
 
 import static de.bmoth.parser.ast.nodes.ltl.LTLInfixOperatorNode.Kind.*;
+import static de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode.Kind.FALSE;
+import static de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode.Kind.TRUE;
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NEXT;
 
 public class BuechiAutomaton {
@@ -117,7 +119,7 @@ public class BuechiAutomaton {
         }
     }
 
-    private BuechiAutomatonNode buildFirstNodeInSplit(BuechiAutomatonNode buechiNode, LTLInfixOperatorNode subNode, Set<LTLNode> newProcessed) {
+    private BuechiAutomatonNode buildFirstNodeInSplit(BuechiAutomatonNode buechiNode, LTLInfixOperatorNode subNode) {
         // Prepare the different parts of the first new node created for Until, Release and Or
         Set<LTLNode> unprocessed = new LinkedHashSet<>(buechiNode.unprocessed);
         for (LTLNode node : new1(subNode)) {
@@ -129,11 +131,14 @@ public class BuechiAutomaton {
         Set<LTLNode> next = new LinkedHashSet<>(buechiNode.next);
         next.addAll(next1(subNode));
 
+        Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
+        processed.add(subNode);
+
         return new BuechiAutomatonNode(newName(), new LinkedHashSet<>(buechiNode.incoming),
-            unprocessed, newProcessed, next);
+            unprocessed, processed, next);
     }
 
-    private BuechiAutomatonNode buildSecondNodeInSplit(BuechiAutomatonNode buechiNode, LTLInfixOperatorNode subNode, Set<LTLNode> processed) {
+    private BuechiAutomatonNode buildSecondNodeInSplit(BuechiAutomatonNode buechiNode, LTLInfixOperatorNode subNode) {
         // Prepare the different parts of the second new node created for Until, Release and Or
         Set<LTLNode> unprocessed = new LinkedHashSet<>(buechiNode.unprocessed);
         for (LTLNode node : new2(subNode)) {
@@ -141,6 +146,9 @@ public class BuechiAutomaton {
                 unprocessed.add(node);
             }
         }
+
+        Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
+        processed.add(subNode);
 
         return new BuechiAutomatonNode(newName(), new LinkedHashSet<>(buechiNode.incoming),
             unprocessed, processed, new LinkedHashSet<>(buechiNode.next));
@@ -182,11 +190,9 @@ public class BuechiAutomaton {
                 (ltlNode.getKind() == RELEASE)) && !ltlNodeIsInList(ltlNode, subFormulasForAcceptance)) {
                 subFormulasForAcceptance.add(ltlNode);
             }
-            Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
-            processed.add(ltlNode);
 
-            BuechiAutomatonNode node1 = buildFirstNodeInSplit(buechiNode, ltlNode, processed);
-            BuechiAutomatonNode node2 = buildSecondNodeInSplit(buechiNode, ltlNode, new LinkedHashSet<>(processed)); // copy of newly created processed set
+            BuechiAutomatonNode node1 = buildFirstNodeInSplit(buechiNode, ltlNode);
+            BuechiAutomatonNode node2 = buildSecondNodeInSplit(buechiNode, ltlNode);
 
             return expand(node2, expand(node1, nodeSet));
         }
@@ -220,10 +226,10 @@ public class BuechiAutomaton {
 
             if (ltlNode instanceof LTLKeywordNode) {
                 // True, False
-                if (((LTLKeywordNode) ltlNode).getKind() == LTLKeywordNode.Kind.FALSE) {
+                if (((LTLKeywordNode) ltlNode).getKind() == FALSE) {
                     // Discard the current node
                     return nodeSet;
-                } else if (((LTLKeywordNode) ltlNode).getKind() == LTLKeywordNode.Kind.TRUE) {
+                } else if (((LTLKeywordNode) ltlNode).getKind() == TRUE) {
                     buechiNode.processed.add(ltlNode);
                     return expand(buechiNode, nodeSet);
                 } else {
