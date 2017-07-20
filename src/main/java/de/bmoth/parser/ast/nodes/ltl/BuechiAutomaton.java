@@ -10,7 +10,7 @@ import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NEXT;
 public class BuechiAutomaton {
 
     private int nodeCounter = 0;
-    private List<LTLInfixOperatorNode> subFormulasForAcceptance = new ArrayList<>();
+    private Set<LTLNode> subFormulasForAcceptance = new LinkedHashSet<>();
     private List<List<BuechiAutomatonNode>> acceptingStateSets = new ArrayList<>();
     private Set<BuechiAutomatonNode> initialStates = new LinkedHashSet<>();
 
@@ -170,8 +170,8 @@ public class BuechiAutomaton {
         } else {
             // Until, Release, Or: Split the node in two
             // TODO: the previous comment mentions OR, but it is not in the if?
-            if ((ltlNode.getKind() == UNTIL) ||
-                (ltlNode.getKind() == RELEASE)) {
+            if (((ltlNode.getKind() == UNTIL) ||
+                (ltlNode.getKind() == RELEASE)) && !ltlNodeIsInList(ltlNode, subFormulasForAcceptance)) {
                 subFormulasForAcceptance.add(ltlNode);
             }
             Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
@@ -249,7 +249,8 @@ public class BuechiAutomaton {
         for (BuechiAutomatonNode buechiNode : finalNodeSet) {
             buechiNode.label();
         }
-        for (LTLInfixOperatorNode untilNode : subFormulasForAcceptance) {
+        for (LTLNode formulaForAcceptance : subFormulasForAcceptance) {
+            LTLInfixOperatorNode untilNode = (LTLInfixOperatorNode) formulaForAcceptance;
             List<BuechiAutomatonNode> acceptingStateSet = new ArrayList<>();
             for (BuechiAutomatonNode buechiNode : finalNodeSet) {
                 if (!ltlNodeIsInList(untilNode, buechiNode.processed) ||
