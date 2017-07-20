@@ -78,6 +78,7 @@ public class LTLModelCheckerTest extends TestParser {
     }
 
     @Test
+    @Ignore
     public void testCorrectCounterWithNext() {
         machine = builder
             .setName("CorrectCounter")
@@ -114,7 +115,6 @@ public class LTLModelCheckerTest extends TestParser {
     }
 
     @Test
-    @Ignore
     public void testBrokenCounterWithNext() {
         machine = builder
             .setName("BrokenCounter")

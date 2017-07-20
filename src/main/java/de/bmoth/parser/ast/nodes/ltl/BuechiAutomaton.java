@@ -1,6 +1,5 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
-import com.google.common.collect.Sets;
 import de.bmoth.parser.ast.nodes.PredicateNode;
 
 import java.util.*;
@@ -297,12 +296,17 @@ public class BuechiAutomaton {
     }
 
     public boolean isAcceptingSet(Set<BuechiAutomatonNode> buechiStates) {
-        for (List<BuechiAutomatonNode> accepting : acceptingStateSets) {
-            LinkedHashSet acceptingSet = new LinkedHashSet(accepting);
-            if (Sets.symmetricDifference(acceptingSet, buechiStates).isEmpty()) {
+        for (BuechiAutomatonNode node : buechiStates) {
+            if (node.isAcceptingState) {
                 return true;
             }
         }
+        // for (List<BuechiAutomatonNode> accepting : acceptingStateSets) {
+        //     LinkedHashSet acceptingSet = new LinkedHashSet(accepting);
+        //     if (Sets.symmetricDifference(acceptingSet, buechiStates).isEmpty()) {
+        //         return true;
+        //     }
+        // }
         return false;
     }
 
