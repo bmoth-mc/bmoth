@@ -68,6 +68,17 @@ public class LTLBuechiTest {
     }
 
     @Test
+    public void testGraphConstructionUntil2() throws ParserException {
+        String formula = "{1=1} U ({2=2} U {3=3})";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        // should be 4?
+        //assertEquals(8, buechiAutomaton.getFinalNodeSet().size());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
+    }
+
+    @Test
     public void testGraphConstructionUntilNext() throws ParserException {
         String formula = "{0=1} U (X {1=1})";
         LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);

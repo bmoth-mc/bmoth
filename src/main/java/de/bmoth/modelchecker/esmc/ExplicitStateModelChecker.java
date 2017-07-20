@@ -134,10 +134,8 @@ public class ExplicitStateModelChecker extends ModelChecker {
                 for (List<State> cycle : cycles) {
                     // if there is an accepting Buechi state in the cycle, a counterexample is found
                     for (State state : cycle) {
-                        for (BuechiAutomatonNode node : state.getBuechiNodes()) {
-                            if (node.isAccepting()) {
-                                return createLTLCounterExampleFound(visited.size(), state);
-                            }
+                        if (buechiAutomaton.isAcceptingSet(state.getBuechiNodes())) {
+                            return createLTLCounterExampleFound(visited.size(), state);
                         }
                     }
                 }
@@ -145,7 +143,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
             return resultVerified;
         }
     }
-    
+
 
     private void updateStateSpace(State from, State to) {
         StateSpaceNode toNode;

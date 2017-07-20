@@ -1,5 +1,6 @@
 package de.bmoth.parser.ast.nodes.ltl;
 
+import com.google.common.collect.Sets;
 import de.bmoth.parser.ast.nodes.PredicateNode;
 
 import java.util.*;
@@ -176,8 +177,12 @@ public class BuechiAutomaton {
             }
             Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
             processed.add(ltlNode);
-            return expand(buildSecondNodeInSplit(buechiNode, ltlNode, processed),
-                expand(buildFirstNodeInSplit(buechiNode, ltlNode, processed), nodeSet));
+
+            BuechiAutomatonNode node1 = buildFirstNodeInSplit(buechiNode, ltlNode, processed);
+            BuechiAutomatonNode node2 = buildSecondNodeInSplit(buechiNode, ltlNode, processed);
+
+            return expand(node2,
+                expand(node1, nodeSet));
         }
     }
 
@@ -289,6 +294,16 @@ public class BuechiAutomaton {
         }
         nodesString.add("Accepting state sets: " + acceptingString.toString());
         return nodesString.toString();
+    }
+
+    public boolean isAcceptingSet(Set<BuechiAutomatonNode> buechiStates) {
+        for (List<BuechiAutomatonNode> accepting : acceptingStateSets) {
+            LinkedHashSet acceptingSet = new LinkedHashSet(accepting);
+            if (Sets.symmetricDifference(acceptingSet, buechiStates).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Set<BuechiAutomatonNode> getFinalNodeSet() {
