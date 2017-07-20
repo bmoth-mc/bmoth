@@ -74,7 +74,7 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         // should be 4?
-        //assertEquals(8, buechiAutomaton.getFinalNodeSet().size());
+        // assertEquals(6, buechiAutomaton.getFinalNodeSet().size());
         logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 

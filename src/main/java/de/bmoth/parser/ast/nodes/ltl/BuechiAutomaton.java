@@ -64,6 +64,7 @@ public class BuechiAutomaton {
                     }
                 }
             }
+
             return (nodeProcessed.isEmpty() && nodeInSetProcessed.isEmpty());
         } else {
             return false;
@@ -179,10 +180,9 @@ public class BuechiAutomaton {
             processed.add(ltlNode);
 
             BuechiAutomatonNode node1 = buildFirstNodeInSplit(buechiNode, ltlNode, processed);
-            BuechiAutomatonNode node2 = buildSecondNodeInSplit(buechiNode, ltlNode, processed);
+            BuechiAutomatonNode node2 = buildSecondNodeInSplit(buechiNode, ltlNode, new LinkedHashSet<>(processed)); // copy of newly created processed set
 
-            return expand(node2,
-                expand(node1, nodeSet));
+            return expand(node2, expand(node1, nodeSet));
         }
     }
 
