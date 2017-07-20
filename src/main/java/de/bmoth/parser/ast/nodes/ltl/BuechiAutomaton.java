@@ -185,7 +185,6 @@ public class BuechiAutomaton {
                 unprocessed, processed, new LinkedHashSet<>(buechiNode.next)), nodeSet);
         } else {
             // Until, Release, Or: Split the node in two
-            // TODO: the previous comment mentions OR, but it is not in the if?
             if (((ltlNode.getKind() == UNTIL) ||
                 (ltlNode.getKind() == RELEASE)) && !ltlNodeIsInList(ltlNode, subFormulasForAcceptance)) {
                 subFormulasForAcceptance.add(ltlNode);
