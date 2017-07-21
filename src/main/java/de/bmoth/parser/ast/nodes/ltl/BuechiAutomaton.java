@@ -182,8 +182,7 @@ public class BuechiAutomaton {
                 unprocessed, processed, new LinkedHashSet<>(buechiNode.next)));
         } else {
             // Until, Release, Or: Split the node in two
-            if (((ltlNode.getKind() == UNTIL) ||
-                (ltlNode.getKind() == RELEASE)) && !ltlNodeIsInList(ltlNode, subFormulasForAcceptance)) {
+            if (ltlNode.getKind() == UNTIL && !ltlNodeIsInList(ltlNode, subFormulasForAcceptance)) {
                 subFormulasForAcceptance.add(ltlNode);
             }
 
