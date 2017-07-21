@@ -6,6 +6,7 @@ import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.ltl.BuechiAutomaton;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 import de.bmoth.parser.ast.nodes.ltl.LTLNode;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.logging.Level;
@@ -75,6 +76,26 @@ public class LTLBuechiTest {
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         // should be 4?
         // assertEquals(6, buechiAutomaton.getFinalNodeSet().size());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
+    }
+
+    @Test
+    public void testGraphConstructionRelease() throws ParserException {
+        String formula = "{0=1} R {1=1}";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        assertEquals(3, buechiAutomaton.getFinalNodeSet().size());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
+    }
+
+    @Test
+    public void testGraphConstructionRelease2() throws ParserException {
+        String formula = "{1=1} R ({2=2} R {3=3})";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        assertEquals(7, buechiAutomaton.getFinalNodeSet().size());
         logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 
@@ -156,6 +177,37 @@ public class LTLBuechiTest {
         LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
         BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
         assertEquals(5, buechiAutomaton.getFinalNodeSet().size());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
+    }
+
+    @Test
+    public void testGraphConstructionFp1UGp2() throws ParserException {
+        String formula = "(F {3=4}) U (G {2=3})";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        assertEquals(8, buechiAutomaton.getFinalNodeSet().size());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
+    }
+
+    @Test
+    public void testGraphConstructionGp1Up2() throws ParserException {
+        String formula = "(G {3=4}) U ({2=3})";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        assertEquals(5, buechiAutomaton.getFinalNodeSet().size());
+        logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
+    }
+
+    @Test
+    @Ignore
+    public void testGraphConstructionGFp1ImpliesGFp2() throws ParserException {
+        String formula = "(GF {3=4}) => (GF {2=3})";
+        LTLFormula ltlFormula = Parser.getLTLFormulaAsSemanticAst(formula);
+        LTLNode node = LTLTransformations.transformLTLNode(ltlFormula.getLTLNode());
+        BuechiAutomaton buechiAutomaton = new BuechiAutomaton(node);
+        assertEquals(8, buechiAutomaton.getFinalNodeSet().size());
         logger.log(Level.INFO, String.format("{0}"), buechiAutomaton.toString());
     }
 }
