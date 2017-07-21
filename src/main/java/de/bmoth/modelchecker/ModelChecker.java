@@ -1,19 +1,12 @@
 package de.bmoth.modelchecker;
 
 import com.microsoft.z3.Context;
-import com.microsoft.z3.Expr;
 import com.microsoft.z3.Model;
 import de.bmoth.backend.Abortable;
 import de.bmoth.backend.TranslationOptions;
-import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.backend.z3.MachineToZ3Translator;
 import de.bmoth.parser.ast.nodes.MachineNode;
-import de.bmoth.parser.ast.nodes.PredicateNode;
-import de.bmoth.parser.ast.nodes.ltl.BuechiAutomaton;
-import de.bmoth.parser.ast.nodes.ltl.BuechiAutomatonNode;
 
-import java.util.HashSet;
-import java.util.Set;
 
 public abstract class ModelChecker implements Abortable {
     private Context ctx;

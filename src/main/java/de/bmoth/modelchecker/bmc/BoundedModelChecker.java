@@ -9,13 +9,10 @@ import de.bmoth.modelchecker.SymbolicModelChecker;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
 public class BoundedModelChecker extends SymbolicModelChecker {
-
-    private final int maxSteps;
     private final Solver solver;
 
     public BoundedModelChecker(MachineNode machine, int maxSteps) {
         super(machine, maxSteps);
-        this.maxSteps = maxSteps;
         this.solver = Z3SolverFactory.getZ3Solver(getContext());
     }
 
