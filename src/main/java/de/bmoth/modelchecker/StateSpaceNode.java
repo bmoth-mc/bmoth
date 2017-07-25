@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class StateSpaceNode {
     private final State state;
     private final Set<StateSpaceNode> successors;

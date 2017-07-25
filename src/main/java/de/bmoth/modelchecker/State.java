@@ -9,10 +9,12 @@ import de.bmoth.parser.ast.nodes.ltl.BuechiAutomatonNode;
 import java.util.*;
 
 public class State {
+    @Deprecated
     private final State predecessor;
     private final Map<String, Expr> values;
     private final Set<BuechiAutomatonNode> buechiNodes = new HashSet<>();
 
+    @Deprecated
     public State(State predecessor, Map<String, Expr> values) {
         this.predecessor = predecessor;
         this.values = values;
@@ -58,6 +60,7 @@ public class State {
         }
     }
 
+    @Deprecated
     public List<String> getPath() {
         List<String> path = new ArrayList<>();
         for (State current = this.predecessor; current != null; current = current.predecessor) {
@@ -66,6 +69,7 @@ public class State {
         return path;
     }
 
+    @Deprecated
     public State getPredecessor() {
         return predecessor;
     }

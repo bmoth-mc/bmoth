@@ -28,6 +28,7 @@ public class ModelCheckingResult {
         this.stateSpace = stateSpaceRoot != null ? new StateSpace(stateSpaceRoot) : null;
     }
 
+    @Deprecated
     public static ModelCheckingResult createVerified(int steps, Set<StateSpaceNode> stateSpaceRoot) {
         return new ModelCheckingResult(null, steps, Type.VERIFIED, null, stateSpaceRoot);
     }
