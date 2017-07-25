@@ -35,6 +35,6 @@ public abstract class SymbolicModelChecker extends ModelChecker {
     }
 
     protected State getStateFromModel(Model model, int step) {
-        return getStateFromModel(null, model, new TranslationOptions(step));
+        return getStateFromModel(model, new TranslationOptions(step));
     }
 }

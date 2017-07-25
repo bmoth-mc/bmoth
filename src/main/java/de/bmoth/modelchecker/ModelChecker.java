@@ -42,7 +42,7 @@ public abstract class ModelChecker implements Abortable {
 
     protected abstract ModelCheckingResult doModelCheck();
 
-    protected State getStateFromModel(State predecessor, Model model, TranslationOptions ops) {
-        return new State(predecessor, getMachineTranslator().getVarMapFromModel(model, ops));
+    protected State getStateFromModel(Model model, TranslationOptions ops) {
+        return new State(getMachineTranslator().getVarMapFromModel(model, ops));
     }
 }

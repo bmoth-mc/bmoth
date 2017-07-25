@@ -114,7 +114,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
             // compute successors on separate finder
             models = opFinder.findSolutions(stateConstraint, maxTransitions);
             models.stream()
-                .map(model -> getStateFromModel(current, model))
+                .map(model -> getStateFromModel(model))
                 .forEach(successor -> {
                         if (isUnknown(successor)) {
                             stateSpace.addVertex(successor);
@@ -205,11 +205,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
     }
 
     private State getStateFromModel(Model model) {
-        return getStateFromModel(null, model, TranslationOptions.PRIMED_0);
-    }
-
-    private State getStateFromModel(State predecessor, Model model) {
-        return getStateFromModel(predecessor, model, TranslationOptions.PRIMED_0);
+        return getStateFromModel(model, TranslationOptions.PRIMED_0);
     }
 
     private boolean isUnknown(State state) {
