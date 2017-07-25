@@ -7,12 +7,19 @@ import org.jgrapht.graph.DefaultEdge;
 
 import java.util.*;
 
-public class StateSpace {
+public class StateSpace extends DefaultDirectedGraph<State, DefaultEdge> {
+    @Deprecated
     private final DirectedGraph<State, DefaultEdge> graph;
-    private final Set<StateSpaceNode> spaceStateRoot;
+    @Deprecated
+    private final Set<StateSpaceNode> _spaceStateRoot;
 
+    private final Set<State> rootVertexSet;
+
+    @Deprecated
     public StateSpace(Set<StateSpaceNode> spaceStateRoot) {
-        this.spaceStateRoot = spaceStateRoot;
+        super(DefaultEdge.class);
+        this._spaceStateRoot = spaceStateRoot;
+        this.rootVertexSet = null;
         this.graph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
         // breadth-first generation of vertices
@@ -46,15 +53,34 @@ public class StateSpace {
         }
     }
 
-    public List<List<State>> getCycles() {
-        return new TarjanSimpleCycles<>(graph).findSimpleCycles();
+    public StateSpace() {
+        super(DefaultEdge.class);
+        this._spaceStateRoot = null;
+        this.graph = null;
+        this.rootVertexSet = new LinkedHashSet<>();
     }
 
-    public Set<StateSpaceNode> getRoot() {
-        return spaceStateRoot;
+    @Deprecated
+    public List<List<State>> _getCycles() {
+        return new TarjanSimpleCycles<>(this).findSimpleCycles();
     }
 
-    public DirectedGraph<State, DefaultEdge> getGraph() {
+    @Deprecated
+    public Set<StateSpaceNode> _getRoot() {
+        return _spaceStateRoot;
+    }
+
+    @Deprecated
+    public DirectedGraph<State, DefaultEdge> _getGraph() {
         return graph;
+    }
+
+    public void addRootVertex(State state) {
+        rootVertexSet.add(state);
+        addVertex(state);
+    }
+
+    public Set<State> rootVertexSet() {
+        return rootVertexSet;
     }
 }

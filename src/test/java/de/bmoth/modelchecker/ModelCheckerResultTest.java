@@ -20,7 +20,9 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     String unknown = "check-sat ...";
 
-    Set<StateSpaceNode> stateSpace;
+    @Deprecated
+    Set<StateSpaceNode> _stateSpace;
+    StateSpace stateSpace;
 
     @Before
     public void init() {
@@ -46,14 +48,25 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
         thirdNode.addSuccessor(secondNode);
         secondNode.addSuccessor(firstNode);
 
-        stateSpace = new HashSet<>();
-        stateSpace.add(thirdNode);
+        _stateSpace = new HashSet<>();
+        _stateSpace.add(thirdNode);
+
+        stateSpace = new StateSpace();
+
+        // insert vertices
+        stateSpace.addRootVertex(thirdState);
+        stateSpace.addVertex(secondState);
+        stateSpace.addVertex(firstState);
+
+        // connect them
+        stateSpace.addEdge(thirdState, secondState);
+        stateSpace.addEdge(secondState, firstState);
     }
 
     @Test
     public void testIsCorrect() {
         //TODO think about state space root
-        ModelCheckingResult resultCorrect = ModelCheckingResult.createVerified(0, null);
+        ModelCheckingResult resultCorrect = ModelCheckingResult.createVerified(0, (Set<StateSpaceNode>) null);
         ModelCheckingResult resultIncorrectUnknown = ModelCheckingResult.createUnknown(0, unknown);
         ModelCheckingResult resultIncorrectPath = ModelCheckingResult.createCounterExampleFound(0, firstState);
 
@@ -71,11 +84,11 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     @Test
     public void testGetStateSpace() {
         // TODO merge into one
-        ModelCheckingResult resultNoStateSpace = ModelCheckingResult.createVerified(0, null);
+        ModelCheckingResult resultNoStateSpace = ModelCheckingResult.createVerified(0, (Set<StateSpaceNode>) null);
         ModelCheckingResult resultWithStateSpace = ModelCheckingResult.createVerified(1, stateSpace);
 
         assertTrue(resultNoStateSpace.getStateSpace() == null);
-        assertEquals("[{x=12}, successors: [{x=11}]]", resultWithStateSpace.getStateSpace().getRoot().toString());
+        assertEquals("([{x=12}, {x=11}, {x=10}], [({x=12},{x=11}), ({x=11},{x=10})])", resultWithStateSpace.getStateSpace().toString());
     }
 
     @Test
@@ -117,6 +130,6 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
         assertEquals("ABORTED after 15 steps", ModelCheckingResult.createAborted(15).toString());
         assertEquals("COUNTER_EXAMPLE_FOUND {x=11} after 12 steps", ModelCheckingResult.createCounterExampleFound(12, secondState).toString());
         assertEquals("EXCEEDED_MAX_STEPS after 17 steps", ModelCheckingResult.createExceededMaxSteps(17).toString());
-        assertEquals("VERIFIED after 3 steps", ModelCheckingResult.createVerified(3, null).toString());
+        assertEquals("VERIFIED after 3 steps", ModelCheckingResult.createVerified(3, (Set<StateSpaceNode>) null).toString());
     }
 }

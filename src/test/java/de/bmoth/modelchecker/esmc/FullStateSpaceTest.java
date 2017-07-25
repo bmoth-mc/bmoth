@@ -2,6 +2,7 @@ package de.bmoth.modelchecker.esmc;
 
 import de.bmoth.TestParser;
 import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.modelchecker.State;
 import de.bmoth.modelchecker.StateSpaceNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Before;
@@ -40,8 +41,8 @@ public class FullStateSpaceTest extends TestParser {
         assertTrue(result.isCorrect());
         assertEquals(3, result.getSteps());
 
-        Set<StateSpaceNode> stateSpace = result.getStateSpace().getRoot();
-        assertEquals(1, stateSpace.size());
+        Set<State> rootVertices = result.getStateSpace().rootVertexSet();
+        assertEquals(1, rootVertices.size());
     }
 
     @Test
@@ -60,7 +61,7 @@ public class FullStateSpaceTest extends TestParser {
         assertTrue(result.isCorrect());
         assertEquals(3, result.getSteps());
 
-        Set<StateSpaceNode> rootNodes = result.getStateSpace().getRoot();
-        assertEquals(1, rootNodes.size());
+        Set<State> rootVertices = result.getStateSpace().rootVertexSet();
+        assertEquals(1, rootVertices.size());
     }
 }

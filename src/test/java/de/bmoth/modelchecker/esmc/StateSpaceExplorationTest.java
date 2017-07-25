@@ -2,11 +2,15 @@ package de.bmoth.modelchecker.esmc;
 
 import de.bmoth.TestParser;
 import de.bmoth.modelchecker.ModelCheckingResult;
+import de.bmoth.modelchecker.State;
 import de.bmoth.modelchecker.StateSpace;
 import de.bmoth.parser.ast.nodes.MachineNode;
+import org.jgrapht.alg.cycle.TarjanSimpleCycles;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.List;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.Type.UNKNOWN;
 import static org.junit.Assert.*;
@@ -15,12 +19,14 @@ public class StateSpaceExplorationTest extends TestParser {
     private MachineBuilder machineBuilder;
     private ModelCheckingResult result;
     private MachineNode machine;
+    private CycleComparator<State> comparator;
 
     @Before
     public void init() {
         machineBuilder = new MachineBuilder();
         result = null;
         machine = null;
+        comparator = new CycleComparator<>();
     }
 
 
@@ -40,7 +46,8 @@ public class StateSpaceExplorationTest extends TestParser {
         assertTrue(result.isCorrect());
 
         StateSpace space = result.getStateSpace();
-        assertEquals(0, space.getCycles().size());
+        List<List<State>> cycles = new TarjanSimpleCycles<>(space).findSimpleCycles();
+        assertEquals(0, cycles.size());
 
         machine = machineBuilder
             .setName("ExitingMachineWithLoop")
@@ -52,8 +59,12 @@ public class StateSpaceExplorationTest extends TestParser {
         assertTrue(result.isCorrect());
 
         space = result.getStateSpace();
-        assertEquals(1, space.getCycles().size());
-        assertEquals("[{x=3}, {x=4}, {x=5}, {x=6}, {x=7}]", space.getCycles().get(0).toString());
+        cycles = new TarjanSimpleCycles<>(space).findSimpleCycles();
+
+        comparator.addExpectedCycle("{x=3}", "{x=4}", "{x=5}", "{x=6}", "{x=7}");
+        comparator.addActualCycle(cycles.get(0));
+
+        comparator.compare();
     }
 
     @Test
@@ -81,16 +92,21 @@ public class StateSpaceExplorationTest extends TestParser {
         assertTrue(result.isCorrect());
         assertEquals(10, result.getSteps());
 
-        StateSpace space = result.getStateSpace();
-        assertEquals(8, space.getCycles().size());
-        assertEquals("[{x=1}, {x=2}, {x=3}, {x=4}]", space.getCycles().get(0).toString());
-        assertEquals("[{x=3}, {x=4}, {x=5}]", space.getCycles().get(1).toString());
-        assertEquals("[{x=3}, {x=5}]", space.getCycles().get(2).toString());
-        assertEquals("[{x=6}, {x=9}, {x=7}]", space.getCycles().get(3).toString());
-        assertEquals("[{x=6}, {x=9}]", space.getCycles().get(4).toString());
-        assertEquals("[{x=6}, {x=7}]", space.getCycles().get(5).toString());
-        assertEquals("[{x=6}, {x=7}, {x=8}, {x=10}, {x=9}]", space.getCycles().get(6).toString());
-        assertEquals("[{x=9}, {x=7}, {x=8}, {x=10}]", space.getCycles().get(7).toString());
+        List<List<State>> cycles = new TarjanSimpleCycles<>(result.getStateSpace()).findSimpleCycles();
+        assertEquals(8, cycles.size());
+
+        comparator.addExpectedCycle("{x=1}", "{x=2}", "{x=3}", "{x=4}");
+        comparator.addExpectedCycle("{x=3}", "{x=4}", "{x=5}");
+        comparator.addExpectedCycle("{x=3}", "{x=5}");
+        comparator.addExpectedCycle("{x=6}", "{x=7}");
+        comparator.addExpectedCycle("{x=6}", "{x=7}", "{x=8}", "{x=10}", "{x=9}");
+        comparator.addExpectedCycle("{x=6}", "{x=9}", "{x=7}");
+        comparator.addExpectedCycle("{x=6}", "{x=9}");
+        comparator.addExpectedCycle("{x=7}", "{x=8}", "{x=10}", "{x=9}");
+
+        cycles.forEach(comparator::addActualCycle);
+
+        comparator.compare();
     }
 
     @Test
