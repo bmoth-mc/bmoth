@@ -9,14 +9,10 @@ import de.bmoth.parser.ast.nodes.ltl.BuechiAutomatonNode;
 import java.util.*;
 
 public class State {
-    @Deprecated
-    private final State predecessor;
     private final Map<String, Expr> values;
     private final Set<BuechiAutomatonNode> buechiNodes = new HashSet<>();
 
-    @Deprecated
-    public State(State predecessor, Map<String, Expr> values) {
-        this.predecessor = predecessor;
+    public State(Map<String, Expr> values) {
         this.values = values;
     }
 
@@ -58,11 +54,6 @@ public class State {
             default:
                 return context.mkAnd(result);
         }
-    }
-
-    @Deprecated
-    public State getPredecessor() {
-        return predecessor;
     }
 
     public Map<String, Expr> getValues() {
