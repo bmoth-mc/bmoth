@@ -40,7 +40,7 @@ public class KInductionModelChecker extends SymbolicModelChecker {
             if (check == Status.SATISFIABLE) {
                 // counter example found!
                 State counterExample = getStateFromModel(baseSolver.getModel(), k);
-                return createCounterExampleFound(k, counterExample);
+                return createCounterExampleFound(k, counterExample, null);
             } else {
                 stepSolver.reset();
 

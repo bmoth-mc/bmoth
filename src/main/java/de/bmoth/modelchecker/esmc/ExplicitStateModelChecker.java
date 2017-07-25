@@ -105,7 +105,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
                 case UNKNOWN:
                     return createUnknown(visited.size(), solver.getReasonUnknown());
                 case UNSATISFIABLE:
-                    return createCounterExampleFound(visited.size(), current);
+                    return createCounterExampleFound(visited.size(), current, stateSpace);
                 case SATISFIABLE:
                 default:
                     // continue

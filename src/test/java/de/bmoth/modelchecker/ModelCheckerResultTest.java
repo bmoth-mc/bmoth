@@ -59,7 +59,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
         //TODO think about state space root
         ModelCheckingResult resultCorrect = ModelCheckingResult.createVerified(0, null);
         ModelCheckingResult resultIncorrectUnknown = ModelCheckingResult.createUnknown(0, unknown);
-        ModelCheckingResult resultIncorrectPath = ModelCheckingResult.createCounterExampleFound(0, firstState);
+        ModelCheckingResult resultIncorrectPath = ModelCheckingResult.createCounterExampleFound(0, firstState, stateSpace);
 
         assertTrue(resultCorrect.isCorrect());
         assertFalse(resultIncorrectUnknown.isCorrect());
@@ -68,7 +68,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     @Test
     public void testGetLastState() {
-        ModelCheckingResult resultIncorrectPath = ModelCheckingResult.createCounterExampleFound(0, firstState);
+        ModelCheckingResult resultIncorrectPath = ModelCheckingResult.createCounterExampleFound(0, firstState, stateSpace);
         assertEquals(firstState, resultIncorrectPath.getLastState());
     }
 
@@ -84,10 +84,8 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     @Test
     public void testGetPath() {
-        ShortestPathAlgorithm<State, DefaultEdge> shortestPath = new DijkstraShortestPath<>(stateSpace);
-        for (State root : stateSpace.rootVertexSet()) {
-            assertEquals("[(" + thirdState + " : " + secondState + "), (" + secondState + " : " + firstState + ")]", shortestPath.getPath(root, firstState).toString());
-        }
+        ModelCheckingResult resultIncorrectPath = ModelCheckingResult.createCounterExampleFound(0, firstState, stateSpace);
+        assertEquals("[{x=12}, {x=11}, {x=10}]", resultIncorrectPath.getCounterExamplePath().toString());
     }
 
     @Test
@@ -112,7 +110,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     public void testToString() {
         assertEquals("UNKNOWN check-sat ... after 23 steps", ModelCheckingResult.createUnknown(23, unknown).toString());
         assertEquals("ABORTED after 15 steps", ModelCheckingResult.createAborted(15).toString());
-        assertEquals("COUNTER_EXAMPLE_FOUND {x=11} after 12 steps", ModelCheckingResult.createCounterExampleFound(12, secondState).toString());
+        assertEquals("COUNTER_EXAMPLE_FOUND {x=11} after 12 steps", ModelCheckingResult.createCounterExampleFound(12, secondState, stateSpace).toString());
         assertEquals("EXCEEDED_MAX_STEPS after 17 steps", ModelCheckingResult.createExceededMaxSteps(17).toString());
         assertEquals("VERIFIED after 3 steps", ModelCheckingResult.createVerified(3, null).toString());
     }

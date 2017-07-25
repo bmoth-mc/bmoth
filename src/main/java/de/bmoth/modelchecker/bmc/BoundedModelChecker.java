@@ -40,7 +40,7 @@ public class BoundedModelChecker extends SymbolicModelChecker {
             if (check == Status.SATISFIABLE) {
                 // counter example found!
                 State counterExample = getStateFromModel(solver.getModel(), k);
-                return ModelCheckingResult.createCounterExampleFound(k, counterExample);
+                return ModelCheckingResult.createCounterExampleFound(k, counterExample, null);
             }
         }
 

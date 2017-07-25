@@ -61,15 +61,6 @@ public class State {
     }
 
     @Deprecated
-    public List<String> getPath() {
-        List<String> path = new ArrayList<>();
-        for (State current = this.predecessor; current != null; current = current.predecessor) {
-            path.add(current.toString());
-        }
-        return path;
-    }
-
-    @Deprecated
     public State getPredecessor() {
         return predecessor;
     }
