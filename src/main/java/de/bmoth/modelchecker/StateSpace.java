@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class StateSpace extends DefaultDirectedGraph<State, DefaultEdge> {
-    private final Set<State> rootVertexSet;
+    private final LinkedHashSet<State> rootVertexSet;
 
     public StateSpace() {
         super(DefaultEdge.class);

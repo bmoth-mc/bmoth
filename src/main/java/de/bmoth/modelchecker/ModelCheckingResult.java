@@ -70,7 +70,7 @@ public class ModelCheckingResult {
                 .sorted((first, second) -> first.size() < second.size() ? 1 : -1)
                 .findFirst();
 
-            return shortestPath.get();
+            return shortestPath.orElseGet(Collections::emptyList);
         } else {
             return Collections.emptyList();
         }
