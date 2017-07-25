@@ -2,6 +2,9 @@ package de.bmoth.modelchecker;
 
 import com.microsoft.z3.Expr;
 import de.bmoth.TestUsingZ3;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultEdge;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,8 +23,6 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
 
     String unknown = "check-sat ...";
 
-    @Deprecated
-    Set<StateSpaceNode> _stateSpace;
     StateSpace stateSpace;
 
     @Before
@@ -36,20 +37,10 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
         thirdMap.put("x", z3Context.mkInt(12));
         firstMapEquiv.put("x", z3Context.mkInt(10));
 
-        thirdState = new State(null, thirdMap);
-        secondState = new State(thirdState, secondMap);
-        firstState = new State(secondState, firstMap);
-        firstStateEquiv = new State(null, firstMapEquiv);
-
-        StateSpaceNode thirdNode = new StateSpaceNode(thirdState);
-        StateSpaceNode secondNode = new StateSpaceNode(secondState);
-        StateSpaceNode firstNode = new StateSpaceNode(firstState);
-
-        thirdNode.addSuccessor(secondNode);
-        secondNode.addSuccessor(firstNode);
-
-        _stateSpace = new HashSet<>();
-        _stateSpace.add(thirdNode);
+        thirdState = new State(thirdMap);
+        secondState = new State(secondMap);
+        firstState = new State(firstMap);
+        firstStateEquiv = new State(firstMapEquiv);
 
         stateSpace = new StateSpace();
 
@@ -66,7 +57,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     @Test
     public void testIsCorrect() {
         //TODO think about state space root
-        ModelCheckingResult resultCorrect = ModelCheckingResult.createVerified(0, (Set<StateSpaceNode>) null);
+        ModelCheckingResult resultCorrect = ModelCheckingResult.createVerified(0, null);
         ModelCheckingResult resultIncorrectUnknown = ModelCheckingResult.createUnknown(0, unknown);
         ModelCheckingResult resultIncorrectPath = ModelCheckingResult.createCounterExampleFound(0, firstState);
 
@@ -84,7 +75,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     @Test
     public void testGetStateSpace() {
         // TODO merge into one
-        ModelCheckingResult resultNoStateSpace = ModelCheckingResult.createVerified(0, (Set<StateSpaceNode>) null);
+        ModelCheckingResult resultNoStateSpace = ModelCheckingResult.createVerified(0, null);
         ModelCheckingResult resultWithStateSpace = ModelCheckingResult.createVerified(1, stateSpace);
 
         assertTrue(resultNoStateSpace.getStateSpace() == null);
@@ -92,18 +83,11 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     }
 
     @Test
-    public void testStateSpaceNode() {
-        StateSpaceNode firstNode = new StateSpaceNode(firstState);
-
-        assertFalse(firstNode.equals(new Object()));
-        assertTrue(firstNode.equals(firstNode));
-        assertTrue(firstNode.equals(new StateSpaceNode(firstStateEquiv)));
-    }
-
-    @Test
     public void testGetPath() {
-        assertEquals("[" + secondState + ", " + thirdState.toString() + "]",
-            firstState.getPath().toString());
+        ShortestPathAlgorithm<State, DefaultEdge> shortestPath = new DijkstraShortestPath<>(stateSpace);
+        for (State root : stateSpace.rootVertexSet()) {
+            assertEquals("[(" + thirdState + " : " + secondState + "), (" + secondState + " : " + firstState + ")]", shortestPath.getPath(root, firstState).toString());
+        }
     }
 
     @Test
@@ -130,6 +114,6 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
         assertEquals("ABORTED after 15 steps", ModelCheckingResult.createAborted(15).toString());
         assertEquals("COUNTER_EXAMPLE_FOUND {x=11} after 12 steps", ModelCheckingResult.createCounterExampleFound(12, secondState).toString());
         assertEquals("EXCEEDED_MAX_STEPS after 17 steps", ModelCheckingResult.createExceededMaxSteps(17).toString());
-        assertEquals("VERIFIED after 3 steps", ModelCheckingResult.createVerified(3, (Set<StateSpaceNode>) null).toString());
+        assertEquals("VERIFIED after 3 steps", ModelCheckingResult.createVerified(3, null).toString());
     }
 }

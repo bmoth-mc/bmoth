@@ -1,8 +1,5 @@
 package de.bmoth.modelchecker;
 
-import java.util.Collections;
-import java.util.Set;
-
 public class ModelCheckingResult {
 
     private final int steps;
@@ -26,11 +23,6 @@ public class ModelCheckingResult {
         this.type = type;
         this.reason = reason;
         this.stateSpace = stateSpace;
-    }
-
-    @Deprecated
-    public static ModelCheckingResult createVerified(int steps, Set<StateSpaceNode> stateSpaceRoot) {
-        return new ModelCheckingResult(null, steps, Type.VERIFIED, null, null);
     }
 
     public static ModelCheckingResult createVerified(int steps, StateSpace stateSpace) {

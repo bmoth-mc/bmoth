@@ -60,7 +60,7 @@ public class KInductionModelChecker extends SymbolicModelChecker {
 
                 if (checkStep == Status.UNSATISFIABLE)
                     // TODO think about state space root!
-                    return createVerified(k, (Set<StateSpaceNode>) null);
+                    return createVerified(k, null);
             }
         }
 

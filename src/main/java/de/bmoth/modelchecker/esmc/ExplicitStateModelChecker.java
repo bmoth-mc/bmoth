@@ -14,7 +14,6 @@ import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.*;
 import de.bmoth.preferences.BMothPreferences;
-import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.cycle.TarjanSimpleCycles;
 import org.jgrapht.graph.DefaultEdge;
 
@@ -31,8 +30,6 @@ public class ExplicitStateModelChecker extends ModelChecker {
     private SolutionFinder opFinder;
     private Set<State> visited;
     private Queue<State> queue;
-    @Deprecated
-    private Map<State, StateSpaceNode> knownStateToStateSpaceNode;
     private BuechiAutomaton buechiAutomaton;
     private StateSpace stateSpace;
 
@@ -43,7 +40,6 @@ public class ExplicitStateModelChecker extends ModelChecker {
         this.labelSolver = Z3SolverFactory.getZ3Solver(getContext());
         this.finder = new SolutionFinder(solver, getContext());
         this.opFinder = new SolutionFinder(opSolver, getContext());
-        this.knownStateToStateSpaceNode = new HashMap<>();
         List<LTLFormula> ltlFormulas = machine.getLTLFormulas();
         if (ltlFormulas.size() == 1) {
             LTLNode negatedFormula = new LTLPrefixOperatorNode(NOT, ltlFormulas.get(0).getLTLNode());
@@ -74,7 +70,6 @@ public class ExplicitStateModelChecker extends ModelChecker {
 
         visited = new HashSet<>();
         queue = new LinkedList<>();
-        Set<StateSpaceNode> _stateSpaceRoot = new HashSet<>();
 
         // prepare initial states
         BoolExpr initialValueConstraint = getMachineTranslator().getInitialValueConstraint();
@@ -152,27 +147,6 @@ public class ExplicitStateModelChecker extends ModelChecker {
                 }
             }
             return resultVerified;
-        }
-    }
-
-    @Deprecated
-    private void updateStateSpace(State from, State to) {
-        StateSpaceNode toNode;
-
-        if (!knownStateToStateSpaceNode.containsKey(to)) {
-            toNode = new StateSpaceNode(to);
-            knownStateToStateSpaceNode.put(to, toNode);
-            // !queue.contains(...) check can be omitted as it is always parallel to insertion into knownStateToStateSpaceNode
-            if (!visited.contains(to)) {
-                queue.add(to);
-            }
-        } else {
-            toNode = knownStateToStateSpaceNode.get(to);
-        }
-
-        if (from != null) {
-            StateSpaceNode fromNode = knownStateToStateSpaceNode.get(from);
-            fromNode.addSuccessor(toNode);
         }
     }
 
