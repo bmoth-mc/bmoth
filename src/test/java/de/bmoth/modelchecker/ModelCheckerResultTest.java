@@ -2,15 +2,10 @@ package de.bmoth.modelchecker;
 
 import com.microsoft.z3.Expr;
 import de.bmoth.TestUsingZ3;
-import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultEdge;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.Type.*;
 import static org.junit.Assert.*;

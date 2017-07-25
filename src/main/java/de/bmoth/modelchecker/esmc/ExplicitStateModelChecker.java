@@ -29,7 +29,6 @@ public class ExplicitStateModelChecker extends ModelChecker {
     private SolutionFinder finder;
     private SolutionFinder opFinder;
     private Set<State> visited;
-    private Queue<State> queue;
     private BuechiAutomaton buechiAutomaton;
     private StateSpace stateSpace;
 
@@ -69,7 +68,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
         stateSpace = new StateSpace();
 
         visited = new HashSet<>();
-        queue = new LinkedList<>();
+        Queue<State> queue = new LinkedList<>();
 
         // prepare initial states
         BoolExpr initialValueConstraint = getMachineTranslator().getInitialValueConstraint();
@@ -114,7 +113,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
             // compute successors on separate finder
             models = opFinder.findSolutions(stateConstraint, maxTransitions);
             models.stream()
-                .map(model -> getStateFromModel(model))
+                .map(this::getStateFromModel)
                 .forEach(successor -> {
                         if (isUnknown(successor)) {
                             stateSpace.addVertex(successor);
@@ -130,7 +129,6 @@ public class ExplicitStateModelChecker extends ModelChecker {
         if (isAborted()) {
             return createAborted(visited.size());
         } else {
-            //ModelCheckingResult resultVerified = createVerified(visited.size(), _stateSpaceRoot);
             ModelCheckingResult resultVerified = createVerified(visited.size(), stateSpace);
 
             if (buechiAutomaton != null) {
@@ -157,8 +155,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
             State current = statesToUpdate.poll();
             final Set<BuechiAutomatonNode> buechiNodes = new HashSet<>();
             final Set<BuechiAutomatonNode> candidates = new HashSet<>();
-            // cant check for inDegreeOf as there might be a loop in the state space
-            //if (current.getPredecessor() == null) {
+
             if (stateSpace.rootVertexSet().contains(current)) {
                 candidates.addAll(buechiAutomaton.getInitialStates());
             } else {
