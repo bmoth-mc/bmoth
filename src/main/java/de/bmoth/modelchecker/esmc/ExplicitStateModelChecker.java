@@ -9,15 +9,12 @@ import de.bmoth.backend.ltl.LTLTransformations;
 import de.bmoth.backend.z3.FormulaToZ3Translator;
 import de.bmoth.backend.z3.SolutionFinder;
 import de.bmoth.backend.z3.Z3SolverFactory;
-import de.bmoth.modelchecker.ModelChecker;
-import de.bmoth.modelchecker.ModelCheckingResult;
-import de.bmoth.modelchecker.State;
-import de.bmoth.modelchecker.StateSpaceNode;
+import de.bmoth.modelchecker.*;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.nodes.PredicateNode;
 import de.bmoth.parser.ast.nodes.ltl.*;
 import de.bmoth.preferences.BMothPreferences;
-import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.cycle.TarjanSimpleCycles;
 import org.jgrapht.graph.DefaultEdge;
 
 import java.util.*;
@@ -33,8 +30,8 @@ public class ExplicitStateModelChecker extends ModelChecker {
     private SolutionFinder opFinder;
     private Set<State> visited;
     private Queue<State> queue;
-    private Map<State, StateSpaceNode> knownStateToStateSpaceNode;
     private BuechiAutomaton buechiAutomaton;
+    private StateSpace stateSpace;
 
     public ExplicitStateModelChecker(MachineNode machine) {
         super(machine);
@@ -43,7 +40,6 @@ public class ExplicitStateModelChecker extends ModelChecker {
         this.labelSolver = Z3SolverFactory.getZ3Solver(getContext());
         this.finder = new SolutionFinder(solver, getContext());
         this.opFinder = new SolutionFinder(opSolver, getContext());
-        this.knownStateToStateSpaceNode = new HashMap<>();
         List<LTLFormula> ltlFormulas = machine.getLTLFormulas();
         if (ltlFormulas.size() == 1) {
             LTLNode negatedFormula = new LTLPrefixOperatorNode(NOT, ltlFormulas.get(0).getLTLNode());
@@ -70,19 +66,20 @@ public class ExplicitStateModelChecker extends ModelChecker {
         final int maxInitialStates = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_INITIAL_STATE);
         final int maxTransitions = BMothPreferences.getIntPreference(BMothPreferences.IntPreference.MAX_TRANSITIONS);
 
+        stateSpace = new StateSpace();
+
         visited = new HashSet<>();
         queue = new LinkedList<>();
-        Set<StateSpaceNode> stateSpaceRoot = new HashSet<>();
 
         // prepare initial states
         BoolExpr initialValueConstraint = getMachineTranslator().getInitialValueConstraint();
 
         Set<Model> models = finder.findSolutions(initialValueConstraint, maxInitialStates);
         models.stream()
-            .map(this::getStateFromModel)
-            .forEach(state -> {
-                updateStateSpace(null, state);
-                stateSpaceRoot.add(knownStateToStateSpaceNode.get(state));
+            .map(this::getStateFromModel).filter(this::isUnknown)
+            .forEach(root -> {
+                stateSpace.addRootVertex(root);
+                queue.add(root);
             });
 
         final BoolExpr invariant = getMachineTranslator().getInvariantConstraint();
@@ -108,7 +105,7 @@ public class ExplicitStateModelChecker extends ModelChecker {
                 case UNKNOWN:
                     return createUnknown(visited.size(), solver.getReasonUnknown());
                 case UNSATISFIABLE:
-                    return createCounterExampleFound(visited.size(), current);
+                    return createCounterExampleFound(visited.size(), current, stateSpace);
                 case SATISFIABLE:
                 default:
                     // continue
@@ -117,8 +114,15 @@ public class ExplicitStateModelChecker extends ModelChecker {
             // compute successors on separate finder
             models = opFinder.findSolutions(stateConstraint, maxTransitions);
             models.stream()
-                .map(model -> getStateFromModel(current, model))
-                .forEach(successor -> updateStateSpace(current, successor));
+                .map(model -> getStateFromModel(model))
+                .forEach(successor -> {
+                        if (isUnknown(successor)) {
+                            stateSpace.addVertex(successor);
+                            queue.add(successor);
+                        }
+                        stateSpace.addEdge(current, successor);
+                    }
+                );
 
             solver.pop();
         }
@@ -126,11 +130,13 @@ public class ExplicitStateModelChecker extends ModelChecker {
         if (isAborted()) {
             return createAborted(visited.size());
         } else {
-            ModelCheckingResult resultVerified = createVerified(visited.size(), stateSpaceRoot);
+            //ModelCheckingResult resultVerified = createVerified(visited.size(), _stateSpaceRoot);
+            ModelCheckingResult resultVerified = createVerified(visited.size(), stateSpace);
+
             if (buechiAutomaton != null) {
                 // do ltl model check
-                labelStateSpace(resultVerified.getStateSpace().getGraph());
-                List<List<State>> cycles = resultVerified.getStateSpace().getCycles();
+                labelStateSpace();
+                List<List<State>> cycles = new TarjanSimpleCycles<>(stateSpace).findSimpleCycles();
                 for (List<State> cycle : cycles) {
                     // if there is an accepting Buechi state in the cycle, a counterexample is found
                     for (State state : cycle) {
@@ -144,41 +150,21 @@ public class ExplicitStateModelChecker extends ModelChecker {
         }
     }
 
-
-    private void updateStateSpace(State from, State to) {
-        StateSpaceNode toNode;
-
-        if (!knownStateToStateSpaceNode.containsKey(to)) {
-            toNode = new StateSpaceNode(to);
-            knownStateToStateSpaceNode.put(to, toNode);
-            // !queue.contains(...) check can be omitted as it is always parallel to insertion into knownStateToStateSpaceNode
-            if (!visited.contains(to)) {
-                queue.add(to);
-            }
-        } else {
-            toNode = knownStateToStateSpaceNode.get(to);
-        }
-
-        if (from != null) {
-            StateSpaceNode fromNode = knownStateToStateSpaceNode.get(from);
-            fromNode.addSuccessor(toNode);
-        }
-    }
-
-    private void labelStateSpace(DirectedGraph<State, DefaultEdge> graph) {
+    private void labelStateSpace() {
         Queue<State> statesToUpdate = new ArrayDeque<>();
-        statesToUpdate.addAll(graph.vertexSet());
+        statesToUpdate.addAll(stateSpace.vertexSet());
         while (!statesToUpdate.isEmpty()) {
             State current = statesToUpdate.poll();
             final Set<BuechiAutomatonNode> buechiNodes = new HashSet<>();
             final Set<BuechiAutomatonNode> candidates = new HashSet<>();
             // cant check for inDegreeOf as there might be a loop in the state space
-            if (current.getPredecessor() == null) {
+            //if (current.getPredecessor() == null) {
+            if (stateSpace.rootVertexSet().contains(current)) {
                 candidates.addAll(buechiAutomaton.getInitialStates());
             } else {
-                Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(current);
+                Set<DefaultEdge> incomingEdges = stateSpace.incomingEdgesOf(current);
                 for (DefaultEdge incomingEdge : incomingEdges) {
-                    State predecessor = graph.getEdgeSource(incomingEdge);
+                    State predecessor = stateSpace.getEdgeSource(incomingEdge);
                     predecessor.getBuechiNodes().forEach(n -> candidates.addAll(n.getSuccessors()));
                 }
             }
@@ -207,9 +193,9 @@ public class ExplicitStateModelChecker extends ModelChecker {
                 // found a new node, need to update successors again
                 current.addBuechiNode(newBuechiNode);
 
-                Set<DefaultEdge> outgoingEdges = graph.outgoingEdgesOf(current);
+                Set<DefaultEdge> outgoingEdges = stateSpace.outgoingEdgesOf(current);
                 for (DefaultEdge outgoingEdge : outgoingEdges) {
-                    State successor = graph.getEdgeTarget(outgoingEdge);
+                    State successor = stateSpace.getEdgeTarget(outgoingEdge);
                     if (!statesToUpdate.contains(successor)) {
                         statesToUpdate.add(successor);
                     }
@@ -219,10 +205,10 @@ public class ExplicitStateModelChecker extends ModelChecker {
     }
 
     private State getStateFromModel(Model model) {
-        return getStateFromModel(null, model, TranslationOptions.PRIMED_0);
+        return getStateFromModel(model, TranslationOptions.PRIMED_0);
     }
 
-    private State getStateFromModel(State predecessor, Model model) {
-        return getStateFromModel(predecessor, model, TranslationOptions.PRIMED_0);
+    private boolean isUnknown(State state) {
+        return !stateSpace.containsVertex(state) && !visited.contains(state);
     }
 }

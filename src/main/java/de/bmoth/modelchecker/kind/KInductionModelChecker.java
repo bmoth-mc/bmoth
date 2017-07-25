@@ -3,10 +3,10 @@ package de.bmoth.modelchecker.kind;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 import de.bmoth.backend.z3.Z3SolverFactory;
-import de.bmoth.modelchecker.ModelCheckingResult;
-import de.bmoth.modelchecker.State;
-import de.bmoth.modelchecker.SymbolicModelChecker;
+import de.bmoth.modelchecker.*;
 import de.bmoth.parser.ast.nodes.MachineNode;
+
+import java.util.Set;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.*;
 
@@ -40,7 +40,7 @@ public class KInductionModelChecker extends SymbolicModelChecker {
             if (check == Status.SATISFIABLE) {
                 // counter example found!
                 State counterExample = getStateFromModel(baseSolver.getModel(), k);
-                return createCounterExampleFound(k, counterExample);
+                return createCounterExampleFound(k, counterExample, null);
             } else {
                 stepSolver.reset();
 

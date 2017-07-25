@@ -6,9 +6,8 @@ import de.bmoth.parser.ast.nodes.FormulaNode;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import de.bmoth.parser.ast.nodes.ltl.LTLFormula;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.fail;
 
@@ -143,4 +142,46 @@ public class TestParser {
         }
     }
 
+    public class CycleComparator<E extends Object> {
+        private final Set<Set<String>> expected;
+        private final Set<Set<String>> actual;
+
+
+        public CycleComparator() {
+            expected = new HashSet<>();
+            actual = new HashSet<>();
+        }
+
+        public void addExpectedCycle(String... values) {
+            expected.add(new HashSet<>(Arrays.asList(values)));
+        }
+
+        public void addActualCycle(Collection<? extends E> values) {
+            actual.add(values.stream().map(E::toString).collect(Collectors.toSet()));
+        }
+
+        public void compare() {
+            Set<Set<String>> unvisitedExpexted = new HashSet<>(expected);
+
+            for (Set<String> currentActual : actual) {
+                boolean found = false;
+                for (Set<String> currentExpected : expected) {
+                    if (currentActual.size() == currentExpected.size()) {
+                        if (currentActual.containsAll(currentExpected)) {
+                            found = true;
+                            unvisitedExpexted.remove(currentExpected);
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    fail("Didn't find: " + currentActual);
+                }
+            }
+
+            if (!unvisitedExpexted.isEmpty()) {
+                fail("Didn't visit expected: " + unvisitedExpexted.toString());
+            }
+        }
+    }
 }
