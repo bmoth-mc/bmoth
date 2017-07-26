@@ -296,18 +296,13 @@ public class BuechiAutomaton {
     }
 
     public boolean isAcceptingSet(Set<BuechiAutomatonNode> buechiStates) {
-        for (BuechiAutomatonNode node : buechiStates) {
-            if (node.isAcceptingState) {
-                return true;
+        for (List<BuechiAutomatonNode> accepting : acceptingStateSets) {
+            Set acceptingSet = new LinkedHashSet(accepting);
+            if (Collections.disjoint(acceptingSet, buechiStates)) {
+                return false;
             }
         }
-        // for (List<BuechiAutomatonNode> accepting : acceptingStateSets) {
-        //     LinkedHashSet acceptingSet = new LinkedHashSet(accepting);
-        //     if (Sets.symmetricDifference(acceptingSet, buechiStates).isEmpty()) {
-        //         return true;
-        //     }
-        // }
-        return false;
+        return true;
     }
 
     public Set<BuechiAutomatonNode> getFinalNodeSet() {
