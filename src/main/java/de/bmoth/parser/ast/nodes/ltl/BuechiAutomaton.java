@@ -9,7 +9,7 @@ import static de.bmoth.parser.ast.nodes.ltl.LTLKeywordNode.Kind.TRUE;
 import static de.bmoth.parser.ast.nodes.ltl.LTLPrefixOperatorNode.Kind.NEXT;
 
 public class BuechiAutomaton {
-
+    static final String FORMULA_NOT_NOMALIZED = "Formula not normalized";
     private int nodeCounter = 0;
     private Set<LTLNode> subFormulasForAcceptance = new LinkedHashSet<>();
     private List<List<BuechiAutomatonNode>> acceptingStateSets = new ArrayList<>();
@@ -32,7 +32,7 @@ public class BuechiAutomaton {
         PredicateNode negatedNode = ((LTLBPredicateNode) ltlNode).getPredicate().getNegatedPredicateNode();
         for (LTLNode processedNode : processedNodes) {
             if (processedNode instanceof LTLBPredicateNode
-                && ((LTLBPredicateNode) processedNode).getPredicate().equalAst(negatedNode)) {
+                    && ((LTLBPredicateNode) processedNode).getPredicate().equalAst(negatedNode)) {
                 return true;
             }
         }
@@ -72,7 +72,8 @@ public class BuechiAutomaton {
     }
 
     private BuechiAutomatonNode buechiNodeIsInNodeSet(BuechiAutomatonNode buechiNode) {
-        // Check whether the finished node is already in the list (determined by the same Old- and Next-sets).
+        // Check whether the finished node is already in the list (determined by
+        // the same Old- and Next-sets).
         for (BuechiAutomatonNode nodeInSet : nodeSet) {
             boolean processedEquals = compareLTLNodeSets(buechiNode.processed, nodeInSet.processed);
             boolean nextEquals = compareLTLNodeSets(buechiNode.next, nodeInSet.next);
@@ -91,7 +92,7 @@ public class BuechiAutomaton {
             // Until, or
             newNodes.add(ltlNode.getLeft());
         } else {
-            throw new IllegalArgumentException("Formula not normalized");
+            throw new IllegalArgumentException(FORMULA_NOT_NOMALIZED);
         }
         return newNodes;
     }
@@ -114,12 +115,13 @@ public class BuechiAutomaton {
             // In case of or an empty list is returned
             return newNodes;
         } else {
-            throw new IllegalArgumentException("Formula not normalized");
+            throw new IllegalArgumentException(FORMULA_NOT_NOMALIZED);
         }
     }
 
     private BuechiAutomatonNode buildFirstNodeInSplit(BuechiAutomatonNode buechiNode, LTLInfixOperatorNode subNode) {
-        // Prepare the different parts of the first new node created for Until, Release and Or
+        // Prepare the different parts of the first new node created for Until,
+        // Release and Or
         Set<LTLNode> unprocessed = new LinkedHashSet<>(buechiNode.unprocessed);
         for (LTLNode node : new1(subNode)) {
             if (!ltlNodeIsInList(node, buechiNode.processed)) {
@@ -133,12 +135,13 @@ public class BuechiAutomaton {
         Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
         processed.add(subNode);
 
-        return new BuechiAutomatonNode(newName(), new LinkedHashSet<>(buechiNode.incoming),
-            unprocessed, processed, next);
+        return new BuechiAutomatonNode(newName(), new LinkedHashSet<>(buechiNode.incoming), unprocessed, processed,
+                next);
     }
 
     private BuechiAutomatonNode buildSecondNodeInSplit(BuechiAutomatonNode buechiNode, LTLInfixOperatorNode subNode) {
-        // Prepare the different parts of the second new node created for Until, Release and Or
+        // Prepare the different parts of the second new node created for Until,
+        // Release and Or
         Set<LTLNode> unprocessed = new LinkedHashSet<>(buechiNode.unprocessed);
         for (LTLNode node : new2(subNode)) {
             if (!ltlNodeIsInList(node, buechiNode.processed)) {
@@ -149,8 +152,8 @@ public class BuechiAutomaton {
         Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
         processed.add(subNode);
 
-        return new BuechiAutomatonNode(newName(), new LinkedHashSet<>(buechiNode.incoming),
-            unprocessed, processed, new LinkedHashSet<>(buechiNode.next));
+        return new BuechiAutomatonNode(newName(), new LinkedHashSet<>(buechiNode.incoming), unprocessed, processed,
+                new LinkedHashSet<>(buechiNode.next));
     }
 
     private void handleProcessedNode(BuechiAutomatonNode buechiNode) {
@@ -163,7 +166,7 @@ public class BuechiAutomaton {
             incoming.add(buechiNode);
             nodeSet.add(buechiNode);
             expand(new BuechiAutomatonNode(newName(), incoming, new LinkedHashSet<>(buechiNode.next),
-                new LinkedHashSet<>(), new LinkedHashSet<>()));
+                    new LinkedHashSet<>(), new LinkedHashSet<>()));
         }
     }
 
@@ -178,8 +181,8 @@ public class BuechiAutomaton {
             Set<LTLNode> processed = new LinkedHashSet<>(buechiNode.processed);
             processed.add(ltlNode);
 
-            expand(new BuechiAutomatonNode(buechiNode.name, new LinkedHashSet<>(buechiNode.incoming),
-                unprocessed, processed, new LinkedHashSet<>(buechiNode.next)));
+            expand(new BuechiAutomatonNode(buechiNode.name, new LinkedHashSet<>(buechiNode.incoming), unprocessed,
+                    processed, new LinkedHashSet<>(buechiNode.next)));
         } else {
             // Until, Release, Or: Split the node in two
             if (ltlNode.getKind() == UNTIL && !ltlNodeIsInList(ltlNode, subFormulasForAcceptance)) {
@@ -203,15 +206,16 @@ public class BuechiAutomaton {
             next.add(ltlNode.getArgument());
 
             expand(new BuechiAutomatonNode(buechiNode.name + "_1", new LinkedHashSet<>(buechiNode.incoming),
-                new LinkedHashSet<>(buechiNode.unprocessed), processed, next));
+                    new LinkedHashSet<>(buechiNode.unprocessed), processed, next));
         } else {
-            throw new IllegalArgumentException("Formula not normalized");
+            throw new IllegalArgumentException(FORMULA_NOT_NOMALIZED);
         }
     }
 
     private void expand(BuechiAutomatonNode buechiNode) {
         if (buechiNode.unprocessed.isEmpty()) {
-            // The current node is completely processed and can be added to the list (or, in case he was
+            // The current node is completely processed and can be added to the
+            // list (or, in case he was
             // already added before, updated).
             handleProcessedNode(buechiNode);
         } else {
@@ -242,11 +246,11 @@ public class BuechiAutomaton {
     private void createGraph(LTLNode node) {
         Set<BuechiAutomatonNode> initIncoming = new LinkedHashSet<>();
         initIncoming.add(new BuechiAutomatonNode("init", new LinkedHashSet<>(), new LinkedHashSet<>(),
-            new LinkedHashSet<>(), new LinkedHashSet<>()));
+                new LinkedHashSet<>(), new LinkedHashSet<>()));
         Set<LTLNode> unprocessed = new LinkedHashSet<>();
         unprocessed.add(node);
         expand(new BuechiAutomatonNode(newName(), initIncoming, unprocessed, new LinkedHashSet<>(),
-            new LinkedHashSet<>()));
+                new LinkedHashSet<>()));
     }
 
     private void labelNodes() {
@@ -257,8 +261,8 @@ public class BuechiAutomaton {
             LTLInfixOperatorNode untilNode = (LTLInfixOperatorNode) formulaForAcceptance;
             List<BuechiAutomatonNode> acceptingStateSet = new ArrayList<>();
             for (BuechiAutomatonNode buechiNode : nodeSet) {
-                if (!ltlNodeIsInList(untilNode, buechiNode.processed) ||
-                    ltlNodeIsInList(untilNode.getRight(), buechiNode.processed)) {
+                if (!ltlNodeIsInList(untilNode, buechiNode.processed)
+                        || ltlNodeIsInList(untilNode.getRight(), buechiNode.processed)) {
                     buechiNode.isAcceptingState = true;
                     acceptingStateSet.add(buechiNode);
                 }
@@ -297,7 +301,7 @@ public class BuechiAutomaton {
 
     public boolean isAcceptingSet(Set<BuechiAutomatonNode> buechiStates) {
         for (List<BuechiAutomatonNode> accepting : acceptingStateSets) {
-            Set acceptingSet = new LinkedHashSet(accepting);
+            Set<BuechiAutomatonNode> acceptingSet = new LinkedHashSet<>(accepting);
             if (Collections.disjoint(acceptingSet, buechiStates)) {
                 return false;
             }
