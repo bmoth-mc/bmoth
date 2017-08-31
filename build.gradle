@@ -89,7 +89,7 @@ dependencies {
     // Z3 Java Bindings
     compile files('com.microsoft.z3.jar')
 
-    compile 'com.google.guava:guava:22.0'
+    compile 'com.google.guava:guava:23.0'
     compile 'org.apache.commons:commons-lang3:3.6'
 
     compile group: 'org.jgrapht', name: 'jgrapht-core', version: '1.0.1'
@@ -241,15 +241,15 @@ eclipse.classpath.file.whenMerged { classpath ->
 }
 
 task cleanZ3 {
-  doLast {
-    delete 'libs'
-    delete 'python'
-    delete 'z3'
-    delete 'com.microsoft.z3.jar'
-    delete fileTree('./') { include 'z3*.zip' }
-    delete fileTree('./') { include 'libz3*.*' }
-    delete fileTree('./') { include 'Microsoft.Z3.*' }
-  }
+    doLast {
+        delete 'libs'
+        delete 'python'
+        delete 'z3'
+        delete 'com.microsoft.z3.jar'
+        delete fileTree('./') { include 'z3*.zip' }
+        delete fileTree('./') { include 'libz3*.*' }
+        delete fileTree('./') { include 'Microsoft.Z3.*' }
+    }
 }
 
 // type 'gradle test jacocoTestReport' in order to run the jacoco code coverage analysis
