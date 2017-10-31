@@ -7,7 +7,7 @@
  */
 
 plugins {
-    id "de.undercouch.download" version "3.2.0"
+    id "de.undercouch.download" version "3.3.0"
     id "org.standardout.versioneye" version "1.5.0"
 }
 
@@ -89,16 +89,16 @@ dependencies {
     // Z3 Java Bindings
     compile files('com.microsoft.z3.jar')
 
-    compile 'com.google.guava:guava:23.0'
+    compile 'com.google.guava:guava:23.2-jre'
     compile 'org.apache.commons:commons-lang3:3.6'
 
     compile group: 'org.jgrapht', name: 'jgrapht-core', version: '1.0.1'
 
     // JavaFX RichText Editor
-    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.7-M3'
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.8.1'
     // MVVMFx
-    compile group: 'de.saxsys', name: 'mvvmfx', version: '1.6.0'
-    compile group: 'de.saxsys', name: 'mvvmfx-testing-utils', version: '1.6.0'
+    compile group: 'de.saxsys', name: 'mvvmfx', version: '1.7.0'
+    compile group: 'de.saxsys', name: 'mvvmfx-testing-utils', version: '1.7.0'
 
     // TestFX & monocle for headless testing
     testCompile "org.testfx:testfx-core:4.0.+"
