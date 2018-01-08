@@ -64,20 +64,19 @@ public class CliTask {
     }
 
     private ModelChecker getModelChecker(MachineNode machineNode) {
-        ModelChecker modelChecker = null;
         switch (algorithm) {
             case ESMC:
-                modelChecker = new ExplicitStateModelChecker(machineNode);
-                break;
+                return new ExplicitStateModelChecker(machineNode);
             case BMC:
-                modelChecker = new BoundedModelChecker(machineNode, maxSteps);
-                break;
+                return new BoundedModelChecker(machineNode, maxSteps);
             case KIND:
-                modelChecker = new KInductionModelChecker(machineNode, maxSteps);
-                break;
+                return new KInductionModelChecker(machineNode, maxSteps);
+            default:
+                // should not be reachable
+                System.err.println("Invalid algorithm");
+                System.exit(1);
+                return null;
         }
-
-        return modelChecker;
     }
 
     private MachineNode parseMachine(String machineContent) {
