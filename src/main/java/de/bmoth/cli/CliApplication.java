@@ -1,24 +1,8 @@
 package de.bmoth.cli;
 
-import de.bmoth.modelchecker.ModelChecker;
-import de.bmoth.modelchecker.ModelCheckingResult;
-import de.bmoth.modelchecker.bmc.BoundedModelChecker;
-import de.bmoth.modelchecker.esmc.ExplicitStateModelChecker;
-import de.bmoth.modelchecker.kind.KInductionModelChecker;
-import de.bmoth.parser.Parser;
-import de.bmoth.parser.ParserException;
-import de.bmoth.parser.ast.nodes.MachineNode;
-import gnu.getopt.Getopt;
-
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class CliApplication {
-    private enum ModelCheckingAlgorithm {
-        ESMC, BMC, KIND
-    }
 
     private static void help() {
         System.out.print("bmoth-cli - BMoTH command line interface\n\n");
@@ -34,40 +18,25 @@ public class CliApplication {
     }
 
     public static void main(String[] args) {
-        // prepare getopt
-        Getopt g = CliOption.getGetOpt(args);
+        CliTask task = new CliTask();
 
-        // set defaults
-        ModelCheckingAlgorithm algorithm = ModelCheckingAlgorithm.ESMC;
-        boolean isBenchmark = false;
-        String machineContent = null;
-        int maxSteps = 20;
+        // prepare getopt
+        CliGetopt g = new CliGetopt(args);
 
         // parse options one by one
-        CliOption option;
-        while ((option = CliOption.getCliOpt(g)) != null) {
+        for (CliOption option = g.getopt(); option != null; option = g.getopt()) {
             switch (option) {
                 case ALGORITHM:
-                    algorithm = ModelCheckingAlgorithm.valueOf(g.getOptarg().toUpperCase());
+                    task.setAlgorithm(g.getOptarg());
                     break;
                 case BENCHMARK:
-                    isBenchmark = true;
+                    task.setIsBenchmark(true);
                     break;
                 case MACHINE:
-                    File inputFile = new File(g.getOptarg());
-                    if (!inputFile.exists() || !inputFile.isFile() || !inputFile.canRead()) {
-                        System.err.println("Unable to read file " + inputFile);
-                        System.exit(1);
-                    }
-                    try {
-                        machineContent = new String(Files.readAllBytes(Paths.get(inputFile.getPath())));
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    task.setMachineFile(new File(g.getOptarg()));
                     break;
                 case STEPS:
-                    maxSteps = Integer.parseInt(g.getOptarg());
+                    task.setMaxSteps(Integer.parseInt(g.getOptarg()));
                     break;
                 case HELP:
                 default:
@@ -75,50 +44,6 @@ public class CliApplication {
             }
         }
 
-        // we need a machine
-        if (machineContent == null) {
-            System.err.println("Missing machine");
-            System.exit(1);
-        }
-
-        MachineNode machineNode = null;
-        long start = 0, end;
-        try {
-            if (isBenchmark) {
-                start = System.nanoTime();
-            }
-            machineNode = Parser.getMachineAsSemanticAst(machineContent);
-            if (isBenchmark) {
-                end = System.nanoTime();
-                System.out.printf("Parsing time:\t%14d ns\n", end - start);
-            }
-        } catch (ParserException e) {
-            e.printStackTrace();
-        }
-
-        ModelChecker modelChecker = null;
-        switch (algorithm) {
-            case ESMC:
-                modelChecker = new ExplicitStateModelChecker(machineNode);
-                break;
-            case BMC:
-                modelChecker = new BoundedModelChecker(machineNode, maxSteps);
-                break;
-            case KIND:
-                modelChecker = new KInductionModelChecker(machineNode, maxSteps);
-                break;
-        }
-
-        ModelCheckingResult result;
-        if (isBenchmark) {
-            start = System.nanoTime();
-        }
-        result = modelChecker.check();
-        if (isBenchmark) {
-            end = System.nanoTime();
-            System.out.printf("Checking time:\t%14d ns\n", end - start);
-        }
-
-        System.out.printf("Result:\t%s\n", result);
+        task.execute();
     }
 }
