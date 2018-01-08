@@ -98,7 +98,8 @@ public class CliTask {
             machineNode = Parser.getMachineAsSemanticAst(machineContent);
             nanoDiffTime = isBenchmark ? System.nanoTime() - start : 0;
         } catch (ParserException e) {
-            e.printStackTrace();
+            logger.severe(e.toString());
+            System.exit(1);
         }
 
         if (machineNode == null) {
