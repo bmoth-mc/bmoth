@@ -13,8 +13,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.logging.Logger;
 
 public class CliTask {
+    private static Logger logger = Logger.getAnonymousLogger();
+
     private boolean isBenchmark;
     private int maxSteps;
     private ModelCheckingAlgorithm algorithm;
@@ -29,30 +32,39 @@ public class CliTask {
 
     public void setAlgorithm(String algorithm) {
         this.algorithm = ModelCheckingAlgorithm.valueOf(algorithm.toUpperCase());
+        logger.config("Setting algorithm to " + this.algorithm.verbose());
+
     }
 
     public void setIsBenchmark(boolean isBenchmark) {
         this.isBenchmark = isBenchmark;
+        logger.config((isBenchmark ? "Enabling" : "Disabling") + " benchmark");
     }
 
     public void setMachineFile(File machineFile) {
         this.machineFile = machineFile;
+        if (machineFile == null || !machineFile.exists()) {
+            logger.warning("Setting invalid machine file");
+        } else {
+            logger.config("Setting machine file to " + machineFile.getAbsolutePath());
+        }
     }
 
     public void setMaxSteps(int maxSteps) {
         this.maxSteps = maxSteps;
+        logger.config("Setting max steps to " + maxSteps);
     }
 
     public void execute() {
         MachineNode machineNode = parseMachine(readMachineContent());
         if (isBenchmark) {
-            System.out.printf("Parsing time:\t%10d ns\n", nanoDiffTime);
+            logger.info("Parsing time: " + nanoDiffTime + " ns");
         }
         ModelCheckingResult result = doModelCheck(getModelChecker(machineNode));
         if (isBenchmark) {
-            System.out.printf("Checking time:\t%10d ns\n", nanoDiffTime);
+            logger.info("Checking time: " + nanoDiffTime + " ns");
         }
-        System.out.println(result);
+        logger.info("Result: " + result.toString());
     }
 
     private ModelCheckingResult doModelCheck(ModelChecker modelChecker) {
@@ -73,7 +85,7 @@ public class CliTask {
                 return new KInductionModelChecker(machineNode, maxSteps);
             default:
                 // should not be reachable
-                System.err.println("Invalid algorithm");
+                logger.severe("Unknown algorithm " + algorithm);
                 System.exit(1);
                 return null;
         }
@@ -90,7 +102,7 @@ public class CliTask {
         }
 
         if (machineNode == null) {
-            System.err.println("Invalid machine");
+            logger.severe("Invalid machine");
             System.exit(1);
         }
 
@@ -99,18 +111,19 @@ public class CliTask {
 
     private String readMachineContent() {
         if (machineFile == null || !machineFile.exists() || !machineFile.isFile() || !machineFile.canRead()) {
-            System.err.println("Unable to read file " + machineFile);
+            logger.severe("Unable to read file " + machineFile);
             System.exit(1);
         }
         String machineContent = null;
         try {
             machineContent = new String(Files.readAllBytes(Paths.get(machineFile.getPath())));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.severe(e.toString());
+            System.exit(1);
         }
         // we need a machine
         if (machineContent == null || machineContent.isEmpty()) {
-            System.err.println("Missing machine");
+            logger.severe("Missing machine");
             System.exit(1);
         }
 
@@ -118,6 +131,16 @@ public class CliTask {
     }
 
     private enum ModelCheckingAlgorithm {
-        ESMC, BMC, KIND
+        ESMC("Explicit-state model checking"), BMC("Bounded model checking"), KIND("k-induction model checking");
+
+        private final String name;
+
+        ModelCheckingAlgorithm(String name) {
+            this.name = name;
+        }
+
+        public String verbose() {
+            return name;
+        }
     }
 }
