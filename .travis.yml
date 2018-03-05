@@ -26,7 +26,6 @@ script:
 - "./gradlew -Pheadless=true uiTest"
 - "./gradlew copyDependenciesForSonarAnalysis"
 - sonar-scanner
-- "./gradlew versioneye-update"
 env:
   global:
     secure: Mhte6dEo7j95osD1rDGoFTCN3eR2sQ2kO+KKFv+SJ1arizMmw4wX8KMFpCkClX89ONhYcVtdkBCHGbhbecPUgV+NGsIXkZZdKdf2XrzOXz+ArwqD6cQugd2DCGp5GWfDw0on3sNdhS8kyoHnWLPdqMSE+bjN5UBDkqPWo5vvRs937nBvGm+zES5YddK1bsZoHCo2lmpB/jcblyx/0UrcIHlr3yOmsahxGEVdRu013H8jisTNvD6htk+M4x+galc5F/mMgYai7J6awqWH/FEmddc/fTil8Vylic60BsiYnbO3m9OMdYE5xxj0nZUNvjM9wNHjEqMbeYo14wwLq0Ch0IZPIwPuyVZIG3y6sSoA6D/9eLa07slGA9cKukXWs3HSZ8CNgEt/lYecawzHm3RShMBj60j0bW2y5atOJbEdI/AauVp/jmDefW/E8NNKL77TGEgw/gs7pbyq3eUW34k3ZL3UnCLBnXiLZWw2WFpTyK6+npicUKhMDsAWKx5RmJa9mAys5CVtKSfH/4/b5dUxm9d8s3zLETzvmDS3TkXDkVVHmbgjBD3HYZVWPvKtztIRJ6hBxl34L2iWOq4mZleBbn3TXP4hNBCC11pvyKS0kiu+gyZrKVmfQiiPqpZeb3z/DsXnSX76pcXb8fs41h40QoXiTnJlIsfFdtIFunkvyuI=
