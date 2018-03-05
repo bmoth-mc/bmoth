@@ -328,6 +328,20 @@ task copyDependenciesForSonarAnalysis(type: Copy) {
     from configurations.testCompile
 }
 
-//versioneye {
+// a second set of start scripts for the cli version
+task createCliStartScripts(type: CreateStartScripts) {
+    mainClassName = "de.bmoth.cli.CliApplication"
+    classpath = startScripts.classpath
+    outputDir = startScripts.outputDir
+    applicationName = 'bmoth-cli'
+}
+
+applicationDistribution.into("bin") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(createCliStartScripts)
+    fileMode = 0755
+}
+
+// versioneye {
 //    exclude project.configurations.findAll { !it.canBeResolved }*.name as String[]
 //}
