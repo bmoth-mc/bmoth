@@ -13,7 +13,7 @@ import org.testfx.util.WaitForAsyncUtils;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isNotNull;
 import static org.testfx.matcher.base.NodeMatchers.isNull;
-import static org.testfx.matcher.control.LabeledMatchers.hasText;
+import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 
 public class AppViewTest extends HeadlessUITest {
     private String codeAreaId = "#codeArea";
