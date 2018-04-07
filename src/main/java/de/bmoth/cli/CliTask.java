@@ -11,8 +11,10 @@ import de.bmoth.parser.ast.nodes.MachineNode;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.StringJoiner;
 import java.util.logging.Logger;
 
 public class CliTask {
@@ -20,25 +22,30 @@ public class CliTask {
 
     private boolean isBenchmark;
     private int maxSteps;
+    private int times;
     private ModelCheckingAlgorithm algorithm;
     private File machineFile;
+    private String resultFileName;
+
     private long nanoDiffTime;
 
     CliTask() {
         algorithm = ModelCheckingAlgorithm.ESMC;
         isBenchmark = false;
+        times = 1;
+        maxSteps = 20;
         machineFile = null;
+        resultFileName = null;
     }
 
     public void setAlgorithm(String algorithm) {
         this.algorithm = ModelCheckingAlgorithm.valueOf(algorithm.toUpperCase());
         logger.config("Setting algorithm to " + this.algorithm.verbose());
-
     }
 
-    public void setIsBenchmark(boolean isBenchmark) {
-        this.isBenchmark = isBenchmark;
-        logger.config((isBenchmark ? "Enabling" : "Disabling") + " benchmark");
+    public void setIsBenchmark() {
+        this.isBenchmark = true;
+        logger.config("Enabling benchmark");
     }
 
     public void setMachineFile(File machineFile) {
@@ -55,16 +62,38 @@ public class CliTask {
         logger.config("Setting max steps to " + maxSteps);
     }
 
+    public void setTimes(int times) {
+        this.times = times;
+        logger.config("Setting times to " + times);
+    }
+
+    public void setResultFileName(String resultFileName) {
+        this.resultFileName = resultFileName;
+        logger.config("Setting resultFileName to " + resultFileName);
+    }
+
     public void execute() {
+        StringJoiner resultString = new StringJoiner("\n", "", "");
         MachineNode machineNode = parseMachine(readMachineContent());
         if (isBenchmark) {
             logger.info("Parsing time: " + nanoDiffTime + " ns");
+            resultString.add("Parsing time: " + nanoDiffTime + " ns");
         }
         ModelCheckingResult result = doModelCheck(getModelChecker(machineNode));
         if (isBenchmark) {
             logger.info("Checking time: " + nanoDiffTime + " ns");
+            resultString.add("Checking time: " + nanoDiffTime + " ns");
         }
         logger.info("Result: " + result.toString());
+        resultString.add(result.toString());
+        try {
+            PrintWriter writer = new PrintWriter(resultFileName, "UTF-8");
+            writer.println(resultString.toString());
+            writer.close();
+        } catch (Exception e) {
+            logger.warning(e.toString());
+        }
+
     }
 
     private ModelCheckingResult doModelCheck(ModelChecker modelChecker) {

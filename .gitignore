@@ -41,3 +41,4 @@ src/main/resources/de/bmoth/App/pref.xml
 *.prob
 
 out/
+*.txt

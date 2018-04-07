@@ -5,7 +5,9 @@ public enum CliOption {
     ALGORITHM('a', "algorithm", true),
     MACHINE('m', "machine", true),
     BENCHMARK('b', "benchmark", false),
-    STEPS('s', "max-steps", true);
+    STEPS('s', "max-steps", true),
+    TIMES('t', "times", true),
+    FILE('f', "file", true);
 
     private final char shortOption;
     private final String longOption;

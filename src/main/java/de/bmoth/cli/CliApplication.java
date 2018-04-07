@@ -14,6 +14,8 @@ public class CliApplication {
         System.out.print("-a or --algorithm string: Specify the algorithm used for model checking. (default: esmc).\n");
         System.out.print("-b or --benchmark:        Enable benchmark mode.\n");
         System.out.print("-s or --max-steps:        Optional for bmc|kind max # steps before aborting. (default: 20)\n");
+        System.out.print("-t or --times:            Specify the number of times the benchmark is executed. (default: 1)\n");
+        System.out.print("-f or --file:             Specify a file that the benchmark results will be written to.\n");
         System.exit(1);
     }
 
@@ -30,13 +32,19 @@ public class CliApplication {
                     task.setAlgorithm(g.getOptarg());
                     break;
                 case BENCHMARK:
-                    task.setIsBenchmark(true);
+                    task.setIsBenchmark();
                     break;
                 case MACHINE:
                     task.setMachineFile(new File(g.getOptarg()));
                     break;
                 case STEPS:
                     task.setMaxSteps(Integer.parseInt(g.getOptarg()));
+                    break;
+                case TIMES:
+                    task.setTimes(Integer.parseInt(g.getOptarg()));
+                    break;
+                case FILE:
+                    task.setResultFileName(g.getOptarg());
                     break;
                 case HELP:
                 default:
