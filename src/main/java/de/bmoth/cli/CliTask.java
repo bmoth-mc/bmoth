@@ -28,6 +28,8 @@ public class CliTask {
     private String resultFileName;
 
     private long nanoDiffTime;
+    private long parsingTimes;
+    private long checkingTimes;
 
     CliTask() {
         algorithm = ModelCheckingAlgorithm.ESMC;
@@ -36,6 +38,8 @@ public class CliTask {
         maxSteps = 20;
         machineFile = null;
         resultFileName = null;
+        parsingTimes = 0;
+        checkingTimes = 0;
     }
 
     public void setAlgorithm(String algorithm) {
@@ -72,28 +76,45 @@ public class CliTask {
         logger.config("Setting resultFileName to " + resultFileName);
     }
 
-    public void execute() {
-        StringJoiner resultString = new StringJoiner("\n", "", "");
-        MachineNode machineNode = parseMachine(readMachineContent());
-        if (isBenchmark) {
-            logger.info("Parsing time: " + nanoDiffTime + " ns");
-            resultString.add("Parsing time: " + nanoDiffTime + " ns");
-        }
-        ModelCheckingResult result = doModelCheck(getModelChecker(machineNode));
-        if (isBenchmark) {
-            logger.info("Checking time: " + nanoDiffTime + " ns");
-            resultString.add("Checking time: " + nanoDiffTime + " ns");
-        }
-        logger.info("Result: " + result.toString());
-        resultString.add(result.toString());
-        try {
-            PrintWriter writer = new PrintWriter(resultFileName, "UTF-8");
-            writer.println(resultString.toString());
-            writer.close();
-        } catch (Exception e) {
-            logger.warning(e.toString());
-        }
+    public void executeBenchmarks() {
+        if (times != 0) {
+            // first parsing and checking process takes longer and is ignored
+            MachineNode machineNode = parseMachine(readMachineContent());
+            String result = doModelCheck(getModelChecker(machineNode)).toString();
+            for (int i = 1; i <= times; i++) {
+                logger.info("Executing benchmark " + i + " of " + times);
+                machineNode = parseMachine(readMachineContent());
+                parsingTimes += nanoDiffTime;
+                result = doModelCheck(getModelChecker(machineNode)).toString();
+                checkingTimes += nanoDiffTime;
+            }
+            StringJoiner resultString = new StringJoiner("\n", "", "");
+            resultString.add("Machine: " + machineFile.getName() + ", algorithm: " + algorithm + ", times: " + times);
+            resultString.add("Result: " + result);
+            resultString.add("Average parsing time: " + (parsingTimes / times) + " ns");
+            resultString.add("Average checking time: " + (checkingTimes / times) + " ns");
+            logger.info(resultString.toString());
 
+            if (resultFileName != null) {
+                try {
+                    PrintWriter writer = new PrintWriter(resultFileName, "UTF-8");
+                    writer.println(resultString.toString());
+                    writer.close();
+                } catch (Exception e) {
+                    logger.warning(e.toString());
+                }
+            }
+        }
+    }
+
+    public void execute() {
+        if (isBenchmark) {
+            executeBenchmarks();
+        } else {
+            MachineNode machineNode = parseMachine(readMachineContent());
+            ModelCheckingResult result = doModelCheck(getModelChecker(machineNode));
+            logger.info("Result: " + result.toString());
+        }
     }
 
     private ModelCheckingResult doModelCheck(ModelChecker modelChecker) {
