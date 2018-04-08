@@ -10,10 +10,13 @@ import de.bmoth.parser.ParserException;
 import de.bmoth.parser.ast.nodes.MachineNode;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.StringJoiner;
 import java.util.logging.Logger;
 
@@ -88,7 +91,8 @@ public class CliTask {
                 result = doModelCheck(getModelChecker(machineNode)).toString();
                 checkingTimes += nanoDiffTime;
             }
-            StringJoiner resultString = new StringJoiner("\n", "", "");
+            StringJoiner resultString = new StringJoiner("\n", "", "\n\n");
+            resultString.add(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")));
             resultString.add("Machine: " + machineFile.getName() + ", algorithm: " + algorithm + ", times: " + times);
             resultString.add("Result: " + result);
             resultString.add("Average parsing time: " + (parsingTimes / times) + " ns");
@@ -97,8 +101,8 @@ public class CliTask {
 
             if (resultFileName != null) {
                 try {
-                    PrintWriter writer = new PrintWriter(resultFileName, "UTF-8");
-                    writer.println(resultString.toString());
+                    PrintWriter writer = new PrintWriter(new FileOutputStream(new File(resultFileName), true));
+                    writer.append(resultString.toString());
                     writer.close();
                 } catch (Exception e) {
                     logger.warning(e.toString());
