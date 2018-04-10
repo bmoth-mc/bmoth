@@ -93,7 +93,7 @@ public class CliTask {
             }
             StringJoiner resultString = new StringJoiner("\n", "", "\n\n");
             resultString.add(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")));
-            resultString.add("Machine: " + machineFile.getName() + ", algorithm: " + algorithm + ", times: " + times);
+            resultString.add("Machine: " + machineFile.getName() + ", algorithm: " + algorithm + ", maxSteps: " + maxSteps + ", times: " + times);
             resultString.add("Result: " + result);
             resultString.add("Average parsing time: " + (parsingTimes / times) + " ns");
             resultString.add("Average checking time: " + (checkingTimes / times) + " ns");
