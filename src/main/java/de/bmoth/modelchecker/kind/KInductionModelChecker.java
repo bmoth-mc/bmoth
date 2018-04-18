@@ -34,7 +34,7 @@ public class KInductionModelChecker extends SymbolicModelChecker {
             }
 
             // not INV(Vk)
-            baseSolver.add(getContext().mkNot(invariant(k)));
+            baseSolver.add(negatedInvariant(k));
 
             Status check = baseSolver.check();
             if (check == Status.SATISFIABLE) {
@@ -54,7 +54,7 @@ public class KInductionModelChecker extends SymbolicModelChecker {
                 for (int i = 0; i <= k; i++) {
                     stepSolver.add(invariant(i));
                 }
-                stepSolver.add(getContext().mkNot(invariant(k + 1)));
+                stepSolver.add(negatedInvariant(k + 1));
 
                 Status checkStep = stepSolver.check();
 

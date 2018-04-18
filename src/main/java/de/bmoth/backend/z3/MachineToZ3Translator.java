@@ -166,6 +166,20 @@ public class MachineToZ3Translator {
         return getInvariantConstraint(UNPRIMED);
     }
 
+    public BoolExpr getNegatedInvariantConstraint(TranslationOptions ops) {
+        PredicateNode invariantPredicate = machineNode.getInvariant().getNegatedPredicateNode();
+        if (invariantPredicate != null) {
+            return translatePredicate(invariantPredicate, ops);
+        } else {
+            return z3Context.mkTrue();
+        }
+    }
+
+    public BoolExpr getNegatedInvariantConstraint() {
+        return getNegatedInvariantConstraint(UNPRIMED);
+    }
+
+
     public List<BoolExpr> getOperationConstraints(SubstitutionOptions ops) {
         return visitOperations(ops);
     }

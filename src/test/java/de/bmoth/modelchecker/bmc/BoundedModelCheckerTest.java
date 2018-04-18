@@ -54,4 +54,18 @@ public class BoundedModelCheckerTest extends TestParser {
         assertEquals("{b=false, c=100000}", result.getLastState().toString());
         assertEquals(2, result.getSteps());
     }
+
+    @Test
+    public void testExponentiation() {
+        machine = builder
+            .setName("Exponentiation")
+            .setVariables("x")
+            .setInvariant("x=2 & 2**0 = 1")
+            .setInitialization("x := 2")
+            .build();
+
+        result = new BoundedModelChecker(machine, 5).check();
+        assertEquals(EXCEEDED_MAX_STEPS, result.getType());
+        assertEquals(5, result.getSteps());
+    }
 }

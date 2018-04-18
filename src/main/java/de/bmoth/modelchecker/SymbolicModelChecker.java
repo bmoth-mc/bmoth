@@ -30,6 +30,10 @@ public abstract class SymbolicModelChecker extends ModelChecker {
         return getMachineTranslator().getInvariantConstraint(new TranslationOptions(step));
     }
 
+    protected BoolExpr negatedInvariant(int step) {
+        return getMachineTranslator().getNegatedInvariantConstraint(new TranslationOptions(step));
+    }
+
     protected BoolExpr distinctVectors(int to) {
         return getMachineTranslator().getDistinctVars(0, to);
     }

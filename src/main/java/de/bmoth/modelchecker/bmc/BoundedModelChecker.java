@@ -31,7 +31,7 @@ public class BoundedModelChecker extends SymbolicModelChecker {
             }
 
             // not INV(Vk)
-            solver.add(getContext().mkNot(invariant(k)));
+            solver.add(negatedInvariant(k));
 
             // CONJUNCTION i from 1 to k, j from i + 1 to k (Vi != Vj)
             solver.add(distinctVectors(k));
