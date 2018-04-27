@@ -240,7 +240,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
 
             modelChecker = new ExplicitStateModelChecker(machineNode);
 
-            checkwithChecker(modelChecker);
+            checkWithChecker();
 
         }
     }
@@ -252,7 +252,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
 
             modelChecker = new BoundedModelChecker(machineNode, MAX_STEPS);
 
-            checkwithChecker(modelChecker);
+            checkWithChecker();
         }
 
 
@@ -266,12 +266,12 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
 
             modelChecker = new KInductionModelChecker(machineNode, MAX_STEPS);
 
-            checkwithChecker(modelChecker);
+            checkWithChecker();
         }
 
     }
 
-    public void checkwithChecker(ModelChecker modelChecker) {
+    public void checkWithChecker() {
 
         task = new Task<ModelCheckingResult>() {
             @Override
@@ -288,7 +288,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
             switch (result.getType()) {
                 case VERIFIED:
                     alert.setHeaderText("The model is...");
-                    alert.setContentText("...VERIFIED via K-Induction Model Checking!\nNo counter-example found.");
+                    alert.setContentText("...VERIFIED by " + modelChecker.getClass().getSimpleName() + "!\nNo counter-example found.");
                     break;
                 case EXCEEDED_MAX_STEPS:
                     alert.setHeaderText("The model is...");
