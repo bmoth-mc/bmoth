@@ -80,7 +80,7 @@ public class ModelCheckerResultTest extends TestUsingZ3 {
     @Test
     public void testGetPath() {
         ModelCheckingResult resultIncorrectPath = ModelCheckingResult.createCounterExampleFound(0, firstState, stateSpace);
-        assertEquals("[{x=12}, {x=11}, {x=10}]", resultIncorrectPath.findCounterExamplePath().toString());
+        assertEquals("[{x=12}, {x=11}, {x=10}]", resultIncorrectPath.getCounterExamplePath().toString());
     }
 
     @Test
