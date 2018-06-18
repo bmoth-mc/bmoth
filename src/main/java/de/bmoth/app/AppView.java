@@ -362,8 +362,48 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
             parseMachineNode();
             InvariantSatisfiabilityCheckingResult result = InvariantSatisfiabilityChecker
                 .doInvariantSatisfiabilityCheck(machineNode);
-            showResultAlert(result.getResult());
+            showResultAlert(false, result.getResult());
         }
+    }
+
+    public void handleInitialStateExists() {
+        if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
+            if (hasChanged || machineNode == null) {
+                handleSave();
+                try {
+                    machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
+                } catch (ParserException e) {
+                    EventBus eventBus = EventBusProvider.getInstance().getEventBus();
+                    eventBus.post(new ErrorEvent("Parse error", e.toString(), e));
+                    return;
+                }
+            }
+
+            InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(machineNode);
+            showResultAlert(true, result.getResult());
+        }
+    }
+
+    private void showResultAlert(boolean initial, Status status) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(initial ? "Check for Initial State" : "Check Invariant Satisfiability");
+        alert.setHeaderText(initial ? "Initial state..." : "State satisfying the invariant...");
+        switch (status) {
+            case UNSATISFIABLE:
+                alert.setContentText("...does not exist!\nThe model is probably not correct.");
+                break;
+            case UNKNOWN:
+                alert.setContentText("...is unknown!\nThe initialization is too complex for the backend.");
+                break;
+            case SATISFIABLE:
+                alert.setContentText("...exists!");
+                break;
+            default:
+                throw new IllegalArgumentException("Unhandled result: " + status.toString());
+        }
+
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.showAndWait();
     }
 
     @FXML
@@ -524,47 +564,6 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         new ErrorAlert(Alert.AlertType.ERROR, event.getErrorType(), event.getMessage());
     }
     // </editor-fold>
-
-    public void handleInitialStateExists() {
-        if (codeArea.getText().replaceAll("\\s+", "").length() > 0) {
-            if (hasChanged || machineNode == null) {
-                handleSave();
-                try {
-                    machineNode = Parser.getMachineAsSemanticAst(codeArea.getText());
-                } catch (ParserException e) {
-                    EventBus eventBus = EventBusProvider.getInstance().getEventBus();
-                    eventBus.post(new ErrorEvent("Parse error", e.toString(), e));
-                    return;
-                }
-            }
-
-            InitialStateExistsCheckingResult result = InitialStateExistsChecker.doInitialStateExistsCheck(machineNode);
-            showResultAlert(result.getResult());
-        }
-    }
-
-    private void showResultAlert(Status status) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Invariant Satisfiability Checking Result");
-        alert.setHeaderText("Initial state...");
-        switch (status) {
-            case UNSATISFIABLE:
-                alert.setContentText("...does not exists!\nThe model is probably not correct.");
-                break;
-            case UNKNOWN:
-                alert.setContentText("...is unknown!\nThe initialization is too complex for the backend.");
-                break;
-            case SATISFIABLE:
-                alert.setContentText("...exists!");
-                break;
-            default:
-                throw new IllegalArgumentException("Unhandled result: " + status.toString());
-        }
-
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        alert.showAndWait();
-
-    }
 
     public void handlePresentation(ActionEvent actionEvent) {
         if (!presentationMode) {
