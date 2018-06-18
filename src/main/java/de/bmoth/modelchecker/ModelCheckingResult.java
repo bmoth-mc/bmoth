@@ -68,14 +68,13 @@ public class ModelCheckingResult {
         return lastState;
     }
 
-    public static List<State> findCounterExamplePath(StateSpace stateSpace, State lastState) {
+    private static List<State> findCounterExamplePath(StateSpace stateSpace, State lastState) {
         if (stateSpace != null && lastState != null) {
             ShortestPathAlgorithm<State, DefaultEdge> pathFinder = new DijkstraShortestPath<>(stateSpace);
-
             Optional<List<State>> shortestPath = stateSpace.rootVertexSet().stream()
+                .filter(root -> (pathFinder.getPath(root, lastState) != null))
                 .map(root -> pathFinder.getPath(root, lastState).getVertexList())
-                .sorted((first, second) -> first.size() < second.size() ? 1 : -1)
-                .findFirst();
+                .min((first, second) -> first.size() < second.size() ? 1 : -1);
 
             return shortestPath.orElseGet(Collections::emptyList);
         } else {
@@ -83,7 +82,7 @@ public class ModelCheckingResult {
         }
     }
 
-    public static List<State> findCounterExamplePath(Model model) {
+    private static List<State> findCounterExamplePath(Model model) {
         List<State> path = new ArrayList<>();
         HashMap<Integer, HashMap<String, Expr>> states = new HashMap<>();
         for (FuncDecl decl: model.getDecls()) {

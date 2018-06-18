@@ -148,7 +148,6 @@ public class ModelCheckerTest extends TestParser {
         assertEquals(1, result.getSteps());
     }
 
-    @Ignore
     @Test
     public void testDeferredSetUsingAny() {
         machine = builder
@@ -174,7 +173,7 @@ public class ModelCheckerTest extends TestParser {
             .build();
 
         result = new ExplicitStateModelChecker(machine).check();
-        assertEquals(true, result.isCorrect());
+        assertTrue(result.isCorrect());
     }
 
     @Test
@@ -188,7 +187,7 @@ public class ModelCheckerTest extends TestParser {
             .build();
 
         result = new ExplicitStateModelChecker(machine).check();
-        assertEquals(true, result.isCorrect());
+        assertTrue(result.isCorrect());
     }
 
     @Test
@@ -201,6 +200,6 @@ public class ModelCheckerTest extends TestParser {
             .build();
 
         result = new ExplicitStateModelChecker(machine).check();
-        assertEquals(true, result.isCorrect());
+        assertTrue(result.isCorrect());
     }
 }
