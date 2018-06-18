@@ -4,6 +4,7 @@ import de.bmoth.TestParser;
 import de.bmoth.modelchecker.ModelCheckingResult;
 import de.bmoth.parser.ast.nodes.MachineNode;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.bmoth.modelchecker.ModelCheckingResult.Type.COUNTER_EXAMPLE_FOUND;
@@ -38,6 +39,7 @@ public class BoundedModelCheckerTest extends TestParser {
         assertEquals(20, result.getSteps());
     }
 
+    @Ignore
     @Test
     public void test2() {
         machine = builder

@@ -148,6 +148,7 @@ public class ModelCheckerTest extends TestParser {
         assertEquals(1, result.getSteps());
     }
 
+    @Ignore
     @Test
     public void testDeferredSetUsingAny() {
         machine = builder
