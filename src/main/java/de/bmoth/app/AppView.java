@@ -488,8 +488,8 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Open MCH File", "*.mch"));
         fileChooser.setTitle("Choose File");
-        fileChooser.setInitialDirectory(
-            new File(BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_DIR)));
+        File f = new File(BMothPreferences.getStringPreference(BMothPreferences.StringPreference.LAST_DIR));
+        fileChooser.setInitialDirectory(f.exists() && f.isDirectory() ? f : new File("."));
         File file = fileChooser.showOpenDialog(primaryStage);
 
         if (file != null) {
