@@ -6,7 +6,7 @@ INVARIANT
   y : NATURAL & y < 899
 INITIALISATION
   x := 9 
-  y := 1
+  || y := 1
 OPERATIONS
   Inc = SELECT x < 1000 THEN x := x + 1 END;
   Dec = SELECT x > 1 THEN x := x -1 END;
