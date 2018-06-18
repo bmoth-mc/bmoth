@@ -17,7 +17,7 @@ public class Highlighter {
         "MACHINE"
     };
     private static final String[] KEYWORDS = new String[]{
-        "VARIABLES", "DEFINITIONS", "INVARIANT", "INITIALISATION", "OPERATIONS", "CONSTANTS", "PROPERTIES"
+        "VARIABLES", "DEFINITIONS", "INVARIANT", "INITIALISATION", "OPERATIONS", "CONSTANTS", "PROPERTIES", "SETS"
     };
     private static final String[] KEYWORDS2 = new String[]{
         "END", "SELECT", "THEN", "BEGIN", "WHERE", "ANY"
