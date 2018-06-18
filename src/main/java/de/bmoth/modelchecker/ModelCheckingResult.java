@@ -85,15 +85,16 @@ public class ModelCheckingResult {
 
     public static List<State> findCounterExamplePath(Model model) {
         List<State> path = new ArrayList<>();
-
         HashMap<Integer, HashMap<String, Expr>> states = new HashMap<>();
         for (FuncDecl decl: model.getDecls()) {
             String name = decl.getName().toString();
             Expr value = model.getConstInterp(decl);
-            int index = Integer.parseInt(name.split("'")[1]);
-            HashMap<String, Expr> indexedStates = states.containsKey(index) ? states.get(index) : new HashMap<>();
-            indexedStates.put(name.split("'")[0], value);
-            states.put(index, indexedStates);
+            if (name.contains("'")) {
+                int index = Integer.parseInt(name.split("'")[1]);
+                HashMap<String, Expr> indexedStates = states.containsKey(index) ? states.get(index) : new HashMap<>();
+                indexedStates.put(name.split("'")[0], value);
+                states.put(index, indexedStates);
+            }
         }
 
         for (HashMap.Entry<Integer, HashMap<String, Expr>> entry : states.entrySet())
