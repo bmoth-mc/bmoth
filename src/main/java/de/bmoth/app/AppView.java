@@ -325,7 +325,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
         task.setOnCancelled(event -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Model Checking Result");
-            alert.setHeaderText("Modelchecking was canceled!");
+            alert.setHeaderText("Model checking was canceled!");
             alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
             alert.showAndWait();
         });
