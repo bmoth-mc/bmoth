@@ -68,6 +68,12 @@ public class ModelCheckingResult {
         return lastState;
     }
 
+    /** Returns the shortest path to a found counterexample for ESMC.
+     *
+     * @param stateSpace The built state space
+     * @param lastState The state in which the counterexample occurred
+     * @return The shortest path from an initial state to lastState
+     */
     private static List<State> findCounterExamplePath(StateSpace stateSpace, State lastState) {
         if (stateSpace != null && lastState != null) {
             ShortestPathAlgorithm<State, DefaultEdge> pathFinder = new DijkstraShortestPath<>(stateSpace);
@@ -82,6 +88,12 @@ public class ModelCheckingResult {
         }
     }
 
+    /**
+     * Returns the shortest path to a found counterexample for BMC and k-induction.
+     *
+     * @param model The model containing the path to the counterexample
+     * @return The extracted path to the counterexample
+     */
     private static List<State> findCounterExamplePath(Model model) {
         List<State> path = new ArrayList<>();
         HashMap<Integer, HashMap<String, Expr>> states = new HashMap<>();
