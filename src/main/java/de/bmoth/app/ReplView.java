@@ -24,6 +24,7 @@ public class ReplView implements FxmlView<ReplViewModel>, Initializable {
         replText.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 replViewModel.processPredicate();
+                replText.positionCaret(replText.getLength());
                 keyEvent.consume();
             }
         });
