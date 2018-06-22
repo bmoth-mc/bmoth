@@ -272,18 +272,19 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
     }
 
     public void checkWithChecker() {
-
         task = new Task<ModelCheckingResult>() {
             @Override
             protected ModelCheckingResult call() throws Exception {
+                infoArea.setText("Model checking started.");
                 return AppView.this.modelChecker.check();
             }
         };
-
         task.setOnSucceeded(event -> {
+            infoArea.setText("Model checking finished.");
             ModelCheckingResult result = task.getValue();
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Model Checking Result");
+            alert.setOnCloseRequest(e -> infoArea.clear());
 
             switch (result.getType()) {
                 case VERIFIED:
@@ -327,6 +328,7 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
             alert.setTitle("Model Checking Result");
             alert.setHeaderText("Model checking was canceled!");
             alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.setOnCloseRequest(e -> infoArea.clear());
             alert.showAndWait();
         });
         modelCheckingThread = new Thread(task);
@@ -408,7 +410,6 @@ public class AppView implements FxmlView<AppViewModel>, Initializable {
 
     @FXML
     public void handleREPL() throws IOException {
-
         ViewTuple<ReplView, ReplViewModel> viewReplViewModelViewTuple = FluentViewLoader.fxmlView(ReplView.class).load();
         Parent root = viewReplViewModelViewTuple.getView();
         Scene scene = new Scene(root);
